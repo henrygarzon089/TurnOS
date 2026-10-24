@@ -27,7 +27,7 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm tsx scripts/lint-texts.ts
-      - run: pnpm test:unit
+      - run: pnpm test:coverage # unitarias + NFR-009 (100 % de ramas en el dominio)
       # Postgres 16 + pgTAP + pg_cron + shim de Supabase (ADR-015). La imagen supabase/postgres no
       # sirve: su usuario postgres no es superusuario y no deja instalar el shim en `auth`.
       - name: Base de pruebas (shim + migraciones + seed)

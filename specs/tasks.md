@@ -640,12 +640,13 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   prueba propia: 001 (Lighthouse en CI), 002 y 012 (`tests/e2e/nfr.spec.ts`), 003, 004, 005,
   006, 007 (flujo del cliente ≤ 4 campos), 008, 009, 010, 011. **Sin prueba automática, por
   naturaleza**: NFR-007 prueba de pasillo (manual, T-029/T-049) y NFR-013 costo (arquitectura:
-  solo Vercel + Supabase). Cobertura de ramas 100 % de la lógica de dominio (NFR-009) **no
-  medida**: falta agregar `@vitest/coverage-v8` y el umbral al CI. Regresión en la Mac: 467 pgTAP ·
+  solo Vercel + Supabase). Cobertura de ramas (NFR-009): **100 %** en `queue-estimate`, `commission`, `cash-closure` y
+  `money` con umbral en `vitest.config.ts`; el CI corre `pnpm test:coverage` y falla si baja. Regresión en la Mac: 467 pgTAP ·
   80 unitarias · 33 integración · E2E 161/162 (onboarding en iPhone falló una vez por tiempo
   con carga; 6/6 al repetirlo).
-- **Falta (Henry):** pruebas de pasillo (T-029, T-049), CI verde en GitHub con lo nuevo y la
-  aprobación del Hito 3.
+- Producción (2026-10-24): migraciones 0021–0028 aplicadas y app desplegada. Corrección de
+  seguridad ADR-019 (permisos de funciones) aplicada y verificada con la llave pública.
+- **Falta (Henry):** pruebas de pasillo (T-029, T-049) y la aprobación del Hito 3.
 
 ---
 

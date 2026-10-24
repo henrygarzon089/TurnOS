@@ -82,7 +82,7 @@ export function estimateQueue(input: QueueInput): Estimate[] {
   const out: Estimate[] = [];
 
   for (const t of sorted) {
-    const position = pos.get(t.id) ?? 1;
+    const position = pos.get(t.id)!; // positions() incluye todos los turnos en espera
     const base = { id: t.id, position, ahead: position - 1 };
     if (active.length === 0) {
       out.push({ ...base, waitMin: null, barberId: null, reason: "no_barbers" });
