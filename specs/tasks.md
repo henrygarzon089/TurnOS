@@ -267,7 +267,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   ficha; `REQ-012.4` "Cerrar fila por hoy" cancela y bloquea `/[slug]`; `REQ-012.5` dueño con
   silla opera en `/app/fila`; `REQ-010.6` pausar/reactivar barbero.
 
-### [ ] T-026 · QR, enlace y compartir
+### [~] T-026 · QR, enlace y compartir
 - REQ: REQ-001.2, REQ-001.3
 - Archivos: `src/app/(staff)/admin/qr/page.tsx`, `src/components/admin/QrCard.tsx` (librería
   `qrcode`), uso de plantilla `share_queue`
