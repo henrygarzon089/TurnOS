@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getStaffSession } from "@/lib/auth/session";
+import { parseLoyaltyForm } from "@/lib/domain/loyalty";
 import { parseCOP } from "@/lib/domain/money";
 import { normalizePhoneCO } from "@/lib/domain/phone";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -423,4 +424,55 @@ export async function publishPrivacyVersion(
     body: body.trim(),
   });
   return error ? { error: "No se pudo publicar." } : { ok: true };
+}
+
+// ================================================================ T-035: fidelidad ====
+
+/**
+ * REQ-019.1 configura la tarjeta (visitas, premio, servicios que suman). REQ-019.6: solo cambia
+ * la regla; los sellos acumulados no se tocan (el trigger aplica la regla a sellos futuros).
+ */
+export async function saveLoyaltyProgram(_prev: FormState, formData: FormData): Promise<FormState> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { error: "Solo el dueño puede configurar la tarjeta." };
+  const parsed = parseLoyaltyForm(formData);
+  if (!parsed.ok) return { error: parsed.error };
+  const c = parsed.value;
+  const supabase = await createSupabaseServerClient();
+  const biz = session.business.id;
+
+  const { error } = await supabase.from("loyalty_programs").upsert(
+    {
+      business_id: biz,
+      enabled: c.enabled,
+      visits_required: c.visitsRequired,
+      reward_type: c.rewardType,
+      reward_service_id: c.rewardServiceId,
+      reward_amount: c.rewardAmount,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "business_id" },
+  );
+  if (error) return { error: "No se pudo guardar la tarjeta." };
+
+  if (c.enabled) {
+    const counting = c.countingServiceIds;
+    const on = await supabase
+      .from("services")
+      .update({ counts_for_loyalty: true })
+      .eq("business_id", biz)
+      .in("id", counting.length ? counting : ["00000000-0000-0000-0000-000000000000"]);
+    const off = counting.length
+      ? await supabase
+          .from("services")
+          .update({ counts_for_loyalty: false })
+          .eq("business_id", biz)
+          .not("id", "in", `(${counting.join(",")})`)
+      : await supabase
+          .from("services")
+          .update({ counts_for_loyalty: false })
+          .eq("business_id", biz);
+    if (on.error || off.error) return { error: "No se pudieron guardar los servicios que suman." };
+  }
+  return { ok: true };
 }

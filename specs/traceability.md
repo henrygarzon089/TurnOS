@@ -95,13 +95,13 @@
 | REQ-018.4 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (pendiente) | customers.spec.ts, customers.test.ts, rls-customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | prueba escrita |
 | REQ-018.5 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (pendiente) | customers.spec.ts, customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | prueba escrita |
 | REQ-018.6 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (pendiente) | customers-delete.spec.ts, 0013_customers_loyalty.sql, 0014_customers_merge.sql, 0015_anonymize.sql | prueba escrita |
-| REQ-019.1 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (pendiente), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | — | sin prueba |
-| REQ-019.2 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (pendiente), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-019.3 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (pendiente), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-019.4 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (pendiente), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-019.5 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (pendiente), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-019.6 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (pendiente), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-019.7 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (pendiente), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | — | sin prueba |
+| REQ-019.1 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | loyalty-config.spec.ts, loyalty.test.ts, 0016_loyalty_config.sql | prueba escrita |
+| REQ-019.2 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
+| REQ-019.3 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
+| REQ-019.4 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
+| REQ-019.5 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
+| REQ-019.6 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | loyalty-config.spec.ts, 0013_customers_loyalty.sql, 0016_loyalty_config.sql | prueba escrita |
+| REQ-019.7 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | — | sin prueba |
 | REQ-020.1 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (pendiente) | 0002_core.sql | prueba escrita |
 | REQ-020.2 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
 | REQ-020.3 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (pendiente) | — | sin prueba |

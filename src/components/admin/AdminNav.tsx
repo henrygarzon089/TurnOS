@@ -4,6 +4,7 @@ const ITEMS: { href: string; label: string }[] = [
   { href: "/admin/fila", label: "Fila" },
   { href: "/admin/caja", label: "Caja" },
   { href: "/app/clientes", label: "Clientes" },
+  { href: "/admin/fidelidad", label: "Fidelidad" },
   { href: "/admin/servicios", label: "Servicios" },
   { href: "/admin/productos", label: "Productos" },
   { href: "/admin/barberos", label: "Barberos" },

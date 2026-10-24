@@ -360,10 +360,18 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   se rechaza (`CUSTOMER_HAS_ACTIVE_TICKET`): la UI pide terminarlo o cancelarlo. **Ventas**: aún
   no existen; T-040 debe extender `anonymize_customer` a `sales` (ver nota allí).
 
-### [ ] T-035 · Configuración de la tarjeta de fidelidad
+### [x] T-035 · Configuración de la tarjeta de fidelidad — 2026-10-24
 - REQ: REQ-019.1, REQ-019.6
-- Archivos: `src/app/(staff)/admin/fidelidad/page.tsx`, `src/lib/actions/admin.ts`
+- Archivos: `src/app/(staff)/admin/fidelidad/page.tsx`, `src/components/admin/LoyaltyForm.tsx`,
+  `src/lib/actions/admin.ts` (`saveLoyaltyProgram`), `src/lib/domain/loyalty.ts`
+  (`parseLoyaltyForm`), `supabase/tests/0016_loyalty_config.sql`, `tests/unit/loyalty.test.ts`,
+  `tests/e2e/loyalty-config.spec.ts`
 - Terminado: E2E activa tarjeta con 10 visitas y premio "Corte"; cambiar a 8 no borra sellos.
+- Notas: sin migración (el esquema y el trigger de T-031 ya aplican la regla a sellos futuros; el
+  pgTAP 0016 lo deja probado: una tarjeta con 8 sellos no se completa sola al bajar a 8, el
+  siguiente sello sí la completa). "Qué servicios suman" edita `services.counts_for_loyalty`
+  (el mismo campo de /admin/servicios). La página muestra un resumen (clientes con tarjeta,
+  sellos acumulados, premios por canjear) que el E2E usa para verificar REQ-019.6.
 
 ### [ ] T-036 · Progreso y premio visibles (cliente, barbero, ficha) y canje manual
 - REQ: REQ-019.3, REQ-019.5, REQ-019.7
