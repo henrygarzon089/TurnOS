@@ -119,11 +119,11 @@
 | REQ-024.1 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (hecha) | admin-config.spec.ts, new-sale.spec.ts | cubierto |
 | REQ-024.2 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (hecha) | new-sale.spec.ts, 0021_cash.sql, 0022_register_sale.sql | cubierto |
 | REQ-024.3 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (hecha) | new-sale.spec.ts, commission.test.ts, 0022_register_sale.sql | cubierto |
-| REQ-025.1 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (pendiente) | rls-core.test.ts, 0002_core.sql, 0003_rls_core.sql, 0021_cash.sql | prueba escrita |
-| REQ-025.2 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (pendiente) | commission.test.ts, money.test.ts, 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
-| REQ-025.3 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (pendiente) | 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
-| REQ-025.4 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (pendiente) | commission.test.ts, 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
-| REQ-025.5 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (pendiente) | — | sin prueba |
+| REQ-025.1 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | rls-core.test.ts, 0002_core.sql, 0003_rls_core.sql, 0021_cash.sql | cubierto |
+| REQ-025.2 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | commission.test.ts, money.test.ts, 0021_cash.sql, 0022_register_sale.sql | cubierto |
+| REQ-025.3 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | 0021_cash.sql, 0022_register_sale.sql | cubierto |
+| REQ-025.4 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | commission.test.ts, 0021_cash.sql, 0022_register_sale.sql | cubierto |
+| REQ-025.5 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | my-numbers.spec.ts, my-numbers.test.ts, my-numbers.test.ts | cubierto |
 | REQ-026.1 | Anular una venta | T-040 (hecha), T-045 (hecha) | cash-day.spec.ts, 0021_cash.sql, 0022_register_sale.sql, 0025_cash_summary.sql | cubierto |
 | REQ-026.2 | Anular una venta | T-040 (hecha), T-045 (hecha) | 0021_cash.sql, 0026_close_cash.sql | cubierto |
 | REQ-027.1 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | cash-day.spec.ts, 0025_cash_summary.sql | cubierto |
@@ -136,7 +136,7 @@
 | REQ-028.2 | Resumen semanal | T-011 (hecha), T-048 (pendiente) | — | sin prueba |
 | REQ-028.3 | Resumen semanal | T-011 (hecha), T-048 (pendiente) | — | sin prueba |
 | REQ-028.4 | Resumen semanal | T-011 (hecha), T-048 (pendiente) | — | sin prueba |
-| REQ-029.1 | Vista del barbero sobre sus números | T-042 (hecha), T-047 (pendiente), T-050 (pendiente) | rls-cash.test.ts, 0025_cash_summary.sql | prueba escrita |
+| REQ-029.1 | Vista del barbero sobre sus números | T-042 (hecha), T-047 (hecha), T-050 (pendiente) | my-numbers.spec.ts, my-numbers.test.ts, rls-cash.test.ts, 0025_cash_summary.sql | prueba escrita |
 | REQ-030.1 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts, onboarding.spec.ts, 0002_core.sql | cubierto |
 | REQ-030.2 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | onboarding.spec.ts, 0004_invitations.sql | cubierto |
 | REQ-030.3 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts | cubierto |

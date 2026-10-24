@@ -590,11 +590,16 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `/admin/caja/[fecha]` muestra un día pasado en modo lectura (compartir, reabrir). El E2E cierra
   la caja de hoy y siempre la reabre al terminar (bloquearía las ventas de otras pruebas).
 
-### [ ] T-047 · Mis números (barbero)
+### [x] T-047 · Mis números (barbero) — 2026-10-24
 - REQ: REQ-025.5, REQ-029.1
 - Archivos: `src/app/(staff)/app/mis-numeros/page.tsx`, `src/lib/actions/cash.ts` (`getMyNumbers`)
 - Terminado: E2E barbero ve hoy/semana y detalle propio; prueba de integración confirma que la
   consulta con su JWT no devuelve ventas ajenas.
+- Notas: cálculo en `src/lib/domain/my-numbers.ts` (semana lunes–domingo, PA-21; anuladas fuera
+  de los totales y visibles tachadas en el detalle) + unitaria. La consulta no filtra por barbero:
+  el RLS de T-042 lo hace (`tests/integration/my-numbers.test.ts` corre la misma consulta con el
+  JWT del barbero). Enlace "Mis números" en el menú del barbero (con `flex-wrap`: con tres enlaces
+  desbordaba a zoom 200 %, lo detectó `pwa-usability`). `tests/e2e/my-numbers.spec.ts`.
 
 ### [ ] T-048 · Resumen semanal y ocupación
 - REQ: REQ-028.1–28.4, REQ-021.1

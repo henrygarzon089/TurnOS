@@ -3,6 +3,13 @@
 import { z } from "zod";
 import { getStaffSession } from "@/lib/auth/session";
 import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
+import {
+  MY_NUMBERS_COLUMNS,
+  summarizeMyNumbers,
+  type MyNumbersRow,
+  type Totals,
+} from "@/lib/domain/my-numbers";
+import { bogotaWeekStart, businessDayBogota } from "@/lib/domain/time";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 // ---------------------------------------------------------------- tipos ----
@@ -340,4 +347,60 @@ export async function getClosures(): Promise<
     difference: c.difference,
     closedAt: c.closed_at,
   }));
+}
+
+// ================================================================ T-047: mis números ====
+
+export type MyNumbersView = {
+  barberName: string;
+  commissionPct: number;
+  today: Totals;
+  week: Totals;
+  weekStart: string;
+  detail: (MyNumbersRow & { items: string })[];
+};
+
+/**
+ * REQ-025.5 / REQ-029.1 "Mis números": hoy y semana con el detalle de sus ventas. Sin filtro por
+ * barbero a propósito: el RLS de sales solo devuelve las suyas (prueba en
+ * tests/integration/my-numbers.test.ts con la misma consulta).
+ */
+export async function getMyNumbers(): Promise<MyNumbersView | null> {
+  const session = await getStaffSession();
+  if (!session?.barberId) return null;
+  const supabase = await createSupabaseServerClient();
+  const today = businessDayBogota();
+  const weekStart = bogotaWeekStart();
+  const [salesRes, barberRes] = await Promise.all([
+    supabase
+      .from("sales")
+      .select(`${MY_NUMBERS_COLUMNS}, sale_items(kind, name, qty, is_reward)`)
+      .eq("business_id", session.business.id)
+      .gte("business_day", weekStart)
+      .order("created_at", { ascending: false })
+      .limit(500),
+    supabase.from("barbers").select("commission_pct").eq("id", session.barberId).single(),
+  ]);
+  type Row = Omit<MyNumbersRow, "has_service"> & {
+    sale_items: { kind: string; name: string; qty: number; is_reward: boolean }[];
+  };
+  const rows = ((salesRes.data ?? []) as unknown as Row[])
+    // El dueño que también atiende ve todo el negocio por RLS: aquí solo lo de su silla
+    .filter((r) => r.barber_id === session.barberId)
+    .map((r) => ({
+      ...r,
+      has_service: r.sale_items.some((i) => i.kind === "service"),
+      items: r.sale_items
+        .map((i) => `${i.name}${i.qty > 1 ? ` ×${i.qty}` : ""}${i.is_reward ? " (premio)" : ""}`)
+        .join(", "),
+    }));
+  const n = summarizeMyNumbers(rows, today, weekStart);
+  return {
+    barberName: session.barberName ?? "",
+    commissionPct: barberRes.data?.commission_pct ?? 0,
+    today: n.today,
+    week: n.week,
+    weekStart,
+    detail: n.detail as MyNumbersView["detail"],
+  };
 }

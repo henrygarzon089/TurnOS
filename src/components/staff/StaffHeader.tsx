@@ -20,7 +20,10 @@ export function StaffHeader({ session }: { session: StaffSession }) {
         </form>
       </div>
       {session.role === "barber" && (
-        <nav aria-label="Barbero" className="mx-auto flex w-full max-w-md gap-2 px-4 pb-2">
+        <nav
+          aria-label="Barbero"
+          className="mx-auto flex w-full max-w-md flex-wrap gap-x-2 px-4 pb-2"
+        >
           <Link href="/app/fila" className="text-accent min-h-10 px-2 py-2 text-sm font-semibold">
             Mi fila
           </Link>
@@ -29,6 +32,12 @@ export function StaffHeader({ session }: { session: StaffSession }) {
             className="text-accent min-h-10 px-2 py-2 text-sm font-semibold"
           >
             Clientes
+          </Link>
+          <Link
+            href="/app/mis-numeros"
+            className="text-accent min-h-10 px-2 py-2 text-sm font-semibold"
+          >
+            Mis números
           </Link>
         </nav>
       )}
