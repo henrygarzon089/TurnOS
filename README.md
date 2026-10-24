@@ -29,6 +29,7 @@ PWA mobile-first · 100 % en español, COP sin decimales, `America/Bogota`.
 | `pnpm test:integration`                        | pruebas de integración contra la base local                               |
 | `pnpm db:local`                                | levanta/reinicia Postgres local con shim de Supabase + migraciones + seed |
 | `pnpm db:test`                                 | pruebas pgTAP de las migraciones                                          |
+| `scripts/ci-db.sh up` / `test` / `down`        | base de pruebas en Docker (Postgres 16 + shim), la misma del CI           |
 | `pnpm build`                                   | build de producción                                                       |
 | `pnpm lighthouse`                              | Lighthouse móvil de /[slug], /t/[token] y /app/fila (ver abajo)           |
 

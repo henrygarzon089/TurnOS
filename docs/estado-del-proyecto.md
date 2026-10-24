@@ -72,10 +72,14 @@ Pendientes (H3): `/admin/caja`,
 
 ## Pendientes externos (los tenía que resolver Henry; verificar estado)
 
-1. **Supabase**: proyecto `uucjmxdssnmvznibrafc` (URL `https://uucjmxdssnmvznibrafc.supabase.co`).
-   Aplicar migraciones (`supabase link` + `supabase db push`), `pnpm seed:users`, `seed.sql`.
-   Desactivar "Confirm email" en Auth (los barberos usan correos alias).
-2. **GitHub**: repo `henrygarzon089/TurnOS` estaba vacío; subir el bundle/clon.
+1. **Supabase** — hecho 2026-10-24: proyecto `uucjmxdssnmvznibrafc` enlazado con el CLI;
+   `supabase db push --include-seed` aplicó 0001–0020 (sin 0016: es solo una prueba) y el seed
+   (`seed.sql` + `seed-local-auth.sql`, ver nota en ese archivo). Login del dueño y del barbero
+   verificado contra la nube con la llave pública; `anon` no lee tablas. **Pendiente (Henry)**:
+   en Auth → Providers → Email desactivar "Confirm email" si se van a registrar dueños nuevos
+   desde la app; cambiar las contraseñas de prueba antes de usarlo con clientes reales.
+2. **GitHub** — hecho 2026-10-24: `main` en `henrygarzon089/TurnOS`. CI arreglado (workflow
+   inválido, `next typegen`, base de pruebas con `scripts/ci-db.sh`).
 3. **Vercel**: importar el repo en la cuenta personal de Henry con `NEXT_PUBLIC_SUPABASE_URL`,
    `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL`.
 4. Correr `pnpm test:e2e` (y `E2E_SCREEN_KEY=<businesses.screen_key>` para la pantalla TV) y

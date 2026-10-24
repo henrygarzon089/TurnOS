@@ -5,7 +5,9 @@
 -- para dejar entrar. `supabase db reset` aplica este archivo después de seed.sql
 -- (config.toml → db.seed.sql_paths); `pnpm db:seed-auth` lo vuelve a aplicar a mano.
 -- Mismas credenciales que scripts/seed-users.ts y tests/e2e/helpers.ts. Idempotente.
--- NO aplicar en un proyecto real: allá se usa `pnpm seed:users`.
+-- En el proyecto de demo de la nube (uucjmxdssnmvznibrafc) se aplicó igual, con
+-- `supabase db push --include-seed` (2026-10-24), para no manejar la llave service_role. En un
+-- negocio real NO: allá los usuarios los crea la app (registro del dueño, invitación del barbero).
 
 with creds(id, email, pin) as (
   values
