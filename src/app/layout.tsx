@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   },
   description: "Toma tu turno sin esperar en el local.",
   applicationName: "TurnOS",
+  // REQ-032.1 iOS Safari "Agregar a inicio" (la app del personal; las públicas usan la del negocio)
+  appleWebApp: { capable: true, title: "TurnOS", statusBarStyle: "default" },
+  icons: { apple: "/icons/apple-touch-icon.png" },
 };
 
 export const viewport: Viewport = {

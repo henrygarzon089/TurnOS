@@ -320,13 +320,28 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Terminado: pgTAP `REQ-002.3` guarda fecha y versión; E2E `REQ-002.5` nueva versión → el
   cliente vuelve a ver la casilla.
 
-### [ ] T-029 · Pulido móvil, PWA y rendimiento del Hito 1
+### [~] T-029 · Pulido móvil, PWA y rendimiento del Hito 1
 - REQ: REQ-032.1–32.2, NFR-001, NFR-007, NFR-008
 - Archivos: ajustes en componentes; `lighthouserc.json` con presupuestos
 - Terminado: Lighthouse móvil ≥ 80 rendimiento y ≥ 90 accesibilidad en `/[slug]`, `/t/[token]`,
   `/app/fila`; botones ≥ 48 px (prueba de Playwright que mide `boundingBox`); instalable en
   Android e iOS (verificación manual documentada en el README); prueba de pasillo con un barbero
   real registrada en `decisions.md`.
+- Estado 2026-10-24 — hecho: `pnpm lighthouse` (`scripts/lighthouse.ts`, build de producción,
+  `/app/fila` con sesión de barbero): portada 97/100 (LCP 2,6 s), Mi turno 98/100 (2,1 s), Mi fila
+  96/100 (2,6 s). `tests/e2e/pwa-usability.spec.ts`: botones ≥ 48 px y abajo (`boundingBox`),
+  fuente base ≥ 16 px, zoom 200 % sin scroll horizontal (NFR-008), manifest por negocio e iOS.
+  `tests/unit/pwa.test.ts`. Desvíos y arreglos: manifest por negocio
+  `/[slug]/manifest.webmanifest` con `pwa_name` o el nombre del negocio (PA-22; antes todo se
+  instalaba como "TurnOS") + `apple-touch-icon` 180 px y `apple-mobile-web-app-*`; en "Tomar
+  turno" las opciones de servicio con nombres largos desbordaban a zoom 200 % (filas que no
+  partían y `fieldset` con ancho mínimo); `LastUpdated` rompía la hidratación de `/t/[token]`
+  (ahora el primer render dice "hace un momento"). `lighthouserc.json` queda para `@lhci/cli` en
+  CI; la medición local usa `pnpm lighthouse` (incluye `/t/[token]` y `/app/fila`, que lhci no
+  cubría). Higiene E2E: `resetQueue` desactiva barberos creados por las pruebas (llenaban la
+  pantalla del TV) y privacidad con 60 s.
+- **Falta (manual, Henry):** instalar en un Android y un iPhone reales con HTTPS (tabla en el
+  README) y la prueba de pasillo con un barbero (NFR-007) registrada en `decisions.md`.
 
 ### [~] T-030 · Validación Hito 1: matriz de trazabilidad
 - Nota (2026-10-23): `pnpm tsx scripts/traceability.ts --hito=1` deja solo 3 CA sin prueba

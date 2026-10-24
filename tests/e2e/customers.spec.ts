@@ -49,8 +49,13 @@ test.describe("REQ-018 ficha de cliente", () => {
     await expect(
       history.getByRole("listitem").filter({ hasText: "Terminado" }).first(),
     ).toBeVisible();
-    await expect(history.getByRole("listitem").filter({ hasText: "No llegó" })).toHaveCount(1);
-    await expect(history.getByRole("listitem").filter({ hasText: "Cancelado" })).toHaveCount(1);
+    // El seed garantiza al menos uno de cada; otras corridas de E2E pueden agregar más
+    await expect(
+      history.getByRole("listitem").filter({ hasText: "No llegó" }).first(),
+    ).toBeVisible();
+    await expect(
+      history.getByRole("listitem").filter({ hasText: "Cancelado" }).first(),
+    ).toBeVisible();
     const pedro = history.getByRole("listitem").filter({ hasText: "Pedro" });
     await expect(pedro).toContainText("$ 15.000");
     await expect(pedro).toContainText("Barba");

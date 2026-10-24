@@ -23,7 +23,8 @@
     "seed:users": "tsx scripts/seed-users.ts",
     "db:seed-auth": "docker exec -i supabase_db_turnos psql -U postgres -d postgres -v ON_ERROR_STOP=1 -q < supabase/seed-local-auth.sql",
     "lint:texts": "tsx scripts/lint-texts.ts",
-    "trace": "tsx scripts/traceability.ts"
+    "trace": "tsx scripts/traceability.ts",
+    "lighthouse": "tsx scripts/lighthouse.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -47,6 +48,7 @@
     "dotenv": "^18.0.9",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
+    "lighthouse": "^12.8.2",
     "pg": "^8.23.1",
     "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",

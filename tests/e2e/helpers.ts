@@ -93,6 +93,16 @@ export async function resetQueue() {
   }
   const { error: rlError } = await db.from("rate_limits").delete().like("key", "ip:%");
   if (rlError) throw new Error(rlError.message);
+  // Barberos que crean las pruebas (p. ej. "Invitado E2E" de onboarding) se acumulan entre
+  // corridas y llenan la pantalla del TV (REQ-013.3, 1080p sin scroll): se desactivan.
+  const seedNames = SEED.barbers.map((b) => b.name);
+  const { error: extraError } = await db
+    .from("barbers")
+    .update({ is_active: false, status: "off" })
+    .eq("business_id", biz.id)
+    .eq("is_active", true)
+    .not("display_name", "in", `(${seedNames.map((n) => `"${n}"`).join(",")})`);
+  if (extraError) throw new Error(extraError.message);
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" });
   const { error } = await db
     .from("barbers")

@@ -1,9 +1,23 @@
 import type { Metadata } from "next";
 import { MyTicket } from "@/components/queue/MyTicket";
 import { getTicketByToken } from "@/lib/actions/public";
+import { businessPwaMetadata } from "@/lib/pwa";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Mi turno" };
+
+/** REQ-032.1: "Mi turno" se instala como la app de la barbería del turno. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}): Promise<Metadata> {
+  const { token } = await params;
+  const t = await getTicketByToken(token);
+  return {
+    title: "Mi turno",
+    ...(t ? businessPwaMetadata({ name: t.business.name, slug: t.business.slug }) : {}),
+  };
+}
 
 /** REQ-004 / REQ-004.7 */
 export default async function TicketPage({

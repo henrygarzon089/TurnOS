@@ -5,6 +5,8 @@ test("REQ-002.5 una versión nueva del aviso hace que el cliente vuelva a ver la
   page,
   browser,
 }) => {
+  // Flujo largo (cliente completo + login del dueño): en WebKit con carga supera los 30 s
+  test.setTimeout(60_000);
   // Cliente acepta la versión vigente
   const cctx = await browser.newContext();
   const customer = await cctx.newPage();

@@ -73,7 +73,7 @@
 | REQ-012.5 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-013.1 | Pantalla pública para el televisor | T-027 (hecha) | screen.spec.ts, 0002_core.sql, 0011_screen.sql | cubierto |
 | REQ-013.2 | Pantalla pública para el televisor | T-027 (hecha) | screen.spec.ts, phone.test.ts, 0011_screen.sql | cubierto |
-| REQ-013.3 | Pantalla pública para el televisor | T-027 (hecha) | screen.spec.ts | cubierto |
+| REQ-013.3 | Pantalla pública para el televisor | T-027 (hecha) | helpers.ts, screen.spec.ts | cubierto |
 | REQ-013.4 | Pantalla pública para el televisor | T-027 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-013.5 | Pantalla pública para el televisor | T-027 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-014.1 | Cierre automático de turnos al final del día | T-014 (hecha), T-020 (hecha), T-030 (en curso) | 0006_transitions.sql, 0008_public_fns.sql, 0020_close_expired_midnight.sql | prueba escrita |
@@ -145,7 +145,7 @@
 | REQ-031.2 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (pendiente) | 0008_public_fns.sql, 0009_realtime.sql | prueba escrita |
 | REQ-031.3 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (pendiente) | — | sin prueba |
 | REQ-031.4 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (pendiente) | rls-core.test.ts, 0003_rls_core.sql | prueba escrita |
-| REQ-032.1 | PWA instalable | T-001 (hecha), T-010 (en curso), T-029 (pendiente) | — | sin prueba |
-| REQ-032.2 | PWA instalable | T-001 (hecha), T-010 (en curso), T-029 (pendiente) | — | sin prueba |
+| REQ-032.1 | PWA instalable | T-001 (hecha), T-010 (en curso), T-029 (en curso) | pwa-usability.spec.ts, pwa.test.ts | prueba escrita |
+| REQ-032.2 | PWA instalable | T-001 (hecha), T-010 (en curso), T-029 (en curso) | pwa-usability.spec.ts | prueba escrita |
 | REQ-033.1 | Plantillas de mensajes de WhatsApp | T-024 (hecha) | admin-config.spec.ts, render-template.test.ts, 0002_core.sql | cubierto |
 | REQ-034.1 | Datos de ejemplo (seed) | T-009 (hecha), T-030 (en curso) | 0009_seed.sql | prueba escrita |

@@ -136,32 +136,34 @@ export function JoinForm({ business, now }: Props) {
         {error?.field === "phone" && <ErrorText>{error.message}</ErrorText>}
       </Field>
 
-      <fieldset>
+      <fieldset className="min-w-0">
         <legend className="mb-2 text-sm font-medium">Servicio</legend>
         <div className="flex flex-col gap-2">
           {business.services.map((s) => (
             <label
               key={s.id}
-              className={`border-line bg-card flex min-h-12 cursor-pointer items-center justify-between rounded-xl border px-3 ${serviceId === s.id ? "border-accent ring-2 ring-blue-200" : ""}`}
+              className={`border-line bg-card flex min-h-12 cursor-pointer items-center justify-between gap-2 rounded-xl border px-3 py-2 ${serviceId === s.id ? "border-accent ring-2 ring-blue-200" : ""}`}
             >
-              <span className="flex items-center gap-2">
+              <span className="flex min-w-0 items-center gap-2 break-words">
                 <input
                   type="radio"
                   name="serviceId"
                   value={s.id}
                   checked={serviceId === s.id}
                   onChange={() => setServiceId(s.id)}
-                  className="h-5 w-5"
+                  className="h-5 w-5 shrink-0"
                 />
-                {s.name} <span className="text-muted text-sm">· {s.durationMin} min</span>
+                <span className="min-w-0">
+                  {s.name} <span className="text-muted text-sm">· {s.durationMin} min</span>
+                </span>
               </span>
-              <span className="font-semibold">{formatCOP(s.price)}</span>
+              <span className="shrink-0 font-semibold">{formatCOP(s.price)}</span>
             </label>
           ))}
         </div>
       </fieldset>
 
-      <fieldset>
+      <fieldset className="min-w-0">
         <legend className="mb-2 text-sm font-medium">Barbero</legend>
         <div className="flex flex-wrap gap-2">
           <Chip selected={barberId === null} onClick={() => pickBarber(null)}>
