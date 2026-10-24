@@ -21,6 +21,7 @@
     "db:test": "scripts/db-local.sh test",
     "test:e2e": "playwright test",
     "seed:users": "tsx scripts/seed-users.ts",
+    "db:seed-auth": "docker exec -i supabase_db_turnos psql -U postgres -d postgres -v ON_ERROR_STOP=1 -q < supabase/seed-local-auth.sql",
     "lint:texts": "tsx scripts/lint-texts.ts",
     "trace": "tsx scripts/traceability.ts"
   },
