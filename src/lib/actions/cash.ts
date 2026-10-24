@@ -404,3 +404,52 @@ export async function getMyNumbers(): Promise<MyNumbersView | null> {
     detail: n.detail as MyNumbersView["detail"],
   };
 }
+
+// ================================================================ T-048: semana ====
+
+export type WeekSummary = {
+  weekStart: string;
+  weekEnd: string;
+  chairs: number;
+  openMinutes: number;
+  busyMinutes: number;
+  occupancyPct: number | null;
+  days: { day: string; openMinutes: number; busyMinutes: number; occupancyPct: number }[];
+  barbers: {
+    barberId: string;
+    name: string;
+    busyMinutes: number;
+    occupancyPct: number;
+    services: number;
+    sold: number;
+    commission: number;
+  }[];
+  newCustomers: number;
+  repeatCustomers: number;
+  lostTickets: number;
+  services: number;
+  sold: number;
+};
+
+/** REQ-028.1–28.4 resumen de la semana (lunes a domingo) y la anterior para comparar. */
+export async function getWeekSummary(
+  weekStart?: string,
+): Promise<{ current: WeekSummary; previous: WeekSummary } | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  if (weekStart && !/^\d{4}-\d{2}-\d{2}$/.test(weekStart)) return null;
+  const supabase = await createSupabaseServerClient();
+  const cur = await supabase.rpc("weekly_summary", {
+    p_business_id: session.business.id,
+    p_week_start: weekStart ?? null,
+  });
+  if (cur.error || !cur.data) return null;
+  const current = cur.data as WeekSummary;
+  const prevDay = new Date(`${current.weekStart}T00:00:00Z`);
+  prevDay.setUTCDate(prevDay.getUTCDate() - 7);
+  const prev = await supabase.rpc("weekly_summary", {
+    p_business_id: session.business.id,
+    p_week_start: prevDay.toISOString().slice(0, 10),
+  });
+  return { current, previous: (prev.data as WeekSummary) ?? current };
+}

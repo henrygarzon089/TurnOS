@@ -601,12 +601,21 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   JWT del barbero). Enlace "Mis números" en el menú del barbero (con `flex-wrap`: con tres enlaces
   desbordaba a zoom 200 %, lo detectó `pwa-usability`). `tests/e2e/my-numbers.spec.ts`.
 
-### [ ] T-048 · Resumen semanal y ocupación
+### [x] T-048 · Resumen semanal y ocupación — 2026-10-24
 - REQ: REQ-028.1–28.4, REQ-021.1
 - Archivos: migración `0019_weekly.sql` (`weekly_summary`, cálculo de minutos en servicio),
   `src/app/(staff)/admin/semana/page.tsx`, `src/components/cash/WeekSummary.tsx`
 - Terminado: pgTAP con el ejemplo de ocupación de §5.3 (40 %) y con nuevos/repiten del seed;
   E2E selector de semana y comparación con la anterior.
+- Notas: migración real `0027_weekly.sql` + pgTAP 0027 (17). La pgTAP usa una semana fija sin
+  historial del seed (lunes 2024-03-04) con datos controlados: 6 días × 11 h × 5 sillas y Juan y
+  Pedro en servicio 9–20 h → 7.920 min → **40 %**; por día (lunes 40 %, domingo cerrado 0 %) y por
+  barbero; 2 nuevos y 1 que repite (REQ-021.1); 2 turnos perdidos; ventas sin las anuladas. (No
+  se usaron "nuevos/repiten del seed" porque el seed cambia de semana según el día en que se
+  aplica; el E2E sí compara la UI con la función sobre los datos del seed.) Bug encontrado y
+  corregido al escribir la prueba: `least`/`greatest` ignoran NULL y un día sin intervalos sumaba
+  24 h. REQ-028.3: `getWeekSummary` pide también la semana anterior; variación en
+  `src/lib/domain/week.ts` (+ unitarias). `/admin/semana?semana=AAAA-MM-DD`, sin ir al futuro.
 
 ### [ ] T-049 · Pulido y rendimiento del Hito 3
 - REQ: NFR-001, NFR-007, NFR-008
