@@ -50,6 +50,8 @@ const ERRORS: Record<string, string> = {
   SAME_CUSTOMER: "Elige una ficha distinta.",
   CUSTOMER_ANONYMIZED: "Una de las fichas fue eliminada y no se puede fusionar.",
   CUSTOMER_NOT_FOUND: "No encontramos esa ficha.",
+  CUSTOMER_HAS_ACTIVE_TICKET:
+    "Tiene un turno activo. Termina o cancela el turno y vuelve a intentar.",
   FORBIDDEN: "No tienes permiso para esta acción.",
 };
 
@@ -291,4 +293,17 @@ export async function findMergeCandidates(
       inQueueToday: false,
       createdAt: c.created_at,
     }));
+}
+
+/**
+ * REQ-018.6 (Ley 1581): elimina los datos personales de la ficha a solicitud del cliente.
+ * Nombre y celular se anonimizan en la ficha y en los turnos; montos y conteos se conservan.
+ */
+export async function anonymizeCustomer(id: string): Promise<MergeResult> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { ok: false, error: ERRORS.FORBIDDEN };
+  if (!z.uuid().safeParse(id).success) return { ok: false, error: ERRORS.CUSTOMER_NOT_FOUND };
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("anonymize_customer", { p_customer_id: id });
+  return error ? { ok: false, error: mapError(error) } : { ok: true };
 }

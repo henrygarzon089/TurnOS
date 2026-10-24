@@ -347,12 +347,18 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   contra `supabase start` (Pixel 7 + iPhone 13, 10/10); `helpers.ts` espera `/admin/fila` tras el
   login (evitaba navegaciones interrumpidas en WebKit).
 
-### [ ] T-034 · Supresión de datos (Ley 1581)
+### [x] T-034 · Supresión de datos (Ley 1581) — 2026-10-24
 - REQ: REQ-018.6, NFR-005
-- Archivos: migración `0013_anonymize.sql` (`anonymize_customer`), botón en ficha con doble
-  confirmación
+- Archivos: migración `0015_anonymize.sql` (`anonymize_customer`), botón en ficha con doble
+  confirmación (`src/components/customers/DeleteCustomer.tsx`, `anonymizeCustomer` en
+  `src/lib/actions/customers.ts`), `supabase/tests/0015_anonymize.sql`,
+  `tests/e2e/customers-delete.spec.ts`
 - Terminado: pgTAP: nombre y celular anonimizados en ficha, turnos y ventas; montos y conteos
   intactos; el celular queda libre para volver a registrarse.
+- Notas: `anonymize_customer` ya existía desde 0013 (T-031); 0015 la redefine para borrar también
+  el celular de `rate_limits` (`phone:<cel>`) y rechazar una ficha ya eliminada. Con turno activo
+  se rechaza (`CUSTOMER_HAS_ACTIVE_TICKET`): la UI pide terminarlo o cancelarlo. **Ventas**: aún
+  no existen; T-040 debe extender `anonymize_customer` a `sales` (ver nota allí).
 
 ### [ ] T-035 · Configuración de la tarjeta de fidelidad
 - REQ: REQ-019.1, REQ-019.6
@@ -389,6 +395,8 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 ## Hito 3 — Caja y comisiones
 
 ### [ ] T-040 · Migración: ventas, pagos, cierres, cambios de comisión
+- Pendiente heredado de T-034: si `sales` guarda nombre o celular del cliente, extender
+  `anonymize_customer` (REQ-018.6) y su pgTAP.
 - REQ: REQ-023.3, REQ-024.2, REQ-025.2–25.4, REQ-026.1, REQ-027.2, NFR-010
 - Archivos: `supabase/migrations/0014_cash.sql` (`sales`, `sale_items`, `sale_payments`,
   `cash_closures`, `commission_changes`, triggers de suma de pagos, bloqueo por cierre y

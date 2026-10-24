@@ -89,12 +89,12 @@
 | REQ-017.1 | Horario y estado del negocio | T-004 (hecha), T-008 (en curso), T-014 (hecha), T-016 (hecha), T-018 (en curso), T-019 (en curso) | admin-config.spec.ts, 0002_core.sql | prueba escrita |
 | REQ-017.2 | Horario y estado del negocio | T-004 (hecha), T-008 (en curso), T-014 (hecha), T-016 (hecha), T-018 (en curso), T-019 (en curso) | 0008_public_fns.sql | prueba escrita |
 | REQ-017.3 | Horario y estado del negocio | T-004 (hecha), T-008 (en curso), T-014 (hecha), T-016 (hecha), T-018 (en curso), T-019 (en curso) | queue-estimate.test.ts | prueba escrita |
-| REQ-018.1 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (pendiente), T-039 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-018.2 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (pendiente), T-039 (pendiente) | customers.spec.ts, customer-history.test.ts | prueba escrita |
-| REQ-018.3 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (pendiente), T-039 (pendiente) | customers.spec.ts, customers.test.ts, 0013_customers_loyalty.sql | prueba escrita |
-| REQ-018.4 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (pendiente), T-039 (pendiente) | customers.spec.ts, customers.test.ts, rls-customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | prueba escrita |
-| REQ-018.5 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (pendiente), T-039 (pendiente) | customers.spec.ts, customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | prueba escrita |
-| REQ-018.6 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (pendiente), T-039 (pendiente) | 0013_customers_loyalty.sql, 0014_customers_merge.sql | prueba escrita |
+| REQ-018.1 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
+| REQ-018.2 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (pendiente) | customers.spec.ts, customer-history.test.ts | prueba escrita |
+| REQ-018.3 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (pendiente) | customers.spec.ts, customers.test.ts, 0013_customers_loyalty.sql | prueba escrita |
+| REQ-018.4 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (pendiente) | customers.spec.ts, customers.test.ts, rls-customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | prueba escrita |
+| REQ-018.5 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (pendiente) | customers.spec.ts, customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | prueba escrita |
+| REQ-018.6 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (pendiente) | customers-delete.spec.ts, 0013_customers_loyalty.sql, 0014_customers_merge.sql, 0015_anonymize.sql | prueba escrita |
 | REQ-019.1 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (pendiente), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | — | sin prueba |
 | REQ-019.2 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (pendiente), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
 | REQ-019.3 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (pendiente), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CustomerForm } from "@/components/customers/CustomerForm";
 import { CustomerHistory } from "@/components/customers/CustomerHistory";
+import { DeleteCustomer } from "@/components/customers/DeleteCustomer";
 import { MergeButton } from "@/components/customers/MergeDialog";
 import { getCustomer } from "@/lib/actions/customers";
 import { businessDayBogota, formatDayCO } from "@/lib/domain/time";
@@ -65,6 +66,7 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
       </section>
 
       {isOwner && <MergeButton view={view} />}
+      {isOwner && <DeleteCustomer id={c.id} name={c.name} />}
     </main>
   );
 }
