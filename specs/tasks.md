@@ -223,7 +223,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   turno!" < 3 s; `REQ-004.6` recarga tras cerrar; `REQ-005.2` cancelar recalcula la fila del otro
   contexto; `REQ-011.6` offline muestra último estado con hora; textos de todos los estados finales.
 
-### [ ] T-021 · Vista "Mi fila" del barbero
+### [~] T-021 · Vista "Mi fila" del barbero
 - REQ: REQ-006.1–6.5, REQ-007.6, REQ-009.1
 - Archivos: `src/app/(staff)/app/fila/page.tsx`, `src/components/queue/BarberQueue.tsx`,
   `src/lib/actions/queue.ts` (`getMyQueue`)
@@ -231,7 +231,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   turno tomado por otro desaparece en vivo; etiqueta "Avisar" a 2 de distancia (`REQ-009.1`);
   `REQ-006.4` indicador de estado.
 
-### [ ] T-022 · Acciones del barbero: llamar, en la silla, terminado, no llegó
+### [~] T-022 · Acciones del barbero: llamar, en la silla, terminado, no llegó
 - REQ: REQ-007.1–7.6, REQ-008.1–8.4, REQ-011.3–11.4
 - Archivos: `src/components/queue/BarberActions.tsx`, `src/lib/actions/queue.ts` (`callNext`,
   `startService`, `finishService`, `markNoShow`), `src/lib/net/retry.ts`
@@ -240,14 +240,16 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   (reloj simulado); `REQ-008.4` cliente marcado vuelve al final; `REQ-011.3` falla de red →
   reintento 3 veces, mensaje y sin cambio de estado (ruta interceptada en Playwright).
 
-### [ ] T-023 · Pausa del barbero con reasignación
+### [~] T-023 · Pausa del barbero con reasignación
 - REQ: REQ-010.1–10.5
 - Archivos: `src/components/queue/PauseSheet.tsx`, `src/lib/actions/queue.ts` (`setMyStatus`)
 - Terminado: E2E `REQ-010.2` hoja con N clientes y dos opciones; opción (b) los pasa a
   "cualquiera" conservando posición y el cliente ve el aviso `REQ-010.3`; `REQ-010.5` bloqueada
   con turno llamado; `REQ-010.1` formulario del cliente lo muestra "En pausa".
 
-### [ ] T-024 · Aviso por WhatsApp (`wa.me`) y canal de notificaciones
+### [~] T-024 · Aviso por WhatsApp (`wa.me`) y canal de notificaciones
+- Nota (2026-10-23): T-021..T-024 construidas con `tests/e2e/barber-flow.spec.ts`; E2E pendiente del proyecto remoto.
+  Migración 0010_notify.sql (mark_ticket_notified) agregada: el barbero no tiene update directo sobre tickets.
 - REQ: REQ-009.2–9.5, REQ-033.1 (uso), REQ-020.5 (respeto a "No contactar")
 - Archivos: `src/lib/notifications/{channel,wa-me,render}.ts`, `src/components/queue/NotifyButton.tsx`,
   `src/lib/actions/queue.ts` (`markNotified`), pruebas unitarias
