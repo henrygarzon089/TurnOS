@@ -21,7 +21,7 @@ Si más adelante recibes otro bundle con commits nuevos: `git pull turnos-main.b
 ```bash
 supabase start            # levanta Postgres + Auth + Realtime locales con pgtap y pg_cron
 supabase db reset         # aplica supabase/migrations/*.sql y supabase/seed.sql
-pnpm db:test              # pgTAP  (ajusta PG_PORT=54322 si usas el Postgres de supabase start)
+pnpm db:test              # pgTAP  (ajusta PG_PORT=57322 si usas el Postgres de supabase start)
 ```
 
 > El shim `supabase/local/0000_supabase_shim.sql` **no** se aplica con `supabase start`: ahí
@@ -30,8 +30,8 @@ pnpm db:test              # pgTAP  (ajusta PG_PORT=54322 si usas el Postgres de 
 Para `pnpm db:test` y `pnpm test:integration` contra el Postgres de `supabase start`:
 
 ```bash
-export DATABASE_URL=postgres://postgres:postgres@127.0.0.1:54322/postgres
-PG_PORT=54322 pg_prove -h 127.0.0.1 -p 54322 -U postgres -d postgres supabase/tests/*.sql
+export DATABASE_URL=postgres://postgres:postgres@127.0.0.1:57322/postgres
+PG_PORT=57322 pg_prove -h 127.0.0.1 -p 57322 -U postgres -d postgres supabase/tests/*.sql
 pnpm test:integration
 ```
 

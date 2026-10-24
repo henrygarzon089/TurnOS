@@ -11,7 +11,7 @@ create type message_template_key as enum ('notify_2_turns', 'reminder_inactive',
 -- --------------------------------------------------------- utilidades ----
 -- Token aleatorio en base64url (NFR-004: >= 128 bits). 16 bytes → 22 caracteres.
 create or replace function gen_public_token(n_bytes int default 16) returns text
-language sql volatile as $$
+language sql volatile set search_path = public, extensions as $$
   select translate(encode(gen_random_bytes(n_bytes), 'base64'), '+/=', '-_')
 $$;
 

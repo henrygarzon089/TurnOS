@@ -51,6 +51,12 @@ Pendientes (H2/H3): `/app/clientes`, `/admin/fidelidad`, `/admin/recordar`, `/ad
 - 0012: REQ-007.8 se refuerza en la base (antes solo en UI).
 - 0013 renumeró las migraciones previstas en `tasks.md` (0011 → 0013); los nombres en tasks.md
   son indicativos.
+- 0002 `gen_public_token()` fija `search_path = public, extensions`: en Supabase real `pgcrypto`
+  vive en `extensions` y las funciones `security definer` con `search_path = public` no
+  encontraban `gen_random_bytes` (falló el seed con `supabase start`; el shim no lo detectaba).
+  Se editó la migración porque aún no se había aplicado a ningún proyecto remoto.
+- Mac de Henry: `supabase/config.toml` usa los puertos 573xx (543xx ocupados por otro proyecto);
+  `next.config.ts` permite `allowedDevOrigins` de la red local para probar desde el celular.
 
 ## Pendientes externos (los tenía que resolver Henry; verificar estado)
 
