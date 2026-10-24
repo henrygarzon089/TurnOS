@@ -630,9 +630,22 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - **Falta (manual, Henry):** prueba de pasillo con el dueño (cobrar, nueva venta, cerrar caja sin
   ayuda) registrada en `decisions.md`; conviene hacerla junto con la de T-029 (ADR-017).
 
-### [ ] T-050 · Validación Hito 3: matriz de trazabilidad final
+### [~] T-050 · Validación Hito 3: matriz de trazabilidad final
 - REQ: REQ-023…REQ-029 y todo el MVP
 - Terminado: matriz completa REQ-001…REQ-034 + NFR sin huecos; CI verde; aprobación de Henry.
+- Estado 2026-10-24: `pnpm trace` → **144 CA, 0 sin prueba** (`--hito=0…3` en verde); la prueba
+  `tests/unit/traceability.test.ts` (NFR-009) lo verifica en cada corrida de unitarias
+  (`scripts/traceability.ts --check` no reescribe la matriz). Se cerraron los 3 huecos que
+  quedaban de H0 (REQ-015.4, REQ-016.1, REQ-031.3: `supabase/tests/0028_mvp_gaps.sql`). NFR con
+  prueba propia: 001 (Lighthouse en CI), 002 y 012 (`tests/e2e/nfr.spec.ts`), 003, 004, 005,
+  006, 007 (flujo del cliente ≤ 4 campos), 008, 009, 010, 011. **Sin prueba automática, por
+  naturaleza**: NFR-007 prueba de pasillo (manual, T-029/T-049) y NFR-013 costo (arquitectura:
+  solo Vercel + Supabase). Cobertura de ramas 100 % de la lógica de dominio (NFR-009) **no
+  medida**: falta agregar `@vitest/coverage-v8` y el umbral al CI. Regresión en la Mac: 467 pgTAP ·
+  80 unitarias · 33 integración · E2E 161/162 (onboarding en iPhone falló una vez por tiempo
+  con carga; 6/6 al repetirlo).
+- **Falta (Henry):** pruebas de pasillo (T-029, T-049), CI verde en GitHub con lo nuevo y la
+  aprobación del Hito 3.
 
 ---
 

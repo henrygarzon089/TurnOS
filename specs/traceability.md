@@ -81,8 +81,8 @@
 | REQ-015.1 | Gestión de servicios | T-004 (hecha), T-008 (hecha) | admin-config.spec.ts, 0002_core.sql, 0003_rls_core.sql | cubierto |
 | REQ-015.2 | Gestión de servicios | T-004 (hecha), T-008 (hecha) | admin-config.spec.ts | cubierto |
 | REQ-015.3 | Gestión de servicios | T-004 (hecha), T-008 (hecha) | 0005_queue.sql | cubierto |
-| REQ-015.4 | Gestión de servicios | T-004 (hecha), T-008 (hecha) | — | sin prueba |
-| REQ-016.1 | Gestión de barberos y sillas | T-004 (hecha), T-007 (hecha), T-008 (hecha), T-025 (hecha) | — | sin prueba |
+| REQ-015.4 | Gestión de servicios | T-004 (hecha), T-008 (hecha) | 0028_mvp_gaps.sql | cubierto |
+| REQ-016.1 | Gestión de barberos y sillas | T-004 (hecha), T-007 (hecha), T-008 (hecha), T-025 (hecha) | 0028_mvp_gaps.sql | cubierto |
 | REQ-016.2 | Gestión de barberos y sillas | T-004 (hecha), T-007 (hecha), T-008 (hecha), T-025 (hecha) | 0002_core.sql | cubierto |
 | REQ-016.3 | Gestión de barberos y sillas | T-004 (hecha), T-007 (hecha), T-008 (hecha), T-025 (hecha) | 0003_rls_core.sql, 0004_invitations.sql | cubierto |
 | REQ-016.4 | Gestión de barberos y sillas | T-004 (hecha), T-007 (hecha), T-008 (hecha), T-025 (hecha) | admin-config.spec.ts, owner-queue.spec.ts | cubierto |
@@ -138,12 +138,12 @@
 | REQ-028.4 | Resumen semanal | T-011 (hecha), T-048 (hecha) | 0027_weekly.sql | cubierto |
 | REQ-029.1 | Vista del barbero sobre sus números | T-042 (hecha), T-047 (hecha), T-050 (pendiente) | my-numbers.spec.ts, my-numbers.test.ts, rls-cash.test.ts, 0025_cash_summary.sql, 0027_weekly.sql | prueba escrita |
 | REQ-030.1 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts, onboarding.spec.ts, 0002_core.sql | cubierto |
-| REQ-030.2 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | onboarding.spec.ts, 0004_invitations.sql | cubierto |
+| REQ-030.2 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | onboarding.spec.ts, 0004_invitations.sql, 0028_mvp_gaps.sql | cubierto |
 | REQ-030.3 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts | cubierto |
 | REQ-030.4 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts, 0004_invitations.sql | cubierto |
 | REQ-031.1 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-cash.test.ts, 0002_core.sql, 0003_rls_core.sql, 0017_loyalty_progress.sql | cubierto |
 | REQ-031.2 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | 0008_public_fns.sql, 0009_realtime.sql | cubierto |
-| REQ-031.3 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | — | sin prueba |
+| REQ-031.3 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | 0028_mvp_gaps.sql | cubierto |
 | REQ-031.4 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-core.test.ts, 0003_rls_core.sql | cubierto |
 | REQ-032.1 | PWA instalable | T-001 (hecha), T-010 (en curso), T-029 (en curso) | pwa-usability.spec.ts, pwa.test.ts | prueba escrita |
 | REQ-032.2 | PWA instalable | T-001 (hecha), T-010 (en curso), T-029 (en curso) | pwa-usability.spec.ts | prueba escrita |

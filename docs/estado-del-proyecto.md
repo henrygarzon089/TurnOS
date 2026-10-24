@@ -18,7 +18,7 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 | H0 Cimientos            | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (CI verde; falta E2E en CI y proteger `main`)      |
 | H1 Fila virtual         | T-011…T-030 | **aprobado** (ADR-017); T-029 `[~]` (instalar en celulares y prueba de pasillo) |
 | H2 Clientes y fidelidad | T-031…T-039 | **aprobado** (ADR-017)                                                          |
-| H3 Caja y comisiones    | T-040…T-050 | **siguiente: T-040**                                                            |
+| H3 Caja y comisiones    | T-040…T-050 | T-040–T-048 `[x]`; T-049/T-050 `[~]` (pasillo y aprobación de Henry)            |
 
 Pruebas en verde (Mac, 2026-10-24): 303 pgTAP · 58 unitarias · 27 integración · E2E de H2 32/32 (Pixel 7 + iPhone 13,
 corrida conjunta). Trazabilidad Hito 2: 0 CA sin prueba (`pnpm trace --hito=2`).
@@ -49,6 +49,7 @@ Cliente: `/[slug]`, `/[slug]/turno`, `/t/[token]`, `/[slug]/privacidad`, `/[slug
 Personal: `/entrar`, `/invitacion/[token]`, `/crear-negocio` (3 pasos), `/app/fila`,
 `/admin/{fila,servicios,productos,barberos,horario,qr,mensajes,negocio,privacidad}`.
 Personal (H2): `/app/clientes`, `/app/clientes/[id]`, `/admin/fidelidad`, `/admin/recordar`.
+Hito 3: `/admin/caja` (+ `/admin/caja/[fecha]`), `/admin/semana`, `/app/mis-numeros`, panel de cobro.
 Pendientes (H3): `/admin/caja`,
 `/admin/semana`, `/app/mis-numeros`.
 

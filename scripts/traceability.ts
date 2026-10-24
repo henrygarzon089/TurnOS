@@ -79,6 +79,8 @@ const statusLabel: Record<string, string> = { " ": "pendiente", "~": "en curso",
 const rows: string[] = [];
 const missing: string[] = [];
 const hitoArg = process.argv.find((a) => a.startsWith("--hito="))?.split("=")[1];
+/** --check: solo verifica (no reescribe specs/traceability.md); lo usa la prueba de NFR-009. */
+const checkOnly = process.argv.includes("--check");
 const inHito = (reqNum: number) =>
   !hitoArg || (HITOS[hitoArg] ?? []).some(([a, b]) => reqNum >= a && reqNum <= b);
 
@@ -106,7 +108,7 @@ const out = `# Matriz de trazabilidad
 |---|---|---|---|---|
 ${rows.join("\n")}
 `;
-writeFileSync("specs/traceability.md", out);
+if (!checkOnly) writeFileSync("specs/traceability.md", out);
 console.log(
   `traceability: ${criteria.length} criterios, ${missing.length} sin prueba${hitoArg ? ` en el hito ${hitoArg}` : ""}.`,
 );
