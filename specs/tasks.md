@@ -123,7 +123,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   4.000, agua 2.500, jugo 5.000), 30 clientes con historial y aviso aceptado; prueba
   `REQ-034.1` cuenta filas.
 
-### [ ] T-010 · CI, PWA base, `/salud`, lint de textos
+### [~] T-010 · CI, PWA base, `/salud`, lint de textos
+- Nota (2026-10-23): todo escrito y probado localmente (manifest, /salud, lint-texts, traceability);
+  el workflow de GitHub Actions se valida en el primer push al repo.
 - REQ: REQ-032.1, NFR-009, NFR-012, NFR-006
 - Archivos: `.github/workflows/ci.yml`, `src/app/manifest.ts`, `public/icons/*`,
   `src/app/salud/route.ts`, `scripts/lint-texts.ts`, `scripts/traceability.ts`,

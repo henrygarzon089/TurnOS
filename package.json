@@ -19,7 +19,9 @@
     "db:stop": "scripts/db-local.sh stop",
     "db:test": "scripts/db-local.sh test",
     "test:e2e": "playwright test",
-    "seed:users": "tsx scripts/seed-users.ts"
+    "seed:users": "tsx scripts/seed-users.ts",
+    "lint:texts": "tsx scripts/lint-texts.ts",
+    "trace": "tsx scripts/traceability.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
