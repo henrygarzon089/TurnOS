@@ -153,3 +153,29 @@ export async function getPrivacyPolicy(slug: string) {
     businessName: biz.name as string,
   };
 }
+
+// ================================================================ T-027: pantalla TV ====
+
+export type ScreenView = {
+  id: string;
+  name: string;
+  slug: string;
+  isOpen: boolean;
+  waitingCount: number;
+  barbers: {
+    id: string;
+    name: string;
+    status: "available" | "busy" | "paused" | "off";
+    current: { name: string; status: "called" | "in_service"; calledAt: string | null } | null;
+    next: string[];
+  }[];
+  anyone: string[];
+};
+
+/** REQ-013.1: datos de la pantalla (clave en la URL). */
+export async function getScreenQueue(slug: string, key: string): Promise<ScreenView | null> {
+  if (!/^[a-z0-9-]{3,40}$/.test(slug) || !/^[A-Za-z0-9_-]{8,64}$/.test(key)) return null;
+  const admin = createSupabaseAdminClient();
+  const { data } = await admin.rpc("get_screen_queue", { p_slug: slug, p_key: key });
+  return (data as ScreenView | null) ?? null;
+}

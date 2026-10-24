@@ -274,7 +274,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Terminado: E2E descarga PNG (nombre `qr-<slug>.png`, ≥ 1024 px), "Copiar enlace", botón
   WhatsApp con `wa.me` y texto de la plantilla.
 
-### [ ] T-027 · Pantalla pública para el televisor
+### [~] T-027 · Pantalla pública para el televisor
 - REQ: REQ-013.1–13.5
 - Archivos: `src/app/(public)/[slug]/pantalla/page.tsx`, `src/components/queue/ScreenBoard.tsx`,
   `src/lib/actions/public.ts` (`getScreenQueue`), `src/lib/domain/name.ts` (`shortName`)
