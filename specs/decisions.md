@@ -152,3 +152,37 @@
   un proyecto de Supabase + Vercel a partir de T-006.
 - Consecuencias: pgTAP y las pruebas de integración corren rápido y sin Docker; en la Mac de Henry
   (con Docker) `supabase start` sigue funcionando con las mismas migraciones.
+
+## ADR-016 · Ficha de cliente: fusión, alcance del barbero y valor antes de la caja
+- Estado: **aceptada** (Henry, 2026-10-24, al iniciar T-033)
+- Contexto: REQ-018.2, 18.4 y 18.5 dejaban sin definir (a) qué pasa con la fidelidad y los datos
+  al fusionar dos fichas, (b) qué clientes lista el barbero (el RLS de `customers` le permite leer
+  todo el negocio) y (c) qué "valor pagado" mostrar antes de que exista la caja (Hito 3). La
+  `merge_customers` de 0013 borraba la tarjeta abierta de la ficha absorbida, perdiendo sellos.
+- Opciones fusión/fidelidad: (1) sumar sellos; (2) quedarse con la tarjeta de más sellos;
+  (3) conservar solo la de la ficha principal. Alcance barbero: (1) su fila + los que ha atendido;
+  (2) todo el negocio. Valor antes de H3: (1) precio congelado en el turno; (2) vacío.
+- Decisión:
+  - **Fusión** (`merge_customers(keep, merge)`, solo dueño): el dueño elige qué celular queda
+    (preseleccionado el de la ficha con visita más reciente); nombre y celular son los de esa
+    ficha. Turnos, recordatorios y tarjetas canjeadas pasan a la ficha que queda. Las tarjetas
+    abiertas se **juntan**: los sellos (`loyalty_stamps`) se mueven a una sola tarjeta, el conteo
+    se suma y, si el programa está activo y la suma llega a `visits_required`, el premio queda
+    disponible (`completed`). Los sellos que excedan el requerido no pasan a la tarjeta siguiente.
+    Si **las dos** fichas tienen premio disponible, no se fusiona (`BOTH_REWARDS_PENDING`):
+    primero se canjea uno. Visitas = suma; primera/última visita = mín/máx; notas se unen;
+    aviso de privacidad = la aceptación de versión más alta; "No contactar" si cualquiera lo
+    tenía; barbero preferido se recalcula (salvo que la ficha que queda lo tenga fijado a mano).
+    No se fusiona una ficha consigo misma, ni fichas eliminadas (REQ-018.6), ni de otro negocio.
+  - **Barbero** en `/app/clientes`: lista "Hoy en tu fila" (turnos activos de hoy que lo
+    eligieron a él o a "el que esté libre") y "Atendidos por ti" (turnos con
+    `assigned_barber_id` = su silla); el buscador filtra solo esos. Solo abre fichas de ese
+    conjunto. Dentro de la ficha ve el historial completo del cliente en el negocio, pero el
+    valor solo de sus propios turnos (PA-10). El RLS no cambia: el filtro es de la función
+    `barber_customers` y de la acción `getCustomer`.
+  - **Valor antes de H3**: el historial muestra `tickets.service_price` (precio congelado al
+    tomar el turno) solo en turnos `done`; medio de pago vacío. T-043 lo reemplaza por el valor
+    cobrado de `sales` y agrega el medio de pago.
+- Consecuencias: migración `0014_customers_merge.sql` redefine `merge_customers` y agrega
+  `barber_customers`; nada del pasado se pierde al fusionar salvo el exceso de sellos (raro y
+  documentado).

@@ -68,3 +68,11 @@ export function formatTimeBogota(at: Date): string {
   const suffix = h24 < 12 ? "a. m." : "p. m.";
   return `${h12}:${parts.minute} ${suffix}`;
 }
+
+const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+/** "2026-10-20" → "20 oct 2026" (día del negocio; armado a mano, sin depender de ICU). */
+export function formatDayCO(day: string): string {
+  const [y, m, d] = day.split("-").map(Number);
+  return `${d} ${MONTHS[m - 1]} ${y}`;
+}

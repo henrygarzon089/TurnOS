@@ -369,6 +369,39 @@ Prueba obligatoria (REQ-031.4): con el JWT de un barbero del negocio A, `select`
 | `sale_payments_check` | sale_payments | al confirmar venta, suma = total |
 | `sales_block_closed_day` | sales | impide insertar/anular en un día con cierre `active` (REQ-027.3, REQ-026.2) |
 
+### 2.6 Ficha de cliente: fusión y alcance del barbero (ADR-016)
+
+**`merge_customers(keep_id, merge_id)`** (solo dueño; REQ-018.5). `keep` es la ficha cuyo nombre
+y celular quedan (el dueño la elige; la UI preselecciona la de visita más reciente):
+
+1. Valida: mismo negocio, distintas, ninguna anonimizada; si las dos tienen tarjeta `completed`
+   → error `BOTH_REWARDS_PENDING` (P0004).
+2. `tickets`, `reminders` y `loyalty_cards` `redeemed` de `merge` pasan a `keep`.
+3. Tarjetas abiertas (`active`/`completed`): si solo una existe, pasa a `keep`. Si existen dos, la
+   destino es la `completed` (si hay) o la de `keep`; los `loyalty_stamps` de la otra se mueven a
+   la destino, `stamps` = suma, se borra la otra; si el programa está activo y
+   `stamps ≥ visits_required`, la destino pasa a `completed` (`completed_at = now()`).
+4. `keep`: `visits_count` = suma; `first_visit_at` = mín; `last_visit_at` = máx; `notes` =
+   unión (`keep` primero); `privacy_version`/`privacy_accepted_at` = los de versión más alta;
+   `do_not_contact` = OR; `preferred_barber_id` recalculado con los últimos 5 turnos `done` de la
+   ficha unida (salvo `preferred_barber_manual`).
+5. Se borra `merge`. Los turnos conservan `customer_name`/`customer_phone_e164` congelados.
+
+Ejemplo: `keep` 3 sellos, `merge` 8 sellos, programa de 10 → una tarjeta con 11 sellos,
+`completed` (premio disponible); al canjear se abre una tarjeta nueva en 0.
+
+**`barber_customers(q)`** (barbero; REQ-018.4): clientes con turno activo hoy que eligieron a su
+silla o a "el que esté libre", más los que tienen algún turno con `assigned_barber_id` = su
+silla; filtro opcional `q` igual que `search_customers`. Devuelve `id, name, phone_last4,
+last_visit_at, visits_count, in_queue_today`. `getCustomer` usa la misma regla para decidir si
+el barbero puede abrir una ficha.
+
+**Historial** (REQ-018.2): por turno, fecha (`business_day`), servicio, barbero asignado, estado
+(`done` → "Terminado", `no_show` → "No llegó", `cancelled` → "Cancelado"; los activos →
+"En la fila"), valor = `service_price` solo si `done` (hasta T-043, luego el cobrado en
+`sales`) y medio de pago (desde H3). Al barbero se le oculta el valor de turnos que no atendió
+él (PA-10). La regla vive en `toHistoryRows` (`src/lib/domain/customer-history.ts`).
+
 ---
 
 ## 3. Máquina de estados del turno
@@ -674,7 +707,7 @@ REQ-013, REQ-030, REQ-032, REQ-033, NFR-002, NFR-004.
 | `setBarberPresent(barberId, present)` | dueño (o barbero propio) | `set_barber_status('available'|'off')` | REQ-016.4 |
 | CRUD servicios, productos, barberos, horario, plantillas, fidelidad, negocio | dueño | inserts/updates con RLS | REQ-015…017, 019, 024, 033 |
 | `inviteBarber(barberId)` | dueño | insert `invitations` | REQ-030.2 |
-| `searchCustomers(q)`, `getCustomer(id)`, `updateCustomer`, `mergeCustomers`, `anonymizeCustomer` | dueño (barbero: lectura) | `search_customers` (índice trigram), `anonymize_customer` | REQ-018 |
+| `searchCustomers(q)`, `getCustomer(id)`, `updateCustomer`, `mergeCustomers`, `anonymizeCustomer` | dueño (barbero: `barber_customers`, ficha de ese conjunto, edita notas y preferido) | `search_customers` (índice trigram), `barber_customers`, `merge_customers`, `anonymize_customer` | REQ-018, §2.6 |
 | `getInactiveCustomers()`, `logReminder(customerId)` | dueño | `inactive_customers` | REQ-020 |
 | `registerSale(input)` | barbero (propio) / dueño | `register_sale` | REQ-023, REQ-024, REQ-019.4 |
 | `voidSale(saleId, reason)` | dueño | `void_sale` | REQ-026 |
@@ -801,6 +834,12 @@ silla]** y **[No llegó]** (este último resaltado al pasar 5 min). Con `in_serv
 botón **[Terminado]** → abre el panel de cobro (Hito 3). Pausar con clientes propios en espera →
 hoja inferior con las dos opciones (REQ-010.2). Franja superior "Sin conexión. Reintentando…"
 cuando aplica.
+
+**`/app/clientes`**: buscador (nombre o últimos dígitos) y lista. Dueño: todos los clientes.
+Barbero: "Hoy en tu fila" y "Atendidos por ti" (§2.6). Cada fila: nombre, `···1234`, visitas,
+última visita. **`/app/clientes/[id]`**: datos de la ficha, notas y preferido editables,
+historial (§2.6); dueño además: editar nombre y **[Fusionar con otra ficha]** → buscar la otra →
+elegir qué celular queda → confirmar.
 
 **`/app/mis-numeros`**: Hoy / Esta semana: servicios, vendido, mi comisión; lista de ventas
 propias.

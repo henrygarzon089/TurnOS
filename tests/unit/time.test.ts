@@ -4,6 +4,7 @@ import {
   businessDayBogota,
   ceil5,
   formatMinutes,
+  formatDayCO,
   formatTimeBogota,
   minutesBetween,
 } from "@/lib/domain/time";
@@ -47,6 +48,11 @@ describe("P5 / REQ-027.5 día de negocio en America/Bogota", () => {
   it("formatTimeBogota muestra hora de 12 h en español", () => {
     expect(formatTimeBogota(new Date("2026-10-23T14:05:00Z"))).toBe("9:05 a. m.");
     expect(formatTimeBogota(new Date("2026-10-24T01:00:00Z"))).toBe("8:00 p. m.");
+  });
+
+  it("P5 formatDayCO muestra la fecha en español sin depender de ICU", () => {
+    expect(formatDayCO("2026-10-20")).toBe("20 oct 2026");
+    expect(formatDayCO("2027-01-05")).toBe("5 ene 2027");
   });
 
   it("minutesBetween redondea hacia abajo", () => {

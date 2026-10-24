@@ -17,10 +17,12 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 | ----------------------- | ----------- | --------------------------------------------------------------------------------- |
 | H0 Cimientos            | T-001…T-010 | T-001–005, 009 `[x]`; T-006, 007, 008, 010 `[~]` (E2E pendiente)                  |
 | H1 Fila virtual         | T-011…T-030 | T-011–017 `[x]`; T-018–030 `[~]` (E2E/Lighthouse pendiente). Trazabilidad 144/144 |
-| H2 Clientes y fidelidad | T-031…T-039 | T-031, T-032 `[x]`; **siguiente T-033**                                           |
+| H2 Clientes y fidelidad | T-031…T-039 | T-031–T-033 `[x]`; **siguiente T-034**                                            |
 | H3 Caja y comisiones    | T-040…T-050 | sin empezar                                                                       |
 
-Pruebas en verde en el entorno de construcción: 224 pgTAP · 38 unitarias · 20 integración.
+Pruebas en verde (Mac, 2026-10-24): 251 pgTAP · 46 unitarias · 24 integración · E2E de T-033 10/10.
+Los E2E de H1 se corrieron por primera vez en la Mac: algunos fallan por selectores y por depender
+de la hora/presencia de barberos (pendiente de las tareas `[~]`).
 E2E escritos (Playwright, Pixel 7 + iPhone 13): 10 archivos, ~50 casos, pendientes de ejecutar.
 
 ### Migraciones (`supabase/migrations/`)
@@ -30,14 +32,16 @@ plantillas, aviso) · 0003 RLS núcleo · 0004 invitaciones · 0005 turnos/event
 0006 máquina de estados (`transition_ticket`) · 0007 operaciones (`call_next` con SKIP LOCKED,
 `set_barber_status`, `add_manual_ticket`, `reorder_ticket`) · 0008 funciones públicas + pg_cron ·
 0009 broadcast realtime · 0010 aviso WhatsApp · 0011 pantalla TV · 0012 barbero solo llama al
-primero · 0013 clientes, fidelidad, recordatorios.
+primero · 0013 clientes, fidelidad, recordatorios · 0014 fusión de fichas y clientes del barbero
+(ADR-016).
 
 ### Pantallas
 
 Cliente: `/[slug]`, `/[slug]/turno`, `/t/[token]`, `/[slug]/privacidad`, `/[slug]/pantalla?k=`.
 Personal: `/entrar`, `/invitacion/[token]`, `/crear-negocio` (3 pasos), `/app/fila`,
 `/admin/{fila,servicios,productos,barberos,horario,qr,mensajes,negocio,privacidad}`.
-Pendientes (H2/H3): `/app/clientes`, `/admin/fidelidad`, `/admin/recordar`, `/admin/caja`,
+Personal (H2): `/app/clientes`, `/app/clientes/[id]` (T-033).
+Pendientes (H2/H3): `/admin/fidelidad`, `/admin/recordar`, `/admin/caja`,
 `/admin/semana`, `/app/mis-numeros`.
 
 ## Desvíos registrados respecto a la spec (todos explícitos)

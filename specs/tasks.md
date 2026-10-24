@@ -328,14 +328,24 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Terminado: barbero lee fichas de su negocio y edita solo `notes`/`preferred_barber_id`; nada
   cruzado entre negocios; `reminders` solo dueño.
 
-### [ ] T-033 · Lista y ficha de cliente (dueño y barbero)
+### [x] T-033 · Lista y ficha de cliente (dueño y barbero) — 2026-10-24
 - REQ: REQ-018.2–18.5
 - Archivos: `src/app/(staff)/app/clientes/{page,[id]/page}.tsx`, `src/components/customers/*`,
   `src/lib/actions/customers.ts` (`searchCustomers`, `getCustomer`, `updateCustomer`,
-  `mergeCustomers`)
+  `mergeCustomers`, `findMergeCandidates`), `src/lib/domain/customer-history.ts`,
+  `supabase/migrations/0014_customers_merge.sql`, `supabase/tests/0014_customers_merge.sql`,
+  `tests/{unit/customer-history,integration/customers}.test.ts`, `tests/e2e/customers.spec.ts`
 - Terminado: integración `REQ-018.3` búsqueda por nombre y últimos 4 dígitos < 1 s con 5.000
   clientes (seed de carga); E2E historial con estados; barbero sin montos de otros
   (`REQ-018.4`); fusión conserva historial (`REQ-018.5`).
+- Notas (desvíos explícitos): la spec no definía la fusión ni el alcance del barbero → ADR-016 y
+  `design.md` §2.6 (aprobados por Henry antes de implementar). 0014 redefine `merge_customers`
+  de 0013 (antes borraba la tarjeta abierta de la ficha absorbida) y agrega `barber_customers` y
+  `barber_can_see_customer`. "Valor" = `tickets.service_price` hasta T-043. El menú del dueño
+  apuntaba a `/admin/clientes`; ahora va a `/app/clientes` (ruta de design.md §6.1). El seed
+  suma a Mateo Londoño un turno de Pedro, un "no llegó" y un cancelado. E2E ejecutados en la Mac
+  contra `supabase start` (Pixel 7 + iPhone 13, 10/10); `helpers.ts` espera `/admin/fila` tras el
+  login (evitaba navegaciones interrumpidas en WebKit).
 
 ### [ ] T-034 · Supresión de datos (Ley 1581)
 - REQ: REQ-018.6, NFR-005

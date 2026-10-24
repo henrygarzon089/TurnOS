@@ -125,3 +125,45 @@ begin
             case when v_visits >= 10 then v_last end);
   end loop;
 end $$;
+
+-- ============================================================================
+-- T-033 · Historial variado para la ficha (REQ-018.2, REQ-018.4): Mateo Londoño (atendido por
+-- Juan) también tuvo una barba con Pedro, un "no llegó" y un turno cancelado.
+-- ============================================================================
+do $$
+declare
+  v_biz uuid := (select id from businesses where slug = 'la-33');
+  v_cust uuid;
+  v_last timestamptz;
+  v_barba uuid;
+  v_corte uuid;
+  v_pedro uuid;
+  v_juan uuid;
+  v_day date;
+begin
+  select id, last_visit_at into v_cust, v_last from customers where business_id = v_biz and phone_e164 = '+573002000005';
+  select id into v_barba from services where business_id = v_biz and name = 'Barba';
+  select id into v_corte from services where business_id = v_biz and name = 'Corte';
+  select id into v_pedro from barbers where business_id = v_biz and display_name = 'Pedro';
+  select id into v_juan from barbers where business_id = v_biz and display_name = 'Juan';
+
+  v_day := (v_last - interval '7 days')::date;
+  insert into tickets (business_id, business_day, customer_id, customer_name, customer_phone_e164, service_id,
+                       assigned_barber_id, status, created_at, called_at, started_at, finished_at, payment_status, source)
+  values (v_biz, v_day, v_cust, 'Mateo Londoño', '+573002000005', v_barba, v_pedro, 'done',
+          v_day + time '16:00', v_day + time '16:10', v_day + time '16:12', v_day + time '16:27', 'paid', 'qr');
+
+  v_day := (v_last - interval '10 days')::date;
+  insert into tickets (business_id, business_day, customer_id, customer_name, customer_phone_e164, service_id,
+                       assigned_barber_id, status, created_at, called_at, finished_at, source)
+  values (v_biz, v_day, v_cust, 'Mateo Londoño', '+573002000005', v_corte, v_juan, 'no_show',
+          v_day + time '11:00', v_day + time '11:30', v_day + time '11:36', 'qr');
+
+  v_day := (v_last - interval '12 days')::date;
+  insert into tickets (business_id, business_day, customer_id, customer_name, customer_phone_e164, service_id,
+                       status, created_at, cancel_reason, source)
+  values (v_biz, v_day, v_cust, 'Mateo Londoño', '+573002000005', v_corte, 'cancelled',
+          v_day + time '09:00', 'customer', 'qr');
+
+  update customers set visits_count = visits_count + 1 where id = v_cust;
+end $$;

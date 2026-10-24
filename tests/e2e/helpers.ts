@@ -18,7 +18,8 @@ export async function loginAsOwner(page: Page) {
   await page.getByLabel("Correo").fill(SEED.owner.email);
   await page.getByLabel("Contraseña").fill(SEED.owner.password);
   await page.getByRole("button", { name: "Entrar" }).click();
-  await expect(page).toHaveURL(/\/admin/);
+  // /admin redirige a /admin/fila: esperar la URL final evita navegaciones interrumpidas
+  await expect(page).toHaveURL(/\/admin\/fila/, { timeout: 15_000 });
 }
 
 export async function loginAsBarber(page: Page, index = 0) {
@@ -27,5 +28,5 @@ export async function loginAsBarber(page: Page, index = 0) {
   await page.getByLabel("Celular").fill(b.phone);
   await page.getByLabel("PIN (6 números)").fill(b.pin);
   await page.getByRole("button", { name: "Entrar" }).click();
-  await expect(page).toHaveURL(/\/app\/fila/);
+  await expect(page).toHaveURL(/\/app\/fila/, { timeout: 15_000 });
 }
