@@ -417,9 +417,11 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `tests/e2e/preferred-barber.spec.ts`. La 0019 se aplicó en local con
   `supabase migration up --include-all` porque la 0020 (sesión de E2E de H1) ya estaba aplicada.
 
-### [ ] T-039 · Validación Hito 2: matriz de trazabilidad
+### [~] T-039 · Validación Hito 2: matriz de trazabilidad
 - REQ: REQ-018…REQ-022
 - Terminado: ningún CA sin prueba; CI verde; demo; aprobación de Henry.
+- Estado 2026-10-24: `pnpm trace --hito=2` → 0 CA sin prueba. En la Mac: pgTAP, unitarias,
+  integración y E2E de H2 en verde. Falta: CI (el repo aún no está en GitHub), demo y aprobación.
 
 ---
 

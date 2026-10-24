@@ -30,7 +30,8 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 ## Estado actual (2026-10-24)
 
 - Hito 0 y Hito 1: construidos. Trazabilidad Hito 1: 144/144 CA con prueba.
-- Hito 2: T-031, T-032 y T-033 hechas. **Siguiente: T-034** (supresión de datos, Ley 1581).
+- Hito 2: T-031…T-038 hechas; trazabilidad H2 sin huecos. **T-039** espera CI, demo y aprobación
+  de Henry; después sigue H3 (T-040).
 - Tareas `[~]`: código y pruebas listos; falta correr E2E contra el proyecto remoto de Supabase.
 - Ver `docs/estado-del-proyecto.md` para el detalle y los pendientes externos.
 
