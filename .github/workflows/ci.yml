@@ -54,7 +54,10 @@ jobs:
     name: E2E móvil (requiere proyecto de Supabase)
     runs-on: ubuntu-latest
     needs: quality
-    if: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY != '' }}
+    # `secrets` no se puede usar en el `if` de un job: se activa con la variable del repositorio
+    # E2E_ENABLED=true (Settings → Secrets and variables → Actions → Variables) cuando existan los
+    # secretos del proyecto de Supabase.
+    if: ${{ vars.E2E_ENABLED == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
