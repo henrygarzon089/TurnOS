@@ -162,7 +162,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   turnos devuelve `NO_TICKETS`; `REQ-010.2` reasignación conserva `queue_order`; `REQ-010.5`
   pausa con turno llamado falla; `reorder_ticket` renumera cuando no hay hueco.
 
-### [ ] T-014 · `join_queue`, `get_public_business`, `get_ticket_by_token`, cierre automático
+### [x] T-014 · `join_queue`, `get_public_business`, `get_ticket_by_token`, cierre automático
 - REQ: REQ-001.1, REQ-001.4–1.5, REQ-003.3–3.5, REQ-004.7, REQ-014, REQ-017.2
 - Archivos: `supabase/migrations/0008_public_fns.sql` (`join_queue`, `get_public_business`,
   `get_ticket_by_token`, `is_business_open`, `close_expired_queues` + job `pg_cron` cada 15 min),
