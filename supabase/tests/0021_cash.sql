@@ -28,7 +28,8 @@ select is(
    where relname in ('sales', 'sale_items', 'sale_payments', 'cash_closures', 'commission_changes')
      and relrowsecurity and relforcerowsecurity), 5, 'NFR-010 RLS activada y forzada en las 5 tablas de caja');
 select fk_ok('loyalty_cards', 'redeemed_sale_id', 'sales', 'id', 'REQ-019.4 el canje apunta a la venta');
-select col_is_unique('sales', 'ticket_id', 'REQ-023.3 una venta por turno');
+select ok(exists (select 1 from pg_indexes where tablename = 'sales' and indexname = 'sales_ticket_active_uniq'),
+  'REQ-023.3 una venta activa por turno (0022)');
 
 create temp table ctx as
 select z.id as biz,

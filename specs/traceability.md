@@ -95,13 +95,13 @@
 | REQ-018.4 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, rls-customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | cubierto |
 | REQ-018.5 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | cubierto |
 | REQ-018.6 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers-delete.spec.ts, 0013_customers_loyalty.sql, 0014_customers_merge.sql, 0015_anonymize.sql | cubierto |
-| REQ-019.1 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | loyalty-config.spec.ts, loyalty.test.ts, 0016_loyalty_config.sql | prueba escrita |
-| REQ-019.2 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-019.3 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | loyalty-progress.spec.ts, loyalty.test.ts, 0013_customers_loyalty.sql, 0017_loyalty_progress.sql | prueba escrita |
-| REQ-019.4 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql, 0021_cash.sql | prueba escrita |
-| REQ-019.5 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | loyalty-progress.spec.ts, 0013_customers_loyalty.sql, 0017_loyalty_progress.sql | prueba escrita |
-| REQ-019.6 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | loyalty-config.spec.ts, 0013_customers_loyalty.sql, 0016_loyalty_config.sql | prueba escrita |
-| REQ-019.7 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | loyalty-progress.spec.ts, loyalty.test.ts, 0017_loyalty_progress.sql | prueba escrita |
+| REQ-019.1 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (pendiente) | loyalty-config.spec.ts, loyalty.test.ts, 0016_loyalty_config.sql | prueba escrita |
+| REQ-019.2 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
+| REQ-019.3 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (pendiente) | loyalty-progress.spec.ts, loyalty.test.ts, 0013_customers_loyalty.sql, 0017_loyalty_progress.sql | prueba escrita |
+| REQ-019.4 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (pendiente) | 0013_customers_loyalty.sql, 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
+| REQ-019.5 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (pendiente) | loyalty-progress.spec.ts, 0013_customers_loyalty.sql, 0017_loyalty_progress.sql | prueba escrita |
+| REQ-019.6 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (pendiente) | loyalty-config.spec.ts, 0013_customers_loyalty.sql, 0016_loyalty_config.sql | prueba escrita |
+| REQ-019.7 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (pendiente) | loyalty-progress.spec.ts, loyalty.test.ts, 0017_loyalty_progress.sql | prueba escrita |
 | REQ-020.1 | Clientes para recordar (inactivos) | T-024 (hecha), T-031 (hecha), T-037 (hecha) | 0002_core.sql, 0018_reminders.sql | cubierto |
 | REQ-020.2 | Clientes para recordar (inactivos) | T-024 (hecha), T-031 (hecha), T-037 (hecha) | reminders.spec.ts, 0013_customers_loyalty.sql, 0018_reminders.sql | cubierto |
 | REQ-020.3 | Clientes para recordar (inactivos) | T-024 (hecha), T-031 (hecha), T-037 (hecha) | reminders.spec.ts, reminders.test.ts | cubierto |
@@ -109,28 +109,28 @@
 | REQ-020.5 | Clientes para recordar (inactivos) | T-024 (hecha), T-031 (hecha), T-037 (hecha) | reminders.spec.ts, 0013_customers_loyalty.sql, 0018_reminders.sql | cubierto |
 | REQ-021.1 | Clientes nuevos vs. que repiten | T-031 (hecha), T-048 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
 | REQ-022.1 | Barbero preferido en la ficha | T-019 (hecha), T-038 (hecha), T-039 (hecha) | preferred-barber.spec.ts, preferred-barber.test.ts | cubierto |
-| REQ-023.1 | Cobrar un servicio | T-040 (hecha), T-041 (pendiente), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0021_cash.sql | prueba escrita |
-| REQ-023.2 | Cobrar un servicio | T-040 (hecha), T-041 (pendiente), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | — | sin prueba |
-| REQ-023.3 | Cobrar un servicio | T-040 (hecha), T-041 (pendiente), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0021_cash.sql | prueba escrita |
-| REQ-023.4 | Cobrar un servicio | T-040 (hecha), T-041 (pendiente), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | — | sin prueba |
-| REQ-023.5 | Cobrar un servicio | T-040 (hecha), T-041 (pendiente), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0021_cash.sql | prueba escrita |
-| REQ-023.6 | Cobrar un servicio | T-040 (hecha), T-041 (pendiente), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0006_transitions.sql | prueba escrita |
-| REQ-023.7 | Cobrar un servicio | T-040 (hecha), T-041 (pendiente), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | — | sin prueba |
-| REQ-024.1 | Vender productos | T-040 (hecha), T-041 (pendiente), T-044 (pendiente) | admin-config.spec.ts | prueba escrita |
-| REQ-024.2 | Vender productos | T-040 (hecha), T-041 (pendiente), T-044 (pendiente) | 0021_cash.sql | prueba escrita |
-| REQ-024.3 | Vender productos | T-040 (hecha), T-041 (pendiente), T-044 (pendiente) | — | sin prueba |
-| REQ-025.1 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (pendiente), T-047 (pendiente) | rls-core.test.ts, 0002_core.sql, 0003_rls_core.sql, 0021_cash.sql | prueba escrita |
-| REQ-025.2 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (pendiente), T-047 (pendiente) | money.test.ts, 0021_cash.sql | prueba escrita |
-| REQ-025.3 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (pendiente), T-047 (pendiente) | 0021_cash.sql | prueba escrita |
-| REQ-025.4 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (pendiente), T-047 (pendiente) | 0021_cash.sql | prueba escrita |
-| REQ-025.5 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (pendiente), T-047 (pendiente) | — | sin prueba |
-| REQ-026.1 | Anular una venta | T-040 (hecha), T-045 (pendiente) | 0021_cash.sql | prueba escrita |
+| REQ-023.1 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
+| REQ-023.2 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | commission.test.ts, 0022_register_sale.sql | prueba escrita |
+| REQ-023.3 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
+| REQ-023.4 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0022_register_sale.sql | prueba escrita |
+| REQ-023.5 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0021_cash.sql | prueba escrita |
+| REQ-023.6 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0006_transitions.sql | prueba escrita |
+| REQ-023.7 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0022_register_sale.sql | prueba escrita |
+| REQ-024.1 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (pendiente) | admin-config.spec.ts | prueba escrita |
+| REQ-024.2 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (pendiente) | 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
+| REQ-024.3 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (pendiente) | commission.test.ts, 0022_register_sale.sql | prueba escrita |
+| REQ-025.1 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (pendiente) | rls-core.test.ts, 0002_core.sql, 0003_rls_core.sql, 0021_cash.sql | prueba escrita |
+| REQ-025.2 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (pendiente) | commission.test.ts, money.test.ts, 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
+| REQ-025.3 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (pendiente) | 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
+| REQ-025.4 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (pendiente) | commission.test.ts, 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
+| REQ-025.5 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (pendiente) | — | sin prueba |
+| REQ-026.1 | Anular una venta | T-040 (hecha), T-045 (pendiente) | 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
 | REQ-026.2 | Anular una venta | T-040 (hecha), T-045 (pendiente) | 0021_cash.sql | prueba escrita |
 | REQ-027.1 | Cierre de caja diario | T-040 (hecha), T-045 (pendiente), T-046 (pendiente) | — | sin prueba |
 | REQ-027.2 | Cierre de caja diario | T-040 (hecha), T-045 (pendiente), T-046 (pendiente) | 0021_cash.sql | prueba escrita |
 | REQ-027.3 | Cierre de caja diario | T-040 (hecha), T-045 (pendiente), T-046 (pendiente) | 0021_cash.sql | prueba escrita |
 | REQ-027.4 | Cierre de caja diario | T-040 (hecha), T-045 (pendiente), T-046 (pendiente) | — | sin prueba |
-| REQ-027.5 | Cierre de caja diario | T-040 (hecha), T-045 (pendiente), T-046 (pendiente) | time.test.ts, 0005_queue.sql | prueba escrita |
+| REQ-027.5 | Cierre de caja diario | T-040 (hecha), T-045 (pendiente), T-046 (pendiente) | time.test.ts, 0005_queue.sql, 0022_register_sale.sql | prueba escrita |
 | REQ-027.6 | Cierre de caja diario | T-040 (hecha), T-045 (pendiente), T-046 (pendiente) | — | sin prueba |
 | REQ-028.1 | Resumen semanal | T-011 (hecha), T-048 (pendiente) | time.test.ts | prueba escrita |
 | REQ-028.2 | Resumen semanal | T-011 (hecha), T-048 (pendiente) | — | sin prueba |

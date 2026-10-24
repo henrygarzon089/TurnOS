@@ -507,13 +507,19 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   descuento, diferencia = contado − esperado). FK `loyalty_cards.redeemed_sale_id → sales`.
   RLS activada y forzada **sin políticas** hasta T-042 (nadie accede con su JWT).
 
-### [ ] T-041 · Dominio: cálculo de comisión (TS) y `register_sale` (SQL)
+### [x] T-041 · Dominio: cálculo de comisión (TS) y `register_sale` (SQL) — 2026-10-24
 - REQ: REQ-023.2–23.3, REQ-024.3, REQ-025.2, REQ-025.4, REQ-019.4
 - Archivos: `src/lib/domain/commission.ts` + unit; migración `0015_register_sale.sql`
   (`register_sale`, `void_sale`) + pgTAP
 - Terminado: unit y pgTAP reproducen **exactamente** los ejemplos A, B, C y D de `design.md`
   §5.1; premio → tarjeta `redeemed` + nueva en cero; venta sin turno; productos sin comisión;
   `ticket.payment_status='paid'`.
+- Notas: migración `0022_register_sale.sql` (numeración real) + `supabase/tests/0022_register_sale.sql`
+  (47) + `tests/unit/commission.test.ts` (8). Reglas que la spec no fijaba en **ADR-018**
+  (provisional, pendiente de revisión de Henry): precios del servidor, descuento solo del dueño
+  con motivo (`sale_items.discount_reason`), una venta **activa** por turno (índice parcial; el
+  `unique` de 0021 se reemplazó y su pgTAP se ajustó), anular solo ventas de hoy y devolver el
+  premio si la tarjeta nueva está vacía.
 
 ### [ ] T-042 · RLS de caja
 - REQ: REQ-029.1, REQ-023.7, REQ-031.1

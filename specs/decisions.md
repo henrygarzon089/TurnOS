@@ -200,3 +200,28 @@
   (tabla del README) y la prueba de pasillo (en este archivo).
 - Consecuencias: se empieza el Hito 3 (T-040). La prueba de pasillo de NFR-007 incluye el cobro,
   así que conviene hacerla cuando exista el panel de cobro (T-043) y cubrir H1 y H3 de una vez.
+
+## ADR-018 · Reglas de `register_sale` y `void_sale` que la spec no fijaba
+- Estado: **aceptada provisionalmente** (2026-10-24, Henry autorizó avanzar sin consultarle;
+  **pendiente de su revisión**). Cualquier punto se cambia con un ADR nuevo.
+- Contexto: REQ-023, REQ-025 y design.md §5.1 definen las fórmulas, pero no quién fija el precio,
+  dónde queda el motivo del descuento, qué pasa con el turno al anular ni a nombre de quién queda
+  una venta de productos de un barbero.
+- Decisión:
+  1. **Precios del servidor.** El cliente manda servicio/producto y cantidad; el precio lo pone la
+     base: la línea del servicio del turno usa `tickets.service_price` (congelado al tomar turno);
+     las demás, el catálogo activo.
+  2. **Descuentos (PA-13).** Solo el dueño descuenta, y con motivo (`sale_items.discount_reason`).
+     El barbero solo aplica el premio. Los productos no llevan descuento.
+  3. **Premio.** El valor lo fija el programa: servicio gratis = el precio del servicio
+     configurado (otro servicio → `REWARD_SERVICE_MISMATCH`); descuento = el monto configurado
+     (máximo el precio). Un premio por venta.
+  4. **Productos de un barbero.** Si un barbero registra una venta solo de productos, queda a su
+     nombre (comisión 0, PA-17) para que la vea en "Mis números"; si la registra el dueño, sin
+     barbero.
+  5. **Anular** (`void_sale`): solo el dueño, solo ventas del día de caja de hoy ("una venta del
+     día", REQ-026.1), con motivo. El turno vuelve a "cobro pendiente" para registrarlo bien, por
+     eso la unicidad es **una venta activa por turno** (índice parcial). Si la venta usó el premio
+     y la tarjeta nueva no tiene sellos, el premio vuelve a quedar disponible.
+- Consecuencias: migración `0022_register_sale.sql`; `src/lib/domain/commission.ts` replica las
+  fórmulas para la UI; pgTAP 0022 reproduce los ejemplos A–D.
