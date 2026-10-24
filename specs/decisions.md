@@ -225,3 +225,22 @@
      y la tarjeta nueva no tiene sellos, el premio vuelve a quedar disponible.
 - Consecuencias: migración `0022_register_sale.sql`; `src/lib/domain/commission.ts` replica las
   fórmulas para la UI; pgTAP 0022 reproduce los ejemplos A–D.
+
+## ADR-019 · Permisos de ejecución de funciones explícitos (corrección de seguridad)
+- Estado: **aceptada** (2026-10-24; corrección aplicada al encontrar el problema en producción)
+- Contexto: en Supabase real, `anon` y `authenticated` reciben EXECUTE sobre todas las funciones
+  de `public` por *default privileges*. Las migraciones solo revocaban a `PUBLIC`, y varias
+  funciones aceptan `auth.uid() is null` pensando en `service_role`/pruebas. Con la llave pública
+  (y el id del negocio, que es público) se podían llamar `search_customers`, `register_sale`,
+  `void_sale`, `close_cash_day`, etc. Además, el personal podía llamar funciones solo del
+  servidor (`join_queue`, `upsert_customer`). El shim de ADR-015 no reproduce esos permisos, por
+  eso ninguna prueba lo detectó hasta llamar la API de producción sin sesión.
+- Decisión: migración `0028_function_grants.sql`: revocar EXECUTE a `public`, `anon` y
+  `authenticated` sobre todo `public`; `service_role` todo; `authenticated` solo la lista de
+  funciones del personal y las que usan las políticas RLS y los defaults de columnas;
+  `gen_public_token` pasa a `security definer`; *default privileges* sin EXECUTE para funciones
+  nuevas (cada migración debe dar permisos explícitos). Prueba `supabase/tests/0029_function_grants.sql`,
+  corrida también sobre la imagen real de Supabase (no solo el shim).
+- Consecuencias: toda función nueva necesita su `grant execute ... to authenticated` si la usa el
+  personal. Pendiente de revisar si en algún momento se leyeron datos con esta vía (logs de la API
+  de Supabase): el negocio de producción es solo de demostración con datos del seed.

@@ -1,5 +1,23 @@
+import { existsSync } from "node:fs";
+import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
-import { loginAsBarber, loginAsOwner } from "./helpers";
+import { loginAsBarber, loginAsOwner, SEED } from "./helpers";
+
+/**
+ * Cada corrida "recuerda" clientes del seed y los saca de la lista 7 días: sin limpiar, la lista
+ * se agota tras varias corridas el mismo día. Se borran los recordatorios del negocio de prueba.
+ */
+async function clearReminders() {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY && existsSync(".env.local"))
+    process.loadEnvFile(".env.local");
+  const admin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } },
+  );
+  const { data: biz } = await admin.from("businesses").select("id").eq("slug", SEED.slug).single();
+  await admin.from("reminders").delete().eq("business_id", biz!.id);
+}
 
 /** El enlace wa.me abre una pestaña nueva: la bloqueamos para no salir a internet. */
 async function blockWhatsApp(page: Page) {
@@ -15,6 +33,7 @@ async function firstRowName(page: Page): Promise<string> {
 }
 
 test.describe("REQ-020 clientes para recordar", () => {
+  test.beforeEach(clearReminders);
   test("REQ-020.2 con el seed y N = 21: solo > 21 días, los que llevan más tiempo primero", async ({
     page,
   }) => {
@@ -48,6 +67,7 @@ test.describe("REQ-020 clientes para recordar", () => {
     await link.click();
     await (await popup).close();
     await expect(row).toBeHidden();
+    await page.waitForLoadState("networkidle"); // el registro del envío termina en el servidor
     await page.reload();
     await expect(list(page).getByRole("listitem").filter({ hasText: name })).toHaveCount(0);
   });

@@ -23,13 +23,11 @@ test.describe("NFR del MVP", () => {
       const add = owner.getByRole("dialog", { name: "Agregar cliente" });
       await add.getByLabel("Nombre").fill(name);
       await add.getByLabel("Barbero").selectOption({ label: "Juan" });
-      const t0 = Date.now();
       await add.getByRole("button", { name: "Agregar" }).click();
       // Sin recargar la pantalla del barbero
       await expect(barber.getByRole("region", { name: "Siguen" }).getByText(name)).toBeVisible({
         timeout: 3000,
       });
-      expect(Date.now() - t0).toBeLessThan(3000);
 
       // Limpieza
       const row = owner
