@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { loginAsBarber, loginAsOwner, SEED } from "./helpers";
+import { appAlert, loginAsBarber, loginAsOwner, SEED } from "./helpers";
 
 test.describe("REQ-030 acceso del personal", () => {
   test("REQ-030.1 dueño entra con correo y contraseña y llega a /admin", async ({ page }) => {
@@ -21,7 +21,7 @@ test.describe("REQ-030 acceso del personal", () => {
     await page.getByLabel("Celular").fill("300 100 0001");
     await page.getByLabel("PIN (6 números)").fill("999999");
     await page.getByRole("button", { name: "Entrar" }).click();
-    await expect(page.getByRole("alert")).toHaveText("Celular o PIN incorrectos.");
+    await expect(appAlert(page)).toHaveText("Celular o PIN incorrectos.");
     await expect(page).toHaveURL(/\/entrar/);
   });
 

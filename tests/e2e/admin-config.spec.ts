@@ -16,7 +16,11 @@ test.describe("REQ-015/016/017/033 administración del negocio", () => {
     await form.getByLabel("Minutos").fill("22");
     await form.getByLabel("Precio").fill("12.000");
     await form.getByRole("button", { name: "Agregar servicio" }).click();
-    await expect(form.getByRole("alert")).toContainText("múltiplos de 5");
+    // El campo tiene step=5: el navegador bloquea el envío antes de llegar al servidor (que
+    // también lo valida con zod en admin.ts).
+    const minutes = form.getByLabel("Minutos");
+    expect(await minutes.evaluate((el: HTMLInputElement) => el.validity.stepMismatch)).toBe(true);
+    await expect(page.getByRole("form", { name: `Servicio ${name}` })).toHaveCount(0);
 
     await form.getByLabel("Minutos").fill("25");
     await form.getByRole("button", { name: "Agregar servicio" }).click();

@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { loginAsOwner, SEED } from "./helpers";
+import { loginAsOwner, resetQueue, SEED } from "./helpers";
 
 test.describe("REQ-012 vista del dueño sobre la fila", () => {
+  test.beforeEach(resetQueue); // cada prueba parte de la fila vacía
+
   test.beforeEach(async ({ page }) => {
     await loginAsOwner(page);
     await page.goto("/admin/fila");

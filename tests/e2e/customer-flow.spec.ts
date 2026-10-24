@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { loginAsBarber, SEED } from "./helpers";
+import { appAlert, loginAsBarber, resetQueue, SEED } from "./helpers";
 
 const phone = () => `300 9${Math.floor(100000 + Math.random() * 899999)}`;
 
@@ -8,12 +8,17 @@ async function takeTicket(page: Page, name: string, cel: string) {
   await page.getByLabel("Tu nombre").fill(name);
   await page.getByLabel("Tu celular (WhatsApp)").fill(cel);
   await page.getByRole("radio", { name: /Corte · 20 min/ }).check();
-  await page.getByRole("checkbox", { name: /Acepto que/ }).check();
+  // REQ-002.4: si este navegador ya aceptó la versión vigente, la casilla no aparece
+  const box = page.getByRole("checkbox", { name: /Acepto que/ });
+  await expect(box.or(page.getByText("Ya aceptaste nuestra política de datos."))).toBeVisible();
+  if (await box.isVisible()) await box.check();
   await page.getByRole("button", { name: "Confirmar turno" }).click();
   await expect(page).toHaveURL(/\/t\/[A-Za-z0-9_-]{22}/);
 }
 
 test.describe("Hito 1 · flujo del cliente", () => {
+  test.beforeEach(resetQueue); // cada prueba parte de la fila vacía
+
   test("REQ-001.1 la portada muestra nombre, estado, personas en fila y botón", async ({
     page,
   }) => {
@@ -40,8 +45,9 @@ test.describe("Hito 1 · flujo del cliente", () => {
     const t0 = Date.now();
     await takeTicket(page, "Camilo E2E", phone());
     expect(Date.now() - t0).toBeLessThan(5000); // margen de red del E2E; el objetivo es 2 s en 4G
-    await expect(page.getByText(/Eres el|En la fila/)).toBeVisible();
-    await expect(page.getByText(/Servicio:/)).toContainText("Corte");
+    // la posición y el estimado pueden decir los dos "Eres el siguiente" (REQ-004.5)
+    await expect(page.getByText(/Eres el|En la fila/).first()).toBeVisible();
+    await expect(page.locator("p", { hasText: "Servicio:" })).toContainText("Corte");
   });
 
   test("REQ-003.2 celular inválido muestra error en español", async ({ page }) => {
@@ -50,7 +56,7 @@ test.describe("Hito 1 · flujo del cliente", () => {
     await page.getByLabel("Tu celular (WhatsApp)").fill("604 444 5555");
     await page.getByRole("checkbox", { name: /Acepto que/ }).check();
     await page.getByRole("button", { name: "Confirmar turno" }).click();
-    await expect(page.getByRole("alert")).toContainText("celular colombiano");
+    await expect(appAlert(page)).toContainText("celular colombiano");
   });
 
   test("REQ-003.5 el mismo celular no duplica: vuelve al turno existente", async ({ page }) => {
@@ -107,7 +113,8 @@ test.describe("Hito 1 · flujo del cliente", () => {
     const url = page.url();
     await page.goto("about:blank");
     await page.goto(url);
-    await expect(page.getByText(/Eres el|En la fila/)).toBeVisible();
+    // la posición y el estimado pueden decir los dos "Eres el siguiente" (REQ-004.5)
+    await expect(page.getByText(/Eres el|En la fila/).first()).toBeVisible();
     await page.goto("/t/xxxxxxxxxxxxxxxxxxxxxx");
     await expect(
       page.getByRole("heading", { name: "Este turno no existe o ya terminó" }),

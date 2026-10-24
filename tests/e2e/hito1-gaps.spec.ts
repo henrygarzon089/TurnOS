@@ -1,9 +1,11 @@
 import { expect, test } from "@playwright/test";
-import { loginAsBarber, loginAsOwner, SEED } from "./helpers";
+import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED } from "./helpers";
 
 const phone = () => `300 6${Math.floor(100000 + Math.random() * 899999)}`;
 
 test.describe("Hito 1 · criterios de interfaz", () => {
+  test.beforeEach(resetQueue); // cada prueba parte de la fila vacía
+
   test("REQ-002.1 el formulario muestra el aviso corto con enlace al completo y casilla desmarcada", async ({
     page,
   }) => {
@@ -17,7 +19,16 @@ test.describe("Hito 1 · criterios de interfaz", () => {
     );
     await page.goto(`/${SEED.slug}/privacidad`);
     await expect(page.getByRole("heading", { name: "Aviso de privacidad" })).toBeVisible();
-    await expect(page.getByText(/Ley 1581 de 2012/)).toBeVisible();
+    // El texto completo es el de la versión vigente (privacy.spec publica versiones nuevas)
+    const { data: current } = await adminDb()
+      .from("privacy_policy_versions")
+      .select("version, body, businesses!inner(slug)")
+      .eq("businesses.slug", SEED.slug)
+      .order("version", { ascending: false })
+      .limit(1)
+      .single();
+    await expect(page.getByText(`versión ${current!.version}`)).toBeVisible();
+    await expect(page.getByRole("article")).toHaveText(current!.body);
   });
 
   test("REQ-005.1 / REQ-005.3 el botón cancelar existe en espera y desaparece al terminar", async ({

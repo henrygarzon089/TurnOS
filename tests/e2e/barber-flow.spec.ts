@@ -1,5 +1,5 @@
 import { expect, test, type BrowserContext, type Page } from "@playwright/test";
-import { loginAsBarber, SEED } from "./helpers";
+import { appAlert, loginAsBarber, resetQueue, SEED } from "./helpers";
 
 const phone = () => `300 8${Math.floor(100000 + Math.random() * 899999)}`;
 
@@ -24,6 +24,8 @@ async function ensurePresent(page: Page) {
 }
 
 test.describe("Hito 1 · flujo del barbero", () => {
+  test.beforeEach(resetQueue); // cada prueba parte de la fila vacía
+
   test("REQ-007.1 → 7.3 → 7.4 llamar, en la silla, terminado; REQ-007.5 bloqueo con turno abierto", async ({
     browser,
     page,
@@ -133,7 +135,7 @@ test.describe("Hito 1 · flujo del barbero", () => {
       route.request().method() === "POST" ? route.abort("failed") : route.continue(),
     );
     await page.getByRole("button", { name: "Llamar al siguiente" }).click();
-    await expect(page.getByRole("alert")).toContainText("Revisa tu conexión", { timeout: 15000 });
+    await expect(appAlert(page)).toContainText("Revisa tu conexión", { timeout: 15000 });
     await expect(page.getByText("Nadie en la silla.")).toBeVisible();
     await page.unroute("**/app/fila");
     await cctx.close();

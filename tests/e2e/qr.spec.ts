@@ -5,8 +5,11 @@ test.describe("REQ-001.2 / REQ-001.3 QR y compartir", () => {
   test("muestra el QR, descarga PNG, copia el enlace y arma el wa.me", async ({
     page,
     context,
+    browserName,
   }) => {
-    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    // WebKit (iPhone) no expone permisos de portapapeles en Playwright: allá solo se verifica el botón
+    const chromium = browserName === "chromium";
+    if (chromium) await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     await loginAsOwner(page);
     await page.goto("/admin/qr");
     const img = page.getByRole("img", { name: /Código QR/ });
@@ -21,8 +24,10 @@ test.describe("REQ-001.2 / REQ-001.3 QR y compartir", () => {
 
     await page.getByRole("button", { name: "Copiar enlace" }).click();
     await expect(page.getByRole("button", { name: "Enlace copiado ✓" })).toBeVisible();
-    const clip = await page.evaluate(() => navigator.clipboard.readText());
-    expect(clip).toMatch(new RegExp(`/${SEED.slug}$`));
+    if (chromium) {
+      const clip = await page.evaluate(() => navigator.clipboard.readText());
+      expect(clip).toMatch(new RegExp(`/${SEED.slug}$`));
+    }
 
     const wa = page.getByRole("link", { name: "Compartir por WhatsApp" });
     await expect(wa).toHaveAttribute("href", /^https:\/\/wa\.me\/\?text=/);

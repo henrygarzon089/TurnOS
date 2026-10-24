@@ -8,6 +8,8 @@ const baseURL = process.env.E2E_BASE_URL ?? "http://localhost:3000";
 
 export default defineConfig({
   testDir: "tests/e2e",
+  // Fila abierta todo el día y barberos presentes: las pruebas no dependen de la hora (global-setup.ts)
+  globalSetup: "./tests/e2e/global-setup.ts",
   timeout: 30_000,
   expect: { timeout: 5_000 },
   fullyParallel: false,
