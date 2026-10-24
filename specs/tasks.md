@@ -147,7 +147,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `REQ-003.3` (sequence/queue_order/token asignados; token 22 chars), `NFR-004` rate limit
   (6.º intento en la hora falla).
 
-### [ ] T-012 · Máquina de estados: `transition_ticket`
+### [x] T-012 · Máquina de estados: `transition_ticket`
 - REQ: REQ-005.2, REQ-007.3–7.5, REQ-007.7, REQ-008.2, REQ-011.4, REQ-012.2
 - Archivos: `supabase/migrations/0006_transitions.sql` (tabla de transiciones,
   `transition_ticket`, actualización de `barbers.status`, `ticket_events`), pgTAP
