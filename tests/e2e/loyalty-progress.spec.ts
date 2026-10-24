@@ -53,7 +53,10 @@ async function ownerAdds(owner: Page, name: string, phone: string) {
 /** Token de "Mi turno" desde el enlace wa.me del botón "Avisar" (REQ-009.2). */
 async function tokenFromBarber(barber: Page, name: string): Promise<string> {
   await barber.goto("/app/fila");
-  const row = barber.getByRole("listitem").filter({ hasText: name });
+  const row = barber
+    .getByRole("region", { name: "Siguen" })
+    .getByRole("listitem")
+    .filter({ hasText: name });
   await expect(row).toBeVisible({ timeout: 15_000 });
   const href = await row.getByRole("link").first().getAttribute("href");
   const m = decodeURIComponent(href ?? "").match(/\/t\/([A-Za-z0-9_-]{16,64})/);
@@ -127,9 +130,12 @@ test.describe("REQ-019 progreso y premio de fidelidad", () => {
       // Turno 3: el barbero ve "Premio disponible" en su fila
       await ownerAdds(owner, name, phone);
       await barber.goto("/app/fila");
-      await expect(barber.getByRole("listitem").filter({ hasText: name })).toContainText(
-        "Premio disponible",
-      );
+      await expect(
+        barber
+          .getByRole("region", { name: "Siguen" })
+          .getByRole("listitem")
+          .filter({ hasText: name }),
+      ).toContainText("Premio disponible");
 
       // Canje manual desde la ficha → tarjeta nueva en cero
       await owner.goto("/app/clientes");

@@ -25,10 +25,10 @@ describe("REQ-032.1 app instalable por negocio (PA-22: marca blanca)", () => {
     expect(businessManifest({ ...b, pwaName: "" }).short_name).toBe("Barbería La…");
   });
 
-  it("REQ-032.1 iOS: manifest del negocio, apple-touch-icon y título", () => {
+  it("REQ-032.1 iOS: manifest del negocio y título de la app", () => {
     const meta = businessPwaMetadata(b);
     expect(meta.manifest).toBe("/la-33/manifest.webmanifest");
     expect(meta.appleWebApp).toMatchObject({ capable: true, title: "La 33" });
-    expect(meta.icons).toMatchObject({ apple: "/icons/apple-touch-icon.png" });
+    expect(meta.icons).toBeUndefined(); // el apple-touch-icon viene del layout raíz
   });
 });

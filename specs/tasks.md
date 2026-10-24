@@ -531,12 +531,23 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   se ve. El barbero ve su propio historial de comisión. Prueba con dos barberos en el negocio A
   (5 casos).
 
-### [ ] T-043 · Panel de cobro al terminar un turno
+### [x] T-043 · Panel de cobro al terminar un turno — 2026-10-24
 - REQ: REQ-023.1–23.3, REQ-023.6, REQ-019.4
 - Archivos: `src/components/cash/CheckoutSheet.tsx`, `src/lib/actions/cash.ts` (`registerSale`),
   ajuste de `BarberActions` ("Terminado" abre el panel)
 - Terminado: E2E terminar → panel prellenado → Nequi → registrado; cerrar sin cobrar → "Cobro
   pendiente" visible para barbero y dueño; aplicar premio deja total 0.
+- Notas: "Terminado" (`BarberQueue`) abre "Registrar cobro" con el servicio y el precio del turno;
+  se puede cambiar o agregar servicios, sumar productos (+/−), aplicar el premio y, solo el
+  dueño, descontar con motivo (ADR-018). El total se calcula con `computeSale` y la base lo
+  recalcula: si un precio cambió entre que se abrió y se confirmó, `PAYMENTS_MISMATCH` pide
+  reabrir. "Cobrar después" deja el turno en "Cobro pendiente" (sección nueva en "Mi fila" del
+  barbero y botón "Cobrar" en la del dueño). "No se cobró" con motivo: migración
+  `0024_unpaid.sql` (`mark_ticket_unpaid`, motivo en `ticket_events`) + pgTAP 0024 (8). Un solo
+  medio de pago en la UI; el pago dividido (REQ-023.5, D) queda soportado por la base.
+  `tests/e2e/checkout.spec.ts` (3). Ajustes: `loyalty-progress` acota la fila del barbero a
+  "Siguen" (el cliente ahora también sale en "Cobro pendiente"); el `apple-touch-icon` lo pone
+  solo el layout raíz (salía duplicado).
 
 ### [ ] T-044 · Nueva venta (productos y servicios sin turno)
 - REQ: REQ-023.4, REQ-024.1–24.3

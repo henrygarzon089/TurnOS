@@ -42,7 +42,7 @@ export function businessManifest(b: Biz): MetadataRoute.Manifest {
 export function businessPwaMetadata(b: Biz): Metadata {
   return {
     manifest: `/${b.slug}/manifest.webmanifest`,
+    // El apple-touch-icon lo pone el layout raíz en todas las páginas (repetirlo lo duplica)
     appleWebApp: { capable: true, title: appName(b), statusBarStyle: "default" },
-    icons: { apple: "/icons/apple-touch-icon.png" },
   };
 }

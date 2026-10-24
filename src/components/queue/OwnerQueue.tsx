@@ -2,6 +2,7 @@
 
 import { useCallback, useState, useTransition } from "react";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { CheckoutSheet } from "@/components/cash/CheckoutSheet";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
 import { setBarberPresent } from "@/lib/actions/admin";
 import {
@@ -43,6 +44,8 @@ export function OwnerQueue({ initial }: { initial: OwnerQueueView }) {
   const [view, setView] = useState(initial);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  /** REQ-023.6: el dueño cobra cualquier turno pendiente (REQ-023.7). */
+  const [checkout, setCheckout] = useState<string | null>(null);
   const [openTicket, setOpenTicket] = useState<string | null>(null);
   const [manual, setManual] = useState(false);
   const [, startTransition] = useTransition();
@@ -180,14 +183,40 @@ export function OwnerQueue({ initial }: { initial: OwnerQueueView }) {
       {view.pendingPayments.length > 0 && (
         <section className="mt-4" aria-label="Cobros pendientes">
           <h2 className="text-muted text-xs font-semibold uppercase">Cobros pendientes</h2>
-          <ul className="mt-1 text-sm">
+          <ul className="mt-1 flex flex-col gap-2">
             {view.pendingPayments.map((t) => (
-              <li key={t.id}>
-                {t.customerName} · {t.serviceName}
+              <li
+                key={t.id}
+                className="flex items-center justify-between gap-3 rounded-xl border border-amber-400 bg-amber-50 p-3 text-sm"
+              >
+                <span className="min-w-0 truncate font-semibold">
+                  {t.customerName} · {t.serviceName}
+                </span>
+                <button
+                  type="button"
+                  className="btn-primary w-auto shrink-0 px-4"
+                  onClick={() => setCheckout(t.id)}
+                >
+                  Cobrar
+                </button>
               </li>
             ))}
           </ul>
         </section>
+      )}
+
+      {checkout && (
+        <CheckoutSheet
+          ticketId={checkout}
+          onClose={() => {
+            setCheckout(null);
+            void reload();
+          }}
+          onDone={() => {
+            setCheckout(null);
+            void reload();
+          }}
+        />
       )}
 
       {manual && (

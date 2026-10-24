@@ -38,6 +38,8 @@ export type BarberQueueView = {
   waiting: QueueTicket[];
   /** Clientes en espera que lo eligieron a él (para la hoja de pausa, REQ-010.2). */
   mineWaiting: number;
+  /** REQ-023.6 turnos que atendió y siguen con cobro pendiente. */
+  pendingPayments: QueueTicket[];
   template: string;
   now: string;
 };
@@ -116,31 +118,44 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
   if (!session?.barberId) return null;
   const supabase = await createSupabaseServerClient();
 
-  const [barberRes, bizRes, listRes, currentRes, allWaitingRes, tplRes] = await Promise.all([
-    supabase.from("barbers").select("id, display_name, status").eq("id", session.barberId).single(),
-    supabase.from("businesses").select("grace_minutes").eq("id", session.business.id).single(),
-    supabase.rpc("barber_queue_tickets", { p_barber_id: session.barberId }),
-    supabase
-      .from("tickets")
-      .select(TICKET_COLS)
-      .eq("assigned_barber_id", session.barberId)
-      .in("status", ["called", "in_service"])
-      .order("called_at", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    supabase
-      .from("tickets")
-      .select("id, queue_order, service_duration_min, preferred_barber_id")
-      .eq("business_id", session.business.id)
-      .eq("status", "waiting")
-      .order("queue_order"),
-    supabase
-      .from("message_templates")
-      .select("body")
-      .eq("business_id", session.business.id)
-      .eq("key", "notify_2_turns")
-      .maybeSingle(),
-  ]);
+  const [barberRes, bizRes, listRes, currentRes, allWaitingRes, tplRes, pendingRes] =
+    await Promise.all([
+      supabase
+        .from("barbers")
+        .select("id, display_name, status")
+        .eq("id", session.barberId)
+        .single(),
+      supabase.from("businesses").select("grace_minutes").eq("id", session.business.id).single(),
+      supabase.rpc("barber_queue_tickets", { p_barber_id: session.barberId }),
+      supabase
+        .from("tickets")
+        .select(TICKET_COLS)
+        .eq("assigned_barber_id", session.barberId)
+        .in("status", ["called", "in_service"])
+        .order("called_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("tickets")
+        .select("id, queue_order, service_duration_min, preferred_barber_id")
+        .eq("business_id", session.business.id)
+        .eq("status", "waiting")
+        .order("queue_order"),
+      supabase
+        .from("message_templates")
+        .select("body")
+        .eq("business_id", session.business.id)
+        .eq("key", "notify_2_turns")
+        .maybeSingle(),
+      supabase
+        .from("tickets")
+        .select(TICKET_COLS)
+        .eq("assigned_barber_id", session.barberId)
+        .eq("status", "done")
+        .eq("payment_status", "pending")
+        .order("finished_at", { ascending: false })
+        .limit(10),
+    ]);
 
   if (barberRes.error || !barberRes.data) return null;
 
@@ -194,6 +209,7 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
     current: currentRes.data ? mark(toTicket(currentRes.data as TicketRow, 0)) : null,
     waiting,
     mineWaiting: list.filter((r) => r.preferred_barber_id === session.barberId).length,
+    pendingPayments: ((pendingRes.data ?? []) as TicketRow[]).map((r) => toTicket(r, 0)),
     template: tplRes.data?.body ?? "",
     now: new Date().toISOString(),
   };

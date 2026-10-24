@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, useTransition } from "react";
+import { CheckoutSheet } from "@/components/cash/CheckoutSheet";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
 import {
   callNext,
@@ -31,6 +32,9 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
   const [error, setError] = useState<string | null>(null);
   const [busyAction, setBusyAction] = useState<string | null>(null);
   const [pauseSheet, setPauseSheet] = useState(false);
+  /** REQ-023.1: turno cuyo cobro se está registrando. */
+  const [checkout, setCheckout] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [, startTransition] = useTransition();
   const [tick, setTick] = useState(0);
 
@@ -123,6 +127,11 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
           {error}
         </p>
       )}
+      {notice && (
+        <p role="status" className="text-ok mb-3 rounded-xl bg-green-50 p-3 text-sm font-medium">
+          {notice}
+        </p>
+      )}
 
       <section aria-label="Ahora" className="mb-4">
         <h2 className="text-muted text-xs font-semibold uppercase">Ahora</h2>
@@ -133,11 +142,45 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
             busy={busyAction}
             run={run}
             now={now}
+            onFinished={(id) => {
+              setNotice(null);
+              setCheckout(id);
+            }}
           />
         ) : (
           <p className="text-muted mt-1">Nadie en la silla.</p>
         )}
       </section>
+
+      {view.pendingPayments.length > 0 && (
+        <section aria-label="Cobros pendientes" className="mb-4">
+          <h2 className="text-warn text-xs font-semibold uppercase">
+            Cobro pendiente ({view.pendingPayments.length})
+          </h2>
+          <ul className="mt-2 flex flex-col gap-2">
+            {view.pendingPayments.map((t) => (
+              <li
+                key={t.id}
+                className="flex items-center justify-between gap-3 rounded-xl border border-amber-400 bg-amber-50 p-3"
+              >
+                <span className="min-w-0 truncate font-semibold">
+                  {t.customerName} · {t.serviceName}
+                </span>
+                <button
+                  type="button"
+                  className="btn-primary w-auto shrink-0 px-4"
+                  onClick={() => {
+                    setNotice(null);
+                    setCheckout(t.id);
+                  }}
+                >
+                  Cobrar
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section aria-label="Siguen">
         <h2 className="text-muted text-xs font-semibold uppercase">
@@ -178,6 +221,21 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
         </div>
       </div>
 
+      {checkout && (
+        <CheckoutSheet
+          ticketId={checkout}
+          onClose={() => {
+            setCheckout(null);
+            void reload();
+          }}
+          onDone={(msg) => {
+            setCheckout(null);
+            setNotice(msg);
+            void reload();
+          }}
+        />
+      )}
+
       {pauseSheet && (
         <PauseSheet
           count={view.mineWaiting}
@@ -202,12 +260,15 @@ function CurrentCard({
   busy,
   run,
   now,
+  onFinished,
 }: {
   ticket: QueueTicket;
   graceMinutes: number;
   busy: string | null;
   run: (key: string, a: () => Promise<ActionResult>) => void;
   now: Date;
+  /** REQ-023.1: al terminar se abre "Registrar cobro". */
+  onFinished: (ticketId: string) => void;
 }) {
   const sinceCalled = ticket.calledAt ? minutesBetween(new Date(ticket.calledAt), now) : 0;
   const overGrace = ticket.status === "called" && sinceCalled >= graceMinutes;
@@ -256,7 +317,13 @@ function CurrentCard({
             type="button"
             className="btn-primary mt-3"
             disabled={busy !== null}
-            onClick={() => run("finish", () => finishService(ticket.id))}
+            onClick={() =>
+              run("finish", async () => {
+                const r = await finishService(ticket.id);
+                if (r.ok) onFinished(ticket.id);
+                return r;
+              })
+            }
           >
             {busy === "finish" ? "Guardando…" : "Terminado"}
           </button>
