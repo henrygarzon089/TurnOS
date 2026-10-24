@@ -17,3 +17,12 @@ describe("REQ-009.2 enlace wa.me con mensaje prellenado", () => {
     expect(link!.startsWith("https://wa.me/573001234567?text=Hola%20Camilo")).toBe(true);
   });
 });
+
+describe("REQ-009.5 canal de notificaciones intercambiable", () => {
+  it("getChannel devuelve la implementación wa.me del MVP detrás de la interfaz NotificationChannel", async () => {
+    const { getChannel } = await import("@/lib/notifications/channel");
+    const ch = getChannel();
+    expect(ch.kind).toBe("wa.me");
+    expect(typeof ch.buildLink).toBe("function");
+  });
+});

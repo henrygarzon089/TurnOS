@@ -299,7 +299,11 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   Android e iOS (verificación manual documentada en el README); prueba de pasillo con un barbero
   real registrada en `decisions.md`.
 
-### [ ] T-030 · Validación Hito 1: matriz de trazabilidad
+### [~] T-030 · Validación Hito 1: matriz de trazabilidad
+- Nota (2026-10-23): `pnpm tsx scripts/traceability.ts --hito=1` deja solo 3 CA sin prueba
+  (REQ-002.3, REQ-003.4, REQ-008.3): dependen de la tabla `customers` que crea T-031 y se cubren
+  allí. Migración 0012 refuerza REQ-007.8 en la base (el barbero solo llama al primero).
+  Pendiente para cerrar: correr los E2E y Lighthouse contra el proyecto remoto y la demo con Henry.
 - REQ: REQ-001…REQ-014, REQ-030…REQ-034, NFR-001/002/003/004/006/007/008/009/012
 - Archivos: `specs/traceability.md` (generado por `scripts/traceability.ts` + revisión manual)
 - Terminado: ningún CA de REQ-001…REQ-014 sin prueba; CI en verde; demo en celular real con la
