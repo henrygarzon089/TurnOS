@@ -154,7 +154,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Terminado: pgTAP cubre **cada fila** de la tabla de `design.md` §3 (válidas) y al menos 6
   inválidas; idempotencia `REQ-011.4`; `BARBER_BUSY` `REQ-007.5`; actor no autorizado falla.
 
-### [ ] T-013 · `call_next`, `set_barber_status`, `add_manual_ticket`, `reorder_ticket`
+### [x] T-013 · `call_next`, `set_barber_status`, `add_manual_ticket`, `reorder_ticket`
 - REQ: REQ-007.1–7.2, REQ-007.6, REQ-010.1–10.2, REQ-010.4–10.5, REQ-012.3, ADR-012
 - Archivos: `supabase/migrations/0007_queue_ops.sql`, pgTAP (incluye prueba de carrera con dos
   conexiones usando `pg_background` o dos sesiones en el test de integración)
