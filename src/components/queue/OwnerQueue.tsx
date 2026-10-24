@@ -47,9 +47,15 @@ export function OwnerQueue({ initial }: { initial: OwnerQueueView }) {
   const [manual, setManual] = useState(false);
   const [, startTransition] = useTransition();
 
+  // Sin red, la relectura también falla: se conserva el último estado (REQ-011.6) en vez de
+  // dejar que el error tumbe la página justo después de mostrar "Revisa tu conexión" (REQ-011.3).
   const reload = useCallback(async () => {
-    const v = await getBusinessQueue();
-    if (v) setView(v);
+    try {
+      const v = await getBusinessQueue();
+      if (v) setView(v);
+    } catch {
+      // la franja de conexión (ConnectionBanner) ya avisa; el canal vuelve a leer al reconectar
+    }
   }, []);
   const { online, lastUpdated } = useQueueSubscription(view.business.id, reload);
 

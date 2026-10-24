@@ -34,9 +34,15 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
   const [, startTransition] = useTransition();
   const [tick, setTick] = useState(0);
 
+  // Sin red, la relectura también falla: se conserva el último estado (REQ-011.6) en vez de
+  // dejar que el error tumbe la página justo después de mostrar "Revisa tu conexión" (REQ-011.3).
   const reload = useCallback(async () => {
-    const v = await getMyQueue();
-    if (v) setView(v);
+    try {
+      const v = await getMyQueue();
+      if (v) setView(v);
+    } catch {
+      // la franja de conexión (ConnectionBanner) ya avisa; el canal vuelve a leer al reconectar
+    }
   }, []);
   const { online, lastUpdated } = useQueueSubscription(view.business.id, reload);
 
