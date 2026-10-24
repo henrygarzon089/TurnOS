@@ -313,7 +313,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ## Hito 2 — Clientes y fidelidad
 
-### [ ] T-031 · Migración: clientes (ampliación), fidelidad, recordatorios
+### [x] T-031 · Migración: clientes (ampliación), fidelidad, recordatorios
 - REQ: REQ-018.1, REQ-019.1–19.2, REQ-019.6, REQ-020.4–20.5, REQ-021.1
 - Archivos: `supabase/migrations/0011_customers_loyalty.sql` (`loyalty_programs`,
   `loyalty_cards`, `loyalty_stamps`, `reminders`, columnas de `customers`, trigger de `done` →
@@ -322,7 +322,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `completed`; `REQ-008.3` `no_show` no suma; `REQ-018.1` preferido = más elegido en últimos 5;
   `REQ-021.1` nuevo vs repite.
 
-### [ ] T-032 · RLS de clientes, fidelidad y recordatorios
+### [x] T-032 · RLS de clientes, fidelidad y recordatorios
 - REQ: REQ-018.4, REQ-031.1
 - Archivos: `supabase/migrations/0012_rls_customers.sql`, `tests/integration/rls-customers.test.ts`
 - Terminado: barbero lee fichas de su negocio y edita solo `notes`/`preferred_barber_id`; nada

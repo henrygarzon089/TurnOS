@@ -79,3 +79,49 @@ begin
     (v_biz, 'Agua',     2500, 3),
     (v_biz, 'Jugo',     5000, 4);
 end $$;
+
+-- ============================================================================
+-- T-031 · Clientes con historial (REQ-034.1): 30 clientes, visitas pasadas, fidelidad activa
+-- ============================================================================
+do $$
+declare
+  v_biz uuid := (select id from businesses where slug = 'la-33');
+  v_corte uuid := (select id from services where business_id = (select id from businesses where slug = 'la-33') and name = 'Corte');
+  v_barbers uuid[] := array(select id from barbers where business_id = (select id from businesses where slug = 'la-33') order by sort_order);
+  names text[] := array['Camilo Restrepo','Sara Mejía','Andrés Pulgarín','Valentina Ríos','Mateo Londoño','Isabella Gómez',
+    'Samuel Zapata','Mariana Ortiz','Daniel Cardona','Luciana Vélez','Tomás Henao','Emma Salazar','Nicolás Arango','Sofía Betancur',
+    'Juan José Mesa','Antonella Díaz','Santiago Vargas','Gabriela Montoya','Emiliano Correa','Salomé Rendón','David Ospina',
+    'Victoria Palacio','Martín Escobar','Julieta Castaño','Jerónimo Botero','Paula Álvarez','Felipe Moreno','Catalina Giraldo',
+    'Alejandro Toro','Manuela Jaramillo'];
+  i int; v_cust uuid; v_visits int; v_last timestamptz; v_barber uuid; k int; v_day date;
+begin
+  insert into loyalty_programs (business_id, enabled, visits_required, reward_type, reward_service_id)
+  values (v_biz, true, 10, 'free_service', v_corte)
+  on conflict (business_id) do update set enabled = true, visits_required = 10, reward_service_id = v_corte;
+
+  for i in 1..30 loop
+    v_visits := (i % 12) + 1;                        -- 1..12 visitas
+    v_last := now() - make_interval(days => (i * 7) % 60); -- última visita hace 0..59 días
+    v_barber := v_barbers[(i % 5) + 1];
+    insert into customers (business_id, phone_e164, name, preferred_barber_id, first_visit_at, last_visit_at, visits_count,
+                           privacy_accepted_at, privacy_version)
+    values (v_biz, '+5730020000' || lpad(i::text, 2, '0'), names[i], v_barber,
+            v_last - make_interval(days => v_visits * 14), v_last, v_visits, v_last - make_interval(days => v_visits * 14), 1)
+    returning id into v_cust;
+
+    -- Historial: un turno terminado por visita, en días distintos
+    for k in 1..v_visits loop
+      v_day := (v_last - make_interval(days => (v_visits - k) * 14))::date;
+      insert into tickets (business_id, business_day, customer_id, customer_name, customer_phone_e164, service_id,
+                           assigned_barber_id, status, created_at, called_at, started_at, finished_at, payment_status, source)
+      values (v_biz, v_day, v_cust, names[i], '+5730020000' || lpad(i::text, 2, '0'), v_corte, v_barber, 'done',
+              v_day + time '10:00', v_day + time '10:20', v_day + time '10:22', v_day + time '10:42', 'paid', 'qr');
+    end loop;
+
+    -- Tarjeta de fidelidad con sellos = visitas mod 10 (algunas completas)
+    insert into loyalty_cards (business_id, customer_id, stamps, status, completed_at)
+    values (v_biz, v_cust, case when v_visits >= 10 then 10 else v_visits end,
+            (case when v_visits >= 10 then 'completed' else 'active' end)::loyalty_card_status,
+            case when v_visits >= 10 then v_last end);
+  end loop;
+end $$;

@@ -15,7 +15,7 @@ select biz, 'Camilo Restrepo', '+573005550001', corte from ctx;
 insert into tickets (business_id, customer_name, customer_phone_e164, service_id, preferred_barber_id)
 select biz, 'Sara Mejía', '+573005550002', barba, juan from ctx;
 
-select is((select count(*)::int from tickets t, ctx where t.business_id = ctx.biz), 2, 'REQ-003.3 se crean turnos');
+select is((select count(*)::int from tickets t, ctx where t.business_id = ctx.biz and t.status = 'waiting'), 2, 'REQ-003.3 se crean turnos');
 select is((select sequence from tickets where customer_phone_e164 = '+573005550002'), 2::bigint,
   'REQ-003.3 numeración correlativa por negocio y día');
 select is((select queue_order from tickets where customer_phone_e164 = '+573005550002'), 2000::bigint,
