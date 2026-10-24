@@ -486,15 +486,26 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ## Hito 3 — Caja y comisiones
 
-### [ ] T-040 · Migración: ventas, pagos, cierres, cambios de comisión
+### [x] T-040 · Migración: ventas, pagos, cierres, cambios de comisión — 2026-10-24
 - Pendiente heredado de T-034: si `sales` guarda nombre o celular del cliente, extender
-  `anonymize_customer` (REQ-018.6) y su pgTAP.
+  `anonymize_customer` (REQ-018.6) y su pgTAP. → **Resuelto**: `sales` guarda solo
+  `customer_id` (sin nombre ni celular); `anonymize_customer` no cambia.
 - REQ: REQ-023.3, REQ-024.2, REQ-025.2–25.4, REQ-026.1, REQ-027.2, NFR-010
 - Archivos: `supabase/migrations/0014_cash.sql` (`sales`, `sale_items`, `sale_payments`,
   `cash_closures`, `commission_changes`, triggers de suma de pagos, bloqueo por cierre y
   cambio de comisión), pgTAP
 - Terminado: pgTAP de estructura; `REQ-025.3` trigger escribe `commission_changes`;
   `sale_payments` ≠ total → error.
+- Notas: la migración es `0021_cash.sql` (0014–0020 ya usadas) con `supabase/tests/0021_cash.sql`
+  (44). Decisiones de implementación dentro del diseño: Σ pagos = total con un **constraint
+  trigger diferido** (al final de la transacción; `register_sale` puede insertar venta y pagos en
+  cualquier orden; una venta en $ 0 por premio no lleva pagos); inmutabilidad (ADR-005): una venta
+  solo pasa de `active` a `voided` con motivo, quién y cuándo, y sus líneas y pagos no se editan;
+  un cierre solo pasa a `voided` con motivo de reapertura; `CASH_DAY_CLOSED` (P0009) bloquea
+  ventas y anulaciones de un día con cierre activo (REQ-026.2, REQ-027.3); checks de montos
+  (`total = servicios + productos`, `negocio = base − comisión`, línea = precio × cantidad −
+  descuento, diferencia = contado − esperado). FK `loyalty_cards.redeemed_sale_id → sales`.
+  RLS activada y forzada **sin políticas** hasta T-042 (nadie accede con su JWT).
 
 ### [ ] T-041 · Dominio: cálculo de comisión (TS) y `register_sale` (SQL)
 - REQ: REQ-023.2–23.3, REQ-024.3, REQ-025.2, REQ-025.4, REQ-019.4
