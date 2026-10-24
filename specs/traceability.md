@@ -10,7 +10,7 @@
 | REQ-001.3 | Acceso a la fila por QR o enlace | T-014 (hecha), T-017 (hecha), T-018 (en curso), T-026 (en curso), T-030 (en curso) | qr.spec.ts | prueba escrita |
 | REQ-001.4 | Acceso a la fila por QR o enlace | T-014 (hecha), T-017 (hecha), T-018 (en curso), T-026 (en curso), T-030 (en curso) | public-queue.test.ts, 0008_public_fns.sql | prueba escrita |
 | REQ-001.5 | Acceso a la fila por QR o enlace | T-014 (hecha), T-017 (hecha), T-018 (en curso), T-026 (en curso), T-030 (en curso) | customer-flow.spec.ts, public-queue.test.ts, 0008_public_fns.sql | prueba escrita |
-| REQ-002.1 | Aviso de privacidad y aceptación (Ley 1581) | T-019 (en curso), T-028 (en curso) | hito1-gaps.spec.ts | prueba escrita |
+| REQ-002.1 | Aviso de privacidad y aceptación (Ley 1581) | T-019 (en curso), T-028 (en curso) | hito1-gaps.spec.ts, privacy.spec.ts | prueba escrita |
 | REQ-002.2 | Aviso de privacidad y aceptación (Ley 1581) | T-019 (en curso), T-028 (en curso) | customer-flow.spec.ts, public-queue.test.ts | prueba escrita |
 | REQ-002.3 | Aviso de privacidad y aceptación (Ley 1581) | T-019 (en curso), T-028 (en curso) | 0013_customers_loyalty.sql | prueba escrita |
 | REQ-002.4 | Aviso de privacidad y aceptación (Ley 1581) | T-019 (en curso), T-028 (en curso) | customer-flow.spec.ts | prueba escrita |
@@ -108,7 +108,7 @@
 | REQ-020.4 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (hecha) | reminders.spec.ts, 0013_customers_loyalty.sql, 0018_reminders.sql | prueba escrita |
 | REQ-020.5 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (hecha) | reminders.spec.ts, 0013_customers_loyalty.sql, 0018_reminders.sql | prueba escrita |
 | REQ-021.1 | Clientes nuevos vs. que repiten | T-031 (hecha), T-048 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-022.1 | Barbero preferido en la ficha | T-019 (en curso), T-038 (pendiente), T-039 (pendiente) | — | sin prueba |
+| REQ-022.1 | Barbero preferido en la ficha | T-019 (en curso), T-038 (hecha), T-039 (pendiente) | preferred-barber.spec.ts, preferred-barber.test.ts | prueba escrita |
 | REQ-023.1 | Cobrar un servicio | T-040 (pendiente), T-041 (pendiente), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | — | sin prueba |
 | REQ-023.2 | Cobrar un servicio | T-040 (pendiente), T-041 (pendiente), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | — | sin prueba |
 | REQ-023.3 | Cobrar un servicio | T-040 (pendiente), T-041 (pendiente), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | — | sin prueba |

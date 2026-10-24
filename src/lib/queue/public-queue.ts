@@ -150,6 +150,22 @@ export async function getPublicBusiness(
   };
 }
 
+/**
+ * REQ-022.1: barbero preferido del cliente que vuelve (por el celular guardado en su navegador).
+ * Solo el id, y solo si el barbero atiende hoy y no está en pausa; si no, null ("El que esté libre").
+ */
+export async function getPreferredBarber(
+  gw: Gateway,
+  slug: string,
+  phone: string,
+): Promise<string | null> {
+  if (!/^[a-z0-9-]{3,40}$/.test(slug)) return null;
+  const e164 = normalizePhoneCO(phone);
+  if (!e164) return null;
+  const id = await gw.rpc<string | null>("get_preferred_barber", { p_slug: slug, p_phone: e164 });
+  return id ?? null;
+}
+
 /** REQ-003.2–3.5, NFR-004 */
 export async function joinQueue(
   gw: Gateway,

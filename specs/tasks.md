@@ -403,12 +403,19 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   (`buildReminderLink`), "No contactar" editable en la ficha (dueño) y el botón "Avisar" de la
   fila del barbero se oculta para esos clientes (`QueueTicket.doNotContact`).
 
-### [ ] T-038 · Barbero preferido preseleccionado
+### [x] T-038 · Barbero preferido preseleccionado — 2026-10-24
 - REQ: REQ-022.1
 - Archivos: `JoinForm.tsx`, `getPublicBusiness` (devuelve preferido si el celular guardado en
   localStorage coincide — consulta por server action con el celular, sin exponer otros datos)
 - Terminado: E2E cliente recurrente ve a su barbero preseleccionado; si está en pausa, "El que
   esté libre".
+- Notas: en vez de ampliar `getPublicBusiness` (que se cachea por negocio, sin celular) se hizo
+  una acción aparte `getPreferredBarber(slug, phone)` → función SQL `get_preferred_barber`
+  (migración `0019_preferred_barber.sql`, solo `service_role`, ADR-009): devuelve solo el id del
+  barbero y solo si atiende hoy (`available`/`busy`); si no, null. El formulario no pisa una
+  elección que el cliente ya hizo. Pruebas: `tests/integration/preferred-barber.test.ts`,
+  `tests/e2e/preferred-barber.spec.ts`. La 0019 se aplicó en local con
+  `supabase migration up --include-all` porque la 0020 (sesión de E2E de H1) ya estaba aplicada.
 
 ### [ ] T-039 · Validación Hito 2: matriz de trazabilidad
 - REQ: REQ-018…REQ-022

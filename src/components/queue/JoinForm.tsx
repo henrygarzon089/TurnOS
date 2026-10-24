@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { ErrorText, Field } from "@/components/auth/LoginForm";
-import { joinQueue } from "@/lib/actions/public";
+import { getPreferredBarber, joinQueue } from "@/lib/actions/public";
 import { formatCOP } from "@/lib/domain/money";
 import { formatPhoneCO, normalizePhoneCO } from "@/lib/domain/phone";
 import { estimateNewTicket } from "@/lib/domain/queue-estimate";
@@ -21,6 +21,11 @@ export function JoinForm({ business, now }: Props) {
   const [phone, setPhone] = useState("");
   const [serviceId, setServiceId] = useState(business.services[0]?.id ?? "");
   const [barberId, setBarberId] = useState<string | null>(null);
+  const pickedByUser = useRef(false);
+  const pickBarber = (id: string | null) => {
+    pickedByUser.current = true;
+    setBarberId(id);
+  };
   const [privacy, setPrivacy] = useState(false);
   const [alreadyAccepted, setAlreadyAccepted] = useState(false);
   const [error, setError] = useState<{ message: string; field?: string } | null>(null);
@@ -31,7 +36,14 @@ export function JoinForm({ business, now }: Props) {
     const id = requestAnimationFrame(() => {
       const p = readPrefs();
       if (p.name) setName(p.name);
-      if (p.phone) setPhone(formatPhoneCO(p.phone));
+      if (p.phone) {
+        setPhone(formatPhoneCO(p.phone));
+        // REQ-022.1: preseleccionar su barbero preferido si atiende hoy (si no, "El que esté libre")
+        void getPreferredBarber(business.slug, p.phone).then((id) => {
+          const ok = business.barbersToday.some((b) => b.id === id && b.status !== "paused");
+          if (id && ok && !pickedByUser.current) setBarberId(id);
+        });
+      }
       const v = p.privacyAccepted?.[business.slug];
       if (v && business.privacyVersion && v >= business.privacyVersion) {
         setAlreadyAccepted(true);
@@ -39,7 +51,7 @@ export function JoinForm({ business, now }: Props) {
       }
     });
     return () => cancelAnimationFrame(id);
-  }, [business.slug, business.privacyVersion]);
+  }, [business.slug, business.privacyVersion, business.barbersToday]);
 
   const service = business.services.find((s) => s.id === serviceId);
 
@@ -152,7 +164,7 @@ export function JoinForm({ business, now }: Props) {
       <fieldset>
         <legend className="mb-2 text-sm font-medium">Barbero</legend>
         <div className="flex flex-wrap gap-2">
-          <Chip selected={barberId === null} onClick={() => setBarberId(null)}>
+          <Chip selected={barberId === null} onClick={() => pickBarber(null)}>
             El que esté libre
           </Chip>
           {business.barbersToday.map((b) => {
@@ -162,7 +174,7 @@ export function JoinForm({ business, now }: Props) {
                 key={b.id}
                 selected={barberId === b.id}
                 disabled={unavailable}
-                onClick={() => setBarberId(b.id)}
+                onClick={() => pickBarber(b.id)}
               >
                 {b.name}
                 {unavailable && <span className="text-muted ml-1 text-xs">(en pausa)</span>}

@@ -119,6 +119,11 @@ export async function getPublicBusiness(slug: string) {
   return queue.getPublicBusiness(createAdminGateway(), slug);
 }
 
+/** REQ-022.1: barbero preferido para preseleccionar en "Tomar turno". */
+export async function getPreferredBarber(slug: string, phone: string): Promise<string | null> {
+  return queue.getPreferredBarber(createAdminGateway(), slug, phone);
+}
+
 /** REQ-003: tomar turno. Devuelve el token (o el existente, REQ-003.5). */
 export async function joinQueue(input: queue.JoinInput): Promise<queue.JoinResult> {
   return queue.joinQueue(createAdminGateway(), input, await clientIp());
