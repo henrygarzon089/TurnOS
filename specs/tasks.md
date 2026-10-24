@@ -138,7 +138,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ## Hito 1 — Fila virtual con QR
 
-### [ ] T-011 · Migración: turnos, eventos, estado de barberos, rate limit
+### [x] T-011 · Migración: turnos, eventos, estado de barberos, rate limit
 - REQ: REQ-003.3–3.5, REQ-007.7, REQ-011.5, REQ-028.2 (fuente de datos), NFR-004
 - Archivos: `supabase/migrations/0005_queue.sql` (`tickets`, `ticket_events`,
   `barber_status_events`, `rate_limits`, enums, índice único parcial de turno activo, trigger
