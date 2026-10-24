@@ -349,13 +349,18 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - **Falta (manual, Henry):** instalar en un Android y un iPhone reales con HTTPS (tabla en el
   README) y la prueba de pasillo con un barbero (NFR-007) registrada en `decisions.md`.
 
-### [~] T-030 · Validación Hito 1: matriz de trazabilidad
+### [x] T-030 · Validación Hito 1: matriz de trazabilidad — 2026-10-24
 - Nota (2026-10-23): `pnpm tsx scripts/traceability.ts --hito=1` deja solo 3 CA sin prueba
   (REQ-002.3, REQ-003.4, REQ-008.3): dependen de la tabla `customers` que crea T-031 y se cubren
   allí. Migración 0012 refuerza REQ-007.8 en la base (el barbero solo llama al primero).
   Pendiente para cerrar: correr los E2E y Lighthouse contra el proyecto remoto y la demo con Henry.
 - Nota (2026-10-24): E2E de H0/H1 en verde en local (90/90, Pixel 7 + iPhone 13). Faltan Lighthouse
   (T-029), la demo en celular real y la aprobación de Henry.
+- Cierre (2026-10-24): `--hito=1` → 0 CA sin prueba; CI verde en GitHub (incluye Lighthouse:
+  97/95/96 rendimiento, 100 accesibilidad); Henry probó en su celular, contra producción
+  (turnos-smoky-nine.vercel.app), el flujo del cliente y del barbero, y **aprobó el hito**
+  (ADR-017). Quedan de T-029, sin bloquear el cierre: instalación en Android/iPhone y prueba de
+  pasillo con un barbero real (NFR-007).
 - REQ: REQ-001…REQ-014, REQ-030…REQ-034, NFR-001/002/003/004/006/007/008/009/012
 - Archivos: `specs/traceability.md` (generado por `scripts/traceability.ts` + revisión manual)
 - Terminado: ningún CA de REQ-001…REQ-014 sin prueba; CI en verde; demo en celular real con la
@@ -469,11 +474,13 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `tests/e2e/preferred-barber.spec.ts`. La 0019 se aplicó en local con
   `supabase migration up --include-all` porque la 0020 (sesión de E2E de H1) ya estaba aplicada.
 
-### [~] T-039 · Validación Hito 2: matriz de trazabilidad
+### [x] T-039 · Validación Hito 2: matriz de trazabilidad — 2026-10-24
 - REQ: REQ-018…REQ-022
 - Terminado: ningún CA sin prueba; CI verde; demo; aprobación de Henry.
 - Estado 2026-10-24: `pnpm trace --hito=2` → 0 CA sin prueba. En la Mac: pgTAP, unitarias,
   integración y E2E de H2 en verde. Falta: CI (el repo aún no está en GitHub), demo y aprobación.
+- Cierre (2026-10-24): CI verde en GitHub; E2E de H2 32/32; Henry probó en su celular, contra
+  producción, fichas, fidelidad, recordar y eliminar, y **aprobó el hito** (ADR-017).
 
 ---
 

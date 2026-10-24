@@ -13,12 +13,12 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 
 ## Hecho
 
-| Hito                    | Tareas      | Estado                                                                              |
-| ----------------------- | ----------- | ----------------------------------------------------------------------------------- |
-| H0 Cimientos            | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (falta validar el CI en GitHub)                        |
-| H1 Fila virtual         | T-011…T-030 | T-011–028 `[x]`; T-029 `[ ]` (Lighthouse); T-030 `[~]` (demo y aprobación). 144/144 |
-| H2 Clientes y fidelidad | T-031…T-039 | T-031–T-038 `[x]`; T-039 `[~]` (falta CI, demo y aprobación de Henry)               |
-| H3 Caja y comisiones    | T-040…T-050 | sin empezar                                                                         |
+| Hito                    | Tareas      | Estado                                                                          |
+| ----------------------- | ----------- | ------------------------------------------------------------------------------- |
+| H0 Cimientos            | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (falta validar el CI en GitHub)                    |
+| H1 Fila virtual         | T-011…T-030 | **aprobado** (ADR-017); T-029 `[~]` (instalar en celulares y prueba de pasillo) |
+| H2 Clientes y fidelidad | T-031…T-039 | **aprobado** (ADR-017)                                                          |
+| H3 Caja y comisiones    | T-040…T-050 | **siguiente: T-040**                                                            |
 
 Pruebas en verde (Mac, 2026-10-24): 303 pgTAP · 58 unitarias · 27 integración · E2E de H2 32/32 (Pixel 7 + iPhone 13,
 corrida conjunta). Trazabilidad Hito 2: 0 CA sin prueba (`pnpm trace --hito=2`).

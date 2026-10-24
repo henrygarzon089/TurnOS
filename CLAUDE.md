@@ -29,10 +29,11 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 
 ## Estado actual (2026-10-24)
 
-- Hito 0 y Hito 1: construidos. Trazabilidad Hito 1: 144/144 CA con prueba.
-- Hito 2: T-031…T-038 hechas; trazabilidad H2 sin huecos. **T-039** espera CI, demo y aprobación
-  de Henry; después sigue H3 (T-040).
-- Tareas `[~]`: código y pruebas listos; falta correr E2E contra el proyecto remoto de Supabase.
+- Hito 0, 1 y 2: construidos y **aprobados por Henry** (ADR-017, 2026-10-24). T-029 `[~]`: falta
+  instalar en celulares reales y la prueba de pasillo. **Siguiente: Hito 3, T-040.**
+- Producción: https://turnos-smoky-nine.vercel.app (Vercel `henry-garzons-projects/turnos` +
+  Supabase `uucjmxdssnmvznibrafc`). CI en GitHub `henrygarzon089/TurnOS`.
+- Tareas `[~]` abiertas: T-010 (activar E2E en el CI y proteger `main`) y T-029 (parte manual).
 - Ver `docs/estado-del-proyecto.md` para el detalle y los pendientes externos.
 
 ## Stack y convenciones
@@ -67,7 +68,7 @@ pnpm trace      # regenera specs/traceability.md
 
 ## Cosas que ya se decidieron (no reabrir sin ADR)
 
-Ver `specs/decisions.md` (ADR-001…ADR-016). Resumen: barbero entra con celular + PIN de 6 dígitos
+Ver `specs/decisions.md` (ADR-001…ADR-017). Resumen: barbero entra con celular + PIN de 6 dígitos
 (cuenta alias `<cel>@barberos.turnos.local`); un solo servicio por turno; el barbero solo llama al
 primero de su fila, el dueño sí puede saltar/reordenar; toda la plata entra al negocio y el negocio
 liquida comisiones; el porcentaje es la parte del barbero sobre servicios después de descuento;

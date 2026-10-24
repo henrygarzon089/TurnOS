@@ -186,3 +186,17 @@
 - Consecuencias: migración `0014_customers_merge.sql` redefine `merge_customers` y agrega
   `barber_customers`; nada del pasado se pierde al fusionar salvo el exceso de sellos (raro y
   documentado).
+
+## ADR-017 · Aprobación de los Hitos 1 y 2 con parte manual de T-029 pendiente
+- Estado: **aceptada** (Henry, 2026-10-24)
+- Contexto: H1 y H2 tienen todos sus CA con prueba (`pnpm trace --hito=1/2` → 0 huecos), CI verde
+  en GitHub (con Lighthouse) y la app desplegada en producción
+  (https://turnos-smoky-nine.vercel.app). Henry probó en su celular el flujo del cliente y del
+  barbero (H1) y clientes y fidelidad (H2). De T-029 faltan dos verificaciones manuales:
+  instalación como app en Android/iPhone y la prueba de pasillo con un barbero real (NFR-007).
+- Opciones: (a) esperar esas dos verificaciones para cerrar H1; (b) aprobar H1 y H2 y llevar la
+  parte manual de T-029 como pendiente explícito.
+- Decisión: (b). T-030 y T-039 quedan `[x]`; T-029 sigue `[~]` hasta registrar la instalación
+  (tabla del README) y la prueba de pasillo (en este archivo).
+- Consecuencias: se empieza el Hito 3 (T-040). La prueba de pasillo de NFR-007 incluye el cobro,
+  así que conviene hacerla cuando exista el panel de cobro (T-043) y cubrir H1 y H3 de una vez.
