@@ -99,7 +99,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   define PIN, entra a `/app`; enlace vencido (7 días) rechazado; `removeBarber` borra membresía y
   deja historial (pgTAP `REQ-016.3`).
 
-### [ ] T-008 · Administración de servicios, productos, barberos, horario y negocio
+### [~] T-008 · Administración de servicios, productos, barberos, horario y negocio
+- Nota (2026-10-23): páginas, acciones y E2E (`tests/e2e/admin-config.spec.ts`) listos; el E2E
+  corre cuando exista el proyecto remoto.
 - REQ: REQ-015.1–15.2, REQ-015.4, REQ-016.1–16.2, REQ-016.4, REQ-017.1, REQ-025.1 (campo),
   REQ-033.1
 - Archivos: `src/app/(staff)/admin/{servicios,productos,barberos,barberos/[id],horario,negocio,mensajes}/page.tsx`,

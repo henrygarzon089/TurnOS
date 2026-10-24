@@ -182,9 +182,9 @@ const barberSchema = z.object({
 
 /** REQ-016.1: crea el barbero y su invitación; devuelve el enlace para compartir. */
 export async function createBarber(
-  _prev: FormState & { inviteUrl?: string },
+  _prev: { error?: string; ok?: boolean; inviteUrl?: string },
   formData: FormData,
-): Promise<FormState & { inviteUrl?: string }> {
+): Promise<{ error?: string; ok?: boolean; inviteUrl?: string }> {
   const session = await getStaffSession();
   if (session?.role !== "owner") return { error: "Solo el dueño puede crear barberos." };
   const parsed = barberSchema.safeParse(Object.fromEntries(formData));
@@ -231,4 +231,167 @@ export async function removeBarber(barberId: string): Promise<FormState> {
   const { error } = await supabase.rpc("remove_barber", { p_barber_id: barberId });
   if (error) return { error: "No se pudo retirar al barbero." };
   return { ok: true };
+}
+
+// ================================================================ T-008: administración ====
+
+async function requireOwner() {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") throw new Error("FORBIDDEN");
+  return session;
+}
+
+/** Crea o edita un servicio (REQ-015.1). Campos: id?, name, duration_min, price, counts_for_loyalty */
+export async function upsertService(_prev: FormState, formData: FormData): Promise<FormState> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { error: "Solo el dueño puede editar servicios." };
+  const parsed = serviceSchema.safeParse({
+    name: formData.get("name"),
+    duration_min: formData.get("duration_min"),
+    price: formData.get("price"),
+    counts_for_loyalty: formData.get("counts_for_loyalty") === "on",
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+  const id = formData.get("id");
+  const supabase = await createSupabaseServerClient();
+  const row = { ...parsed.data, business_id: session.business.id };
+  const { error } =
+    typeof id === "string" && id
+      ? await supabase.from("services").update(row).eq("id", id)
+      : await supabase.from("services").insert(row);
+  if (error) return { error: "No se pudo guardar el servicio." };
+  return { ok: true };
+}
+
+/** Activa/desactiva (REQ-015.2): los turnos existentes conservan el servicio. */
+export async function toggleService(id: string, isActive: boolean): Promise<FormState> {
+  await requireOwner();
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.from("services").update({ is_active: isActive }).eq("id", id);
+  return error ? { error: "No se pudo cambiar el estado." } : { ok: true };
+}
+
+const productSchema = z.object({
+  name: z.string().trim().min(1, "El producto necesita un nombre.").max(60),
+  price: z.string().transform((s, ctx) => {
+    const n = parseCOP(s);
+    if (n === null) {
+      ctx.addIssue({ code: "custom", message: "El precio debe ser un número entero en pesos." });
+      return z.NEVER;
+    }
+    return n;
+  }),
+});
+
+/** Crea o edita un producto (REQ-024.1). */
+export async function upsertProduct(_prev: FormState, formData: FormData): Promise<FormState> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { error: "Solo el dueño puede editar productos." };
+  const parsed = productSchema.safeParse({
+    name: formData.get("name"),
+    price: formData.get("price"),
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+  const id = formData.get("id");
+  const supabase = await createSupabaseServerClient();
+  const row = { ...parsed.data, business_id: session.business.id };
+  const { error } =
+    typeof id === "string" && id
+      ? await supabase.from("products").update(row).eq("id", id)
+      : await supabase.from("products").insert(row);
+  if (error) return { error: "No se pudo guardar el producto." };
+  return { ok: true };
+}
+
+export async function toggleProduct(id: string, isActive: boolean): Promise<FormState> {
+  await requireOwner();
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.from("products").update({ is_active: isActive }).eq("id", id);
+  return error ? { error: "No se pudo cambiar el estado." } : { ok: true };
+}
+
+/** Edita nombre, celular y comisión de un barbero (REQ-016.1, REQ-025.1, REQ-025.3 vía trigger). */
+export async function updateBarber(_prev: FormState, formData: FormData): Promise<FormState> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { error: "Solo el dueño puede editar barberos." };
+  const parsed = barberSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+  const phone = normalizePhoneCO(parsed.data.phone);
+  if (!phone) return { error: "Escribe un celular colombiano de 10 dígitos." };
+  const id = formData.get("id");
+  if (typeof id !== "string") return { error: "Barbero inválido." };
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("barbers")
+    .update({
+      display_name: parsed.data.display_name,
+      phone_e164: phone,
+      commission_pct: parsed.data.commission_pct,
+    })
+    .eq("id", id);
+  if (error) return { error: "No se pudo guardar." };
+  return { ok: true };
+}
+
+/**
+ * REQ-016.4: marca al barbero presente hoy (status available) o ausente (off).
+ * El dueño puede hacerlo con cualquiera; el barbero solo consigo mismo (RLS).
+ */
+export async function setBarberPresent(barberId: string, present: boolean): Promise<FormState> {
+  const supabase = await createSupabaseServerClient();
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" });
+  const { error } = await supabase
+    .from("barbers")
+    .update(
+      present ? { status: "available", present_day: today } : { status: "off", present_day: null },
+    )
+    .eq("id", barberId);
+  return error ? { error: "No se pudo cambiar la asistencia." } : { ok: true };
+}
+
+/** REQ-033.1: plantillas de WhatsApp. Campos: notify_2_turns, reminder_inactive, share_queue */
+export async function saveTemplates(_prev: FormState, formData: FormData): Promise<FormState> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { error: "Solo el dueño puede editar las plantillas." };
+  const keys = ["notify_2_turns", "reminder_inactive", "share_queue"] as const;
+  const rows = [];
+  for (const key of keys) {
+    const body = formData.get(key);
+    if (typeof body !== "string" || body.trim().length === 0 || body.length > 1000) {
+      return { error: "Cada plantilla debe tener entre 1 y 1000 caracteres." };
+    }
+    rows.push({ business_id: session.business.id, key, body: body.trim() });
+  }
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.from("message_templates").upsert(rows);
+  return error ? { error: "No se pudieron guardar las plantillas." } : { ok: true };
+}
+
+const businessSettingsSchema = z.object({
+  name: z.string().trim().min(2).max(80),
+  address: z.string().trim().max(200).optional(),
+  chairs_count: z.coerce.number().int().min(1).max(50),
+  default_commission_pct: z.coerce.number().int().min(0).max(100),
+  grace_minutes: z.coerce.number().int().min(1).max(60),
+  inactive_days: z.coerce.number().int().min(1).max(365),
+  reminder_cooldown_days: z.coerce.number().int().min(1).max(90),
+  pwa_name: z.string().trim().max(40).optional(),
+});
+
+/** REQ-016.2 y parámetros del negocio (/admin/negocio). */
+export async function updateBusiness(_prev: FormState, formData: FormData): Promise<FormState> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { error: "Solo el dueño puede editar el negocio." };
+  const parsed = businessSettingsSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: "Revisa los datos del negocio." };
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("businesses")
+    .update({
+      ...parsed.data,
+      address: parsed.data.address || null,
+      pwa_name: parsed.data.pwa_name || null,
+    })
+    .eq("id", session.business.id);
+  return error ? { error: "No se pudo guardar." } : { ok: true };
 }
