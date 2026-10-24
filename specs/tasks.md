@@ -74,7 +74,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   cruzada = 0 filas, escritura cruzada = error; barbero no puede cambiar `commission_pct` ni
   `is_active` propios; `anon` sin acceso a ninguna tabla.
 
-### [~] T-006 · Autenticación del personal: login, proxy, roles
+### [x] T-006 · Autenticación del personal: login, proxy, roles
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1` (`auth.spec.ts`). Desvío en la prueba: `getByRole('alert')` también
+  encontraba el anunciador de rutas de Next; se usa `appAlert()` de `tests/e2e/helpers.ts`.
 - Nota (2026-10-23): en Next.js 16 `middleware.ts` pasó a llamarse `proxy.ts` (`src/proxy.ts`).
   Código, build y lint listos; el E2E (`tests/e2e/auth.spec.ts`) queda pendiente hasta tener el
   proyecto de Supabase con el seed.
@@ -86,7 +88,8 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `/admin/*` rechaza barbero, `/app/*` acepta ambos; sesión persiste tras cerrar el navegador
   (cookie 30 días); E2E `REQ-030.1`, `REQ-030.3`.
 
-### [~] T-007 · Asistente "crear negocio" e invitación de barberos
+### [x] T-007 · Asistente "crear negocio" e invitación de barberos
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1` (`onboarding.spec.ts`), sin cambios.
 - Nota (2026-10-23): migración, funciones SQL (14 pgTAP), asistente de 3 pasos, aceptación de
   invitación y acciones listas; el E2E (`tests/e2e/onboarding.spec.ts`) espera el proyecto remoto.
   La pantalla /admin/barberos que usa el E2E se construye en T-008.
@@ -99,7 +102,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   define PIN, entra a `/app`; enlace vencido (7 días) rechazado; `removeBarber` borra membresía y
   deja historial (pgTAP `REQ-016.3`).
 
-### [~] T-008 · Administración de servicios, productos, barberos, horario y negocio
+### [x] T-008 · Administración de servicios, productos, barberos, horario y negocio
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1` (`admin-config.spec.ts`). Desvío en la prueba: el campo Minutos tiene
+  `step=5` y el navegador bloquea 22 antes del servidor; la prueba verifica `stepMismatch` (zod
+  sigue validando en `admin.ts`).
 - Nota (2026-10-23): páginas, acciones y E2E (`tests/e2e/admin-config.spec.ts`) listos; el E2E
   corre cuando exista el proyecto remoto.
 - REQ: REQ-015.1–15.2, REQ-015.4, REQ-016.1–16.2, REQ-016.4, REQ-017.1, REQ-025.1 (campo),
@@ -170,10 +176,15 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Terminado: `REQ-001.4` cerrado por horario y por override; `REQ-014.1` cancela `waiting`/
   `called` tras cierre + 60 min con motivo `closing` y no toca `in_service`; `REQ-004.7` token
   inexistente → `null`; `get_ticket_by_token` no expone otros celulares.
+- Nota (2026-10-24): **arreglo** en `0020_close_expired_midnight.sql`: `closes_at + 60 min` se sumaba
+  sobre `time` y daba la vuelta a medianoche (cierre 23:30 → el cron cancelaba todo el día). Ahora
+  se compara como timestamp; pgTAP `supabase/tests/0020_close_expired_midnight.sql`.
 
-### [~] T-015 ·
+### [x] T-015 · Broadcast Realtime desde triggers y hook de suscripción
+- Nota (2026-10-24): NFR-002 medido de punta a punta con Realtime de `supabase start`: el E2E
+  `REQ-004.2` ve "¡Es tu turno!" < 3 s después de llamar. E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1`.
 - Nota (2026-10-23): triggers, función de suscripción y pruebas listas; la medición < 3 s contra
-  Realtime real (NFR-002) se hace con el proyecto remoto. Broadcast Realtime desde triggers y hook de suscripción
+  Realtime real (NFR-002) se hace con el proyecto remoto.
 - REQ: REQ-004.2, REQ-006.3, REQ-011.1–11.2, NFR-002, ADR-008
 - Archivos: `supabase/migrations/0009_realtime.sql` (triggers `tickets_after_change`,
   `barbers_after_status_change` → `realtime.send`), `src/lib/realtime/use-queue-subscription.ts`,
@@ -197,14 +208,17 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Terminado: integración `REQ-003.5` devuelve `existingToken`; `REQ-003.2` errores en español;
   rate limit por celular e IP; `cancelTicketByToken` en `in_service` falla.
 
-### [~] T-018 · Página pública del negocio `/[slug]`
+### [x] T-018 · Página pública del negocio `/[slug]`
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1` (`customer-flow.spec.ts`).
 - REQ: REQ-001.1, REQ-001.4, REQ-001.5, REQ-017.2
 - Archivos: `src/app/(public)/[slug]/page.tsx`, `src/components/queue/PublicHeader.tsx`
 - Terminado: E2E `REQ-001.1` muestra nombre, abierto/cerrado, personas en fila, botón; `REQ-001.4`
   cerrado muestra próximo horario y sin botón; `REQ-001.5` slug inexistente → 404 en español;
   se actualiza por Realtime.
 
-### [~] T-019 · Formulario "Tomar turno" con aviso de privacidad
+### [x] T-019 · Formulario "Tomar turno" con aviso de privacidad
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1`. Desvío en las pruebas: en la segunda visita la casilla ya no aparece
+  (REQ-002.4), el helper `takeTicket` la marca solo si está.
 - REQ: REQ-002.1–2.4, REQ-003.1–3.3, REQ-003.6–3.7, REQ-017.3, REQ-022.1
 - Archivos: `src/app/(public)/[slug]/turno/page.tsx`, `src/components/queue/JoinForm.tsx`,
   `src/app/(public)/[slug]/privacidad/page.tsx`, `src/lib/storage/customer-prefs.ts`
@@ -213,7 +227,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `REQ-003.1` "El que esté libre" por defecto, barberos en pausa deshabilitados; `REQ-003.7`
   prellenado; `REQ-017.3` franja de advertencia; redirección a `/t/<token>` < 2 s.
 
-### [~] T-020 · Pantalla "Mi turno" `/t/[token]`
+### [x] T-020 · Pantalla "Mi turno" `/t/[token]`
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1`. Desvío en la prueba: posición y estimado pueden decir los dos "Eres el
+  siguiente" (estimado 0 con barberos libres, REQ-004.5); se toma el primero.
 - Nota (2026-10-23): T-018/019/020 construidas; E2E `customer-flow.spec.ts` espera el proyecto remoto.
 - REQ: REQ-004.1–4.7, REQ-005.1–5.3, REQ-008.2 (mensaje), REQ-010.3, REQ-011.6, REQ-014.1 (mensaje)
 - Archivos: `src/app/(public)/t/[token]/page.tsx`, `src/components/queue/MyTicket.tsx`,
@@ -223,7 +239,8 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   turno!" < 3 s; `REQ-004.6` recarga tras cerrar; `REQ-005.2` cancelar recalcula la fila del otro
   contexto; `REQ-011.6` offline muestra último estado con hora; textos de todos los estados finales.
 
-### [~] T-021 · Vista "Mi fila" del barbero
+### [x] T-021 · Vista "Mi fila" del barbero
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1` (`barber-flow.spec.ts`, `hito1-gaps.spec.ts`).
 - REQ: REQ-006.1–6.5, REQ-007.6, REQ-009.1
 - Archivos: `src/app/(staff)/app/fila/page.tsx`, `src/components/queue/BarberQueue.tsx`,
   `src/lib/actions/queue.ts` (`getMyQueue`)
@@ -231,7 +248,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   turno tomado por otro desaparece en vivo; etiqueta "Avisar" a 2 de distancia (`REQ-009.1`);
   `REQ-006.4` indicador de estado.
 
-### [~] T-022 · Acciones del barbero: llamar, en la silla, terminado, no llegó
+### [x] T-022 · Acciones del barbero: llamar, en la silla, terminado, no llegó
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1`. **Arreglo en la app** (`REQ-011.3`): sin red, `run()` mostraba "Revisa tu
+  conexión" y luego `reload()` fallaba en el `finally` y Next tumbaba la página; ahora `reload`
+  conserva el último estado (BarberQueue y OwnerQueue).
 - REQ: REQ-007.1–7.6, REQ-008.1–8.4, REQ-011.3–11.4
 - Archivos: `src/components/queue/BarberActions.tsx`, `src/lib/actions/queue.ts` (`callNext`,
   `startService`, `finishService`, `markNoShow`), `src/lib/net/retry.ts`
@@ -240,14 +260,16 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   (reloj simulado); `REQ-008.4` cliente marcado vuelve al final; `REQ-011.3` falla de red →
   reintento 3 veces, mensaje y sin cambio de estado (ruta interceptada en Playwright).
 
-### [~] T-023 · Pausa del barbero con reasignación
+### [x] T-023 · Pausa del barbero con reasignación
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1`.
 - REQ: REQ-010.1–10.5
 - Archivos: `src/components/queue/PauseSheet.tsx`, `src/lib/actions/queue.ts` (`setMyStatus`)
 - Terminado: E2E `REQ-010.2` hoja con N clientes y dos opciones; opción (b) los pasa a
   "cualquiera" conservando posición y el cliente ve el aviso `REQ-010.3`; `REQ-010.5` bloqueada
   con turno llamado; `REQ-010.1` formulario del cliente lo muestra "En pausa".
 
-### [~] T-024 · Aviso por WhatsApp (`wa.me`) y canal de notificaciones
+### [x] T-024 · Aviso por WhatsApp (`wa.me`) y canal de notificaciones
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1`.
 - Nota (2026-10-23): T-021..T-024 construidas con `tests/e2e/barber-flow.spec.ts`; E2E pendiente del proyecto remoto.
   Migración 0010_notify.sql (mark_ticket_notified) agregada: el barbero no tiene update directo sobre tickets.
 - REQ: REQ-009.2–9.5, REQ-033.1 (uso), REQ-020.5 (respeto a "No contactar")
@@ -257,7 +279,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   E2E `REQ-009.3` tras volver, etiqueta "Avisado ✓" y `notified_at` guardado; botón en
   cualquier posición con mensaje adaptado `REQ-009.4`; sin botón si `do_not_contact`.
 
-### [~] T-025 · Vista del dueño sobre la fila e intervenciones
+### [x] T-025 · Vista del dueño sobre la fila e intervenciones
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1` (`owner-queue.spec.ts`). Las pruebas preparan su estado: `tests/e2e/global-setup.ts`
+  deja La 33 con horario 00:00–23:59 y `resetQueue()` vacía la fila y deja a los barberos
+  presentes antes de cada prueba (antes dependían de la hora y de pruebas previas).
 - REQ: REQ-012.1–12.5, REQ-010.6, REQ-016.4 (presente hoy desde la fila)
 - Archivos: `src/app/(staff)/admin/fila/page.tsx`, `src/components/queue/OwnerQueue.tsx`,
   `src/components/queue/TicketMenu.tsx`, `src/components/queue/ManualTicketSheet.tsx`,
@@ -267,23 +292,27 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   ficha; `REQ-012.4` "Cerrar fila por hoy" cancela y bloquea `/[slug]`; `REQ-012.5` dueño con
   silla opera en `/app/fila`; `REQ-010.6` pausar/reactivar barbero.
 
-### [~] T-026 · QR, enlace y compartir
+### [x] T-026 · QR, enlace y compartir
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1`. Desvío en la prueba: WebKit no admite el permiso `clipboard-write`; en
+  iPhone se verifica el botón "Enlace copiado ✓" y en Android también el contenido.
 - REQ: REQ-001.2, REQ-001.3
 - Archivos: `src/app/(staff)/admin/qr/page.tsx`, `src/components/admin/QrCard.tsx` (librería
   `qrcode`), uso de plantilla `share_queue`
 - Terminado: E2E descarga PNG (nombre `qr-<slug>.png`, ≥ 1024 px), "Copiar enlace", botón
   WhatsApp con `wa.me` y texto de la plantilla.
 
-### [~] T-027 · Pantalla pública para el televisor
+### [x] T-027 · Pantalla pública para el televisor
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1` (`screen.spec.ts`; `E2E_SCREEN_KEY` la lee `global-setup.ts` de la base).
 - REQ: REQ-013.1–13.5
 - Archivos: `src/app/(public)/[slug]/pantalla/page.tsx`, `src/components/queue/ScreenBoard.tsx`,
   `src/lib/actions/public.ts` (`getScreenQueue`), `src/lib/domain/name.ts` (`shortName`)
 - Terminado: unit `REQ-013.2` "Juan Pérez" → "Juan P."; E2E clave incorrecta → 404; resaltado
   30 s al llamar; sin login y sin scroll a 1080p; cabecera `noindex`.
 
-### [~] T-028 ·
+### [x] T-028 · Aviso de privacidad: versiones y re-aceptación
+- Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1` (`privacy.spec.ts`).
 - Nota (2026-10-23): el registro de la versión aceptada en la ficha del cliente (REQ-002.3)
-  se completa en T-031 cuando exista `customers`; join_queue ya recibe `p_privacy_version`. Aviso de privacidad: versiones y re-aceptación
+  se completa en T-031 cuando exista `customers`; join_queue ya recibe `p_privacy_version`.
 - REQ: REQ-002.3, REQ-002.5
 - Archivos: `src/app/(staff)/admin/privacidad/page.tsx`, migración `0010_privacy.sql`
   (`publish_privacy_version`), ajuste de `join_queue` (registra versión), plantilla base del
@@ -304,6 +333,8 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   (REQ-002.3, REQ-003.4, REQ-008.3): dependen de la tabla `customers` que crea T-031 y se cubren
   allí. Migración 0012 refuerza REQ-007.8 en la base (el barbero solo llama al primero).
   Pendiente para cerrar: correr los E2E y Lighthouse contra el proyecto remoto y la demo con Henry.
+- Nota (2026-10-24): E2E de H0/H1 en verde en local (90/90, Pixel 7 + iPhone 13). Faltan Lighthouse
+  (T-029), la demo en celular real y la aprobación de Henry.
 - REQ: REQ-001…REQ-014, REQ-030…REQ-034, NFR-001/002/003/004/006/007/008/009/012
 - Archivos: `specs/traceability.md` (generado por `scripts/traceability.ts` + revisión manual)
 - Terminado: ningún CA de REQ-001…REQ-014 sin prueba; CI en verde; demo en celular real con la

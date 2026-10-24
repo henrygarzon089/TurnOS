@@ -13,18 +13,24 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 
 ## Hecho
 
-| Hito                    | Tareas      | Estado                                                                            |
-| ----------------------- | ----------- | --------------------------------------------------------------------------------- |
-| H0 Cimientos            | T-001…T-010 | T-001–005, 009 `[x]`; T-006, 007, 008, 010 `[~]` (E2E pendiente)                  |
-| H1 Fila virtual         | T-011…T-030 | T-011–017 `[x]`; T-018–030 `[~]` (E2E/Lighthouse pendiente). Trazabilidad 144/144 |
-| H2 Clientes y fidelidad | T-031…T-039 | T-031–T-038 `[x]`; T-039 `[~]` (falta CI, demo y aprobación de Henry)             |
-| H3 Caja y comisiones    | T-040…T-050 | sin empezar                                                                       |
+| Hito                    | Tareas      | Estado                                                                              |
+| ----------------------- | ----------- | ----------------------------------------------------------------------------------- |
+| H0 Cimientos            | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (falta validar el CI en GitHub)                        |
+| H1 Fila virtual         | T-011…T-030 | T-011–028 `[x]`; T-029 `[ ]` (Lighthouse); T-030 `[~]` (demo y aprobación). 144/144 |
+| H2 Clientes y fidelidad | T-031…T-039 | T-031–T-038 `[x]`; T-039 `[~]` (falta CI, demo y aprobación de Henry)               |
+| H3 Caja y comisiones    | T-040…T-050 | sin empezar                                                                         |
 
 Pruebas en verde (Mac, 2026-10-24): 303 pgTAP · 58 unitarias · 27 integración · E2E de H2: cada spec en verde por
 separado; la corrida conjunta (32) está pendiente de repetir sin la suite de H1 en paralelo. Trazabilidad Hito 2: 0 CA sin prueba (`pnpm trace --hito=2`).
-Los E2E de H1 se corrieron por primera vez en la Mac: algunos fallan por selectores y por depender
-de la hora/presencia de barberos (pendiente de las tareas `[~]`).
-E2E escritos (Playwright, Pixel 7 + iPhone 13): 10 archivos, ~50 casos, pendientes de ejecutar.
+E2E de H0/H1 (2026-10-24): 90/90 en verde (10 specs × Pixel 7 + iPhone 13) contra `supabase start`,
+`--workers=1`. `tests/e2e/global-setup.ts` deja La 33 abierta 00:00–23:59 (no se restaura; `supabase
+db reset` vuelve al horario del seed) y `resetQueue()` vacía la fila, borra los contadores `ip:*` de
+`rate_limits` y deja presentes a los barberos antes de cada prueba. No correr dos suites de
+Playwright a la vez contra la misma base: se cancelan los turnos entre sí.
+Arreglos de la app que salieron al correrlos: 0020 (cierre + 60 min daba la vuelta a medianoche) y
+`reload` de BarberQueue/OwnerQueue (sin red tumbaba la página, REQ-011.3).
+Tras `supabase db reset`, `supabase/seed-local-auth.sql` (en `config.toml`) deja listos los usuarios de
+Auth del seed; `pnpm db:seed-auth` lo reaplica a mano.
 
 ### Migraciones (`supabase/migrations/`)
 
