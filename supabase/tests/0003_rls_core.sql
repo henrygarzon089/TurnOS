@@ -116,7 +116,8 @@ select is((select status::text from barbers where id = '0000000b-0000-0000-0000-
 
 -- ------------------------------------------------- service_role salta RLS ----
 select auth.test_login(null, 'service_role');
-select is((select count(*)::int from businesses), 2, 'ADR-009 service_role ve todos los negocios');
+select is((select count(*)::int from businesses where slug in ('barberia-a','barberia-b')), 2,
+  'ADR-009 service_role ve todos los negocios');
 select auth.test_logout();
 
 select * from finish();

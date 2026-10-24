@@ -101,7 +101,8 @@ select lives_ok(
   'REQ-015.1 servicio válido'
 );
 select is(
-  (select is_active from services where name = 'Corte'), true,
+  (select s.is_active from services s join businesses b on b.id = s.business_id
+   where s.name = 'Corte' and b.slug = 'barberia-prueba'), true,
   'REQ-015.1 servicio activo por defecto'
 );
 

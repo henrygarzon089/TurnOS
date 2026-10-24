@@ -29,7 +29,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ## Hito 0 — Cimientos
 
-### [ ] T-001 · Inicializar el proyecto Next.js
+### [x] T-001 · Inicializar el proyecto Next.js
 - REQ: NFR-006, NFR-009 (base), REQ-032 (preparación)
 - Archivos: `package.json`, `next.config.ts`, `tsconfig.json`, `tailwind.config.ts`,
   `src/app/layout.tsx`, `src/app/page.tsx`, `.eslintrc`, `.prettierrc`, `.env.example`,
@@ -37,7 +37,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Terminado: `pnpm dev` levanta la app; `pnpm lint && pnpm typecheck` limpios; `<html lang="es">`;
   fuente base 16 px; Vitest configurado con una prueba de humo (`tests/unit/smoke.test.ts`).
 
-### [ ] T-002 · Supabase local y estructura de migraciones
+### [x] T-002 · Supabase local y estructura de migraciones
+- Nota (2026-10-23): sin Docker en el entorno de construcción, la base local es Postgres 16 +
+  shim (`supabase/local/0000_supabase_shim.sql`), ver ADR-015. `supabase start` sigue siendo
+  válido en una máquina con Docker.
 - REQ: NFR-010, NFR-013
 - Archivos: `supabase/config.toml`, `supabase/migrations/0001_extensions.sql` (pgcrypto, pg_trgm,
   pg_cron), `supabase/seed.sql` (vacío), `scripts/db-reset.sh`, `src/lib/supabase/{client,server,admin}.ts`
@@ -45,7 +48,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `supabase test db` ejecuta una prueba de humo; variables en `.env.example`; `admin.ts` solo
   importable en servidor (guard `server-only`).
 
-### [ ] T-003 · Dominio puro: dinero, celular, tiempo
+### [x] T-003 · Dominio puro: dinero, celular, tiempo
 - REQ: REQ-003.2, NFR-006, REQ-004.5 (redondeo)
 - Archivos: `src/lib/domain/money.ts` (`formatCOP`), `phone.ts` (`normalizePhoneCO`,
   `maskPhone`), `time.ts` (`ceil5`, `businessDayBogota`, `nowBogota`), pruebas en `tests/unit/`
@@ -53,7 +56,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `NFR-006` (`formatCOP(25000) === '$ 25.000'`, nunca decimales), `businessDayBogota` con casos
   de medianoche UTC vs. Bogotá.
 
-### [ ] T-004 · Migración: negocio, horario, membresías, barberos, servicios, productos
+### [x] T-004 · Migración: negocio, horario, membresías, barberos, servicios, productos
 - REQ: REQ-015, REQ-016.1–16.2, REQ-017.1, REQ-031.3
 - Archivos: `supabase/migrations/0002_core.sql` (tablas `businesses`, `business_hours`,
   `memberships`, `barbers`, `invitations`, `services`, `products`, `message_templates`,
@@ -62,7 +65,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   0–100, `slug` único); `create_business()` crea negocio + membresía owner + plantillas por
   defecto + aviso v1.
 
-### [ ] T-005 · Funciones de seguridad y RLS del núcleo
+### [x] T-005 · Funciones de seguridad y RLS del núcleo
 - REQ: REQ-031.1, REQ-031.4, NFR-004
 - Archivos: `supabase/migrations/0003_rls_core.sql` (`auth_business_ids`, `is_owner_of`,
   `my_barber_id`, políticas de `design.md` §2.4 para las tablas de T-004),
@@ -99,7 +102,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   lo oculta de nuevos (prueba de integración `REQ-015.2`); plantillas con vista previa
   (`REQ-033.1`); horario por día (`REQ-017.1`); "presente hoy" por barbero (`REQ-016.4`).
 
-### [ ] T-009 · Seed: barbería de ejemplo
+### [x] T-009 · Seed: barbería de ejemplo
+- Nota (2026-10-23): hecha antes de T-006–T-008 porque no depende de ellas. Las partes del seed
+  que necesitan tablas posteriores (clientes con historial, fila con turnos, ventas) se agregan
+  en T-011, T-031 y T-040; la prueba `0009_seed.sql` crece con ellas.
 - REQ: REQ-034
 - Archivos: `supabase/seed.sql`, `scripts/seed-users.ts` (crea usuarios Auth: dueño +
   5 barberos con PIN)
