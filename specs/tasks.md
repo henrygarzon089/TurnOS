@@ -171,7 +171,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `called` tras cierre + 60 min con motivo `closing` y no toca `in_service`; `REQ-004.7` token
   inexistente → `null`; `get_ticket_by_token` no expone otros celulares.
 
-### [ ] T-015 · Broadcast Realtime desde triggers y hook de suscripción
+### [~] T-015 ·
+- Nota (2026-10-23): triggers, función de suscripción y pruebas listas; la medición < 3 s contra
+  Realtime real (NFR-002) se hace con el proyecto remoto. Broadcast Realtime desde triggers y hook de suscripción
 - REQ: REQ-004.2, REQ-006.3, REQ-011.1–11.2, NFR-002, ADR-008
 - Archivos: `supabase/migrations/0009_realtime.sql` (triggers `tickets_after_change`,
   `barbers_after_status_change` → `realtime.send`), `src/lib/realtime/use-queue-subscription.ts`,
