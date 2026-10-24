@@ -395,3 +395,32 @@ export async function updateBusiness(_prev: FormState, formData: FormData): Prom
     .eq("id", session.business.id);
   return error ? { error: "No se pudo guardar." } : { ok: true };
 }
+
+// ================================================================ T-028: aviso de privacidad ====
+
+/** REQ-002.5: publica una versión nueva del aviso; los clientes vuelven a aceptar. */
+export async function publishPrivacyVersion(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { error: "Solo el dueño puede publicar el aviso." };
+  const body = formData.get("body");
+  if (typeof body !== "string" || body.trim().length < 50) {
+    return { error: "El aviso debe tener al menos 50 caracteres." };
+  }
+  const supabase = await createSupabaseServerClient();
+  const { data: last } = await supabase
+    .from("privacy_policy_versions")
+    .select("version")
+    .eq("business_id", session.business.id)
+    .order("version", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const { error } = await supabase.from("privacy_policy_versions").insert({
+    business_id: session.business.id,
+    version: (last?.version ?? 0) + 1,
+    body: body.trim(),
+  });
+  return error ? { error: "No se pudo publicar." } : { ok: true };
+}

@@ -281,7 +281,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Terminado: unit `REQ-013.2` "Juan Pérez" → "Juan P."; E2E clave incorrecta → 404; resaltado
   30 s al llamar; sin login y sin scroll a 1080p; cabecera `noindex`.
 
-### [ ] T-028 · Aviso de privacidad: versiones y re-aceptación
+### [~] T-028 ·
+- Nota (2026-10-23): el registro de la versión aceptada en la ficha del cliente (REQ-002.3)
+  se completa en T-031 cuando exista `customers`; join_queue ya recibe `p_privacy_version`. Aviso de privacidad: versiones y re-aceptación
 - REQ: REQ-002.3, REQ-002.5
 - Archivos: `src/app/(staff)/admin/privacidad/page.tsx`, migración `0010_privacy.sql`
   (`publish_privacy_version`), ajuste de `join_queue` (registra versión), plantilla base del

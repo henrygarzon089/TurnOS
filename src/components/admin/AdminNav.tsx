@@ -11,6 +11,7 @@ const ITEMS: { href: string; label: string }[] = [
   { href: "/admin/qr", label: "QR" },
   { href: "/admin/mensajes", label: "Mensajes" },
   { href: "/admin/negocio", label: "Negocio" },
+  { href: "/admin/privacidad", label: "Privacidad" },
 ];
 
 /** Menú del dueño: chips desplazables, pensado para pulgar (NFR-008). */
