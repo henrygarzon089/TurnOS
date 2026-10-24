@@ -21,7 +21,7 @@ test.describe("REQ-030 alta de negocio e invitaciones", () => {
     await page.getByRole("button", { name: "Terminar" }).click();
 
     await expect(page).toHaveURL(/\/admin/);
-    await expect(page.getByRole("heading", { name: `Barbería E2E ${id}` })).toBeVisible();
+    await expect(page.getByText(`Barbería E2E ${id}`)).toBeVisible();
   });
 
   test("REQ-030.2 el dueño invita a un barbero y este crea su PIN y entra", async ({

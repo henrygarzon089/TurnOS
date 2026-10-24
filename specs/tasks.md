@@ -257,7 +257,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   E2E `REQ-009.3` tras volver, etiqueta "Avisado ✓" y `notified_at` guardado; botón en
   cualquier posición con mensaje adaptado `REQ-009.4`; sin botón si `do_not_contact`.
 
-### [ ] T-025 · Vista del dueño sobre la fila e intervenciones
+### [~] T-025 · Vista del dueño sobre la fila e intervenciones
 - REQ: REQ-012.1–12.5, REQ-010.6, REQ-016.4 (presente hoy desde la fila)
 - Archivos: `src/app/(staff)/admin/fila/page.tsx`, `src/components/queue/OwnerQueue.tsx`,
   `src/components/queue/TicketMenu.tsx`, `src/components/queue/ManualTicketSheet.tsx`,

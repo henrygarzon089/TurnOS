@@ -223,3 +223,219 @@ export async function markNotified(ticketId: string): Promise<ActionResult> {
   const { error } = await supabase.rpc("mark_ticket_notified", { p_ticket_id: ticketId });
   return error ? mapError(error) : { ok: true };
 }
+
+// ================================================================ T-025: vista del dueño ====
+
+export type OwnerBarber = {
+  id: string;
+  name: string;
+  status: "available" | "busy" | "paused" | "off";
+  isActive: boolean;
+};
+
+export type OwnerQueueView = {
+  business: {
+    id: string;
+    name: string;
+    slug: string;
+    queueOverride: "auto" | "open" | "closed";
+    isOpen: boolean;
+  };
+  barbers: OwnerBarber[];
+  active: QueueTicket[]; // waiting + called + in_service, en orden
+  services: { id: string; name: string; durationMin: number }[];
+  pendingPayments: QueueTicket[];
+  now: string;
+};
+
+/** REQ-012.1: toda la fila del negocio. */
+export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  const supabase = await createSupabaseServerClient();
+  const biz = session.business.id;
+
+  const [bizRes, barbersRes, ticketsRes, servicesRes, openRes, pendingRes] = await Promise.all([
+    supabase.from("businesses").select("queue_override, queue_override_day").eq("id", biz).single(),
+    supabase
+      .from("barbers")
+      .select("id, display_name, status, is_active")
+      .eq("business_id", biz)
+      .order("sort_order"),
+    supabase
+      .from("tickets")
+      .select(TICKET_COLS)
+      .eq("business_id", biz)
+      .in("status", ["waiting", "called", "in_service"])
+      .order("queue_order"),
+    supabase
+      .from("services")
+      .select("id, name, duration_min")
+      .eq("business_id", biz)
+      .eq("is_active", true)
+      .order("sort_order"),
+    supabase.rpc("is_business_open", { p_business_id: biz }),
+    supabase
+      .from("tickets")
+      .select(TICKET_COLS)
+      .eq("business_id", biz)
+      .eq("status", "done")
+      .eq("payment_status", "pending")
+      .order("finished_at", { ascending: false })
+      .limit(20),
+  ]);
+
+  const rows = (ticketsRes.data ?? []) as TicketRow[];
+  const pos = positions(
+    rows
+      .filter((r) => r.status === "waiting")
+      .map((r) => ({
+        id: r.id,
+        queueOrder: Number(r.queue_order),
+        durationMin: r.service_duration_min,
+        preferredBarberId: r.preferred_barber_id,
+      })),
+  );
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" });
+  const override =
+    bizRes.data?.queue_override_day === today
+      ? (bizRes.data?.queue_override as "auto" | "open" | "closed")
+      : "auto";
+
+  return {
+    business: { ...session.business, queueOverride: override, isOpen: Boolean(openRes.data) },
+    barbers: (barbersRes.data ?? []).map((b) => ({
+      id: b.id,
+      name: b.display_name,
+      status: b.status,
+      isActive: b.is_active,
+    })),
+    active: rows.map((r) => toTicket(r, (pos.get(r.id) ?? 1) - 1)),
+    services: (servicesRes.data ?? []).map((s) => ({
+      id: s.id,
+      name: s.name,
+      durationMin: s.duration_min,
+    })),
+    pendingPayments: ((pendingRes.data ?? []) as TicketRow[]).map((r) => toTicket(r, 0)),
+    now: new Date().toISOString(),
+  };
+}
+
+async function ownerRpc(fn: string, args: Record<string, unknown>): Promise<ActionResult> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { ok: false, error: "Solo el dueño puede hacer esto." };
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc(fn, args);
+  return error ? mapError(error) : { ok: true };
+}
+
+/** REQ-012.2: llamar un turno específico con un barbero. */
+export async function callTicket(ticketId: string, barberId: string) {
+  return ownerRpc("transition_ticket", {
+    p_ticket_id: ticketId,
+    p_to: "called",
+    p_actor: "owner",
+    p_reason: null,
+    p_barber_id: barberId,
+  });
+}
+/** REQ-012.2: devolver a la fila. */
+export async function uncallTicket(ticketId: string) {
+  return ownerRpc("transition_ticket", {
+    p_ticket_id: ticketId,
+    p_to: "waiting",
+    p_actor: "owner",
+  });
+}
+/** REQ-012.2: cancelar (motivo negocio). */
+export async function cancelTicket(ticketId: string) {
+  return ownerRpc("transition_ticket", {
+    p_ticket_id: ticketId,
+    p_to: "cancelled",
+    p_actor: "owner",
+    p_reason: "business",
+  });
+}
+/** REQ-012.2: reasignar barbero preferido (null = el que esté libre). Solo en espera. */
+export async function reassignTicket(
+  ticketId: string,
+  barberId: string | null,
+): Promise<ActionResult> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { ok: false, error: "Solo el dueño puede hacer esto." };
+  const supabase = await createSupabaseServerClient();
+  const { error, count } = await supabase
+    .from("tickets")
+    .update({ preferred_barber_id: barberId }, { count: "exact" })
+    .eq("id", ticketId)
+    .eq("status", "waiting");
+  if (error) return mapError(error);
+  if (!count) return { ok: false, error: "Solo se reasignan turnos en espera." };
+  return { ok: true };
+}
+/** REQ-012.2 / ADR-012: mover después de otro turno (null = al principio). */
+export async function moveTicket(ticketId: string, afterTicketId: string | null) {
+  return ownerRpc("reorder_ticket", { p_ticket_id: ticketId, p_after_ticket_id: afterTicketId });
+}
+/** REQ-012.3 */
+export async function addManualTicket(input: {
+  name: string;
+  phone?: string;
+  serviceId: string;
+  preferredBarberId?: string | null;
+}): Promise<ActionResult> {
+  const session = await getStaffSession();
+  if (!session) return { ok: false, error: "Sesión vencida." };
+  const name = input.name.trim();
+  if (name.length < 1 || name.length > 60)
+    return { ok: false, error: "Escribe el nombre del cliente." };
+  let phone: string | null = null;
+  if (input.phone && input.phone.trim()) {
+    const { normalizePhoneCO } = await import("@/lib/domain/phone");
+    phone = normalizePhoneCO(input.phone);
+    if (!phone) return { ok: false, error: "Celular inválido (10 dígitos, empieza por 3)." };
+  }
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("add_manual_ticket", {
+    p_business_id: session.business.id,
+    p_name: name,
+    p_phone: phone,
+    p_service_id: input.serviceId,
+    p_preferred_barber_id: input.preferredBarberId ?? null,
+  });
+  if (error)
+    return error.code === "23505"
+      ? { ok: false, error: "Ese celular ya tiene un turno activo." }
+      : mapError(error);
+  return { ok: true };
+}
+/** REQ-012.4: abrir/cerrar la fila hoy. */
+export async function setQueueOverride(value: "auto" | "open" | "closed"): Promise<ActionResult> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { ok: false, error: "Solo el dueño puede hacer esto." };
+  const supabase = await createSupabaseServerClient();
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" });
+  const { error } = await supabase
+    .from("businesses")
+    .update({ queue_override: value, queue_override_day: value === "auto" ? null : today })
+    .eq("id", session.business.id);
+  if (error) return mapError(error);
+  if (value === "closed") {
+    // Cancela lo que quede en espera/llamado (REQ-014.1) — la función corre con service_role en cron;
+    // aquí la invoca el dueño: transition por cada turno activo.
+    const { data } = await supabase
+      .from("tickets")
+      .select("id")
+      .eq("business_id", session.business.id)
+      .in("status", ["waiting", "called"]);
+    for (const t of data ?? []) {
+      await supabase.rpc("transition_ticket", {
+        p_ticket_id: t.id,
+        p_to: "cancelled",
+        p_actor: "owner",
+        p_reason: "closing",
+      });
+    }
+  }
+  return { ok: true };
+}

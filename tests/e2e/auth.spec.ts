@@ -4,7 +4,7 @@ import { loginAsBarber, loginAsOwner, SEED } from "./helpers";
 test.describe("REQ-030 acceso del personal", () => {
   test("REQ-030.1 dueño entra con correo y contraseña y llega a /admin", async ({ page }) => {
     await loginAsOwner(page);
-    await expect(page.getByRole("heading", { name: "Barbería La 33" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Fila" })).toBeVisible();
     await expect(page.getByText("Dueño")).toBeVisible();
   });
 
