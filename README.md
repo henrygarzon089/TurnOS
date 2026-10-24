@@ -21,15 +21,15 @@ PWA mobile-first · 100 % en español, COP sin decimales, `America/Bogota`.
 
 ## Comandos
 
-| Comando | Qué hace |
-|---|---|
-| `pnpm dev` | servidor de desarrollo en http://localhost:3000 |
-| `pnpm lint` / `pnpm typecheck` / `pnpm format` | calidad de código |
-| `pnpm test` | pruebas unitarias (Vitest) |
-| `pnpm test:integration` | pruebas de integración contra la base local |
-| `pnpm db:local` | levanta/reinicia Postgres local con shim de Supabase + migraciones + seed |
-| `pnpm db:test` | pruebas pgTAP de las migraciones |
-| `pnpm build` | build de producción |
+| Comando                                        | Qué hace                                                                  |
+| ---------------------------------------------- | ------------------------------------------------------------------------- |
+| `pnpm dev`                                     | servidor de desarrollo en http://localhost:3000                           |
+| `pnpm lint` / `pnpm typecheck` / `pnpm format` | calidad de código                                                         |
+| `pnpm test`                                    | pruebas unitarias (Vitest)                                                |
+| `pnpm test:integration`                        | pruebas de integración contra la base local                               |
+| `pnpm db:local`                                | levanta/reinicia Postgres local con shim de Supabase + migraciones + seed |
+| `pnpm db:test`                                 | pruebas pgTAP de las migraciones                                          |
+| `pnpm build`                                   | build de producción                                                       |
 
 ## Variables de entorno
 
