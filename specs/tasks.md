@@ -559,13 +559,21 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   nombre sin elegir (ADR-018). `/admin/caja` se crea aquí con el botón; los totales llegan en
   T-045. `tests/e2e/new-sale.spec.ts` (3) verifica montos y comisión en la base.
 
-### [ ] T-045 · Caja de hoy y anulación
+### [x] T-045 · Caja de hoy y anulación — 2026-10-24
 - REQ: REQ-026.1–26.2, REQ-027.1
 - Archivos: `src/app/(staff)/admin/caja/page.tsx`, `src/components/cash/CashDay.tsx`,
   `src/lib/actions/cash.ts` (`getCashDay`, `voidSale`), migración `0017_cash_summary.sql`
   (`cash_day_summary`)
 - Terminado: E2E totales por medio y por barbero en vivo con el seed; anular con motivo excluye
   de totales y queda visible tachada.
+- Notas: migración real `0025_cash_summary.sql`: `cash_day_summary(business, día)` (solo dueño;
+  fórmulas de design §5.2; pgTAP 0025 reproduce el ejemplo de cierre exacto: Efectivo 32.000 ·
+  Nequi 25.000 · Tarjeta 40.000 · total 97.000 · Juan 30.000 · Pedro 32.500) y un trigger que
+  avisa `queue_changed` (kind `sale`) por el canal del negocio en cada venta o anulación: "en
+  vivo" con el mismo mecanismo de ADR-008. El seed no trae ventas (serían de un día fijo): el E2E
+  registra una venta "desde otro celular" y verifica que la caja cambie sin recargar. REQ-026.2
+  (no anular en día cerrado) ya lo cubren el trigger de 0021 y su pgTAP; la UI oculta "Anular" y
+  "Nueva venta" con la caja cerrada.
 
 ### [ ] T-046 · Cierre de caja y reapertura
 - REQ: REQ-027.2–27.6

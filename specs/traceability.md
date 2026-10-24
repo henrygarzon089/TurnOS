@@ -124,19 +124,19 @@
 | REQ-025.3 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (pendiente) | 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
 | REQ-025.4 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (pendiente) | commission.test.ts, 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
 | REQ-025.5 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (pendiente) | — | sin prueba |
-| REQ-026.1 | Anular una venta | T-040 (hecha), T-045 (pendiente) | 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
-| REQ-026.2 | Anular una venta | T-040 (hecha), T-045 (pendiente) | 0021_cash.sql | prueba escrita |
-| REQ-027.1 | Cierre de caja diario | T-040 (hecha), T-045 (pendiente), T-046 (pendiente) | — | sin prueba |
-| REQ-027.2 | Cierre de caja diario | T-040 (hecha), T-045 (pendiente), T-046 (pendiente) | 0021_cash.sql | prueba escrita |
-| REQ-027.3 | Cierre de caja diario | T-040 (hecha), T-045 (pendiente), T-046 (pendiente) | 0021_cash.sql | prueba escrita |
-| REQ-027.4 | Cierre de caja diario | T-040 (hecha), T-045 (pendiente), T-046 (pendiente) | — | sin prueba |
-| REQ-027.5 | Cierre de caja diario | T-040 (hecha), T-045 (pendiente), T-046 (pendiente) | time.test.ts, 0005_queue.sql, 0022_register_sale.sql | prueba escrita |
-| REQ-027.6 | Cierre de caja diario | T-040 (hecha), T-045 (pendiente), T-046 (pendiente) | — | sin prueba |
+| REQ-026.1 | Anular una venta | T-040 (hecha), T-045 (hecha) | cash-day.spec.ts, 0021_cash.sql, 0022_register_sale.sql, 0025_cash_summary.sql | cubierto |
+| REQ-026.2 | Anular una venta | T-040 (hecha), T-045 (hecha) | 0021_cash.sql | cubierto |
+| REQ-027.1 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (pendiente) | cash-day.spec.ts, 0025_cash_summary.sql | prueba escrita |
+| REQ-027.2 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (pendiente) | 0021_cash.sql, 0025_cash_summary.sql | prueba escrita |
+| REQ-027.3 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (pendiente) | 0021_cash.sql | prueba escrita |
+| REQ-027.4 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (pendiente) | — | sin prueba |
+| REQ-027.5 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (pendiente) | time.test.ts, 0005_queue.sql, 0022_register_sale.sql, 0025_cash_summary.sql | prueba escrita |
+| REQ-027.6 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (pendiente) | — | sin prueba |
 | REQ-028.1 | Resumen semanal | T-011 (hecha), T-048 (pendiente) | time.test.ts | prueba escrita |
 | REQ-028.2 | Resumen semanal | T-011 (hecha), T-048 (pendiente) | — | sin prueba |
 | REQ-028.3 | Resumen semanal | T-011 (hecha), T-048 (pendiente) | — | sin prueba |
 | REQ-028.4 | Resumen semanal | T-011 (hecha), T-048 (pendiente) | — | sin prueba |
-| REQ-029.1 | Vista del barbero sobre sus números | T-042 (hecha), T-047 (pendiente), T-050 (pendiente) | rls-cash.test.ts | prueba escrita |
+| REQ-029.1 | Vista del barbero sobre sus números | T-042 (hecha), T-047 (pendiente), T-050 (pendiente) | rls-cash.test.ts, 0025_cash_summary.sql | prueba escrita |
 | REQ-030.1 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts, onboarding.spec.ts, 0002_core.sql | cubierto |
 | REQ-030.2 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | onboarding.spec.ts, 0004_invitations.sql | cubierto |
 | REQ-030.3 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts | cubierto |

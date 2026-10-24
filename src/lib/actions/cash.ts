@@ -220,3 +220,68 @@ export async function markUnpaid(ticketId: string, reason: string): Promise<Cash
   });
   return error ? { ok: false, error: mapError(error) } : { ok: true };
 }
+
+// ================================================================ T-045: caja de hoy ====
+
+export type CashDaySummary = {
+  day: string;
+  byMethod: Record<PaymentMethod, number>;
+  total: number;
+  services: number;
+  products: number;
+  rewards: number;
+  commission: number;
+  cashExpected: number;
+  barbers: {
+    barberId: string;
+    name: string;
+    pct: number;
+    services: number;
+    sold: number;
+    commission: number;
+    business: number;
+  }[];
+  sales: {
+    id: string;
+    at: string;
+    status: "active" | "voided";
+    voidedReason: string | null;
+    total: number;
+    commission: number;
+    barberName: string | null;
+    customerName: string | null;
+    items: string;
+    methods: string;
+  }[];
+  closure: {
+    id: string;
+    closedAt: string;
+    cashCounted: number;
+    cashExpected: number;
+    difference: number;
+    totals: unknown;
+  } | null;
+};
+
+/** REQ-027.1 caja del día (hoy por defecto; REQ-027.4 días pasados en T-046). Solo dueño. */
+export async function getCashDay(day?: string): Promise<CashDaySummary | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  if (day && !/^\d{4}-\d{2}-\d{2}$/.test(day)) return null;
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("cash_day_summary", {
+    p_business_id: session.business.id,
+    p_day: day ?? null,
+  });
+  return error ? null : (data as CashDaySummary);
+}
+
+/** REQ-026.1 anular una venta del día con motivo (solo dueño). */
+export async function voidSale(saleId: string, reason: string): Promise<CashResult> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { ok: false, error: ERRORS.FORBIDDEN };
+  if (!z.uuid().safeParse(saleId).success) return { ok: false, error: "Venta no válida." };
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("void_sale", { p_sale_id: saleId, p_reason: reason });
+  return error ? { ok: false, error: mapError(error) } : { ok: true };
+}
