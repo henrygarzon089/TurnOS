@@ -20,8 +20,8 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 | H2 Clientes y fidelidad | T-031…T-039 | T-031–T-038 `[x]`; T-039 `[~]` (falta CI, demo y aprobación de Henry)             |
 | H3 Caja y comisiones    | T-040…T-050 | sin empezar                                                                       |
 
-Pruebas en verde (Mac, 2026-10-24): 303 pgTAP · 58 unitarias · 27 integración · E2E de H2 32/32 (sin
-otra suite corriendo a la vez). Trazabilidad Hito 2: 0 CA sin prueba (`pnpm trace --hito=2`).
+Pruebas en verde (Mac, 2026-10-24): 303 pgTAP · 58 unitarias · 27 integración · E2E de H2: cada spec en verde por
+separado; la corrida conjunta (32) está pendiente de repetir sin la suite de H1 en paralelo. Trazabilidad Hito 2: 0 CA sin prueba (`pnpm trace --hito=2`).
 Los E2E de H1 se corrieron por primera vez en la Mac: algunos fallan por selectores y por depender
 de la hora/presencia de barberos (pendiente de las tareas `[~]`).
 E2E escritos (Playwright, Pixel 7 + iPhone 13): 10 archivos, ~50 casos, pendientes de ejecutar.
