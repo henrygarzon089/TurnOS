@@ -64,3 +64,50 @@ jobs:
         with:
           name: playwright-report
           path: test-results
+
+  lighthouse:
+    # NFR-001 / REQ-032.2: Lighthouse móvil (rendimiento ≥ 80, accesibilidad ≥ 90) en /[slug],
+    # /t/[token] y /app/fila, sobre un build de producción contra un Supabase local del CI
+    # (supabase start aplica migraciones + seed; no necesita secretos).
+    name: Lighthouse móvil
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Supabase local (migraciones + seed)
+        run: supabase start -x storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+      - name: Variables de la app desde supabase status
+        run: |
+          supabase status -o env > /tmp/sb.env
+          set -a; . /tmp/sb.env; set +a
+          echo "::add-mask::$SERVICE_ROLE_KEY"
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY"
+            echo "NEXT_PUBLIC_APP_URL=http://localhost:3100"
+          } >> "$GITHUB_ENV"
+      - run: pnpm build
+      - name: Servidor de producción
+        run: |
+          pnpm start -p 3100 > /tmp/next.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:3100/salud >/dev/null && break; sleep 1; done
+          curl -sf http://localhost:3100/salud
+      - run: pnpm lighthouse
+        env:
+          LH_BASE_URL: http://localhost:3100
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse
+          path: .lighthouse

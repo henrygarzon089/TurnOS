@@ -5,7 +5,8 @@
  *   LH_BASE_URL=http://localhost:3100 pnpm lighthouse
  *
  * Mide /[slug], /t/[token] y /app/fila (con la sesión de un barbero del seed) y falla si
- * rendimiento < 80 o accesibilidad < 90. Crea un turno con service_role para /t/[token].
+ * rendimiento < 80 o accesibilidad < 90. Crea un turno con service_role para /t/[token] y lo
+ * cancela al final.
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync } from "node:fs";
@@ -32,17 +33,16 @@ async function ticketToken(): Promise<string> {
     .order("sort_order")
     .limit(1)
     .single();
-  const { data, error } = await db.rpc("join_queue", {
-    p_slug: SLUG,
+  // add_manual_ticket no depende del horario (el CI corre a cualquier hora, en UTC)
+  const { data, error } = await db.rpc("add_manual_ticket", {
+    p_business_id: biz!.id,
     p_name: "Lighthouse",
     p_phone: `+57302${Date.now().toString().slice(-7)}`,
     p_service_id: svc!.id,
     p_preferred_barber_id: null,
-    p_privacy_version: 1,
-    p_source: "qr",
   });
-  if (error) throw new Error(`join_queue: ${error.message}`);
-  return (data as { token: string }).token;
+  if (error) throw new Error(`add_manual_ticket: ${error.message}`);
+  return (data as { public_token: string }).public_token;
 }
 
 /** Cookie de sesión de Juan (barbero del seed) para medir /app/fila. */
@@ -96,6 +96,10 @@ const results = [
   run(`${BASE}/t/${token}`, "mi-turno"),
   run(`${BASE}/app/fila`, "mi-fila", { Cookie: cookie }),
 ];
+
+await createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
+  auth: { persistSession: false },
+}).rpc("cancel_ticket_by_token", { p_token: token });
 
 let ok = true;
 for (const r of results) {
