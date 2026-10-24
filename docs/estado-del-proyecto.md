@@ -80,8 +80,13 @@ Pendientes (H3): `/admin/caja`,
    desde la app; cambiar las contraseñas de prueba antes de usarlo con clientes reales.
 2. **GitHub** — hecho 2026-10-24: `main` en `henrygarzon089/TurnOS`. CI arreglado (workflow
    inválido, `next typegen`, base de pruebas con `scripts/ci-db.sh`).
-3. **Vercel**: importar el repo en la cuenta personal de Henry con `NEXT_PUBLIC_SUPABASE_URL`,
-   `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL`.
+3. **Vercel** — hecho 2026-10-24: proyecto `turnos` en la cuenta personal
+   (`henry-garzons-projects`), producción en **https://turnos-smoky-nine.vercel.app**
+   (`/salud` → `{ok:true, db:true}`). Variables en producción y preview:
+   `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+   (sensible), `NEXT_PUBLIC_APP_URL`. **Pendiente (Henry)**: conectar el repo de GitHub en
+   Vercel (Settings → Git; el CLI no pudo: la app de Vercel no tiene acceso al repo) para que cada
+   push a `main` despliegue solo. Mientras tanto: `vercel deploy --prod --scope henry-garzons-projects`.
 4. Correr `pnpm test:e2e` (y `E2E_SCREEN_KEY=<businesses.screen_key>` para la pantalla TV) y
    Lighthouse (`lighthouserc.json`) → pasar las `[~]` a `[x]` → T-030 demo con Henry → cerrar H1.
 5. CI (`.github/workflows/ci.yml`) nunca ha corrido: validar en el primer push.
