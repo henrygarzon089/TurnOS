@@ -15,7 +15,7 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 
 | Hito                    | Tareas      | Estado                                                                          |
 | ----------------------- | ----------- | ------------------------------------------------------------------------------- |
-| H0 Cimientos            | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (falta validar el CI en GitHub)                    |
+| H0 Cimientos            | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (CI verde; falta E2E en CI y proteger `main`)      |
 | H1 Fila virtual         | T-011…T-030 | **aprobado** (ADR-017); T-029 `[~]` (instalar en celulares y prueba de pasillo) |
 | H2 Clientes y fidelidad | T-031…T-039 | **aprobado** (ADR-017)                                                          |
 | H3 Caja y comisiones    | T-040…T-050 | **siguiente: T-040**                                                            |
