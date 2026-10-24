@@ -1,7 +1,10 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { createAdminGateway } from "@/lib/db/supabase-gateway";
+import * as queue from "@/lib/queue/public-queue";
 import { barberEmailFromPhone } from "@/lib/auth/session";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -102,4 +105,31 @@ export async function acceptInvitation(
   const signed = await supabase.auth.signInWithPassword({ email, password: parsed.data.pin });
   if (signed.error) return { error: "Tu acceso quedó creado; entra con tu celular y PIN." };
   redirect("/app/fila");
+}
+
+// ================================================================ T-017: fila pública ====
+
+async function clientIp(): Promise<string | null> {
+  const h = await headers();
+  return h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? h.get("x-real-ip") ?? null;
+}
+
+/** REQ-001.1 */
+export async function getPublicBusiness(slug: string) {
+  return queue.getPublicBusiness(createAdminGateway(), slug);
+}
+
+/** REQ-003: tomar turno. Devuelve el token (o el existente, REQ-003.5). */
+export async function joinQueue(input: queue.JoinInput): Promise<queue.JoinResult> {
+  return queue.joinQueue(createAdminGateway(), input, await clientIp());
+}
+
+/** REQ-004 */
+export async function getTicketByToken(token: string) {
+  return queue.getTicketByToken(createAdminGateway(), token);
+}
+
+/** REQ-005 */
+export async function cancelTicketByToken(token: string) {
+  return queue.cancelTicketByToken(createAdminGateway(), token);
 }

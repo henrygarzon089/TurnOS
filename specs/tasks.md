@@ -190,7 +190,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   sin barberos activos → `null`; preferido en pausa → `null`; "Eres el siguiente"; etiqueta a 2;
   estimado de turno ficticio para el formulario; cobertura 100 % de ramas.
 
-### [ ] T-017 · Server actions públicas con validación y rate limiting
+### [x] T-017 · Server actions públicas con validación y rate limiting
 - REQ: REQ-001.1, REQ-003.2–3.5, REQ-004.7, REQ-005.2, REQ-011.5, NFR-004, ADR-009
 - Archivos: `src/lib/actions/public.ts` (`getPublicBusiness`, `joinQueue`, `getTicketByToken`,
   `cancelTicketByToken`), `src/lib/validation/queue.ts` (Zod), `tests/integration/public-actions.test.ts`
