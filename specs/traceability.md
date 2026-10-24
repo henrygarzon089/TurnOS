@@ -109,13 +109,13 @@
 | REQ-020.5 | Clientes para recordar (inactivos) | T-024 (hecha), T-031 (hecha), T-037 (hecha) | reminders.spec.ts, 0013_customers_loyalty.sql, 0018_reminders.sql | cubierto |
 | REQ-021.1 | Clientes nuevos vs. que repiten | T-031 (hecha), T-048 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
 | REQ-022.1 | Barbero preferido en la ficha | T-019 (hecha), T-038 (hecha), T-039 (hecha) | preferred-barber.spec.ts, preferred-barber.test.ts | cubierto |
-| REQ-023.1 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
-| REQ-023.2 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | commission.test.ts, 0022_register_sale.sql | prueba escrita |
-| REQ-023.3 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
-| REQ-023.4 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0022_register_sale.sql | prueba escrita |
-| REQ-023.5 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0021_cash.sql | prueba escrita |
-| REQ-023.6 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0006_transitions.sql | prueba escrita |
-| REQ-023.7 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0022_register_sale.sql | prueba escrita |
+| REQ-023.1 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
+| REQ-023.2 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | commission.test.ts, 0022_register_sale.sql | prueba escrita |
+| REQ-023.3 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
+| REQ-023.4 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0022_register_sale.sql | prueba escrita |
+| REQ-023.5 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0021_cash.sql | prueba escrita |
+| REQ-023.6 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | 0006_transitions.sql | prueba escrita |
+| REQ-023.7 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | rls-cash.test.ts, 0022_register_sale.sql | prueba escrita |
 | REQ-024.1 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (pendiente) | admin-config.spec.ts | prueba escrita |
 | REQ-024.2 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (pendiente) | 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
 | REQ-024.3 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (pendiente) | commission.test.ts, 0022_register_sale.sql | prueba escrita |
@@ -136,15 +136,15 @@
 | REQ-028.2 | Resumen semanal | T-011 (hecha), T-048 (pendiente) | — | sin prueba |
 | REQ-028.3 | Resumen semanal | T-011 (hecha), T-048 (pendiente) | — | sin prueba |
 | REQ-028.4 | Resumen semanal | T-011 (hecha), T-048 (pendiente) | — | sin prueba |
-| REQ-029.1 | Vista del barbero sobre sus números | T-042 (pendiente), T-047 (pendiente), T-050 (pendiente) | — | sin prueba |
+| REQ-029.1 | Vista del barbero sobre sus números | T-042 (hecha), T-047 (pendiente), T-050 (pendiente) | rls-cash.test.ts | prueba escrita |
 | REQ-030.1 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts, onboarding.spec.ts, 0002_core.sql | cubierto |
 | REQ-030.2 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | onboarding.spec.ts, 0004_invitations.sql | cubierto |
 | REQ-030.3 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts | cubierto |
 | REQ-030.4 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts, 0004_invitations.sql | cubierto |
-| REQ-031.1 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (pendiente) | 0002_core.sql, 0003_rls_core.sql, 0017_loyalty_progress.sql | prueba escrita |
-| REQ-031.2 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (pendiente) | 0008_public_fns.sql, 0009_realtime.sql | prueba escrita |
-| REQ-031.3 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (pendiente) | — | sin prueba |
-| REQ-031.4 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (pendiente) | rls-core.test.ts, 0003_rls_core.sql | prueba escrita |
+| REQ-031.1 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-cash.test.ts, 0002_core.sql, 0003_rls_core.sql, 0017_loyalty_progress.sql | cubierto |
+| REQ-031.2 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | 0008_public_fns.sql, 0009_realtime.sql | cubierto |
+| REQ-031.3 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | — | sin prueba |
+| REQ-031.4 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-core.test.ts, 0003_rls_core.sql | cubierto |
 | REQ-032.1 | PWA instalable | T-001 (hecha), T-010 (en curso), T-029 (en curso) | pwa-usability.spec.ts, pwa.test.ts | prueba escrita |
 | REQ-032.2 | PWA instalable | T-001 (hecha), T-010 (en curso), T-029 (en curso) | pwa-usability.spec.ts | prueba escrita |
 | REQ-033.1 | Plantillas de mensajes de WhatsApp | T-024 (hecha) | admin-config.spec.ts, render-template.test.ts, 0002_core.sql | cubierto |

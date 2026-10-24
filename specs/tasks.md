@@ -521,10 +521,15 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `unique` de 0021 se reemplazó y su pgTAP se ajustó), anular solo ventas de hoy y devolver el
   premio si la tarjeta nueva está vacía.
 
-### [ ] T-042 · RLS de caja
+### [x] T-042 · RLS de caja — 2026-10-24
 - REQ: REQ-029.1, REQ-023.7, REQ-031.1
 - Archivos: `supabase/migrations/0016_rls_cash.sql`, `tests/integration/rls-cash.test.ts`
 - Terminado: barbero solo ve y crea sus ventas; no ve `cash_closures`; dueño todo; nada cruzado.
+- Notas: migración real `0023_rls_cash.sql`. Solo políticas de lectura (design §2.4): las
+  escrituras van por `register_sale`/`void_sale` (y `close_cash_day`/`reopen_cash_day` en T-046);
+  un insert directo da 42501 y un update directo no toca filas. Líneas y pagos se ven si la venta
+  se ve. El barbero ve su propio historial de comisión. Prueba con dos barberos en el negocio A
+  (5 casos).
 
 ### [ ] T-043 · Panel de cobro al terminar un turno
 - REQ: REQ-023.1–23.3, REQ-023.6, REQ-019.4
