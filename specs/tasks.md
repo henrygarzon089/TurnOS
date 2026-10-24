@@ -74,7 +74,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   cruzada = 0 filas, escritura cruzada = error; barbero no puede cambiar `commission_pct` ni
   `is_active` propios; `anon` sin acceso a ninguna tabla.
 
-### [ ] T-006 · Autenticación del personal: login, middleware, roles
+### [~] T-006 · Autenticación del personal: login, proxy, roles
+- Nota (2026-10-23): en Next.js 16 `middleware.ts` pasó a llamarse `proxy.ts` (`src/proxy.ts`).
+  Código, build y lint listos; el E2E (`tests/e2e/auth.spec.ts`) queda pendiente hasta tener el
+  proyecto de Supabase con el seed.
 - REQ: REQ-030.1, REQ-030.3, REQ-030.4, REQ-012.5
 - Archivos: `src/app/(auth)/entrar/page.tsx`, `src/middleware.ts`, `src/lib/auth/session.ts`
   (`getSessionWithRole`), `src/app/(staff)/app/page.tsx`, `src/app/(staff)/admin/page.tsx`

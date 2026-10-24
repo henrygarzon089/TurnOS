@@ -17,7 +17,9 @@
     "db:local": "scripts/db-local.sh reset",
     "db:start": "scripts/db-local.sh start",
     "db:stop": "scripts/db-local.sh stop",
-    "db:test": "scripts/db-local.sh test"
+    "db:test": "scripts/db-local.sh test",
+    "test:e2e": "playwright test",
+    "seed:users": "tsx scripts/seed-users.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -29,6 +31,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^22.20.5",
     "@types/pg": "^8.23.1",
