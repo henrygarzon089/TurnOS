@@ -2,6 +2,7 @@
 
 import { useCallback, useState, useTransition } from "react";
 import { ErrorText } from "@/components/auth/LoginForm";
+import { CloseCash } from "@/components/cash/CloseCashSheet";
 import { NewSaleButton } from "@/components/cash/NewSaleSheet";
 import { ConnectionBanner } from "@/components/ui/ConnectionBanner";
 import { getCashDay, voidSale, type CashDaySummary } from "@/lib/actions/cash";
@@ -17,17 +18,19 @@ const METHODS: { key: keyof CashDaySummary["byMethod"]; label: string }[] = [
 ];
 
 /**
- * REQ-027.1 Caja de hoy en vivo (se relee con cada venta, ADR-008) · REQ-026.1 anular con motivo.
- * `children` deja espacio para el cierre (T-046).
+ * REQ-027.1 Caja del día en vivo (se relee con cada venta, ADR-008) · REQ-026.1 anular con motivo ·
+ * REQ-027.2–27.4 cierre, reapertura y compartir. Un día pasado se ve igual, sin "Nueva venta".
  */
 export function CashDay({
   businessId,
+  businessName,
   initial,
-  children,
+  isToday,
 }: {
   businessId: string;
+  businessName: string;
   initial: CashDaySummary;
-  children?: (summary: CashDaySummary, reload: () => Promise<void>) => React.ReactNode;
+  isToday: boolean;
 }) {
   const [summary, setSummary] = useState(initial);
   const [voiding, setVoiding] = useState<string | null>(null);
@@ -106,7 +109,7 @@ export function CashDay({
         )}
       </section>
 
-      {!closed && <NewSaleButton onSaved={() => void reload()} />}
+      {!closed && isToday && <NewSaleButton onSaved={() => void reload()} />}
 
       <section aria-label="Ventas del día">
         <h2 className="mb-2 font-semibold">Ventas del día ({summary.sales.length})</h2>
@@ -140,7 +143,8 @@ export function CashDay({
                       Anulada: {s.voidedReason}
                     </p>
                   ) : (
-                    !closed && (
+                    !closed &&
+                    isToday && (
                       <button
                         type="button"
                         className="text-danger mt-1 min-h-10 text-xs font-semibold underline"
@@ -161,7 +165,7 @@ export function CashDay({
         )}
       </section>
 
-      {children?.(summary, reload)}
+      <CloseCash summary={summary} businessName={businessName} onChanged={reload} />
 
       {voiding && (
         <div

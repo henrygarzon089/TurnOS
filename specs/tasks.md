@@ -575,13 +575,20 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   (no anular en día cerrado) ya lo cubren el trigger de 0021 y su pgTAP; la UI oculta "Anular" y
   "Nueva venta" con la caja cerrada.
 
-### [ ] T-046 · Cierre de caja y reapertura
+### [x] T-046 · Cierre de caja y reapertura — 2026-10-24
 - REQ: REQ-027.2–27.6
 - Archivos: migración `0018_close_cash.sql` (`close_cash_day`, `reopen_cash_day`),
   `src/components/cash/CloseCashSheet.tsx`, `src/app/(staff)/admin/caja/[fecha]/page.tsx`
 - Terminado: pgTAP reproduce el **ejemplo de cierre** de `design.md` §5.2 (totales, comisiones,
   diferencia −2.000); E2E cierre bloquea ventas del día; reabrir con motivo; compartir por
   WhatsApp con texto de liquidación `REQ-027.6`.
+- Notas: migración real `0026_close_cash.sql` (`close_cash_day`, `reopen_cash_day`,
+  `cash_closures_list`) + pgTAP 0026 (20). La foto del cierre (`totals`) es el mismo resumen de
+  `cash_day_summary` sin el detalle de ventas. Texto de liquidación y enlace `wa.me/?text=` en
+  `src/lib/domain/cash-closure.ts` (unitarias con el ejemplo de §5.2: "Juan: 2 servicios,
+  $ 50.000 vendidos, comisión 60 % = $ 30.000"). `/admin/caja` lista los cierres anteriores y
+  `/admin/caja/[fecha]` muestra un día pasado en modo lectura (compartir, reabrir). El E2E cierra
+  la caja de hoy y siempre la reabre al terminar (bloquearía las ventas de otras pruebas).
 
 ### [ ] T-047 · Mis números (barbero)
 - REQ: REQ-025.5, REQ-029.1

@@ -285,3 +285,59 @@ export async function voidSale(saleId: string, reason: string): Promise<CashResu
   const { error } = await supabase.rpc("void_sale", { p_sale_id: saleId, p_reason: reason });
   return error ? { ok: false, error: mapError(error) } : { ok: true };
 }
+
+// ================================================================ T-046: cierre de caja ====
+
+/** REQ-027.2 cerrar la caja del día con el efectivo contado (solo dueño). */
+export async function closeCashDay(day: string, cashCounted: number): Promise<CashResult> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { ok: false, error: ERRORS.FORBIDDEN };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return { ok: false, error: "Día no válido." };
+  if (!Number.isInteger(cashCounted) || cashCounted < 0) {
+    return { ok: false, error: "Escribe el efectivo contado en pesos." };
+  }
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("close_cash_day", {
+    p_business_id: session.business.id,
+    p_day: day,
+    p_cash_counted: cashCounted,
+  });
+  if (error?.message?.includes("ALREADY_CLOSED"))
+    return { ok: false, error: "La caja de ese día ya está cerrada." };
+  return error ? { ok: false, error: mapError(error) } : { ok: true };
+}
+
+/** REQ-027.3 reabrir con motivo: anula el cierre y permite uno nuevo. */
+export async function reopenCashDay(day: string, reason: string): Promise<CashResult> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { ok: false, error: ERRORS.FORBIDDEN };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return { ok: false, error: "Día no válido." };
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("reopen_cash_day", {
+    p_business_id: session.business.id,
+    p_day: day,
+    p_reason: reason,
+  });
+  return error ? { ok: false, error: mapError(error) } : { ok: true };
+}
+
+/** REQ-027.4 cierres pasados. */
+export async function getClosures(): Promise<
+  { day: string; total: number; difference: number; closedAt: string }[]
+> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return [];
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.rpc("cash_closures_list", {
+    p_business_id: session.business.id,
+    p_limit: 30,
+  });
+  return (
+    (data ?? []) as { business_day: string; total: number; difference: number; closed_at: string }[]
+  ).map((c) => ({
+    day: c.business_day,
+    total: c.total,
+    difference: c.difference,
+    closedAt: c.closed_at,
+  }));
+}
