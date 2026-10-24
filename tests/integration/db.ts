@@ -38,3 +38,23 @@ export type Q = <R = Record<string, unknown>>(
 export async function loginAs(q: Q, userId: string | null, role = "authenticated") {
   await q("select auth.test_login($1::uuid, $2)", [userId, role]);
 }
+
+/**
+ * Ejecuta una consulta que DEBE fallar con el código SQLSTATE dado, sin abortar la transacción
+ * de la prueba (usa un savepoint).
+ */
+export async function expectSqlError(q: Q, text: string, params: unknown[], code: string) {
+  await q("savepoint expect_fail");
+  try {
+    await q(text, params);
+  } catch (e) {
+    await q("rollback to savepoint expect_fail");
+    const err = e as { code?: string; message?: string };
+    if (err.code !== code) {
+      throw new Error(`Se esperaba SQLSTATE ${code}, llegó ${err.code}: ${err.message}`);
+    }
+    return;
+  }
+  await q("release savepoint expect_fail");
+  throw new Error(`Se esperaba un error ${code} y la consulta tuvo éxito: ${text}`);
+}
