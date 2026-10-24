@@ -5,6 +5,8 @@ import { CustomerForm } from "@/components/customers/CustomerForm";
 import { CustomerHistory } from "@/components/customers/CustomerHistory";
 import { DeleteCustomer } from "@/components/customers/DeleteCustomer";
 import { MergeButton } from "@/components/customers/MergeDialog";
+import { RedeemReward } from "@/components/customers/RedeemReward";
+import { StampCard } from "@/components/loyalty/StampCard";
 import { getCustomer } from "@/lib/actions/customers";
 import { businessDayBogota, formatDayCO } from "@/lib/domain/time";
 
@@ -57,6 +59,13 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
           ? `Aceptó el aviso de privacidad (versión ${c.privacyVersion}) el ${day(c.privacyAcceptedAt)}.`
           : "No ha aceptado el aviso de privacidad."}
       </p>
+
+      {view.loyalty?.enabled && (
+        <div className="flex flex-col gap-2">
+          <StampCard status={view.loyalty} compact />
+          {isOwner && view.loyalty.available && <RedeemReward customerId={c.id} />}
+        </div>
+      )}
 
       <CustomerForm view={view} />
 

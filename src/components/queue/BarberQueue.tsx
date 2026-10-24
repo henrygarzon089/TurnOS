@@ -216,6 +216,7 @@ function CurrentCard({
         {ticket.customerName}{" "}
         <span className="text-muted text-sm font-normal">· {ticket.serviceName}</span>
       </p>
+      {ticket.rewardAvailable && <RewardBadge />}
       {ticket.status === "called" ? (
         <>
           <p className="text-sm">
@@ -306,6 +307,7 @@ function WaitingRow({
         <p className="truncate font-semibold">
           {index + 1}. {ticket.customerName}
         </p>
+        {ticket.rewardAvailable && <RewardBadge />}
         <p className="text-muted text-sm">
           {ticket.serviceName} {ticket.serviceDurationMin}&apos; · hace {waitedMin}&apos; ·{" "}
           {ticket.preferredBarberId === me ? "te eligió" : "cualquiera"}
@@ -369,5 +371,14 @@ function PauseSheet({
         </div>
       </div>
     </div>
+  );
+}
+
+/** REQ-019.3: el cliente tiene el premio de fidelidad disponible. */
+function RewardBadge() {
+  return (
+    <span className="text-ok mt-0.5 inline-block rounded-full bg-green-50 px-2 py-0.5 text-xs font-semibold">
+      🎁 Premio disponible
+    </span>
   );
 }

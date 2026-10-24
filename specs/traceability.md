@@ -50,7 +50,7 @@
 | REQ-008.3 | Cliente que no llega | T-012 (hecha), T-020 (en curso), T-022 (en curso) | 0013_customers_loyalty.sql | prueba escrita |
 | REQ-008.4 | Cliente que no llega | T-012 (hecha), T-020 (en curso), T-022 (en curso) | 0012_hito1_gaps.sql | prueba escrita |
 | REQ-009.1 | Aviso por WhatsApp cuando faltan 2 turnos | T-016 (hecha), T-021 (en curso), T-024 (en curso) | queue-estimate.test.ts | prueba escrita |
-| REQ-009.2 | Aviso por WhatsApp cuando faltan 2 turnos | T-016 (hecha), T-021 (en curso), T-024 (en curso) | barber-flow.spec.ts, phone.test.ts, wa-me.test.ts | prueba escrita |
+| REQ-009.2 | Aviso por WhatsApp cuando faltan 2 turnos | T-016 (hecha), T-021 (en curso), T-024 (en curso) | barber-flow.spec.ts, loyalty-progress.spec.ts, phone.test.ts, wa-me.test.ts | prueba escrita |
 | REQ-009.3 | Aviso por WhatsApp cuando faltan 2 turnos | T-016 (hecha), T-021 (en curso), T-024 (en curso) | barber-flow.spec.ts, 0010_notify.sql | prueba escrita |
 | REQ-009.4 | Aviso por WhatsApp cuando faltan 2 turnos | T-016 (hecha), T-021 (en curso), T-024 (en curso) | hito1-gaps.spec.ts | prueba escrita |
 | REQ-009.5 | Aviso por WhatsApp cuando faltan 2 turnos | T-016 (hecha), T-021 (en curso), T-024 (en curso) | wa-me.test.ts | prueba escrita |
@@ -68,7 +68,7 @@
 | REQ-011.6 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (en curso), T-017 (hecha), T-020 (en curso), T-022 (en curso) | customer-flow.spec.ts | prueba escrita |
 | REQ-012.1 | Vista del dueño sobre la fila | T-006 (en curso), T-012 (hecha), T-013 (hecha), T-025 (en curso) | hito1-gaps.spec.ts | prueba escrita |
 | REQ-012.2 | Vista del dueño sobre la fila | T-006 (en curso), T-012 (hecha), T-013 (hecha), T-025 (en curso) | owner-queue.spec.ts, 0006_transitions.sql, 0007_queue_ops.sql | prueba escrita |
-| REQ-012.3 | Vista del dueño sobre la fila | T-006 (en curso), T-012 (hecha), T-013 (hecha), T-025 (en curso) | customers.spec.ts, owner-queue.spec.ts, 0005_queue.sql, 0007_queue_ops.sql | prueba escrita |
+| REQ-012.3 | Vista del dueño sobre la fila | T-006 (en curso), T-012 (hecha), T-013 (hecha), T-025 (en curso) | customers.spec.ts, loyalty-progress.spec.ts, owner-queue.spec.ts, 0005_queue.sql, 0007_queue_ops.sql | prueba escrita |
 | REQ-012.4 | Vista del dueño sobre la fila | T-006 (en curso), T-012 (hecha), T-013 (hecha), T-025 (en curso) | owner-queue.spec.ts, 0008_public_fns.sql | prueba escrita |
 | REQ-012.5 | Vista del dueño sobre la fila | T-006 (en curso), T-012 (hecha), T-013 (hecha), T-025 (en curso) | hito1-gaps.spec.ts | prueba escrita |
 | REQ-013.1 | Pantalla pública para el televisor | T-027 (en curso) | screen.spec.ts, 0002_core.sql, 0011_screen.sql | prueba escrita |
@@ -76,8 +76,8 @@
 | REQ-013.3 | Pantalla pública para el televisor | T-027 (en curso) | screen.spec.ts | prueba escrita |
 | REQ-013.4 | Pantalla pública para el televisor | T-027 (en curso) | hito1-gaps.spec.ts | prueba escrita |
 | REQ-013.5 | Pantalla pública para el televisor | T-027 (en curso) | hito1-gaps.spec.ts | prueba escrita |
-| REQ-014.1 | Cierre automático de turnos al final del día | T-014 (hecha), T-020 (en curso), T-030 (en curso) | 0006_transitions.sql, 0008_public_fns.sql | prueba escrita |
-| REQ-014.2 | Cierre automático de turnos al final del día | T-014 (hecha), T-020 (en curso), T-030 (en curso) | 0012_hito1_gaps.sql | prueba escrita |
+| REQ-014.1 | Cierre automático de turnos al final del día | T-014 (hecha), T-020 (en curso), T-030 (en curso) | 0006_transitions.sql, 0008_public_fns.sql, 0020_close_expired_midnight.sql | prueba escrita |
+| REQ-014.2 | Cierre automático de turnos al final del día | T-014 (hecha), T-020 (en curso), T-030 (en curso) | 0012_hito1_gaps.sql, 0020_close_expired_midnight.sql | prueba escrita |
 | REQ-015.1 | Gestión de servicios | T-004 (hecha), T-008 (en curso) | admin-config.spec.ts, 0002_core.sql, 0003_rls_core.sql | prueba escrita |
 | REQ-015.2 | Gestión de servicios | T-004 (hecha), T-008 (en curso) | admin-config.spec.ts | prueba escrita |
 | REQ-015.3 | Gestión de servicios | T-004 (hecha), T-008 (en curso) | 0005_queue.sql | prueba escrita |
@@ -95,13 +95,13 @@
 | REQ-018.4 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (pendiente) | customers.spec.ts, customers.test.ts, rls-customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | prueba escrita |
 | REQ-018.5 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (pendiente) | customers.spec.ts, customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | prueba escrita |
 | REQ-018.6 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (pendiente) | customers-delete.spec.ts, 0013_customers_loyalty.sql, 0014_customers_merge.sql, 0015_anonymize.sql | prueba escrita |
-| REQ-019.1 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | loyalty-config.spec.ts, loyalty.test.ts, 0016_loyalty_config.sql | prueba escrita |
-| REQ-019.2 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-019.3 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-019.4 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-019.5 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-019.6 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | loyalty-config.spec.ts, 0013_customers_loyalty.sql, 0016_loyalty_config.sql | prueba escrita |
-| REQ-019.7 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (pendiente), T-041 (pendiente), T-043 (pendiente) | — | sin prueba |
+| REQ-019.1 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | loyalty-config.spec.ts, loyalty.test.ts, 0016_loyalty_config.sql | prueba escrita |
+| REQ-019.2 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
+| REQ-019.3 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | loyalty-progress.spec.ts, loyalty.test.ts, 0013_customers_loyalty.sql, 0017_loyalty_progress.sql | prueba escrita |
+| REQ-019.4 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
+| REQ-019.5 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | loyalty-progress.spec.ts, 0013_customers_loyalty.sql, 0017_loyalty_progress.sql | prueba escrita |
+| REQ-019.6 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | loyalty-config.spec.ts, 0013_customers_loyalty.sql, 0016_loyalty_config.sql | prueba escrita |
+| REQ-019.7 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | loyalty-progress.spec.ts, loyalty.test.ts, 0017_loyalty_progress.sql | prueba escrita |
 | REQ-020.1 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (pendiente) | 0002_core.sql | prueba escrita |
 | REQ-020.2 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
 | REQ-020.3 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (pendiente) | — | sin prueba |
@@ -141,7 +141,7 @@
 | REQ-030.2 | Acceso del personal (dueño y barberos) | T-006 (en curso), T-007 (en curso), T-030 (en curso) | onboarding.spec.ts, 0004_invitations.sql | prueba escrita |
 | REQ-030.3 | Acceso del personal (dueño y barberos) | T-006 (en curso), T-007 (en curso), T-030 (en curso) | auth.spec.ts | prueba escrita |
 | REQ-030.4 | Acceso del personal (dueño y barberos) | T-006 (en curso), T-007 (en curso), T-030 (en curso) | auth.spec.ts, 0004_invitations.sql | prueba escrita |
-| REQ-031.1 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (pendiente) | 0002_core.sql, 0003_rls_core.sql | prueba escrita |
+| REQ-031.1 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (pendiente) | 0002_core.sql, 0003_rls_core.sql, 0017_loyalty_progress.sql | prueba escrita |
 | REQ-031.2 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (pendiente) | 0008_public_fns.sql, 0009_realtime.sql | prueba escrita |
 | REQ-031.3 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (pendiente) | — | sin prueba |
 | REQ-031.4 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (pendiente) | rls-core.test.ts, 0003_rls_core.sql | prueba escrita |

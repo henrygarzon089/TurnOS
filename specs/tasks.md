@@ -373,12 +373,20 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   (el mismo campo de /admin/servicios). La página muestra un resumen (clientes con tarjeta,
   sellos acumulados, premios por canjear) que el E2E usa para verificar REQ-019.6.
 
-### [ ] T-036 · Progreso y premio visibles (cliente, barbero, ficha) y canje manual
+### [x] T-036 · Progreso y premio visibles (cliente, barbero, ficha) y canje manual — 2026-10-24
 - REQ: REQ-019.3, REQ-019.5, REQ-019.7
 - Archivos: `src/components/loyalty/StampCard.tsx`, ajustes en `MyTicket`, `BarberQueue`,
   ficha; `src/lib/actions/customers.ts` (`redeemRewardManually`)
 - Terminado: E2E cliente con 9 sellos termina turno → "¡Tu próximo corte es gratis!"; barbero ve
   "Premio disponible" en la fila; canje manual abre tarjeta nueva en cero.
+- Notas: migración `0017_loyalty_progress.sql` (`customer_loyalty()` y `get_ticket_by_token` con
+  `loyalty`, redefinida desde 0008); textos en `loyaltyText` (`src/lib/domain/loyalty.ts`):
+  "N de M cortes"; premio "¡Tu próximo <servicio> es gratis!" o "¡Tienes $ X de descuento en tu
+  próxima visita!" si el premio es descuento. El canje manual es **solo del dueño** (RLS de
+  design.md §2.4: el barbero solo lee `loyalty_cards`); `redeem_loyalty_card` sigue aceptando
+  barberos porque `register_sale` (T-041) la usará. La etiqueta de la fila se calcula en
+  `getMyQueue` leyendo `loyalty_cards` (sin migración). El E2E no depende de la hora: usa una
+  tarjeta de 2 visitas (en vez de 9 sellos del seed, para poder repetirse) y la restaura a 10.
 
 ### [ ] T-037 · Clientes para recordar + WhatsApp
 - REQ: REQ-020.1–20.5

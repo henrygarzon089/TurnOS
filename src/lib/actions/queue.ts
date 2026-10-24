@@ -24,6 +24,9 @@ export type QueueTicket = {
   publicToken: string;
   /** Personas delante en la lista relevante (REQ-009.1). */
   ahead: number;
+  customerId: string | null;
+  /** REQ-019.3: el cliente tiene el premio de fidelidad disponible. */
+  rewardAvailable: boolean;
 };
 
 export type BarberQueueView = {
@@ -56,10 +59,11 @@ type TicketRow = {
   payment_status: QueueTicket["paymentStatus"];
   public_token: string;
   queue_order: number;
+  customer_id: string | null;
 };
 
 const TICKET_COLS =
-  "id, display_number, customer_name, customer_phone_e164, service_name, service_duration_min, preferred_barber_id, assigned_barber_id, status, created_at, called_at, started_at, notified_at, payment_status, public_token, queue_order";
+  "id, display_number, customer_name, customer_phone_e164, service_name, service_duration_min, preferred_barber_id, assigned_barber_id, status, created_at, called_at, started_at, notified_at, payment_status, public_token, queue_order, customer_id";
 
 function toTicket(r: TicketRow, ahead: number): QueueTicket {
   return {
@@ -79,6 +83,8 @@ function toTicket(r: TicketRow, ahead: number): QueueTicket {
     paymentStatus: r.payment_status,
     publicToken: r.public_token,
     ahead,
+    customerId: r.customer_id ?? null,
+    rewardAvailable: false,
   };
 }
 
@@ -145,8 +151,29 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
     })),
   );
   const list = (listRes.data ?? []) as TicketRow[];
+
+  // REQ-019.3: "Premio disponible" en la fila del barbero
+  const customerIds = [
+    ...new Set(
+      [...list, ...(currentRes.data ? [currentRes.data as TicketRow] : [])]
+        .map((r) => r.customer_id)
+        .filter((id): id is string => !!id),
+    ),
+  ];
+  const rewardRes = customerIds.length
+    ? await supabase
+        .from("loyalty_cards")
+        .select("customer_id")
+        .eq("status", "completed")
+        .in("customer_id", customerIds)
+    : { data: [] as { customer_id: string }[] };
+  const withReward = new Set((rewardRes.data ?? []).map((c) => c.customer_id as string));
+  const mark = (t: QueueTicket): QueueTicket => ({
+    ...t,
+    rewardAvailable: !!t.customerId && withReward.has(t.customerId),
+  });
   const waiting = list.map((r, i) =>
-    toTicket(r, r.preferred_barber_id ? i : (globalPos.get(r.id) ?? i + 1) - 1),
+    mark(toTicket(r, r.preferred_barber_id ? i : (globalPos.get(r.id) ?? i + 1) - 1)),
   );
 
   return {
@@ -156,7 +183,7 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
       status: barberRes.data.status,
     },
     business: { ...session.business, graceMinutes: bizRes.data?.grace_minutes ?? 5 },
-    current: currentRes.data ? toTicket(currentRes.data as TicketRow, 0) : null,
+    current: currentRes.data ? mark(toTicket(currentRes.data as TicketRow, 0)) : null,
     waiting,
     mineWaiting: list.filter((r) => r.preferred_barber_id === session.barberId).length,
     template: tplRes.data?.body ?? "",

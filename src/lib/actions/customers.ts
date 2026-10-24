@@ -8,6 +8,7 @@ import {
   type HistoryTicket,
   type TicketStatus,
 } from "@/lib/domain/customer-history";
+import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 // ---------------------------------------------------------------- tipos ----
@@ -39,6 +40,8 @@ export type CustomerView = {
   };
   barbers: { id: string; name: string }[];
   history: HistoryRow[];
+  /** REQ-019.3 / REQ-019.7 tarjeta de fidelidad */
+  loyalty: LoyaltyStatus | null;
 };
 
 export type CustomerFormState = { ok?: boolean; error?: string } | undefined;
@@ -129,7 +132,7 @@ export async function getCustomer(id: string): Promise<CustomerView | null> {
     if (!allowed) return null;
   }
 
-  const [custRes, ticketsRes, barbersRes] = await Promise.all([
+  const [custRes, ticketsRes, barbersRes, loyaltyRes] = await Promise.all([
     supabase
       .from("customers")
       .select(
@@ -149,6 +152,7 @@ export async function getCustomer(id: string): Promise<CustomerView | null> {
       .select("id, display_name, is_active")
       .eq("business_id", session.business.id)
       .order("sort_order"),
+    supabase.rpc("customer_loyalty", { p_customer_id: id }),
   ]);
 
   const c = custRes.data;
@@ -198,6 +202,7 @@ export async function getCustomer(id: string): Promise<CustomerView | null> {
     },
     barbers: barbers.filter((b) => b.is_active).map((b) => ({ id: b.id, name: b.display_name })),
     history: toHistoryRows(tickets, viewer),
+    loyalty: toLoyaltyStatus(loyaltyRes.data),
   };
 }
 
@@ -305,5 +310,25 @@ export async function anonymizeCustomer(id: string): Promise<MergeResult> {
   if (!z.uuid().safeParse(id).success) return { ok: false, error: ERRORS.CUSTOMER_NOT_FOUND };
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("anonymize_customer", { p_customer_id: id });
+  return error ? { ok: false, error: mapError(error) } : { ok: true };
+}
+
+/**
+ * REQ-019.5: mientras no exista la caja, el dueño marca el premio como canjeado desde la ficha.
+ * Se abre una tarjeta nueva en cero (redeem_loyalty_card).
+ */
+export async function redeemRewardManually(customerId: string): Promise<MergeResult> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { ok: false, error: ERRORS.FORBIDDEN };
+  if (!z.uuid().safeParse(customerId).success) {
+    return { ok: false, error: ERRORS.CUSTOMER_NOT_FOUND };
+  }
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.rpc("customer_loyalty", { p_customer_id: customerId });
+  const status = toLoyaltyStatus(data);
+  if (!status?.available || !status.cardId) {
+    return { ok: false, error: "Este cliente no tiene un premio disponible." };
+  }
+  const { error } = await supabase.rpc("redeem_loyalty_card", { p_card_id: status.cardId });
   return error ? { ok: false, error: mapError(error) } : { ok: true };
 }

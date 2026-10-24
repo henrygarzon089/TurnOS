@@ -3,6 +3,7 @@
  * Sin dependencias de Next: recibe un Gateway y devuelve resultados tipados o errores conocidos.
  */
 import { z } from "zod";
+import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
 import { GatewayError, type Gateway } from "@/lib/db/gateway";
 import { normalizePhoneCO } from "@/lib/domain/phone";
 import {
@@ -58,6 +59,8 @@ export type MyTicket = {
   cancelReason: "customer" | "business" | "closing" | "barber_removed" | null;
   /** Solo mientras está en espera */
   estimate: Estimate | null;
+  /** REQ-019.7 progreso de la tarjeta del cliente (null si no hay ficha) */
+  loyalty: LoyaltyStatus | null;
 };
 
 export type JoinResult =
@@ -261,6 +264,7 @@ export async function getTicketByToken(
     calledAt: (raw.calledAt as string | null) ?? null,
     cancelReason: (raw.cancelReason as MyTicket["cancelReason"]) ?? null,
     estimate,
+    loyalty: toLoyaltyStatus(raw.loyalty),
   };
 }
 

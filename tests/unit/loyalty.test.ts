@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseLoyaltyForm } from "@/lib/domain/loyalty";
+import { loyaltyText, parseLoyaltyForm, type LoyaltyStatus } from "@/lib/domain/loyalty";
 
 const CORTE = "11111111-1111-4111-8111-111111111111";
 const BARBA = "22222222-2222-4222-8222-222222222222";
@@ -82,5 +82,51 @@ describe("REQ-019.1 configuración de la tarjeta de fidelidad", () => {
   it("REQ-019.1 desactivada no exige premio ni servicios", () => {
     const r = parseLoyaltyForm(form({ visits_required: "10", reward_type: "free_service" }));
     expect(r.ok && r.value.enabled).toBe(false);
+  });
+});
+
+const base: LoyaltyStatus = {
+  enabled: true,
+  stamps: 7,
+  required: 10,
+  available: false,
+  rewardType: "free_service",
+  rewardServiceName: "Corte",
+  rewardAmount: null,
+  cardId: "c1",
+};
+
+describe("REQ-019.7 / REQ-019.3 textos de la tarjeta", () => {
+  it("REQ-019.7 muestra el progreso '7 de 10 cortes'", () => {
+    expect(loyaltyText(base)).toEqual({ progress: "7 de 10 cortes", reward: null });
+  });
+
+  it("REQ-019.3 tarjeta completa: '¡Tu próximo corte es gratis!'", () => {
+    expect(loyaltyText({ ...base, stamps: 10, available: true })?.reward).toBe(
+      "¡Tu próximo corte es gratis!",
+    );
+  });
+
+  it("REQ-019.3 premio de descuento en COP", () => {
+    const t = loyaltyText({
+      ...base,
+      available: true,
+      stamps: 10,
+      rewardType: "discount",
+      rewardServiceName: null,
+      rewardAmount: 10000,
+    });
+    expect(t?.reward).toBe("¡Tienes $ 10.000 de descuento en tu próxima visita!");
+  });
+
+  it("REQ-019.3 el premio usa el nombre del servicio regalado", () => {
+    expect(
+      loyaltyText({ ...base, available: true, rewardServiceName: "Corte + barba" })?.reward,
+    ).toBe("¡Tu próximo corte + barba es gratis!");
+  });
+
+  it("REQ-019.7 sin tarjeta activa no muestra nada", () => {
+    expect(loyaltyText({ ...base, enabled: false })).toBeNull();
+    expect(loyaltyText(null)).toBeNull();
   });
 });

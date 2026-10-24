@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { StampCard } from "@/components/loyalty/StampCard";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
 import { cancelTicketByToken, getTicketByToken } from "@/lib/actions/public";
 import { formatMinutes } from "@/lib/domain/time";
@@ -95,6 +96,10 @@ export function MyTicket({
           {ticket.assignedBarberName ?? ticket.preferredBarberName ?? "El que esté libre"}
         </p>
       </section>
+
+      <div className="mt-4">
+        <StampCard status={ticket.loyalty} />
+      </div>
 
       <div className="mt-4">
         <LastUpdated at={lastUpdated ?? new Date(initial.createdAt)} />
