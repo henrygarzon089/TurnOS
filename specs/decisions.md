@@ -1,0 +1,154 @@
+# TurnOS — Registro de decisiones (ADR) y preguntas abiertas
+
+> Formato de cada ADR: contexto → opciones → decisión → consecuencias. Estado: `propuesta`,
+> `aceptada`, `reemplazada por ADR-nnn`. Una decisión aceptada solo cambia con un ADR nuevo.
+> Las preguntas abiertas viven en `requirements.md` §9 (`PA-nn`); cuando se responden, la
+> respuesta se registra aquí como ADR si cambia el diseño, o se incorpora al requisito si no.
+
+## ADR-001 · Stack: Next.js + Supabase + Vercel
+- Estado: **aceptada** (definida en el brief del producto, 2026-10-23)
+- Contexto: equipo de una persona, experiencia previa con este stack, necesidad de tiempo real y
+  autenticación sin construir backend propio.
+- Opciones: (a) Next.js + Supabase + Vercel; (b) Next.js + Prisma + Postgres gestionado + WebSockets
+  propios; (c) Firebase.
+- Decisión: (a).
+- Consecuencias: RLS como mecanismo central de aislamiento; Realtime de Supabase para la fila;
+  Edge Functions para lógica que no debe correr en el cliente; dependencia de dos proveedores.
+
+## ADR-002 · El cliente se identifica por celular, sin cuenta
+- Estado: **aceptada** (brief)
+- Contexto: usuarios son familias del barrio; cualquier fricción (app, contraseña, OTP) elimina el
+  uso. El contacto natural es WhatsApp.
+- Opciones: (a) nombre + celular sin verificación; (b) OTP por SMS/WhatsApp; (c) cuenta con
+  contraseña.
+- Decisión: (a). La clave del cliente es `(business_id, phone_e164)`.
+- Consecuencias: no hay garantía de que el celular sea del que lo escribe; se mitiga con rate
+  limiting, un turno activo por celular, y que el único canal de contacto sea WhatsApp a ese
+  número (quien puso un número ajeno no recibe nada). El enlace "Mi turno" usa un token aleatorio;
+  nunca el celular en la URL.
+
+## ADR-003 · Notificaciones por `wa.me` en el MVP, interfaz preparada para Cloud API
+- Estado: **aceptada** (brief)
+- Contexto: WhatsApp Cloud API requiere verificación de negocio, plantillas aprobadas y costo por
+  conversación; para un negocio no es viable el primer día.
+- Opciones: (a) `wa.me` con mensaje prellenado y un toque del barbero; (b) Cloud API desde el
+  inicio; (c) SMS.
+- Decisión: (a), detrás de una interfaz `NotificationChannel` con una sola implementación en el
+  MVP (`WaMeChannel`). Se registra en la base de datos el evento "aviso enviado" al tocar el
+  botón.
+- Consecuencias: el aviso depende de que el barbero lo toque; no hay confirmación de entrega.
+  Cambiar a Cloud API después es agregar una implementación y una configuración por negocio.
+
+## ADR-004 · Multi-tenant por `business_id` + RLS en una sola base de datos
+- Estado: **aceptada** (brief)
+- Opciones: (a) una base, `business_id` en todas las tablas y RLS; (b) un esquema por negocio;
+  (c) una base de datos por negocio.
+- Decisión: (a).
+- Consecuencias: la seguridad depende de que cada tabla tenga su política y de que exista una
+  prueba automatizada de aislamiento (REQ-031.4). Membresías usuario↔negocio con rol, para
+  soportar varios negocios por dueño sin cambiar el modelo.
+
+## ADR-005 · Dinero en enteros COP, registros inmutables de caja
+- Estado: **aceptada** (constitución P9)
+- Decisión: columnas `integer` en COP; ventas y cierres no se editan, se anulan y se vuelven a
+  crear; comisión calculada y congelada en cada venta.
+- Consecuencias: cambiar el porcentaje de un barbero no reescribe el pasado; el cierre de caja es
+  reproducible a mano.
+
+## ADR-006 · Especificación como fuente de verdad (SDD)
+- Estado: **aceptada** (brief)
+- Decisión: nada se implementa sin REQ aprobado, diseño aprobado y tarea en `tasks.md`; cada
+  tarea nace con sus pruebas; cada hito cierra con matriz de trazabilidad.
+
+## ADR-007 · Preguntas abiertas PA-01 a PA-27 resueltas con el valor por defecto
+- Estado: **aceptada** (Henry, 2026-10-23: "todo está bien")
+- Decisión: todos los valores por defecto de `requirements.md` §9 quedan como definitivos. Los que
+  cambian el diseño quedan así:
+  - PA-01 Acceso: dueño con correo + contraseña; barbero con **celular + PIN de 6 dígitos**
+    (internamente una cuenta de Supabase Auth con correo alias `<celular>@barberos.turnos.local`,
+    sin proveedor de SMS). Ver ADR-010.
+  - PA-03 Un solo servicio por turno; los combos se crean como servicio aparte.
+  - PA-04 El barbero solo llama al primero de su lista; el dueño puede reordenar y saltar.
+  - PA-09 Duración por servicio, igual para todos los barberos (campo de ajuste por barbero
+    reservado, no usado).
+  - PA-15 Toda la plata entra al negocio; el negocio liquida la comisión al barbero.
+  - PA-18 El porcentaje es la parte del barbero, sobre el valor de servicios después de descuento.
+  - PA-20 Los cierres son inmutables; solo el dueño reabre con motivo (se anula el cierre y se
+    crea otro).
+- Consecuencias: el diseño (`design.md`) se escribe con estas reglas sin alternativas.
+
+## ADR-008 · Tiempo real = señal por Broadcast + relectura del estado
+- Estado: **aceptada**
+- Contexto: el cliente no tiene sesión (ADR-002), así que no puede recibir cambios de tabla con
+  RLS; además los eventos perdidos durante una desconexión no deben dejar la pantalla en un estado
+  viejo (REQ-011.2).
+- Opciones: (a) `postgres_changes` con políticas RLS para anónimos (imposible filtrar por token);
+  (b) Broadcast desde triggers de Postgres con un payload sanitizado y relectura del estado por
+  server action; (c) polling cada 3 s.
+- Decisión: (b). Un trigger en `tickets` y `barbers` publica en el canal `queue:<business_id>`
+  un mensaje `{ "type": "queue_changed", "at": … }` (sin datos personales). Todo cliente
+  interesado (cliente, barbero, dueño, pantalla) al recibirlo vuelve a cargar su vista completa
+  con una server action o RPC. Al reconectar, se recarga igual.
+- Consecuencias: un solo mecanismo para todas las pantallas; los datos sensibles nunca viajan por
+  el canal; la carga por evento es una consulta ligera por suscriptor (aceptable para NFR-011).
+
+## ADR-009 · Escrituras públicas solo por server actions con validación y rate limiting
+- Estado: **aceptada**
+- Contexto: tomar turno y cancelar lo hace un anónimo.
+- Decisión: las páginas públicas no usan la clave `anon` para escribir. Las server actions
+  (Next.js) usan la clave `service_role` **solo en servidor**, validan con Zod, aplican rate
+  limiting en una tabla `rate_limits` de Postgres (5 turnos/celular/hora, 30/IP/hora) y llaman
+  funciones SQL (`join_queue`, `cancel_ticket_by_token`) que encapsulan las reglas.
+- Consecuencias: la lógica de negocio queda en funciones de Postgres probables con pgTAP y desde
+  Vitest; ningún secreto llega al navegador.
+
+## ADR-010 · Acceso del personal: Supabase Auth con correo/contraseña y alias para barberos
+- Estado: **aceptada** (resuelve PA-01)
+- Decisión: dueño: correo + contraseña. Barbero: celular + PIN de 6 dígitos, materializado como
+  usuario de Auth con correo `<E.164 sin +>@barberos.turnos.local` y contraseña = PIN. La
+  invitación (enlace con token, 7 días) crea el usuario con el PIN que el barbero elige.
+- Consecuencias: sin SMS ni costo; el PIN es débil, se compensa con bloqueo tras 5 intentos
+  (Supabase) y con que el barbero solo ve su fila y sus ventas. El dueño puede restablecer el PIN.
+
+## ADR-011 · Transiciones de estado del turno validadas en Postgres
+- Estado: **aceptada**
+- Decisión: una sola función `transition_ticket(ticket_id, to_status, actor, reason)` valida la
+  transición contra la tabla de transiciones permitidas, actualiza marcas de tiempo, estado del
+  barbero y escribe `ticket_events`. Es idempotente: repetir la misma transición ya aplicada no
+  falla ni duplica (REQ-011.4). "Llamar al siguiente" usa `SELECT … FOR UPDATE SKIP LOCKED` para
+  resolver la carrera entre barberos (REQ-007.2).
+- Consecuencias: la máquina de estados vive en un solo lugar; la UI solo muestra botones.
+
+## ADR-012 · Orden de la fila por `queue_order` con huecos
+- Estado: **aceptada** (resuelve PA-04)
+- Decisión: cada turno recibe `queue_order = sequence × 1000` al crearse (secuencia global por
+  negocio). Reordenar por el dueño asigna un valor entre los vecinos; si no hay hueco, se
+  renumera la fila del día. La posición y el estimado usan `queue_order`.
+
+## ADR-013 · Tiempo estimado por simulación de asignación
+- Estado: **aceptada**
+- Decisión: el estimado se calcula simulando la fila contra los barberos activos (ver
+  `design.md` §4), en una función pura de TypeScript (`estimateQueue`) usada por servidor y
+  pruebas, no en SQL. Se redondea hacia arriba a 5 minutos.
+
+## ADR-014 · Cierre automático del día con `pg_cron`
+- Estado: **aceptada**
+- Decisión: `pg_cron` (incluido en Supabase) ejecuta cada 15 min `close_expired_queues()`, que
+  cancela turnos activos de negocios cuya hora de cierre + 60 min ya pasó (REQ-014). Sin
+  servicios externos (NFR-013).
+
+## ADR-015 · Base de datos local sin Docker: Postgres 16 + shim de Supabase para pruebas
+- Estado: **aceptada** (2026-10-23, al iniciar la Fase 4)
+- Contexto: el entorno donde se construye el MVP no tiene demonio de Docker, así que
+  `supabase start` no está disponible. Sí hay Postgres 16, pgTAP, pg_trgm y pg_cron instalables.
+- Opciones: (a) esperar a tener Docker; (b) correr todas las pruebas contra un proyecto remoto de
+  Supabase; (c) un clúster local de Postgres con un *shim* mínimo que imita lo que las migraciones
+  usan de Supabase (`auth.uid()`, roles `anon`/`authenticated`/`service_role`, `realtime.send`).
+- Decisión: (c). `scripts/db-local.sh` levanta un clúster en `.pg/` (puerto 54329) y aplica
+  `supabase/local/0000_supabase_shim.sql` **antes** de las migraciones; el shim nunca se aplica a
+  un proyecto real de Supabase (allí esas funciones ya existen). Las migraciones en
+  `supabase/migrations/` siguen siendo las que se aplican al proyecto remoto con `supabase db
+  push` o con el MCP de Supabase. Auth real, Realtime real y la PWA desplegada se validan contra
+  un proyecto de Supabase + Vercel a partir de T-006.
+- Consecuencias: pgTAP y las pruebas de integración corren rápido y sin Docker; en la Mac de Henry
+  (con Docker) `supabase start` sigue funcionando con las mismas migraciones.

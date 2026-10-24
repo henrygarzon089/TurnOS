@@ -1,26 +1,43 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Paleta de TurnOS (constitution.md P2, NFR-008):
+  - fondo claro, un color de acento, estados con color + icono + texto.
+  - contraste >= 4.5:1 en texto normal.
+*/
+@theme {
+  --color-surface: #f8fafc; /* fondo de página */
+  --color-card: #ffffff; /* tarjetas */
+  --color-ink: #111827; /* texto principal (contraste 16:1 sobre surface) */
+  --color-muted: #4b5563; /* texto secundario (7.5:1) */
+  --color-line: #e5e7eb; /* bordes */
+  --color-accent: #1d4ed8; /* acción principal (6.3:1 con blanco) */
+  --color-accent-ink: #ffffff;
+  --color-ok: #166534; /* estados positivos */
+  --color-warn: #92400e; /* advertencias */
+  --color-danger: #991b1b; /* cancelar, errores */
+  --color-called: #fef3c7; /* fondo "es tu turno" */
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  font-size: 16px; /* NFR-008: base >= 16 px */
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* Botón principal: grande, usable con una mano (NFR-008: >= 48 px) */
+.btn-primary {
+  @apply bg-accent text-accent-ink flex min-h-12 w-full items-center justify-center rounded-xl px-4 text-lg font-semibold active:opacity-90 disabled:opacity-50;
+}
+.btn-secondary {
+  @apply border-line bg-card text-ink active:bg-surface flex min-h-12 w-full items-center justify-center rounded-xl border px-4 text-lg font-semibold disabled:opacity-50;
+}
+.btn-danger {
+  @apply border-danger text-danger flex min-h-12 w-full items-center justify-center rounded-xl border px-4 text-lg font-semibold active:bg-red-50 disabled:opacity-50;
 }
