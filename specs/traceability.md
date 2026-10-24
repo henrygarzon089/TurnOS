@@ -26,7 +26,7 @@
 | REQ-004.2 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (en curso), T-016 (hecha), T-017 (hecha), T-020 (en curso) | customer-flow.spec.ts, queue-subscription.test.ts | prueba escrita |
 | REQ-004.3 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (en curso), T-016 (hecha), T-017 (hecha), T-020 (en curso) | customer-flow.spec.ts | prueba escrita |
 | REQ-004.4 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (en curso), T-016 (hecha), T-017 (hecha), T-020 (en curso) | hito1-gaps.spec.ts | prueba escrita |
-| REQ-004.5 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (en curso), T-016 (hecha), T-017 (hecha), T-020 (en curso) | queue-estimate.test.ts, time.test.ts | prueba escrita |
+| REQ-004.5 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (en curso), T-016 (hecha), T-017 (hecha), T-020 (en curso) | customer-flow.spec.ts, queue-estimate.test.ts, time.test.ts | prueba escrita |
 | REQ-004.6 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (en curso), T-016 (hecha), T-017 (hecha), T-020 (en curso) | customer-flow.spec.ts | prueba escrita |
 | REQ-004.7 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (en curso), T-016 (hecha), T-017 (hecha), T-020 (en curso) | customer-flow.spec.ts, public-queue.test.ts, 0008_public_fns.sql | prueba escrita |
 | REQ-005.1 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (en curso) | hito1-gaps.spec.ts | prueba escrita |
@@ -102,11 +102,11 @@
 | REQ-019.5 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | loyalty-progress.spec.ts, 0013_customers_loyalty.sql, 0017_loyalty_progress.sql | prueba escrita |
 | REQ-019.6 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | loyalty-config.spec.ts, 0013_customers_loyalty.sql, 0016_loyalty_config.sql | prueba escrita |
 | REQ-019.7 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (pendiente), T-043 (pendiente) | loyalty-progress.spec.ts, loyalty.test.ts, 0017_loyalty_progress.sql | prueba escrita |
-| REQ-020.1 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (pendiente) | 0002_core.sql | prueba escrita |
-| REQ-020.2 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-020.3 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (pendiente) | — | sin prueba |
-| REQ-020.4 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
-| REQ-020.5 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
+| REQ-020.1 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (hecha) | 0002_core.sql, 0018_reminders.sql | prueba escrita |
+| REQ-020.2 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (hecha) | reminders.spec.ts, 0013_customers_loyalty.sql, 0018_reminders.sql | prueba escrita |
+| REQ-020.3 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (hecha) | reminders.spec.ts, reminders.test.ts | prueba escrita |
+| REQ-020.4 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (hecha) | reminders.spec.ts, 0013_customers_loyalty.sql, 0018_reminders.sql | prueba escrita |
+| REQ-020.5 | Clientes para recordar (inactivos) | T-024 (en curso), T-031 (hecha), T-037 (hecha) | reminders.spec.ts, 0013_customers_loyalty.sql, 0018_reminders.sql | prueba escrita |
 | REQ-021.1 | Clientes nuevos vs. que repiten | T-031 (hecha), T-048 (pendiente) | 0013_customers_loyalty.sql | prueba escrita |
 | REQ-022.1 | Barbero preferido en la ficha | T-019 (en curso), T-038 (pendiente), T-039 (pendiente) | — | sin prueba |
 | REQ-023.1 | Cobrar un servicio | T-040 (pendiente), T-041 (pendiente), T-042 (pendiente), T-043 (pendiente), T-044 (pendiente), T-050 (pendiente) | — | sin prueba |

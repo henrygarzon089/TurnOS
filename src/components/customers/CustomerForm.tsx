@@ -55,6 +55,17 @@ export function CustomerForm({ view }: { view: CustomerView }) {
           placeholder="Ej.: corte bajo a los lados, viene con el hijo"
         />
       </label>
+      {isOwner && (
+        <label className="flex min-h-12 items-center gap-3 text-sm font-medium">
+          <input
+            type="checkbox"
+            name="do_not_contact"
+            defaultChecked={c.doNotContact}
+            className="h-5 w-5"
+          />
+          No contactar (sin recordatorios ni avisos por WhatsApp)
+        </label>
+      )}
       {state?.error && <ErrorText>{state.error}</ErrorText>}
       <div className="flex items-center gap-3">
         <button type="submit" className="btn-primary flex-1" disabled={pending}>

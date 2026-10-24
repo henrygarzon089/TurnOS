@@ -27,6 +27,8 @@ export type QueueTicket = {
   customerId: string | null;
   /** REQ-019.3: el cliente tiene el premio de fidelidad disponible. */
   rewardAvailable: boolean;
+  /** REQ-020.5: el cliente pidió no ser contactado (sin botón "Avisar"). */
+  doNotContact: boolean;
 };
 
 export type BarberQueueView = {
@@ -85,6 +87,7 @@ function toTicket(r: TicketRow, ahead: number): QueueTicket {
     ahead,
     customerId: r.customer_id ?? null,
     rewardAvailable: false,
+    doNotContact: false,
   };
 }
 
@@ -152,7 +155,7 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
   );
   const list = (listRes.data ?? []) as TicketRow[];
 
-  // REQ-019.3: "Premio disponible" en la fila del barbero
+  // REQ-019.3 "Premio disponible" y REQ-020.5 "No contactar" en la fila del barbero
   const customerIds = [
     ...new Set(
       [...list, ...(currentRes.data ? [currentRes.data as TicketRow] : [])]
@@ -160,17 +163,22 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
         .filter((id): id is string => !!id),
     ),
   ];
-  const rewardRes = customerIds.length
-    ? await supabase
-        .from("loyalty_cards")
-        .select("customer_id")
-        .eq("status", "completed")
-        .in("customer_id", customerIds)
-    : { data: [] as { customer_id: string }[] };
+  const [rewardRes, dncRes] = customerIds.length
+    ? await Promise.all([
+        supabase
+          .from("loyalty_cards")
+          .select("customer_id")
+          .eq("status", "completed")
+          .in("customer_id", customerIds),
+        supabase.from("customers").select("id").eq("do_not_contact", true).in("id", customerIds),
+      ])
+    : [{ data: [] as { customer_id: string }[] }, { data: [] as { id: string }[] }];
   const withReward = new Set((rewardRes.data ?? []).map((c) => c.customer_id as string));
+  const noContact = new Set((dncRes.data ?? []).map((c) => c.id as string));
   const mark = (t: QueueTicket): QueueTicket => ({
     ...t,
     rewardAvailable: !!t.customerId && withReward.has(t.customerId),
+    doNotContact: !!t.customerId && noContact.has(t.customerId),
   });
   const waiting = list.map((r, i) =>
     mark(toTicket(r, r.preferred_barber_id ? i : (globalPos.get(r.id) ?? i + 1) - 1)),

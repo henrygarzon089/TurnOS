@@ -388,12 +388,20 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `getMyQueue` leyendo `loyalty_cards` (sin migración). El E2E no depende de la hora: usa una
   tarjeta de 2 visitas (en vez de 9 sellos del seed, para poder repetirse) y la restaura a 10.
 
-### [ ] T-037 · Clientes para recordar + WhatsApp
+### [x] T-037 · Clientes para recordar + WhatsApp — 2026-10-24
 - REQ: REQ-020.1–20.5
 - Archivos: `src/app/(staff)/admin/recordar/page.tsx`, `src/lib/actions/customers.ts`
   (`getInactiveCustomers`, `logReminder`, `setDoNotContact`)
 - Terminado: E2E con seed: N=21 lista correcta y orden; enviar → registro y desaparece 7 días
   (reloj simulado); "No contactar" lo excluye aquí y en el botón de la fila.
+- Notas: migración `0018_inactive_days.sql` corrige `inactive_customers` (0013): "más de N
+  días" ahora se mide en días del negocio, como `days_since` (antes salía un cliente con
+  "21 días" cuando N = 21; lo detectó el E2E). Los 7 días de espera se prueban con reloj
+  simulado en pgTAP 0018 (recordatorio con `sent_at` de hace 8 días). También
+  `saveInactiveDays` (N en la misma pantalla; también sigue en /admin/negocio),
+  `src/components/customers/RemindersList.tsx`, `src/lib/notifications/reminder.ts`
+  (`buildReminderLink`), "No contactar" editable en la ficha (dueño) y el botón "Avisar" de la
+  fila del barbero se oculta para esos clientes (`QueueTicket.doNotContact`).
 
 ### [ ] T-038 · Barbero preferido preseleccionado
 - REQ: REQ-022.1

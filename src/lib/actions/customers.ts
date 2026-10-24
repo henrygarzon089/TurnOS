@@ -218,6 +218,7 @@ const updateSchema = z.object({
     .optional(),
   notes: z.string().trim().max(500, "Las notas son muy largas (máximo 500 caracteres)."),
   preferred_barber_id: z.union([z.uuid(), z.literal("")]),
+  do_not_contact: z.literal("on").optional(),
 });
 
 /** REQ-018.5 el dueño edita nombre y notas; REQ-018.4 el barbero, notas y preferido. */
@@ -229,7 +230,7 @@ export async function updateCustomer(
   if (!session) return { error: "Sesión vencida. Vuelve a entrar." };
   const parsed = updateSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
-  const { id, name, notes, preferred_barber_id } = parsed.data;
+  const { id, name, notes, preferred_barber_id, do_not_contact } = parsed.data;
   const supabase = await createSupabaseServerClient();
   if (session.role !== "owner") {
     const { data: allowed } = await supabase.rpc("barber_can_see_customer", { p_customer_id: id });
@@ -247,6 +248,7 @@ export async function updateCustomer(
   const patch: Record<string, unknown> = { notes: notes || null, preferred_barber_id: preferred };
   if (session.role === "owner") {
     if (name) patch.name = name;
+    patch.do_not_contact = do_not_contact === "on"; // REQ-020.5
     // Un preferido elegido a mano no lo pisa el recálculo automático (REQ-018.1)
     if (preferred !== current.preferred_barber_id) patch.preferred_barber_manual = true;
   }
@@ -331,4 +333,112 @@ export async function redeemRewardManually(customerId: string): Promise<MergeRes
   }
   const { error } = await supabase.rpc("redeem_loyalty_card", { p_card_id: status.cardId });
   return error ? { ok: false, error: mapError(error) } : { ok: true };
+}
+
+// ================================================================ T-037: recordar ====
+
+export type InactiveCustomer = {
+  id: string;
+  name: string;
+  phone: string;
+  daysSince: number;
+  visitsCount: number;
+  preferredBarberName: string | null;
+};
+
+export type RemindersView = {
+  inactiveDays: number;
+  template: string;
+  businessName: string;
+  queueUrl: string;
+  customers: InactiveCustomer[];
+};
+
+/** REQ-020.2 clientes con más de N días sin venir (excluye recordados < 7 días y "No contactar"). */
+export async function getInactiveCustomers(): Promise<RemindersView | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  const supabase = await createSupabaseServerClient();
+  const biz = session.business.id;
+  const [listRes, bizRes, tplRes] = await Promise.all([
+    supabase.rpc("inactive_customers", { p_business_id: biz }),
+    supabase.from("businesses").select("inactive_days").eq("id", biz).single(),
+    supabase
+      .from("message_templates")
+      .select("body")
+      .eq("business_id", biz)
+      .eq("key", "reminder_inactive")
+      .maybeSingle(),
+  ]);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  return {
+    inactiveDays: bizRes.data?.inactive_days ?? 21,
+    template: tplRes.data?.body ?? "",
+    businessName: session.business.name,
+    queueUrl: `${appUrl}/${session.business.slug}`,
+    customers: (
+      (listRes.data ?? []) as {
+        id: string;
+        name: string;
+        phone_e164: string;
+        days_since: number;
+        visits_count: number;
+        preferred_barber_name: string | null;
+      }[]
+    ).map((c) => ({
+      id: c.id,
+      name: c.name,
+      phone: c.phone_e164,
+      daysSince: c.days_since,
+      visitsCount: c.visits_count,
+      preferredBarberName: c.preferred_barber_name,
+    })),
+  };
+}
+
+/** REQ-020.4 registra "recordatorio enviado" (fecha y quién) al tocar el botón de WhatsApp. */
+export async function logReminder(customerId: string): Promise<MergeResult> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { ok: false, error: ERRORS.FORBIDDEN };
+  if (!z.uuid().safeParse(customerId).success) {
+    return { ok: false, error: ERRORS.CUSTOMER_NOT_FOUND };
+  }
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.from("reminders").insert({
+    business_id: session.business.id,
+    customer_id: customerId,
+    kind: "inactive",
+    sent_by: session.userId,
+  });
+  return error ? { ok: false, error: mapError(error) } : { ok: true };
+}
+
+/** REQ-020.5 "No contactar": lo excluye de recordatorios y del aviso de la fila (REQ-009). */
+export async function setDoNotContact(customerId: string, value: boolean): Promise<MergeResult> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { ok: false, error: ERRORS.FORBIDDEN };
+  if (!z.uuid().safeParse(customerId).success) {
+    return { ok: false, error: ERRORS.CUSTOMER_NOT_FOUND };
+  }
+  const supabase = await createSupabaseServerClient();
+  const { error, count } = await supabase
+    .from("customers")
+    .update({ do_not_contact: value }, { count: "exact" })
+    .eq("id", customerId);
+  return error || count === 0 ? { ok: false, error: mapError(error) } : { ok: true };
+}
+
+/** REQ-020.1 configura N (días sin venir). */
+export async function saveInactiveDays(days: number): Promise<MergeResult> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { ok: false, error: ERRORS.FORBIDDEN };
+  if (!Number.isInteger(days) || days < 1 || days > 365) {
+    return { ok: false, error: "Escribe un número de días entre 1 y 365." };
+  }
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("businesses")
+    .update({ inactive_days: days })
+    .eq("id", session.business.id);
+  return error ? { ok: false, error: "No se pudo guardar." } : { ok: true };
 }

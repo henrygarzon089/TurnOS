@@ -281,7 +281,7 @@ function WaitingRow({
 }) {
   const waitedMin = minutesBetween(new Date(ticket.createdAt), now);
   const shouldNotify = ticket.ahead === 2 && !ticket.notifiedAt;
-  const canNotify = !!ticket.customerPhone;
+  const canNotify = !!ticket.customerPhone && !ticket.doNotContact; // REQ-020.5
 
   const link = canNotify
     ? getChannel().buildLink({
