@@ -132,6 +132,11 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 ### [~] T-010 · CI, PWA base, `/salud`, lint de textos
 - Nota (2026-10-23): todo escrito y probado localmente (manifest, /salud, lint-texts, traceability);
   el workflow de GitHub Actions se valida en el primer push al repo.
+- Nota (2026-10-24): primer push hecho. CI en verde en GitHub (run 40098684738): lint →
+  typecheck (`next typegen`) → unit → pgTAP → integración (`scripts/ci-db.sh`, Postgres 16 +
+  shim) → trazabilidad → build. Falta: activar el job E2E (secretos del proyecto de Supabase +
+  variable `E2E_ENABLED=true`), agregar Lighthouse al CI (`pnpm lighthouse`) y la regla de
+  protección de `main` en GitHub para que bloquee en rojo.
 - REQ: REQ-032.1, NFR-009, NFR-012, NFR-006
 - Archivos: `.github/workflows/ci.yml`, `src/app/manifest.ts`, `public/icons/*`,
   `src/app/salud/route.ts`, `scripts/lint-texts.ts`, `scripts/traceability.ts`,
