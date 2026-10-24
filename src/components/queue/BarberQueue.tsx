@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { CheckoutSheet } from "@/components/cash/CheckoutSheet";
+import { NewSaleButton } from "@/components/cash/NewSaleSheet";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
 import {
   callNext,
@@ -181,6 +182,10 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
           </ul>
         </section>
       )}
+
+      <div className="mb-4">
+        <NewSaleButton onSaved={() => void reload()} />
+      </div>
 
       <section aria-label="Siguen">
         <h2 className="text-muted text-xs font-semibold uppercase">

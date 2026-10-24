@@ -129,10 +129,12 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
   if (ticketId && (!t || t.status !== "done" || t.payment_status !== "pending")) return null;
   if (t && session.role !== "owner" && t.assigned_barber_id !== session.barberId) return null;
 
-  const barbers = ((barbersRes.data ?? []) as { id: string; display_name: string }[]).map((b) => ({
-    id: b.id,
-    name: b.display_name,
-  }));
+  const allBarbers = ((barbersRes.data ?? []) as { id: string; display_name: string }[]).map(
+    (b) => ({ id: b.id, name: b.display_name }),
+  );
+  // REQ-023.7: el barbero solo registra a su nombre; el dueño elige cualquiera
+  const barbers =
+    session.role === "owner" ? allBarbers : allBarbers.filter((b) => b.id === session.barberId);
   const loyalty = t?.customer_id
     ? toLoyaltyStatus(
         (await supabase.rpc("customer_loyalty", { p_customer_id: t.customer_id })).data,
@@ -149,7 +151,7 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
           serviceName: t.service_name,
           servicePrice: t.service_price,
           barberId: t.assigned_barber_id ?? "",
-          barberName: barbers.find((b) => b.id === t.assigned_barber_id)?.name ?? "",
+          barberName: allBarbers.find((b) => b.id === t.assigned_barber_id)?.name ?? "",
         }
       : null,
     services: (servicesRes.data ?? []) as CatalogItem[],

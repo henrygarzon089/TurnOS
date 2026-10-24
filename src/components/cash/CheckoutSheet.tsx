@@ -52,12 +52,15 @@ export function CheckoutSheet({
   const [unpaidReason, setUnpaidReason] = useState("");
   const [pending, startTransition] = useTransition();
   const [nextKey, setNextKey] = useState(1);
+  /** Con turno: "Registrar cobro". Sin turno (REQ-023.4, REQ-024.2): "Nueva venta". */
+  const title = ticketId ? "Registrar cobro" : "Nueva venta";
 
   useEffect(() => {
     let alive = true;
     void getCheckout(ticketId).then((v) => {
       if (!alive) return;
       setView(v);
+      if (v && !v.ticket && !v.isOwner && v.barbers[0]) setBarberId(v.barbers[0].id);
       if (v?.ticket) {
         setServices([
           {
@@ -116,14 +119,14 @@ export function CheckoutSheet({
 
   if (view === undefined) {
     return (
-      <Sheet onClose={onClose}>
+      <Sheet onClose={onClose} title={title}>
         <p className="text-muted py-6 text-center">Cargando…</p>
       </Sheet>
     );
   }
   if (view === null) {
     return (
-      <Sheet onClose={onClose}>
+      <Sheet onClose={onClose} title={title}>
         <p className="py-6 text-center">Este turno ya no tiene cobro pendiente.</p>
         <button type="button" className="btn-secondary" onClick={onClose}>
           Cerrar
@@ -189,15 +192,15 @@ export function CheckoutSheet({
   }
 
   return (
-    <Sheet onClose={onClose}>
-      <p className="text-lg font-bold">Registrar cobro</p>
+    <Sheet onClose={onClose} title={title}>
+      <p className="text-lg font-bold">{title}</p>
       {view.ticket && (
         <p className="text-muted -mt-2 text-sm">
           {view.ticket.customerName} · {view.ticket.barberName}
         </p>
       )}
 
-      {!view.ticket && services.length > 0 && (
+      {!view.ticket && services.length > 0 && view.isOwner && (
         <label className="flex flex-col gap-1 text-sm font-medium">
           Barbero
           <select className="input" value={barberId} onChange={(e) => setBarberId(e.target.value)}>
@@ -450,12 +453,20 @@ export function CheckoutSheet({
   );
 }
 
-function Sheet({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+function Sheet({
+  children,
+  onClose,
+  title,
+}: {
+  children: React.ReactNode;
+  onClose: () => void;
+  title: string;
+}) {
   return (
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Registrar cobro"
+      aria-label={title}
       className="fixed inset-0 z-30 flex items-end bg-black/40"
       onKeyDown={(e) => e.key === "Escape" && onClose()}
     >

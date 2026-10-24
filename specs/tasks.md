@@ -549,11 +549,15 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   "Siguen" (el cliente ahora también sale en "Cobro pendiente"); el `apple-touch-icon` lo pone
   solo el layout raíz (salía duplicado).
 
-### [ ] T-044 · Nueva venta (productos y servicios sin turno)
+### [x] T-044 · Nueva venta (productos y servicios sin turno) — 2026-10-24
 - REQ: REQ-023.4, REQ-024.1–24.3
 - Archivos: `src/components/cash/NewSaleSheet.tsx`, botón en `/admin/caja` y `/app/fila`
 - Terminado: E2E venta de 2 helados en efectivo sin barbero; venta de servicio sin turno con
   barbero elegido genera comisión.
+- Notas: "Nueva venta" reutiliza `CheckoutSheet` sin turno (título "Nueva venta"): el dueño elige
+  barbero solo si hay servicios (sin barbero no deja registrar un servicio); el barbero vende a su
+  nombre sin elegir (ADR-018). `/admin/caja` se crea aquí con el botón; los totales llegan en
+  T-045. `tests/e2e/new-sale.spec.ts` (3) verifica montos y comisión en la base.
 
 ### [ ] T-045 · Caja de hoy y anulación
 - REQ: REQ-026.1–26.2, REQ-027.1
