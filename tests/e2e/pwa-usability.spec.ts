@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { loginAsBarber, SEED } from "./helpers";
+import { loginAsBarber, loginAsOwner, SEED } from "./helpers";
 
 /**
  * T-029 · REQ-032.1 (instalable), REQ-032.2 y NFR-008 (botones ≥ 48 px abajo, fuente ≥ 16 px,
@@ -150,6 +150,34 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
   }) => {
     await loginAsBarber(page, 0);
     await expectThumbButton(page, page.getByRole("button", { name: "Llamar al siguiente" }));
+    await expectAllTargets48(page);
+    await expectBaseFont16(page);
+    await expectZoom200(page);
+  });
+
+  test("NFR-008 / T-049 panel de cobro usable con una mano: botones ≥ 48 px, Registrar abajo, zoom 200 %", async ({
+    page,
+  }) => {
+    await loginAsOwner(page);
+    await page.goto("/admin/caja");
+    await page.getByRole("button", { name: "+ Nueva venta" }).click();
+    const sheet = page.getByRole("dialog", { name: "Nueva venta" });
+    await sheet.getByRole("button", { name: "Agregar un Helado" }).click();
+    await sheet.getByRole("button", { name: "+ Agregar servicio" }).click();
+    await expectAllTargets48(page);
+    const register = sheet.getByRole("button", { name: /^Registrar/ });
+    await register.scrollIntoViewIfNeeded();
+    await expectThumbButton(page, register);
+    for (const m of ["Efectivo", "Nequi", "Transferencia", "Tarjeta"]) {
+      const box = (await sheet.getByRole("radio", { name: m }).boundingBox())!;
+      expect(box.height, `${m} ≥ 48 px`).toBeGreaterThanOrEqual(48);
+    }
+    await expectZoom200(page);
+  });
+
+  test("NFR-008 / T-049 caja de hoy: botones ≥ 48 px y zoom 200 %", async ({ page }) => {
+    await loginAsOwner(page);
+    await page.goto("/admin/caja");
     await expectAllTargets48(page);
     await expectBaseFont16(page);
     await expectZoom200(page);

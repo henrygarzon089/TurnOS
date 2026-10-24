@@ -66,7 +66,7 @@ export default async function MyNumbersPage() {
                 <li
                   key={s.id}
                   data-testid={`my-sale-${s.id}`}
-                  className={`border-line bg-card flex items-start justify-between gap-3 rounded-xl border p-3 text-sm ${voided ? "opacity-70" : ""}`}
+                  className={`border-line bg-card flex items-start justify-between gap-3 rounded-xl border p-3 text-sm`}
                 >
                   <div className={`min-w-0 ${voided ? "line-through" : ""}`}>
                     <p className="font-semibold">{s.items}</p>

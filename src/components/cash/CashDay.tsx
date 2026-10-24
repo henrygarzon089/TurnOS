@@ -123,7 +123,7 @@ export function CashDay({
                 <li
                   key={s.id}
                   data-testid={`sale-${s.id}`}
-                  className={`border-line bg-card rounded-xl border p-3 text-sm ${voided ? "opacity-70" : ""}`}
+                  className={`border-line bg-card rounded-xl border p-3 text-sm`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className={`min-w-0 ${voided ? "line-through" : ""}`}>
@@ -147,7 +147,7 @@ export function CashDay({
                     isToday && (
                       <button
                         type="button"
-                        className="text-danger mt-1 min-h-10 text-xs font-semibold underline"
+                        className="text-danger mt-1 min-h-12 px-1 text-sm font-semibold underline"
                         onClick={() => {
                           setVoiding(s.id);
                           setReason("");

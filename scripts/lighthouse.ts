@@ -4,7 +4,7 @@
  *   pnpm build && pnpm start -p 3100          # en otra terminal
  *   LH_BASE_URL=http://localhost:3100 pnpm lighthouse
  *
- * Mide /[slug], /t/[token] y /app/fila (con la sesión de un barbero del seed) y falla si
+ * Mide /[slug], /t/[token], /app/fila (barbero) y /admin/caja (dueño, T-049) y falla si
  * rendimiento < 80 o accesibilidad < 90. Crea un turno con service_role para /t/[token] y lo
  * cancela al final.
  */
@@ -45,15 +45,23 @@ async function ticketToken(): Promise<string> {
   return (data as { public_token: string }).public_token;
 }
 
-/** Cookie de sesión de Juan (barbero del seed) para medir /app/fila. */
-async function barberCookie(): Promise<string> {
+/** Cookie de sesión del personal del seed (barbero Juan o dueño) para medir pantallas privadas. */
+async function staffCookie(who: "barber" | "owner"): Promise<string> {
   const browser = await chromium.launch();
   const page = await browser.newPage();
-  await page.goto(`${BASE}/entrar`);
-  await page.getByLabel("Celular").fill("300 100 0001");
-  await page.getByLabel("PIN (6 números)").fill("111111");
-  await page.getByRole("button", { name: "Entrar" }).click();
-  await page.waitForURL(/\/app\/fila/, { timeout: 30_000 });
+  if (who === "barber") {
+    await page.goto(`${BASE}/entrar`);
+    await page.getByLabel("Celular").fill("300 100 0001");
+    await page.getByLabel("PIN (6 números)").fill("111111");
+    await page.getByRole("button", { name: "Entrar" }).click();
+    await page.waitForURL(/\/app\/fila/, { timeout: 30_000 });
+  } else {
+    await page.goto(`${BASE}/entrar?rol=dueno`);
+    await page.getByLabel("Correo").fill("dueno@la33.test");
+    await page.getByLabel("Contraseña").fill("turnos123");
+    await page.getByRole("button", { name: "Entrar" }).click();
+    await page.waitForURL(/\/admin/, { timeout: 30_000 });
+  }
   const cookies = await page.context().cookies();
   await browser.close();
   return cookies.map((c) => `${c.name}=${c.value}`).join("; ");
@@ -90,11 +98,13 @@ function run(url: string, name: string, headers?: Record<string, string>): Resul
 }
 
 const token = await ticketToken();
-const cookie = await barberCookie();
+const barber = await staffCookie("barber");
+const owner = await staffCookie("owner");
 const results = [
   run(`${BASE}/${SLUG}`, "portada"),
   run(`${BASE}/t/${token}`, "mi-turno"),
-  run(`${BASE}/app/fila`, "mi-fila", { Cookie: cookie }),
+  run(`${BASE}/app/fila`, "mi-fila", { Cookie: barber }),
+  run(`${BASE}/admin/caja`, "caja", { Cookie: owner }), // T-049
 ];
 
 await createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {

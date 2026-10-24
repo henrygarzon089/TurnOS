@@ -617,10 +617,18 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   24 h. REQ-028.3: `getWeekSummary` pide también la semana anterior; variación en
   `src/lib/domain/week.ts` (+ unitarias). `/admin/semana?semana=AAAA-MM-DD`, sin ir al futuro.
 
-### [ ] T-049 · Pulido y rendimiento del Hito 3
+### [~] T-049 · Pulido y rendimiento del Hito 3
 - REQ: NFR-001, NFR-007, NFR-008
 - Terminado: Lighthouse en `/admin/caja`; panel de cobro usable con una mano; prueba de pasillo
   con el dueño registrada en `decisions.md`.
+- Estado 2026-10-24 — hecho: `pnpm lighthouse` mide también `/admin/caja` con la sesión del
+  dueño: 98 rendimiento / 100 accesibilidad (LCP 2,4 s); el CI lo corre en cada push.
+  `pwa-usability.spec.ts`: panel de cobro con botones ≥ 48 px (incluidos los 4 medios de pago),
+  "Registrar" en la mitad inferior y zoom 200 % sin scroll; caja de hoy igual. Arreglos que salieron
+  de esas pruebas: "Anular" medía 40 px (ahora 48) y las ventas anuladas usaban `opacity-70`, que
+  dejaba el texto bajo 4,5:1 de contraste (ahora solo tachadas).
+- **Falta (manual, Henry):** prueba de pasillo con el dueño (cobrar, nueva venta, cerrar caja sin
+  ayuda) registrada en `decisions.md`; conviene hacerla junto con la de T-029 (ADR-017).
 
 ### [ ] T-050 · Validación Hito 3: matriz de trazabilidad final
 - REQ: REQ-023…REQ-029 y todo el MVP
