@@ -86,7 +86,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `/admin/*` rechaza barbero, `/app/*` acepta ambos; sesión persiste tras cerrar el navegador
   (cookie 30 días); E2E `REQ-030.1`, `REQ-030.3`.
 
-### [ ] T-007 · Asistente "crear negocio" e invitación de barberos
+### [~] T-007 · Asistente "crear negocio" e invitación de barberos
+- Nota (2026-10-23): migración, funciones SQL (14 pgTAP), asistente de 3 pasos, aceptación de
+  invitación y acciones listas; el E2E (`tests/e2e/onboarding.spec.ts`) espera el proyecto remoto.
+  La pantalla /admin/barberos que usa el E2E se construye en T-008.
 - REQ: REQ-030.1, REQ-030.2, REQ-016.1, REQ-016.3
 - Archivos: `src/app/(auth)/crear-negocio/page.tsx` (3 pasos), `src/app/(auth)/invitacion/[token]/page.tsx`,
   `src/lib/actions/admin.ts` (`createBusiness`, `inviteBarber`, `removeBarber`),
