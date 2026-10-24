@@ -197,14 +197,14 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Terminado: integración `REQ-003.5` devuelve `existingToken`; `REQ-003.2` errores en español;
   rate limit por celular e IP; `cancelTicketByToken` en `in_service` falla.
 
-### [ ] T-018 · Página pública del negocio `/[slug]`
+### [~] T-018 · Página pública del negocio `/[slug]`
 - REQ: REQ-001.1, REQ-001.4, REQ-001.5, REQ-017.2
 - Archivos: `src/app/(public)/[slug]/page.tsx`, `src/components/queue/PublicHeader.tsx`
 - Terminado: E2E `REQ-001.1` muestra nombre, abierto/cerrado, personas en fila, botón; `REQ-001.4`
   cerrado muestra próximo horario y sin botón; `REQ-001.5` slug inexistente → 404 en español;
   se actualiza por Realtime.
 
-### [ ] T-019 · Formulario "Tomar turno" con aviso de privacidad
+### [~] T-019 · Formulario "Tomar turno" con aviso de privacidad
 - REQ: REQ-002.1–2.4, REQ-003.1–3.3, REQ-003.6–3.7, REQ-017.3, REQ-022.1
 - Archivos: `src/app/(public)/[slug]/turno/page.tsx`, `src/components/queue/JoinForm.tsx`,
   `src/app/(public)/[slug]/privacidad/page.tsx`, `src/lib/storage/customer-prefs.ts`
@@ -213,7 +213,8 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `REQ-003.1` "El que esté libre" por defecto, barberos en pausa deshabilitados; `REQ-003.7`
   prellenado; `REQ-017.3` franja de advertencia; redirección a `/t/<token>` < 2 s.
 
-### [ ] T-020 · Pantalla "Mi turno" `/t/[token]`
+### [~] T-020 · Pantalla "Mi turno" `/t/[token]`
+- Nota (2026-10-23): T-018/019/020 construidas; E2E `customer-flow.spec.ts` espera el proyecto remoto.
 - REQ: REQ-004.1–4.7, REQ-005.1–5.3, REQ-008.2 (mensaje), REQ-010.3, REQ-011.6, REQ-014.1 (mensaje)
 - Archivos: `src/app/(public)/t/[token]/page.tsx`, `src/components/queue/MyTicket.tsx`,
   `src/components/queue/TicketStatus.tsx`, service worker (`public/sw.js` vía `next-pwa` o

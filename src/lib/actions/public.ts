@@ -133,3 +133,23 @@ export async function getTicketByToken(token: string) {
 export async function cancelTicketByToken(token: string) {
   return queue.cancelTicketByToken(createAdminGateway(), token);
 }
+
+/** REQ-002.1: aviso de privacidad vigente del negocio. */
+export async function getPrivacyPolicy(slug: string) {
+  if (!/^[a-z0-9-]{3,40}$/.test(slug)) return null;
+  const admin = createSupabaseAdminClient();
+  const { data } = await admin
+    .from("privacy_policy_versions")
+    .select("version, body, businesses:business_id!inner ( name, slug )")
+    .eq("businesses.slug", slug)
+    .order("version", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!data) return null;
+  const biz = Array.isArray(data.businesses) ? data.businesses[0] : data.businesses;
+  return {
+    version: data.version as number,
+    body: data.body as string,
+    businessName: biz.name as string,
+  };
+}

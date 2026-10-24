@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import { signInBarber, signInOwner, type AuthFormState } from "@/lib/actions/auth";
 
@@ -95,9 +96,9 @@ export function LoginForm({ initialTab, volver }: { initialTab: Tab; volver?: st
           <button type="submit" className="btn-primary" disabled={ownerPending}>
             {ownerPending ? "Entrando…" : "Entrar"}
           </button>
-          <a href="/crear-negocio" className="text-accent text-center text-sm font-medium">
+          <Link href="/crear-negocio" className="text-accent text-center text-sm font-medium">
             ¿Nuevo negocio? Crear mi cuenta
-          </a>
+          </Link>
         </form>
       )}
     </div>
