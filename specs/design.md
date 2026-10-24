@@ -495,7 +495,7 @@ T3 corte 20 min pref=Luis; T4 corte 20 min pref=null.
 |---|---|---|---|---|---|
 | T1 | {Juan 10:10, Pedro 10:00} | 10:00 | Pedro (hasta 10:20) | 0 → "Eres el siguiente" | 1 |
 | T2 | {Juan 10:10} | 10:10 | Juan (hasta 10:25) | 10 min | 2 (T1 es "cualquiera" y está delante, así que cuenta en la lista de Juan) |
-| T3 | {} (Luis en pausa) | — | — | null → "Tu barbero está en pausa" | 1 en la lista de Luis |
+| T3 | {} (Luis en pausa) | — | — | null → "Tu barbero está en pausa" | 2 (T1 es "cualquiera" y está delante; corregido en T-016: antes decía 1) |
 | T4 | {Juan 10:25, Pedro 10:20} | 10:20 | Pedro | 20 min | 4 |
 
 Nota: la **posición** es un conteo determinista de quién está delante en la lista relevante; el

@@ -183,7 +183,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   perder el canal y llama `reload` al reconectar (prueba unitaria con cliente simulado
   `REQ-011.1`, `REQ-011.2`).
 
-### [ ] T-016 · Dominio: posición y tiempo estimado (`estimateQueue`)
+### [x] T-016 · Dominio: posición y tiempo estimado (`estimateQueue`)
 - REQ: REQ-004.1, REQ-004.5, REQ-006.1, REQ-009.1, REQ-010.1, REQ-017.3, ADR-013
 - Archivos: `src/lib/domain/queue-estimate.ts`, `tests/unit/queue-estimate.test.ts`
 - Terminado: pruebas con el ejemplo numérico de `design.md` §4 exacto; barbero en pausa excluido;
