@@ -892,8 +892,9 @@ Convención de trazabilidad: cada prueba lleva en su nombre el CA que cubre, p. 
 genera la matriz REQ → tareas → pruebas → estado a partir de `tasks.md` y de los nombres de las
 pruebas, y falla si un CA de un hito cerrado no tiene prueba.
 
-CI (GitHub Actions): `lint` → `typecheck` → `unit` → `supabase start` + `db test` (pgTAP) +
-`integration` → `e2e` → `lighthouse`. Merge bloqueado si algo falla.
+CI (GitHub Actions): `lint` → `typecheck` → `unit` (+ cobertura del dominio, NFR-009) → pgTAP +
+`integration` (Postgres 16 + shim, `scripts/ci-db.sh`) → `e2e` y `lighthouse` contra `supabase
+start` dentro del CI, **nunca contra producción** (ADR-022). Merge bloqueado si algo falla.
 
 ---
 

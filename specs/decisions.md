@@ -269,3 +269,17 @@
 - Decisión: NFR-007 y la verificación manual de REQ-032.1 se dan por cumplidas; T-029 y T-049 `[x]`.
 - Consecuencias: del MVP solo queda abierta T-010 (activar E2E en el CI con los secretos del
   proyecto de Supabase y proteger `main`), que depende de configuración en GitHub.
+
+## ADR-022 · E2E del CI contra un Supabase local, nunca contra producción
+- Estado: **aceptada** (2026-10-25)
+- Contexto: design.md §8 y el job `e2e` de 0.1 suponían correr los E2E con los secretos "del
+  proyecto de Supabase". El único proyecto es producción (ADR del despliegue, 2026-10-24) y los
+  E2E cambian datos: `resetQueue` cancela todos los turnos activos, `close-cash` cierra y reabre la
+  caja del día, otras crean clientes, ventas y barberos. Correrlos en cada push contra producción
+  le cancelaría turnos a clientes reales.
+- Opciones: (a) secretos de producción; (b) un segundo proyecto de Supabase de pruebas; (c)
+  `supabase start` dentro del CI con migraciones + seed (como el job de Lighthouse).
+- Decisión: (c). Sin secretos; mismo esquema que producción (migraciones versionadas) y la imagen
+  real de Supabase (cubre también los permisos de ADR-019, que el shim no reproduce).
+- Consecuencias: T-010 ya no depende de configurar secretos en GitHub; solo queda proteger `main`.
+  `design.md` §8: "E2E contra Supabase local del CI (ADR-022)".
