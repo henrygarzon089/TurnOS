@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-10-24.
+> Generada por `scripts/traceability.ts` el 2026-10-25.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -26,7 +26,7 @@
 | REQ-004.2 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts, queue-subscription.test.ts | cubierto |
 | REQ-004.3 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts | cubierto |
 | REQ-004.4 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | hito1-gaps.spec.ts | cubierto |
-| REQ-004.5 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts, queue-estimate.test.ts, time.test.ts | cubierto |
+| REQ-004.5 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts, domain-branches.test.ts, queue-estimate.test.ts, time.test.ts | cubierto |
 | REQ-004.6 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts | cubierto |
 | REQ-004.7 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0008_public_fns.sql | cubierto |
 | REQ-005.1 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | hito1-gaps.spec.ts | cubierto |
@@ -109,13 +109,13 @@
 | REQ-020.5 | Clientes para recordar (inactivos) | T-024 (hecha), T-031 (hecha), T-037 (hecha) | reminders.spec.ts, 0013_customers_loyalty.sql, 0018_reminders.sql | cubierto |
 | REQ-021.1 | Clientes nuevos vs. que repiten | T-031 (hecha), T-048 (hecha) | 0013_customers_loyalty.sql, 0027_weekly.sql | cubierto |
 | REQ-022.1 | Barbero preferido en la ficha | T-019 (hecha), T-038 (hecha), T-039 (hecha) | preferred-barber.spec.ts, preferred-barber.test.ts | cubierto |
-| REQ-023.1 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (en curso) | checkout.spec.ts, 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
-| REQ-023.2 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (en curso) | checkout.spec.ts, commission.test.ts, 0022_register_sale.sql | prueba escrita |
-| REQ-023.3 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (en curso) | checkout.spec.ts, 0021_cash.sql, 0022_register_sale.sql | prueba escrita |
-| REQ-023.4 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (en curso) | new-sale.spec.ts, 0022_register_sale.sql | prueba escrita |
-| REQ-023.5 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (en curso) | 0021_cash.sql | prueba escrita |
-| REQ-023.6 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (en curso) | checkout.spec.ts, 0006_transitions.sql, 0024_unpaid.sql | prueba escrita |
-| REQ-023.7 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (en curso) | checkout.spec.ts, rls-cash.test.ts, 0022_register_sale.sql | prueba escrita |
+| REQ-023.1 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (hecha) | checkout.spec.ts, 0021_cash.sql, 0022_register_sale.sql | cubierto |
+| REQ-023.2 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (hecha) | checkout.spec.ts, commission.test.ts, 0022_register_sale.sql | cubierto |
+| REQ-023.3 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (hecha) | checkout.spec.ts, 0021_cash.sql, 0022_register_sale.sql | cubierto |
+| REQ-023.4 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (hecha) | new-sale.spec.ts, 0022_register_sale.sql | cubierto |
+| REQ-023.5 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (hecha) | 0021_cash.sql | cubierto |
+| REQ-023.6 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (hecha) | checkout.spec.ts, 0006_transitions.sql, 0024_unpaid.sql | cubierto |
+| REQ-023.7 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (hecha) | checkout.spec.ts, rls-cash.test.ts, 0022_register_sale.sql | cubierto |
 | REQ-024.1 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (hecha) | admin-config.spec.ts, new-sale.spec.ts | cubierto |
 | REQ-024.2 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (hecha) | new-sale.spec.ts, 0021_cash.sql, 0022_register_sale.sql | cubierto |
 | REQ-024.3 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (hecha) | new-sale.spec.ts, commission.test.ts, 0022_register_sale.sql | cubierto |
@@ -131,12 +131,12 @@
 | REQ-027.3 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | close-cash.spec.ts, 0021_cash.sql, 0026_close_cash.sql | cubierto |
 | REQ-027.4 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | close-cash.spec.ts, cash-closure.test.ts | cubierto |
 | REQ-027.5 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | time.test.ts, 0005_queue.sql, 0022_register_sale.sql, 0025_cash_summary.sql, 0026_close_cash.sql | cubierto |
-| REQ-027.6 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | close-cash.spec.ts, cash-closure.test.ts | cubierto |
+| REQ-027.6 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | close-cash.spec.ts, cash-closure.test.ts, domain-branches.test.ts | cubierto |
 | REQ-028.1 | Resumen semanal | T-011 (hecha), T-048 (hecha) | week.spec.ts, time.test.ts, week.test.ts, 0027_weekly.sql | cubierto |
 | REQ-028.2 | Resumen semanal | T-011 (hecha), T-048 (hecha) | week.test.ts, 0027_weekly.sql | cubierto |
 | REQ-028.3 | Resumen semanal | T-011 (hecha), T-048 (hecha) | week.spec.ts, week.test.ts | cubierto |
 | REQ-028.4 | Resumen semanal | T-011 (hecha), T-048 (hecha) | 0027_weekly.sql | cubierto |
-| REQ-029.1 | Vista del barbero sobre sus números | T-042 (hecha), T-047 (hecha), T-050 (en curso) | my-numbers.spec.ts, my-numbers.test.ts, rls-cash.test.ts, 0025_cash_summary.sql, 0027_weekly.sql | prueba escrita |
+| REQ-029.1 | Vista del barbero sobre sus números | T-042 (hecha), T-047 (hecha), T-050 (hecha) | my-numbers.spec.ts, my-numbers.test.ts, rls-cash.test.ts, 0025_cash_summary.sql, 0027_weekly.sql | cubierto |
 | REQ-030.1 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts, onboarding.spec.ts, 0002_core.sql | cubierto |
 | REQ-030.2 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | onboarding.spec.ts, 0004_invitations.sql, 0028_mvp_gaps.sql, 0029_function_grants.sql | cubierto |
 | REQ-030.3 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts | cubierto |

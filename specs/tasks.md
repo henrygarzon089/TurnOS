@@ -630,7 +630,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - **Falta (manual, Henry):** prueba de pasillo con el dueño (cobrar, nueva venta, cerrar caja sin
   ayuda) registrada en `decisions.md`; conviene hacerla junto con la de T-029 (ADR-017).
 
-### [~] T-050 · Validación Hito 3: matriz de trazabilidad final
+### [x] T-050 · Validación Hito 3: matriz de trazabilidad final — 2026-10-24
 - REQ: REQ-023…REQ-029 y todo el MVP
 - Terminado: matriz completa REQ-001…REQ-034 + NFR sin huecos; CI verde; aprobación de Henry.
 - Estado 2026-10-24: `pnpm trace` → **144 CA, 0 sin prueba** (`--hito=0…3` en verde); la prueba
@@ -646,7 +646,8 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   con carga; 6/6 al repetirlo).
 - Producción (2026-10-24): migraciones 0021–0028 aplicadas y app desplegada. Corrección de
   seguridad ADR-019 (permisos de funciones) aplicada y verificada con la llave pública.
-- **Falta (Henry):** pruebas de pasillo (T-029, T-049) y la aprobación del Hito 3.
+- Cierre (2026-10-24): **Henry aprobó el Hito 3** (ADR-020). Pruebas de pasillo pendientes en
+  T-029 y T-049.
 
 ---
 

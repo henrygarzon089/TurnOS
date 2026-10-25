@@ -244,3 +244,15 @@
 - Consecuencias: toda función nueva necesita su `grant execute ... to authenticated` si la usa el
   personal. Pendiente de revisar si en algún momento se leyeron datos con esta vía (logs de la API
   de Supabase): el negocio de producción es solo de demostración con datos del seed.
+
+## ADR-020 · Aprobación del Hito 3 con pruebas de pasillo pendientes
+- Estado: **aceptada** (Henry, 2026-10-24: "apruebo el Hito 3")
+- Contexto: H3 (caja y comisiones) construido y en producción; matriz 144/144 CA con prueba;
+  CI verde en GitHub (unitarias con cobertura 100 % del dominio, pgTAP, integración, Lighthouse);
+  corrección de seguridad ADR-019 aplicada. Siguen manuales: prueba de pasillo con un barbero
+  (T-029, NFR-007) y con el dueño (T-049), e instalación en celulares reales.
+- Decisión: T-050 `[x]`; T-029 y T-049 siguen `[~]` hasta registrar esas pruebas aquí, como en
+  ADR-017. ADR-018 (reglas de cobro y anulación) sigue **provisional**: la aprobación del hito no
+  lo revisa punto por punto.
+- Consecuencias: el MVP de la especificación (REQ-001…REQ-034) queda construido. Lo siguiente sale
+  de los pendientes externos y de lo que muestre el uso real en la barbería.
