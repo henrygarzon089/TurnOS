@@ -105,7 +105,7 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
     // .first(): al refrescar la portada en vivo, Next puede volver a insertar el <link> (inofensivo)
     const apple = await page.locator('link[rel="apple-touch-icon"]').first().getAttribute("href");
     expect((await request.get(apple!)).ok()).toBe(true);
-    await expect(page.locator('meta[name="apple-mobile-web-app-title"]')).toHaveAttribute(
+    await expect(page.locator('meta[name="apple-mobile-web-app-title"]').first()).toHaveAttribute(
       "content",
       "Barbería La 33",
     );
