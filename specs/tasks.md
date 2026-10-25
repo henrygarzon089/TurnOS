@@ -516,7 +516,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `ticket.payment_status='paid'`.
 - Notas: migración `0022_register_sale.sql` (numeración real) + `supabase/tests/0022_register_sale.sql`
   (47) + `tests/unit/commission.test.ts` (8). Reglas que la spec no fijaba en **ADR-018**
-  (provisional, pendiente de revisión de Henry): precios del servidor, descuento solo del dueño
+  (aprobado por Henry el 2026-10-24): precios del servidor, descuento solo del dueño
   con motivo (`sale_items.discount_reason`), una venta **activa** por turno (índice parcial; el
   `unique` de 0021 se reemplazó y su pgTAP se ajustó), anular solo ventas de hoy y devolver el
   premio si la tarjeta nueva está vacía.
