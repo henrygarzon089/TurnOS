@@ -257,3 +257,15 @@
   mismo día.
 - Consecuencias: el MVP de la especificación (REQ-001…REQ-034) queda construido. Lo siguiente sale
   de los pendientes externos y de lo que muestre el uso real en la barbería.
+
+## ADR-021 · Prueba de pasillo e instalación en celulares reales (NFR-007, REQ-032.1)
+- Estado: **aceptada** (Henry, 2026-10-25)
+- Contexto: T-029 y T-049 quedaron `[~]` (ADR-017, ADR-020) hasta hacer la prueba de pasillo y la
+  instalación en celulares reales, contra producción (https://turnos-smoky-nine.vercel.app).
+- Resultado (reportado por Henry): **un barbero** completó llamar → en la silla → terminado → cobro
+  sin ayuda; **el dueño** cobró, registró una venta suelta y cerró la caja sin ayuda; la app se
+  instaló en **Android** (Chrome) y en **iPhone** (Safari, "Agregar a inicio"). Nada les costó ni
+  hubo preguntas; no quedaron hallazgos.
+- Decisión: NFR-007 y la verificación manual de REQ-032.1 se dan por cumplidas; T-029 y T-049 `[x]`.
+- Consecuencias: del MVP solo queda abierta T-010 (activar E2E en el CI con los secretos del
+  proyecto de Supabase y proteger `main`), que depende de configuración en GitHub.

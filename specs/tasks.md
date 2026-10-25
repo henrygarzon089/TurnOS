@@ -326,7 +326,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Terminado: pgTAP `REQ-002.3` guarda fecha y versión; E2E `REQ-002.5` nueva versión → el
   cliente vuelve a ver la casilla.
 
-### [~] T-029 · Pulido móvil, PWA y rendimiento del Hito 1
+### [x] T-029 · Pulido móvil, PWA y rendimiento del Hito 1 — 2026-10-25
 - REQ: REQ-032.1–32.2, NFR-001, NFR-007, NFR-008
 - Archivos: ajustes en componentes; `lighthouserc.json` con presupuestos
 - Terminado: Lighthouse móvil ≥ 80 rendimiento y ≥ 90 accesibilidad en `/[slug]`, `/t/[token]`,
@@ -346,8 +346,8 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   CI; la medición local usa `pnpm lighthouse` (incluye `/t/[token]` y `/app/fila`, que lhci no
   cubría). Higiene E2E: `resetQueue` desactiva barberos creados por las pruebas (llenaban la
   pantalla del TV) y privacidad con 60 s.
-- **Falta (manual, Henry):** instalar en un Android y un iPhone reales con HTTPS (tabla en el
-  README) y la prueba de pasillo con un barbero (NFR-007) registrada en `decisions.md`.
+- Cierre (2026-10-25): prueba de pasillo con un barbero e instalación en Android e iPhone
+  hechas por Henry contra producción, sin hallazgos (ADR-021).
 
 ### [x] T-030 · Validación Hito 1: matriz de trazabilidad — 2026-10-24
 - Nota (2026-10-23): `pnpm tsx scripts/traceability.ts --hito=1` deja solo 3 CA sin prueba
@@ -617,7 +617,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   24 h. REQ-028.3: `getWeekSummary` pide también la semana anterior; variación en
   `src/lib/domain/week.ts` (+ unitarias). `/admin/semana?semana=AAAA-MM-DD`, sin ir al futuro.
 
-### [~] T-049 · Pulido y rendimiento del Hito 3
+### [x] T-049 · Pulido y rendimiento del Hito 3 — 2026-10-25
 - REQ: NFR-001, NFR-007, NFR-008
 - Terminado: Lighthouse en `/admin/caja`; panel de cobro usable con una mano; prueba de pasillo
   con el dueño registrada en `decisions.md`.
@@ -627,8 +627,8 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   "Registrar" en la mitad inferior y zoom 200 % sin scroll; caja de hoy igual. Arreglos que salieron
   de esas pruebas: "Anular" medía 40 px (ahora 48) y las ventas anuladas usaban `opacity-70`, que
   dejaba el texto bajo 4,5:1 de contraste (ahora solo tachadas).
-- **Falta (manual, Henry):** prueba de pasillo con el dueño (cobrar, nueva venta, cerrar caja sin
-  ayuda) registrada en `decisions.md`; conviene hacerla junto con la de T-029 (ADR-017).
+- Cierre (2026-10-25): prueba de pasillo con el dueño (cobrar, venta suelta, cerrar caja) sin
+  ayuda ni hallazgos (ADR-021).
 
 ### [x] T-050 · Validación Hito 3: matriz de trazabilidad final — 2026-10-24
 - REQ: REQ-023…REQ-029 y todo el MVP

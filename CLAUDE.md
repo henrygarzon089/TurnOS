@@ -30,10 +30,10 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 ## Estado actual (2026-10-24)
 
 - **MVP completo**: Hitos 0–3 aprobados por Henry (ADR-017, ADR-020) y en producción. Matriz: 144 CA,
-  0 sin prueba. Abiertas: T-029/T-049 (pruebas de pasillo) y T-010 (E2E en CI, proteger `main`).
+  0 sin prueba. Prueba de pasillo e instalación hechas (ADR-021). Abierta solo T-010 (E2E en CI,
+  proteger `main`).
 - Producción: https://turnos-smoky-nine.vercel.app (Vercel `henry-garzons-projects/turnos` +
   Supabase `uucjmxdssnmvznibrafc`). CI en GitHub `henrygarzon089/TurnOS`.
-- Tareas `[~]` abiertas: T-010 (activar E2E en el CI y proteger `main`) y T-029 (parte manual).
 - Ver `docs/estado-del-proyecto.md` para el detalle y los pendientes externos.
 
 ## Stack y convenciones
@@ -69,7 +69,7 @@ pnpm trace      # regenera specs/traceability.md
 
 ## Cosas que ya se decidieron (no reabrir sin ADR)
 
-Ver `specs/decisions.md` (ADR-001…ADR-020). Resumen: barbero entra con celular + PIN de 6 dígitos
+Ver `specs/decisions.md` (ADR-001…ADR-021). Resumen: barbero entra con celular + PIN de 6 dígitos
 (cuenta alias `<cel>@barberos.turnos.local`); un solo servicio por turno; el barbero solo llama al
 primero de su fila, el dueño sí puede saltar/reordenar; toda la plata entra al negocio y el negocio
 liquida comisiones; el porcentaje es la parte del barbero sobre servicios después de descuento;

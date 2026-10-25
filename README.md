@@ -77,6 +77,7 @@ directo.
 **Personal**: repite con `https://<tu-dominio>/entrar`; se instala como "TurnOS" y abre en
 `/app`.
 
-| Fecha | Dispositivo | Resultado | Quién |
-| ----- | ----------- | --------- | ----- |
-|       |             |           |       |
+| Fecha      | Dispositivo      | Resultado                                  | Quién |
+| ---------- | ---------------- | ------------------------------------------ | ----- |
+| 2026-10-25 | Android (Chrome) | Se instala y abre la fila de la barbería ✓ | Henry |
+| 2026-10-25 | iPhone (Safari)  | Se instala y abre la fila de la barbería ✓ | Henry |

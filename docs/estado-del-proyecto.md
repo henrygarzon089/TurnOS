@@ -13,12 +13,12 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 
 ## Hecho
 
-| Hito                    | Tareas      | Estado                                                                          |
-| ----------------------- | ----------- | ------------------------------------------------------------------------------- |
-| H0 Cimientos            | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (CI verde; falta E2E en CI y proteger `main`)      |
-| H1 Fila virtual         | T-011…T-030 | **aprobado** (ADR-017); T-029 `[~]` (instalar en celulares y prueba de pasillo) |
-| H2 Clientes y fidelidad | T-031…T-039 | **aprobado** (ADR-017)                                                          |
-| H3 Caja y comisiones    | T-040…T-050 | **aprobado** (ADR-020); T-049 `[~]` (prueba de pasillo con el dueño)            |
+| Hito                    | Tareas      | Estado                                                                     |
+| ----------------------- | ----------- | -------------------------------------------------------------------------- |
+| H0 Cimientos            | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (CI verde; falta E2E en CI y proteger `main`) |
+| H1 Fila virtual         | T-011…T-030 | **aprobado** (ADR-017); pasillo e instalación hechos (ADR-021)             |
+| H2 Clientes y fidelidad | T-031…T-039 | **aprobado** (ADR-017)                                                     |
+| H3 Caja y comisiones    | T-040…T-050 | **aprobado** (ADR-020); pasillo con el dueño hecho (ADR-021)               |
 
 Pruebas en verde (Mac, 2026-10-24): 303 pgTAP · 58 unitarias · 27 integración · E2E de H2 32/32 (Pixel 7 + iPhone 13,
 corrida conjunta). Trazabilidad Hito 2: 0 CA sin prueba (`pnpm trace --hito=2`).
