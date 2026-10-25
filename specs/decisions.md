@@ -202,8 +202,9 @@
   así que conviene hacerla cuando exista el panel de cobro (T-043) y cubrir H1 y H3 de una vez.
 
 ## ADR-018 · Reglas de `register_sale` y `void_sale` que la spec no fijaba
-- Estado: **aceptada provisionalmente** (2026-10-24, Henry autorizó avanzar sin consultarle;
-  **pendiente de su revisión**). Cualquier punto se cambia con un ADR nuevo.
+- Estado: **aceptada** (Henry, 2026-10-24: "apruebo el ADR-018"; antes, provisional desde que se
+  implementó T-041 con su autorización de avanzar sin consultarle). Cualquier punto se cambia con un
+  ADR nuevo.
 - Contexto: REQ-023, REQ-025 y design.md §5.1 definen las fórmulas, pero no quién fija el precio,
   dónde queda el motivo del descuento, qué pasa con el turno al anular ni a nombre de quién queda
   una venta de productos de un barbero.
@@ -252,7 +253,7 @@
   corrección de seguridad ADR-019 aplicada. Siguen manuales: prueba de pasillo con un barbero
   (T-029, NFR-007) y con el dueño (T-049), e instalación en celulares reales.
 - Decisión: T-050 `[x]`; T-029 y T-049 siguen `[~]` hasta registrar esas pruebas aquí, como en
-  ADR-017. ADR-018 (reglas de cobro y anulación) sigue **provisional**: la aprobación del hito no
-  lo revisa punto por punto.
+  ADR-017. ADR-018 (reglas de cobro y anulación) seguía provisional; Henry lo aprobó aparte el
+  mismo día.
 - Consecuencias: el MVP de la especificación (REQ-001…REQ-034) queda construido. Lo siguiente sale
   de los pendientes externos y de lo que muestre el uso real en la barbería.
