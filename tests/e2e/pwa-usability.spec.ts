@@ -102,7 +102,8 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
       expect((await request.get(icon.src)).ok(), icon.src).toBe(true);
     }
     // iOS Safari: "Agregar a inicio" usa apple-touch-icon y apple-mobile-web-app-*
-    const apple = await page.locator('link[rel="apple-touch-icon"]').getAttribute("href");
+    // .first(): al refrescar la portada en vivo, Next puede volver a insertar el <link> (inofensivo)
+    const apple = await page.locator('link[rel="apple-touch-icon"]').first().getAttribute("href");
     expect((await request.get(apple!)).ok()).toBe(true);
     await expect(page.locator('meta[name="apple-mobile-web-app-title"]')).toHaveAttribute(
       "content",

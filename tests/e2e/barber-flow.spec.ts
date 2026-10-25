@@ -24,6 +24,9 @@ async function ensurePresent(page: Page) {
 }
 
 test.describe("Hito 1 · flujo del barbero", () => {
+  // En el build de producción la app registra un service worker (PWA) y Playwright no intercepta
+  // lo que pasa por él: sin esto, la prueba de "sin red" (REQ-011.3) no logra cortar la red.
+  test.use({ serviceWorkers: "block" });
   test.beforeEach(resetQueue); // cada prueba parte de la fila vacía
 
   test("REQ-007.1 → 7.3 → 7.4 llamar, en la silla, terminado; REQ-007.5 bloqueo con turno abierto", async ({
@@ -131,13 +134,15 @@ test.describe("Hito 1 · flujo del barbero", () => {
     await customerTakesTicket(cctx, "Sin red");
     await loginAsBarber(page, 0);
     await ensurePresent(page);
-    await page.route("**/app/fila", (route) =>
+    // La acción del servidor va a /app/fila (en el build de producción, con query): solo la ruta
+    const isQueuePage = (url: URL) => url.pathname === "/app/fila";
+    await page.route(isQueuePage, (route) =>
       route.request().method() === "POST" ? route.abort("failed") : route.continue(),
     );
     await page.getByRole("button", { name: "Llamar al siguiente" }).click();
     await expect(appAlert(page)).toContainText("Revisa tu conexión", { timeout: 15000 });
     await expect(page.getByText("Nadie en la silla.")).toBeVisible();
-    await page.unroute("**/app/fila");
+    await page.unroute(isQueuePage);
     await cctx.close();
   });
 });

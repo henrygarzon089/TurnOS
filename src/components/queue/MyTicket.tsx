@@ -139,7 +139,8 @@ function StatusCard({ ticket }: { ticket: Ticket }) {
         >
           {e ? (
             <>
-              <p className="text-4xl font-bold">
+              {/* NFR-008: tamaño según el ancho; "siguiente" no cabía en 36 px con zoom 200 % */}
+              <p className="text-[clamp(1.5rem,9vw,2.25rem)] leading-tight font-bold [overflow-wrap:anywhere]">
                 {e.position === 1 ? "Eres el siguiente" : `Eres el ${e.position}.º`}
               </p>
               <p className="text-muted mt-1">
