@@ -185,6 +185,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Nota (2026-10-24): **arreglo** en `0020_close_expired_midnight.sql`: `closes_at + 60 min` se sumaba
   sobre `time` y daba la vuelta a medianoche (cierre 23:30 → el cron cancelaba todo el día). Ahora
   se compara como timestamp; pgTAP `supabase/tests/0020_close_expired_midnight.sql`.
+- Nota (2026-10-26): **arreglo** (REQ-017.2, la apertura manual "prevalece ese día"): el cron
+  cancelaba los turnos tras cierre + 60 min aunque el dueño hubiera abierto la fila. Migración
+  `0029_close_expired_override_open.sql` + pgTAP `0029_override_open.sql`.
 
 ### [x] T-015 · Broadcast Realtime desde triggers y hook de suscripción
 - Nota (2026-10-24): NFR-002 medido de punta a punta con Realtime de `supabase start`: el E2E
@@ -297,6 +300,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Terminado: E2E `REQ-012.2` cada acción del menú; `REQ-012.3` turno manual sin celular no crea
   ficha; `REQ-012.4` "Cerrar fila por hoy" cancela y bloquea `/[slug]`; `REQ-012.5` dueño con
   silla opera en `/app/fila`; `REQ-010.6` pausar/reactivar barbero.
+- Nota (2026-10-26): **arreglo** (REQ-017.2): "Abrir fila" volvía a `auto`, así que fuera de
+  horario la fila seguía cerrada. Ahora, si la fila está cerrada (por horario o a mano), el botón
+  es "Abrir fila hoy" y pone `queue_override='open'` por el día. E2E `REQ-017.2` en
+  `owner-queue.spec.ts`.
 
 ### [x] T-026 · QR, enlace y compartir
 - Nota (2026-10-24): E2E en verde en la Mac (2026-10-24) contra `supabase start`, Pixel 7 + iPhone 13, `--workers=1`. Desvío en la prueba: WebKit no admite el permiso `clipboard-write`; en

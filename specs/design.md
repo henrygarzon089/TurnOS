@@ -453,7 +453,9 @@ Reglas adicionales que `transition_ticket` aplica:
   `status='off'`, `is_active=false`, y revocación de la sesión (borrar membresía).
 - **Cierre** (REQ-014): `close_expired_queues()` cancela `waiting` y `called` con
   `cancel_reason='closing'` para negocios cuyo `closes_at + 60 min` (hoy, Bogotá) ya pasó o cuyo
-  `queue_override='closed'` para hoy. También lo invoca "Cerrar fila por hoy".
+  `queue_override='closed'` para hoy. También lo invoca "Cerrar fila por hoy". Con
+  `queue_override='open'` para hoy (REQ-017.2) no cancela por horario; los turnos de días
+  anteriores se cancelan siempre (REQ-014.2). Migración 0029.
 
 Estado del barbero (`barbers.status`):
 
@@ -703,7 +705,7 @@ REQ-013, REQ-030, REQ-032, REQ-033, NFR-002, NFR-004.
 | `getBusinessQueue()` | dueño | `get_business_queue` | REQ-012.1 |
 | `callTicket`, `uncallTicket`, `cancelTicket`, `reassignTicket`, `moveTicket(ticketId, afterTicketId)` | dueño | `transition_ticket`, `reorder_ticket` | REQ-012.2 |
 | `addManualTicket({name, phone?, serviceId, preferredBarberId?})` | dueño/barbero | `add_manual_ticket` | REQ-012.3 |
-| `setQueueOverride('open'|'closed'|'auto')` | dueño | update + `close_expired_queues` si `closed` | REQ-012.4 |
+| `setQueueOverride('open'|'closed'|'auto')` | dueño | update + `close_expired_queues` si `closed`; "Abrir fila hoy" usa `open` | REQ-012.4, REQ-017.2 |
 | `setBarberPresent(barberId, present)` | dueño (o barbero propio) | `set_barber_status('available'|'off')` | REQ-016.4 |
 | CRUD servicios, productos, barberos, horario, plantillas, fidelidad, negocio | dueño | inserts/updates con RLS | REQ-015…017, 019, 024, 033 |
 | `inviteBarber(barberId)` | dueño | insert `invitations` | REQ-030.2 |
