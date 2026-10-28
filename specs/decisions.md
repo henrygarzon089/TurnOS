@@ -285,7 +285,7 @@
   `design.md` §8: "E2E contra Supabase local del CI (ADR-022)".
 
 ## ADR-023 · Servicios por barbero (REQ-035)
-- Estado: **propuesta** (2026-10-28, grill con Henry; pendiente de aprobación)
+- Estado: **aceptada** (Henry, 2026-10-28)
 - Contexto: Filo tiene 4 sillas de hombre, 1 de mujer y una persona aparte para manicure y
   pedicure. REQ-003, REQ-006 y REQ-007 suponen que cualquier barbero hace cualquier servicio: un
   turno de "El que esté libre" le cae al primero que llame, y un cepillado le puede caer a quien

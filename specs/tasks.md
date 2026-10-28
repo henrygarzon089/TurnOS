@@ -22,7 +22,7 @@
 | H1 | Fila virtual con QR usable por la barbería | T-011…T-030 | REQ-001…REQ-014, REQ-033, NFR-001/002/003/007/008 |
 | H2 | Clientes y fidelidad | T-031…T-039 | REQ-018…REQ-022 |
 | H3 | Caja y comisiones | T-040…T-050 | REQ-023…REQ-029 |
-| H4 | Servicios por barbero (Filo) — **propuesta** | T-051…T-057 | REQ-035 |
+| H4 | Servicios por barbero (Filo) | T-051…T-057 | REQ-035 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -652,9 +652,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ---
 
-## Hito 4 — Servicios por barbero (propuesta, ADR-023)
+## Hito 4 — Servicios por barbero (ADR-023)
 
-> Pendiente de aprobación de REQ-035 / ADR-023. La migración es la `0030` (la `0029` es de la rama
+> REQ-035 y ADR-023 aprobados por Henry (2026-10-28). La migración es la `0030` (la `0029` es de la rama
 > `fix/abrir-fila-hoy`).
 
 ### [ ] T-051 · Migración y pgTAP: `barber_services`

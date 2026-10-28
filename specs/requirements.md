@@ -23,7 +23,7 @@
 3. Hito 2 — Clientes y fidelidad (REQ-018 a REQ-022)
 4. Hito 3 — Caja y comisiones (REQ-023 a REQ-029)
 5. Transversales: cuentas, negocio, configuración (REQ-030 a REQ-034)
-5b. Hito 4 — Servicios por barbero (REQ-035, propuesta)
+5b. Hito 4 — Servicios por barbero (REQ-035)
 6. Requisitos no funcionales (NFR)
 7. Casos borde consolidados
 8. Fuera de alcance del MVP
@@ -542,7 +542,7 @@ cuánto le corresponde a cada barbero.
 ## 5b. Hito 4 — Servicios por barbero
 
 ### REQ-035 · Servicios por barbero — M
-> Estado: **PROPUESTA** (2026-10-28, grill con Henry; pendiente de aprobación). Sale de Filo: 4
+> Estado: **APROBADA** (Henry, 2026-10-28, tras grill). Sale de Filo: 4
 > sillas de hombre y 1 de mujer, y una persona aparte para manicure y pedicure. Ver ADR-023.
 
 **Como** dueño, **quiero** decir qué servicios hace cada barbero, **para** que un cepillado no le
