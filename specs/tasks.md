@@ -22,6 +22,7 @@
 | H1 | Fila virtual con QR usable por la barbería | T-011…T-030 | REQ-001…REQ-014, REQ-033, NFR-001/002/003/007/008 |
 | H2 | Clientes y fidelidad | T-031…T-039 | REQ-018…REQ-022 |
 | H3 | Caja y comisiones | T-040…T-050 | REQ-023…REQ-029 |
+| H4 | Servicios por barbero (Filo) — **propuesta** | T-051…T-057 | REQ-035 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -651,6 +652,62 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ---
 
+## Hito 4 — Servicios por barbero (propuesta, ADR-023)
+
+> Pendiente de aprobación de REQ-035 / ADR-023. La migración es la `0030` (la `0029` es de la rama
+> `fix/abrir-fila-hoy`).
+
+### [ ] T-051 · Migración y pgTAP: `barber_services`
+- REQ: REQ-035.1–35.5, REQ-035.12
+- Archivos: `supabase/migrations/0030_barber_services.sql` (tabla, RLS, llenado inicial, triggers
+  en `barbers` y `services`, `barber_does_service`, `set_barber_services`, `set_service_barbers`,
+  permisos de ADR-019), `supabase/tests/0030_barber_services.sql`
+- Terminado: pgTAP: combinaciones existentes llenas; barbero/servicio nuevo con todos;
+  `NO_SERVICES`; otro negocio no ve ni cambia filas (REQ-031); barbero "manicure" con solo esos
+  servicios; `0029_function_grants` actualizado con las funciones nuevas.
+
+### [ ] T-052 · Fila: `join_queue`, `add_manual_ticket`, `call_next` y acciones del dueño
+- REQ: REQ-035.7–35.9, REQ-035.11–35.13
+- Archivos: misma migración `0030` (o `0031`), `supabase/tests/0031_queue_by_service.sql`
+- Terminado: pgTAP: `BARBER_CANT_DO_SERVICE` y `NO_BARBER_FOR_SERVICE`; `call_next` salta lo que
+  no hace y respeta `skip locked` (REQ-007.2); preferido conservado tras quitar el servicio
+  (REQ-035.12); reasignar/llamar con barbero valida; `register_sale` sin validación (REQ-035.13).
+
+### [ ] T-053 · Dominio: `estimateQueue` con `capableBarberIds`
+- REQ: REQ-035.10, REQ-004.1, REQ-004.5
+- Archivos: `src/lib/domain/queue-estimate.ts`, `tests/unit/queue-estimate.test.ts`, lecturas
+  que arman la entrada (`get_ticket_by_token`, `get_barber_queue`, `get_business_queue`)
+- Terminado: el ejemplo de §4 sigue igual con "todos hacen todo"; ejemplo nuevo con estilista
+  (cepillado solo con ella; ella en pausa → `null` y "Esperando a que haya quién te atienda");
+  cobertura de ramas 100 %.
+
+### [ ] T-054 · Formulario del cliente
+- REQ: REQ-035.6, REQ-035.7
+- Archivos: `get_public_business`, formulario `/[slug]/turno`
+- Terminado: E2E: al escoger "Cepillado" solo aparece la estilista; al cambiar a un servicio que
+  el preferido no hace vuelve a "El que esté libre"; servicio en gris "Hoy no hay quién lo haga".
+
+### [ ] T-055 · Pantallas del dueño: Barberos y Servicios
+- REQ: REQ-035.1–35.3, REQ-035.11
+- Archivos: `/admin/barberos`, `/admin/servicios`, `src/lib/actions/admin.ts`, "Agregar cliente" y
+  menú del turno en `/admin/fila`
+- Terminado: E2E: desmarcar servicios de un barbero, "Marca al menos un servicio", "Quién lo
+  hace" al crear un servicio, y en "Agregar cliente" solo aparecen los que hacen el servicio.
+
+### [ ] T-056 · Fila del barbero y "Mi turno"
+- REQ: REQ-035.9, REQ-035.10
+- Archivos: `/app/fila`, `/t/[token]`
+- Terminado: E2E con dos barberos: el turno de cepillado "cualquiera" solo aparece y se llama
+  donde la estilista; con ella en pausa, el cliente ve "Esperando a que haya quién te atienda".
+
+### [ ] T-057 · Validación Hito 4: matriz de trazabilidad
+- REQ: REQ-035
+- Archivos: `scripts/traceability.ts` (`HITOS["4"] = [[35, 35]]`), `docs/estado-del-proyecto.md`
+- Terminado: `pnpm trace --hito=4` sin huecos; CI verde; aprobación de Henry; script de Filo
+  actualizado para marcar los servicios de la estilista.
+
+---
+
 ## Dependencias principales
 
 ```mermaid
@@ -662,4 +719,5 @@ flowchart LR
   T017 --> T018 --> T019 --> T020 --> T021 --> T022 --> T023 --> T024 --> T025 --> T026 --> T027 --> T028 --> T029 --> T030
   T030 --> T031 --> T032 --> T033 --> T034 --> T035 --> T036 --> T037 --> T038 --> T039
   T039 --> T040 --> T041 --> T042 --> T043 --> T044 --> T045 --> T046 --> T047 --> T048 --> T049 --> T050
+  T050 --> T051 --> T052 --> T053 --> T054 --> T055 --> T056 --> T057
 ```

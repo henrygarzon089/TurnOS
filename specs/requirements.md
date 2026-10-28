@@ -23,6 +23,7 @@
 3. Hito 2 — Clientes y fidelidad (REQ-018 a REQ-022)
 4. Hito 3 — Caja y comisiones (REQ-023 a REQ-029)
 5. Transversales: cuentas, negocio, configuración (REQ-030 a REQ-034)
+5b. Hito 4 — Servicios por barbero (REQ-035, propuesta)
 6. Requisitos no funcionales (NFR)
 7. Casos borde consolidados
 8. Fuera de alcance del MVP
@@ -535,6 +536,64 @@ cuánto le corresponde a cada barbero.
   5 barberos con distintos porcentajes de comisión, 5–6 servicios con precios en COP, 4–5
   productos, ~30 clientes con historial y una fila con turnos en distintos estados, para pruebas y
   demostración.
+
+---
+
+## 5b. Hito 4 — Servicios por barbero
+
+### REQ-035 · Servicios por barbero — M
+> Estado: **PROPUESTA** (2026-10-28, grill con Henry; pendiente de aprobación). Sale de Filo: 4
+> sillas de hombre y 1 de mujer, y una persona aparte para manicure y pedicure. Ver ADR-023.
+
+**Como** dueño, **quiero** decir qué servicios hace cada barbero, **para** que un cepillado no le
+caiga a quien solo corta pelo de hombre.
+
+Configuración
+
+- REQ-035.1 El dueño DEBE poder marcar, al crear o editar un barbero, los servicios que hace
+  ("Servicios que hace"); al crear un barbero, todos los servicios activos vienen marcados.
+- REQ-035.2 El dueño DEBE poder marcar, al crear o editar un servicio, qué barberos lo hacen
+  ("Quién lo hace"); al crear un servicio, todos los barberos activos vienen marcados. Es la misma
+  relación que REQ-035.1, vista desde el servicio.
+- REQ-035.3 SI el dueño intenta guardar un barbero activo sin ningún servicio marcado, ENTONCES
+  EL SISTEMA DEBE impedirlo con el mensaje "Marca al menos un servicio".
+- REQ-035.4 CUANDO se activa esta función en un negocio existente, EL SISTEMA DEBE considerar que
+  cada barbero hace todos los servicios (nada cambia hasta que el dueño desmarque).
+- REQ-035.5 La persona que solo hace manicure y pedicure (u otro servicio que no es de barbería)
+  se registra como un barbero más, con solo esos servicios marcados; la interfaz sigue diciendo
+  "barbero".
+
+Fila
+
+- REQ-035.6 CUANDO el cliente escoge un servicio en el formulario (REQ-003.1), EL SISTEMA DEBE
+  mostrar solo los barberos presentes que hacen ese servicio, más "El que esté libre"; SI el
+  barbero seleccionado (o el preferido prellenado, REQ-022) no hace el servicio nuevo, ENTONCES EL
+  SISTEMA DEBE volver a seleccionar "El que esté libre".
+- REQ-035.7 SI ningún barbero presente hace un servicio, ENTONCES EL SISTEMA DEBE mostrarlo en
+  gris con "Hoy no hay quién lo haga" y no dejar escogerlo; `join_queue` DEBE rechazarlo también
+  en el servidor.
+- REQ-035.8 `join_queue` y `add_manual_ticket` DEBEN rechazar un barbero preferido que no hace el
+  servicio del turno.
+- REQ-035.9 Un turno de "El que esté libre" DEBE aparecer solo en la fila de los barberos que
+  hacen su servicio, y "Llamar al siguiente" DEBE traer el primer turno que el barbero puede
+  atender (saltando los demás), conservando la regla de carrera de REQ-007.2.
+- REQ-035.10 La posición y el tiempo estimado (REQ-004) DEBEN calcularse solo con los barberos que
+  hacen el servicio del turno; SI ninguno de ellos está atendiendo (todos en pausa o ausentes),
+  ENTONCES el cliente DEBE ver "Esperando a que haya quién te atienda" en lugar del tiempo, y el
+  turno sigue en la fila (nunca pasa a un barbero que no hace el servicio).
+- REQ-035.11 CUANDO el dueño agrega un cliente a mano, reasigna un turno o lo llama con un barbero
+  (REQ-012.2, REQ-012.3), EL SISTEMA DEBE ofrecer solo los barberos que hacen ese servicio y
+  rechazar en el servidor cualquier otro.
+- REQ-035.12 CUANDO el dueño cambia los servicios de un barbero, los turnos que ya están
+  esperando con ese barbero como preferido DEBEN quedarse con él; la regla aplica a los turnos
+  nuevos y a los de "El que esté libre".
+
+Caja
+
+- REQ-035.13 El cobro y la nueva venta (REQ-023, REQ-024) NO validan quién hace qué: la caja
+  registra lo que pasó y la comisión se calcula igual (REQ-025).
+
+Fuera de alcance de REQ-035: duración o precio distintos por barbero (PA-09 sigue vigente).
 
 ---
 

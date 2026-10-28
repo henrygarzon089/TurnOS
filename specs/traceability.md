@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-10-25.
+> Generada por `scripts/traceability.ts` el 2026-10-28.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -22,13 +22,13 @@
 | REQ-003.5 | Tomar turno | T-003 (hecha), T-011 (hecha), T-014 (hecha), T-017 (hecha), T-019 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0005_queue.sql, 0008_public_fns.sql | cubierto |
 | REQ-003.6 | Tomar turno | T-003 (hecha), T-011 (hecha), T-014 (hecha), T-017 (hecha), T-019 (hecha) | 0012_hito1_gaps.sql | cubierto |
 | REQ-003.7 | Tomar turno | T-003 (hecha), T-011 (hecha), T-014 (hecha), T-017 (hecha), T-019 (hecha) | customer-flow.spec.ts | cubierto |
-| REQ-004.1 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | public-queue.test.ts, queue-estimate.test.ts, 0008_public_fns.sql | cubierto |
-| REQ-004.2 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts, queue-subscription.test.ts | cubierto |
-| REQ-004.3 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts | cubierto |
-| REQ-004.4 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | hito1-gaps.spec.ts | cubierto |
-| REQ-004.5 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts, domain-branches.test.ts, queue-estimate.test.ts, time.test.ts | cubierto |
-| REQ-004.6 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts | cubierto |
-| REQ-004.7 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0008_public_fns.sql | cubierto |
+| REQ-004.1 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (pendiente) | public-queue.test.ts, queue-estimate.test.ts, 0008_public_fns.sql | prueba escrita |
+| REQ-004.2 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (pendiente) | customer-flow.spec.ts, queue-subscription.test.ts | prueba escrita |
+| REQ-004.3 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (pendiente) | customer-flow.spec.ts | prueba escrita |
+| REQ-004.4 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (pendiente) | hito1-gaps.spec.ts | prueba escrita |
+| REQ-004.5 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (pendiente) | customer-flow.spec.ts, domain-branches.test.ts, queue-estimate.test.ts, time.test.ts | prueba escrita |
+| REQ-004.6 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (pendiente) | customer-flow.spec.ts | prueba escrita |
+| REQ-004.7 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (pendiente) | customer-flow.spec.ts, public-queue.test.ts, 0008_public_fns.sql | prueba escrita |
 | REQ-005.1 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-005.2 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0006_transitions.sql, 0008_public_fns.sql | cubierto |
 | REQ-005.3 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | hito1-gaps.spec.ts, public-queue.test.ts | cubierto |
@@ -149,3 +149,16 @@
 | REQ-032.2 | PWA instalable | T-001 (hecha), T-010 (en curso), T-029 (hecha) | pwa-usability.spec.ts | prueba escrita |
 | REQ-033.1 | Plantillas de mensajes de WhatsApp | T-024 (hecha) | admin-config.spec.ts, render-template.test.ts, 0002_core.sql | cubierto |
 | REQ-034.1 | Datos de ejemplo (seed) | T-009 (hecha), T-030 (hecha) | 0009_seed.sql | cubierto |
+| REQ-035.1 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.2 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.3 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.4 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.5 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.6 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.7 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.8 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.9 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.10 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.11 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.12 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.13 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
