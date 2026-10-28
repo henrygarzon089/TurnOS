@@ -569,9 +569,11 @@ Fila
   mostrar solo los barberos presentes que hacen ese servicio, más "El que esté libre"; SI el
   barbero seleccionado (o el preferido prellenado, REQ-022) no hace el servicio nuevo, ENTONCES EL
   SISTEMA DEBE volver a seleccionar "El que esté libre".
-- REQ-035.7 SI ningún barbero presente hace un servicio, ENTONCES EL SISTEMA DEBE mostrarlo en
-  gris con "Hoy no hay quién lo haga" y no dejar escogerlo; `join_queue` DEBE rechazarlo también
-  en el servidor.
+- REQ-035.7 SI hay al menos un barbero presente y ninguno de los presentes hace un servicio,
+  ENTONCES EL SISTEMA DEBE mostrarlo en gris con "Hoy no hay quién lo haga" y no dejar escogerlo;
+  `join_queue` DEBE rechazarlo también en el servidor. Si todavía no hay nadie presente (el negocio
+  abrió y no ha llegado ningún barbero), todo sigue como antes: se puede tomar turno y el cliente
+  ve "No hay barberos atendiendo en este momento" (Henry, 2026-10-28, Q16).
 - REQ-035.8 `join_queue` y `add_manual_ticket` DEBEN rechazar un barbero preferido que no hace el
   servicio del turno.
 - REQ-035.9 Un turno de "El que esté libre" DEBE aparecer solo en la fila de los barberos que

@@ -44,7 +44,7 @@
 | REQ-007.5 | Llamar al siguiente, en servicio, terminado | T-011 (hecha), T-012 (hecha), T-013 (hecha), T-021 (hecha), T-022 (hecha) | barber-flow.spec.ts, 0006_transitions.sql, 0007_queue_ops.sql | cubierto |
 | REQ-007.6 | Llamar al siguiente, en servicio, terminado | T-011 (hecha), T-012 (hecha), T-013 (hecha), T-021 (hecha), T-022 (hecha) | 0007_queue_ops.sql | cubierto |
 | REQ-007.7 | Llamar al siguiente, en servicio, terminado | T-011 (hecha), T-012 (hecha), T-013 (hecha), T-021 (hecha), T-022 (hecha) | 0005_queue.sql, 0010_notify.sql | cubierto |
-| REQ-007.8 | Llamar al siguiente, en servicio, terminado | T-011 (hecha), T-012 (hecha), T-013 (hecha), T-021 (hecha), T-022 (hecha) | 0012_hito1_gaps.sql | cubierto |
+| REQ-007.8 | Llamar al siguiente, en servicio, terminado | T-011 (hecha), T-012 (hecha), T-013 (hecha), T-021 (hecha), T-022 (hecha) | 0012_hito1_gaps.sql, 0031_queue_by_service.sql | cubierto |
 | REQ-008.1 | Cliente que no llega | T-012 (hecha), T-020 (hecha), T-022 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-008.2 | Cliente que no llega | T-012 (hecha), T-020 (hecha), T-022 (hecha) | barber-flow.spec.ts, 0006_transitions.sql | cubierto |
 | REQ-008.3 | Cliente que no llega | T-012 (hecha), T-020 (hecha), T-022 (hecha) | 0013_customers_loyalty.sql | cubierto |
@@ -149,16 +149,16 @@
 | REQ-032.2 | PWA instalable | T-001 (hecha), T-010 (en curso), T-029 (hecha) | pwa-usability.spec.ts | prueba escrita |
 | REQ-033.1 | Plantillas de mensajes de WhatsApp | T-024 (hecha) | admin-config.spec.ts, render-template.test.ts, 0002_core.sql | cubierto |
 | REQ-034.1 | Datos de ejemplo (seed) | T-009 (hecha), T-030 (hecha) | 0009_seed.sql | cubierto |
-| REQ-035.1 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
-| REQ-035.2 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
-| REQ-035.3 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
-| REQ-035.4 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
-| REQ-035.5 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
-| REQ-035.6 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.7 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.8 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.9 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
-| REQ-035.10 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.11 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.12 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.13 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.1 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
+| REQ-035.2 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
+| REQ-035.3 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
+| REQ-035.4 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
+| REQ-035.5 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
+| REQ-035.6 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.7 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0031_queue_by_service.sql | prueba escrita |
+| REQ-035.8 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0031_queue_by_service.sql | prueba escrita |
+| REQ-035.9 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql, 0031_queue_by_service.sql | prueba escrita |
+| REQ-035.10 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0031_queue_by_service.sql | prueba escrita |
+| REQ-035.11 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0031_queue_by_service.sql | prueba escrita |
+| REQ-035.12 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0031_queue_by_service.sql | prueba escrita |
+| REQ-035.13 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0031_queue_by_service.sql | prueba escrita |

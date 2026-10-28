@@ -463,7 +463,8 @@ Reglas adicionales que `transition_ticket` aplica:
 - **Servicio por barbero** (REQ-035.8, REQ-035.11): `join_queue`, `add_manual_ticket`,
   `transition_ticket` (llamar con un barbero, reasignar) y `reorder`/reasignar fallan con
   `BARBER_CANT_DO_SERVICE` si el barbero elegido no hace el servicio; `join_queue` falla con
-  `NO_BARBER_FOR_SERVICE` si ningún barbero presente lo hace (REQ-035.7). `register_sale` no
+  `NO_BARBER_FOR_SERVICE` si hay barberos presentes y ninguno lo hace (REQ-035.7; con nadie
+  presente no aplica). `register_sale` no
   valida esto (REQ-035.13).
 - **Pausa** (REQ-010): `set_barber_status(paused, reassign boolean)`: falla con `BARBER_BUSY` si
   tiene turno `called`/`in_service`; si `reassign=true`, pone `preferred_barber_id=null` a sus
