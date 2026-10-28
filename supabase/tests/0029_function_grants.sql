@@ -27,8 +27,9 @@ select is(
                        'create_business', 'customer_loyalty', 'inactive_customers', 'is_business_open',
                        'mark_ticket_notified', 'mark_ticket_unpaid', 'merge_customers', 'redeem_loyalty_card',
                        'register_sale', 'remove_barber', 'reopen_cash_day', 'reorder_ticket', 'search_customers',
-                       'set_barber_status', 'transition_ticket', 'void_sale', 'weekly_summary')),
-  26, 'REQ-031.1 el personal ejecuta las funciones de su trabajo (cada una valida el negocio)');
+                       'set_barber_services', 'set_barber_status', 'set_service_barbers', 'transition_ticket',
+                       'void_sale', 'weekly_summary')),
+  28, 'REQ-031.1 el personal ejecuta las funciones de su trabajo (cada una valida el negocio)');
 
 select ok(has_function_privilege('authenticated', 'is_member_of(uuid)', 'execute')
           and has_function_privilege('authenticated', 'is_owner_of(uuid)', 'execute')
