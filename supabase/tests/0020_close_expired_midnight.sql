@@ -19,8 +19,8 @@ select close_expired_queues();
 select is((select status::text from tickets where customer_phone_e164 = '+573005558001'), 'waiting',
   'REQ-014.1 un cierre cerca de medianoche no cancela los turnos durante el día');
 
--- Con el cierre ya pasado (+60 min) sí cancela: el turno pasa a ser de ayer.
-update tickets set business_day = business_day - 1 where customer_phone_e164 = '+573005558001';
+-- Turno de un día anterior (lejano, para no chocar con la secuencia de días reales): se cancela.
+update tickets set business_day = business_day - 3650 where customer_phone_e164 = '+573005558001';
 select close_expired_queues();
 select is((select status::text from tickets where customer_phone_e164 = '+573005558001'), 'cancelled',
   'REQ-014.2 ningún turno activo sobrevive al día siguiente');
