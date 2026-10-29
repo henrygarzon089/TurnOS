@@ -49,7 +49,7 @@ async function seedCash(q: Q) {
   };
   await q(
     `insert into cash_closures (business_id, business_day, totals, cash_expected, cash_counted, difference, closed_by)
-     values ($1, current_date - 1, '{}', 0, 0, 0, $2)`,
+     values ($1, business_day_bogota(now()) - 1, '{}', 0, 0, 0, $2)`,
     [f.businessA, USERS.ownerA],
   );
   await q("update barbers set commission_pct = 65 where id = $1", [f.barberA]);
@@ -101,7 +101,7 @@ describe("REQ-029.1 / REQ-023.7 / REQ-031.1 RLS de caja", () => {
       await expectSqlError(
         q,
         `insert into sales (business_id, business_day, services_total, products_total, total)
-         values ($1, current_date, 0, 0, 0)`,
+         values ($1, business_day_bogota(now()), 0, 0, 0)`,
         [f.businessA],
         "42501",
       );
