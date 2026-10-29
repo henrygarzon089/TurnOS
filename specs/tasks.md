@@ -741,11 +741,15 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   Supabase local: 166/174; las fallas no son de REQ-035 (invitación con la IP de `.env.local`,
   inicios de sesión lentos y `barber-flow` intermitente en WebKit con `pnpm dev`).
 
-### [ ] T-056 · Fila del barbero y "Mi turno"
+### [x] T-056 · Fila del barbero y "Mi turno" — 2026-10-28
 - REQ: REQ-035.9, REQ-035.10
 - Archivos: `/app/fila`, `/t/[token]`
 - Terminado: E2E con dos barberos: el turno de cepillado "cualquiera" solo aparece y se llama
   donde la estilista; con ella en pausa, el cliente ve "Esperando a que haya quién te atienda".
+- Notas: sin código nuevo de pantalla: la fila del barbero sale de `barber_queue_tickets` (T-052)
+  y el texto de "Mi turno" llegó con T-053 (`no_capable`). E2E `barber-queue-by-service.spec.ts`
+  4/4 (Pixel 7 + iPhone 13, `--workers=1`): Juan no ve el cepillado, Mateo sí y lo llama; con
+  Mateo en pausa el cliente ve "Esperando a que haya quién te atienda".
 
 ### [ ] T-057 · Validación Hito 4: matriz de trazabilidad
 - REQ: REQ-035
