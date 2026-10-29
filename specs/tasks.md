@@ -664,17 +664,23 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 > REQ-035 y ADR-023 aprobados por Henry (2026-10-28). La migración es la `0030` (la `0029` es de la rama
 > `fix/abrir-fila-hoy`).
 
-### [ ] T-051 · Migración y pgTAP: `barber_services`
-- REQ: REQ-035.1–35.5, REQ-035.12
+### [x] T-051 · Migración y pgTAP: `barber_services` — 2026-10-28
+- REQ: REQ-035.1–35.5
 - Archivos: `supabase/migrations/0030_barber_services.sql` (tabla, RLS, llenado inicial, triggers
   en `barbers` y `services`, `barber_does_service`, `set_barber_services`, `set_service_barbers`,
   permisos de ADR-019), `supabase/tests/0030_barber_services.sql`
 - Terminado: pgTAP: combinaciones existentes llenas; barbero/servicio nuevo con todos;
   `NO_SERVICES`; otro negocio no ve ni cambia filas (REQ-031); barbero "manicure" con solo esos
   servicios; `0029_function_grants` actualizado con las funciones nuevas.
+- Notas: pgTAP `0030_barber_services.sql` (17) y `0029_function_grants` (28 funciones del personal);
+  suite completa 490/490 sobre el shim, y 0029 también sobre la imagen real de Supabase. Desvíos:
+  (1) REQ-035.12 pasa a T-052 (necesita `call_next`); (2) los *default privileges* de 0028 no
+  alcanzaron a las funciones nuevas (anon podía ejecutarlas en el shim), así que la migración
+  revoca y concede explícitamente; (3) `barber_does_service` es interna (solo `service_role` y
+  funciones `security definer`); la app y las pruebas con sesión leen `barber_services` por RLS.
 
 ### [ ] T-052 · Fila: `join_queue`, `add_manual_ticket`, `call_next` y acciones del dueño
-- REQ: REQ-035.7–35.9, REQ-035.11–35.13
+- REQ: REQ-035.7–35.9, REQ-035.11–35.13 (incluye REQ-035.12, movido desde T-051)
 - Archivos: misma migración `0030` (o `0031`), `supabase/tests/0031_queue_by_service.sql`
 - Terminado: pgTAP: `BARBER_CANT_DO_SERVICE` y `NO_BARBER_FOR_SERVICE`; `call_next` salta lo que
   no hace y respeta `skip locked` (REQ-007.2); preferido conservado tras quitar el servicio

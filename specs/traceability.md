@@ -141,7 +141,7 @@
 | REQ-030.2 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | onboarding.spec.ts, 0004_invitations.sql, 0028_mvp_gaps.sql, 0029_function_grants.sql | cubierto |
 | REQ-030.3 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts | cubierto |
 | REQ-030.4 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts, 0004_invitations.sql | cubierto |
-| REQ-031.1 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-cash.test.ts, 0002_core.sql, 0003_rls_core.sql, 0017_loyalty_progress.sql, 0029_function_grants.sql | cubierto |
+| REQ-031.1 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-cash.test.ts, 0002_core.sql, 0003_rls_core.sql, 0017_loyalty_progress.sql, 0029_function_grants.sql, 0030_barber_services.sql | cubierto |
 | REQ-031.2 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | 0008_public_fns.sql, 0009_realtime.sql | cubierto |
 | REQ-031.3 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | 0028_mvp_gaps.sql | cubierto |
 | REQ-031.4 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-core.test.ts, 0003_rls_core.sql | cubierto |
@@ -149,16 +149,16 @@
 | REQ-032.2 | PWA instalable | T-001 (hecha), T-010 (en curso), T-029 (hecha) | pwa-usability.spec.ts | prueba escrita |
 | REQ-033.1 | Plantillas de mensajes de WhatsApp | T-024 (hecha) | admin-config.spec.ts, render-template.test.ts, 0002_core.sql | cubierto |
 | REQ-034.1 | Datos de ejemplo (seed) | T-009 (hecha), T-030 (hecha) | 0009_seed.sql | cubierto |
-| REQ-035.1 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.2 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.3 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.4 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.5 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.6 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.7 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.8 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.9 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.10 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.11 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.12 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
-| REQ-035.13 | Servicios por barbero | T-051 (pendiente), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.1 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
+| REQ-035.2 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
+| REQ-035.3 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
+| REQ-035.4 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
+| REQ-035.5 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
+| REQ-035.6 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.7 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.8 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.9 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | 0030_barber_services.sql | prueba escrita |
+| REQ-035.10 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.11 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.12 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
+| REQ-035.13 | Servicios por barbero | T-051 (hecha), T-052 (pendiente), T-053 (pendiente), T-054 (pendiente), T-055 (pendiente), T-056 (pendiente), T-057 (pendiente) | — | sin prueba |
