@@ -19,7 +19,7 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 | H1 Fila virtual          | T-011…T-030 | **aprobado** (ADR-017); pasillo e instalación hechos (ADR-021)             |
 | H2 Clientes y fidelidad  | T-031…T-039 | **aprobado** (ADR-017)                                                     |
 | H3 Caja y comisiones     | T-040…T-050 | **aprobado** (ADR-020); pasillo con el dueño hecho (ADR-021)               |
-| H4 Servicios por barbero | T-051…T-057 | T-051–056 `[x]` (PRs #4–#9); T-057 `[~]` (falta aprobación de Henry)       |
+| H4 Servicios por barbero | T-051…T-057 | **aprobado** (ADR-024); PRs #4–#10 en `main`       |
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

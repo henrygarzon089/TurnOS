@@ -22,7 +22,7 @@
 | H1 | Fila virtual con QR usable por la barbería | T-011…T-030 | REQ-001…REQ-014, REQ-033, NFR-001/002/003/007/008 |
 | H2 | Clientes y fidelidad | T-031…T-039 | REQ-018…REQ-022 |
 | H3 | Caja y comisiones | T-040…T-050 | REQ-023…REQ-029 |
-| H4 | Servicios por barbero (Filo) | T-051…T-057 | REQ-035 |
+| H4 | Servicios por barbero (Filo) — **aprobado** (ADR-024) | T-051…T-057 | REQ-035 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -751,14 +751,14 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   4/4 (Pixel 7 + iPhone 13, `--workers=1`): Juan no ve el cepillado, Mateo sí y lo llama; con
   Mateo en pausa el cliente ve "Esperando a que haya quién te atienda".
 
-### [~] T-057 · Validación Hito 4: matriz de trazabilidad
+### [x] T-057 · Validación Hito 4: matriz de trazabilidad — 2026-10-28
 - REQ: REQ-035
 - Archivos: `scripts/traceability.ts` (`HITOS["4"] = [[35, 35]]`), `docs/estado-del-proyecto.md`
 - Terminado: `pnpm trace --hito=4` sin huecos; CI verde; aprobación de Henry; script de Filo
   actualizado para marcar los servicios de la estilista.
 - Estado 2026-10-28: `HITOS["4"]` en `scripts/traceability.ts` y la prueba de NFR-009 exige el hito
-  4: `pnpm trace --hito=4` → 0 sin prueba. Falta: CI verde de la cadena #5–#9, aprobación de
-  Henry, y la configuración de Filo (se hace desde **Barberos** cuando se conozcan los barberos; el
+  4: `pnpm trace --hito=4` → 0 sin prueba. Cierre: CI verde de la cadena #5–#10 y **Henry aprobó
+  el Hito 4** (ADR-024). Queda y la configuración de Filo (se hace desde **Barberos** cuando se conozcan los barberos; el
   script de datos no la necesita porque por defecto todos hacen todo).
 
 ---
