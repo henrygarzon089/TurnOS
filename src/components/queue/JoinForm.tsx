@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { ErrorText, Field } from "@/components/auth/LoginForm";
 import { getPreferredBarber, joinQueue } from "@/lib/actions/public";
+import { barbersForService, serviceAvailability } from "@/lib/domain/barber-services";
 import { formatCOP } from "@/lib/domain/money";
 import { formatPhoneCO, normalizePhoneCO } from "@/lib/domain/phone";
 import { estimateNewTicket } from "@/lib/domain/queue-estimate";
@@ -19,7 +20,11 @@ export function JoinForm({ business, now }: Props) {
   const [pending, startTransition] = useTransition();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [serviceId, setServiceId] = useState(business.services[0]?.id ?? "");
+  // REQ-035.7: arranca en el primer servicio que hoy alguien hace
+  const [serviceId, setServiceId] = useState(
+    business.services.find((s) => serviceAvailability(s, business.barbersToday) === "available")
+      ?.id ?? "",
+  );
   const [barberId, setBarberId] = useState<string | null>(null);
   const pickedByUser = useRef(false);
   const pickBarber = (id: string | null) => {
@@ -41,6 +46,7 @@ export function JoinForm({ business, now }: Props) {
         // REQ-022.1: preseleccionar su barbero preferido si atiende hoy (si no, "El que esté libre")
         void getPreferredBarber(business.slug, p.phone).then((id) => {
           const ok = business.barbersToday.some((b) => b.id === id && b.status !== "paused");
+          // REQ-035.6: el preferido se queda solo si hace el servicio escogido (se revisa abajo)
           if (id && ok && !pickedByUser.current) setBarberId(id);
         });
       }
@@ -54,6 +60,22 @@ export function JoinForm({ business, now }: Props) {
   }, [business.slug, business.privacyVersion, business.barbersToday]);
 
   const service = business.services.find((s) => s.id === serviceId);
+  // REQ-035.6: solo los presentes que hacen el servicio escogido
+  const barbers = service
+    ? barbersForService(service, business.barbersToday)
+    : business.barbersToday;
+  const shownBarberId = barberId && barbers.some((b) => b.id === barberId) ? barberId : null;
+  function pickService(id: string) {
+    setServiceId(id);
+    const next = business.services.find((s) => s.id === id);
+    // REQ-035.6: si el barbero escogido no hace el servicio nuevo, vuelve "El que esté libre"
+    if (
+      next &&
+      barberId &&
+      !barbersForService(next, business.barbersToday).some((b) => b.id === barberId)
+    )
+      setBarberId(null);
+  }
 
   // REQ-017.3: ¿alcanzamos a atenderte hoy?
   const warning = useMemo(() => {
@@ -61,7 +83,7 @@ export function JoinForm({ business, now }: Props) {
     const est = estimateNewTicket(
       { now: new Date(now), barbers: business.queue.barbers, waiting: business.queue.waiting },
       service.durationMin,
-      barberId,
+      shownBarberId,
       service.barberIds ?? null,
     );
     if (est.waitMin === null) return null;
@@ -72,7 +94,7 @@ export function JoinForm({ business, now }: Props) {
     return est.waitMin + service.durationMin > minutesLeft
       ? "Es posible que no alcancemos a atenderte hoy: la espera supera el tiempo que falta para cerrar."
       : null;
-  }, [service, barberId, business, now]);
+  }, [service, shownBarberId, business, now]);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -83,7 +105,7 @@ export function JoinForm({ business, now }: Props) {
         name,
         phone,
         serviceId,
-        preferredBarberId: barberId,
+        preferredBarberId: shownBarberId,
         privacyAccepted: privacy,
         privacyVersion: business.privacyVersion,
         source: "qr",
@@ -140,42 +162,51 @@ export function JoinForm({ business, now }: Props) {
       <fieldset className="min-w-0">
         <legend className="mb-2 text-sm font-medium">Servicio</legend>
         <div className="flex flex-col gap-2">
-          {business.services.map((s) => (
-            <label
-              key={s.id}
-              className={`border-line bg-card flex min-h-12 cursor-pointer items-center justify-between gap-2 rounded-xl border px-3 py-2 ${serviceId === s.id ? "border-accent ring-2 ring-blue-200" : ""}`}
-            >
-              <span className="flex min-w-0 items-center gap-2 break-words">
-                <input
-                  type="radio"
-                  name="serviceId"
-                  value={s.id}
-                  checked={serviceId === s.id}
-                  onChange={() => setServiceId(s.id)}
-                  className="h-5 w-5 shrink-0"
-                />
-                <span className="min-w-0">
-                  {s.name} <span className="text-muted text-sm">· {s.durationMin} min</span>
+          {business.services.map((s) => {
+            // REQ-035.7: en gris si hoy ninguno de los presentes lo hace
+            const nobody = serviceAvailability(s, business.barbersToday) === "nobody_today";
+            return (
+              <label
+                key={s.id}
+                className={`border-line bg-card flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2 ${nobody ? "text-muted cursor-not-allowed bg-gray-100" : "cursor-pointer"} ${serviceId === s.id ? "border-accent ring-2 ring-blue-200" : ""}`}
+              >
+                <span className="flex min-w-0 items-center gap-2 break-words">
+                  <input
+                    type="radio"
+                    name="serviceId"
+                    value={s.id}
+                    checked={serviceId === s.id}
+                    disabled={nobody}
+                    onChange={() => pickService(s.id)}
+                    className="h-5 w-5 shrink-0"
+                  />
+                  <span className="min-w-0">
+                    {s.name}{" "}
+                    <span className="text-muted text-sm">
+                      · {nobody ? "Hoy no hay quién lo haga" : `${s.durationMin} min`}
+                    </span>
+                  </span>
                 </span>
-              </span>
-              <span className="shrink-0 font-semibold">{formatCOP(s.price)}</span>
-            </label>
-          ))}
+                <span className="shrink-0 font-semibold">{formatCOP(s.price)}</span>
+              </label>
+            );
+          })}
         </div>
+        {error?.field === "serviceId" && <ErrorText>{error.message}</ErrorText>}
       </fieldset>
 
       <fieldset className="min-w-0">
         <legend className="mb-2 text-sm font-medium">Barbero</legend>
         <div className="flex flex-wrap gap-2">
-          <Chip selected={barberId === null} onClick={() => pickBarber(null)}>
+          <Chip selected={shownBarberId === null} onClick={() => pickBarber(null)}>
             El que esté libre
           </Chip>
-          {business.barbersToday.map((b) => {
+          {barbers.map((b) => {
             const unavailable = b.status === "paused";
             return (
               <Chip
                 key={b.id}
-                selected={barberId === b.id}
+                selected={shownBarberId === b.id}
                 disabled={unavailable}
                 onClick={() => pickBarber(b.id)}
               >

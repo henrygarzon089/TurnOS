@@ -32,7 +32,13 @@ export type PublicBusiness = {
   closesAt: string | null;
   privacyVersion: number | null;
   /** barberIds: quienes hacen el servicio (REQ-035.6); falta en datos viejos = todos. */
-  services: { id: string; name: string; durationMin: number; price: number; barberIds?: string[] }[];
+  services: {
+    id: string;
+    name: string;
+    durationMin: number;
+    price: number;
+    barberIds?: string[];
+  }[];
   queue: QueueSnapshot;
   /** Derivados */
   waitingCount: number;
@@ -240,6 +246,18 @@ export async function joinQueue(
           };
         case "P0002":
           return { ok: false, error: "No encontramos el negocio o el servicio." };
+        case "P0010": // REQ-035.8
+          return {
+            ok: false,
+            error: "Ese barbero no hace ese servicio. Elige otro o 'el que esté libre'.",
+            field: "preferredBarberId",
+          };
+        case "P0011": // REQ-035.7
+          return {
+            ok: false,
+            error: "Hoy no hay quién haga ese servicio. Elige otro.",
+            field: "serviceId",
+          };
       }
     }
     throw e;
