@@ -758,8 +758,8 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   actualizado para marcar los servicios de la estilista.
 - Estado 2026-10-28: `HITOS["4"]` en `scripts/traceability.ts` y la prueba de NFR-009 exige el hito
   4: `pnpm trace --hito=4` → 0 sin prueba. Cierre: CI verde de la cadena #5–#10 y **Henry aprobó
-  el Hito 4** (ADR-024). Queda y la configuración de Filo (se hace desde **Barberos** cuando se conozcan los barberos; el
-  script de datos no la necesita porque por defecto todos hacen todo).
+  el Hito 4** (ADR-024). Queda la configuración de Filo: se hace desde **Barberos** cuando se
+  conozcan los barberos (el script de datos no la necesita: por defecto todos hacen todo).
 
 ---
 
