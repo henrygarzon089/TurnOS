@@ -314,3 +314,29 @@
   `main` limpio para que producción y `main` coincidan. Falta configurar Filo desde **Barberos**
   cuando lleguen sus barberos.
 
+
+## ADR-025 · TurnOS es para una sola barbería; Hito 5 "experiencia del cliente"
+- Estado: **aceptada** (Henry, 2026-10-28)
+- Contexto: tras comparar TurnOS con Bukea, Beunik, WeiBook, SANEO, TuTurno, SleekFlow y
+  AgendaPro (`docs/propuesta-mejoras-clientes.md`), Henry aclara que TurnOS **no es un producto
+  para vender**: es para su barbería (Filo). La pregunta deja de ser "¿qué tiene la competencia?" y
+  pasa a ser "¿qué mejora la experiencia de nuestros clientes?".
+- Opciones: (a) seguir diseñando como producto multi-negocio (planes, precios, alta de negocios);
+  (b) enfocar todo en una barbería y dejar lo multi-negocio como está.
+- Decisión: (b). Lo multi-negocio que ya existe (`business_id`, RLS, `/crear-negocio`) se queda
+  porque funciona y no estorba, pero no se extiende ni se usa para justificar requisitos. Orden de
+  mejoras acordado ("lo rápido primero"): Hito 5 = reseña en Google (REQ-036), cumpleaños
+  (REQ-037), menú de la barbería con bebida de cortesía (REQ-038) y fotos de cortes (REQ-039).
+  Después, cada uno con su grill y su ADR: aviso automático (canal por decidir: push + WhatsApp
+  Cloud API directo con Meta), membresía familiar (cuota mensual con N cortes compartidos y
+  descuento al agotarlos), citas a hora fija mezcladas con la fila, gift cards y asistente con IA en
+  WhatsApp.
+- Valores por defecto de las preguntas del borrador (Henry aprobó el Hito 5 sin responderlas; se
+  cambian con una nota en `requirements.md`): (1) el enlace de reseña solo va en "Mi turno", no por
+  WhatsApp, porque aún no hay envío automático; (2) el cumpleaños trae solo saludo: el dueño escribe
+  el regalo, si quiere, en la plantilla; (3) la cortesía no pasa por caja: queda en el turno
+  (bebida y "Servida ✓"), sin inventario; (4) hasta 12 fotos por barbero.
+- Consecuencias: REQ-036…REQ-039 nuevos (§5c de `requirements.md`), `design.md` §11, tareas
+  T-058…T-063. "Fuera de alcance del MVP" no cambia, pero sus puntos de citas, planes familiares,
+  WhatsApp Cloud API y push pasan a ser hitos futuros, no exclusiones. Primer uso de Supabase
+  Storage (fotos).

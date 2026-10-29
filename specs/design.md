@@ -998,4 +998,99 @@ turnos/
 | REQ-033 | 2.2 message_templates, 6.5 |
 | REQ-034 | 9 `supabase/seed.sql`, 8 |
 | REQ-035 | 2.2 `barber_services`, 2.4, 3 (servicio por barbero, carrera), 4 (`puede(W)`), 6.2 `getPublicBusiness`, 6.3, 7 (formulario), ADR-023 |
+| REQ-036 | 11.1 `businesses.google_review_url`, 11.4 `get_ticket_by_token`, 11.5 |
+| REQ-037 | 11.1 `customers.birthday_*`, 11.2, 11.4 `join_queue`/`birthdays_this_week`, 11.5 |
+| REQ-038 | 11.1 `products`/`tickets.courtesy_*`, 11.4, 11.5 |
+| REQ-039 | 11.1 `barber_photos`, 11.2, 11.3 Storage, 11.4, 11.5 |
 | NFR-001…013 | 1, 2.4, 6.4, 6.6, 8 |
+
+---
+
+## 11. Hito 5 — Experiencia del cliente (REQ-036…REQ-039, ADR-025)
+
+Una sola migración `0033_customer_experience.sql` con su pgTAP. Las funciones nuevas siguen
+ADR-019 (permisos explícitos: `revoke` de `public`/`anon`, `grant` a quien corresponda).
+
+### 11.1 Datos
+
+| Tabla | Cambio | REQ |
+|---|---|---|
+| `businesses` | `google_review_url text null check (google_review_url ~ '^https://')` | 036.1 |
+| `customers` | `birthday_month smallint null check (1..12)`, `birthday_day smallint null check (1..31)`; `check` de fecha posible con año bisiesto (`make_date(2000, m, d)` no falla); ambos null o ambos con valor | 037.1, 037.3 |
+| `products` | `for_sale bool not null default true`, `is_courtesy bool not null default false`, `photo_path text null` | 038.1 |
+| `tickets` | `courtesy_product_id uuid null` (FK compuesta con `business_id` a `products`), `courtesy_served_at timestamptz null`, `courtesy_served_by uuid null` | 038.3–038.5 |
+| `barber_photos` (nueva) | `id, business_id, barber_id, path text, created_at`; FK compuesta (business_id, barber_id) | 039 |
+| enum `message_template_key` | agrega `'birthday'` con plantilla por defecto: "¡Feliz cumpleaños, {nombre}! En {negocio} te deseamos un gran día." | 037.4 |
+
+Los productos existentes quedan `for_sale = true`, `is_courtesy = false` (nada cambia en caja).
+El texto por defecto del aviso de privacidad (seed y `/crear-negocio`) agrega el cumpleaños como
+dato opcional (REQ-037.6); publicar la versión nueva usa REQ-002.5 sin cambios.
+
+### 11.2 RLS
+
+| Tabla | Dueño | Barbero | REQ |
+|---|---|---|---|
+| `barber_photos` | all en su negocio | select en su negocio; insert/delete solo con `barber_id` = el suyo | 039.1 |
+| `customers.birthday_*` | update (ya tiene) | update con alcance de ficha (ADR-016; el trigger que restringe al barbero admite las dos columnas) | 037.1 |
+| `tickets.courtesy_served_*` | vía `mark_courtesy_served` | vía `mark_courtesy_served` (el barbero no tiene update directo sobre `tickets`, igual que 0010) | 038.5 |
+
+Trigger `barber_photos_limit` (`before insert`): más de 12 por barbero → `PHOTO_LIMIT` (P0013),
+REQ-039.2. El límite vive en la base, no solo en la UI.
+
+### 11.3 Almacenamiento (primer uso de Supabase Storage)
+
+- Bucket `media`, **lectura pública** (las fotos se muestran en páginas públicas sin sesión),
+  escritura con políticas de `storage.objects` por ruta: `<business_id>/barbers/<barber_id>/<uuid>.webp`
+  (dueño del negocio o ese barbero) y `<business_id>/products/<uuid>.webp` (dueño).
+- El celular reduce y convierte a WebP antes de subir (`src/lib/media/resize.ts`, canvas: lado
+  mayor ≤ 1080 px, calidad hasta quedar ≤ 300 KB), REQ-039.4. El servidor rechaza tipos que no
+  sean `image/*` y más de 300 KB (límite del bucket).
+- Borrar una foto borra la fila y el objeto (la acción hace las dos cosas; si falla el objeto,
+  la fila igual se borra y queda un huérfano inofensivo).
+- Barbero desactivado (REQ-039.6): las lecturas públicas filtran por `barbers.is_active`; las
+  fotos no se borran.
+
+### 11.4 Funciones SQL
+
+| Función | Quién | Qué | REQ |
+|---|---|---|---|
+| `join_queue(..., p_birthday_month, p_birthday_day, p_courtesy_product_id)` | service_role | Guarda el cumpleaños solo si la ficha no tiene (`coalesce`); valida la cortesía (activa, `is_courtesy`, mismo negocio) → `COURTESY_INVALID` (P0012) | 037.2, 038.3, 038.6 |
+| `set_ticket_courtesy(p_token, p_product_id null)` | service_role | Solo con el turno en `waiting`; si no → `TICKET_NOT_WAITING`; misma validación | 038.4, 038.6 |
+| `mark_courtesy_served(p_ticket_id)` | dueño, barbero | Pone hora y quién; idempotente (si ya está servida no cambia) | 038.5 |
+| `birthdays_this_week()` | dueño | Clientes con cumpleaños entre hoy y hoy+6 (`business_day_bogota()`), 29-feb → 28-feb en año no bisiesto, sin `do_not_contact` ni anonimizados | 037.4, 037.5 |
+| `get_public_business` | service_role | Agrega `products` (a la venta, activos, con `photoUrl`), `courtesies` (de cortesía, activos), y por barbero presente `photoCount` | 038.2, 038.3, 039.5 |
+| `get_barber_photos(p_slug, p_barber_id)` | service_role | Fotos de un barbero activo, de la más nueva a la más vieja | 039.5 |
+| `get_ticket_by_token` | service_role | Agrega `courtesy` (nombre, servida?) y `googleReviewUrl` si el turno está `done` | 036.2–036.4, 038.4 |
+| `get_barber_queue`, `get_business_queue` (lecturas) | personal | Cada turno trae la bebida y si está servida | 038.5 |
+
+Cada cambio de cortesía (`set_ticket_courtesy`, `mark_courtesy_served`) emite `queue_changed`
+(ADR-008), así la fila del barbero y "Mi turno" se releen solos.
+
+### 11.5 Server actions y pantallas
+
+- Públicas (`src/lib/actions/public.ts`): `joinQueue` recibe `birthday` y `courtesyProductId`;
+  nuevas `setTicketCourtesy(token, productId|null)` y `getBarberPhotos(slug, barberId)`. Errores
+  P0012 → "Esa bebida ya no está disponible" en el campo; P0013 → texto de REQ-039.2.
+- Personal: `saveGoogleReviewUrl` (dueño, `/admin/negocio`), `setCustomerBirthday` (ficha),
+  `getBirthdaysThisWeek` (`/admin/recordar`, pestaña o sección "Cumplen esta semana"),
+  `saveProduct` con `forSale`, `isCourtesy` y foto (`/admin/productos`), `markCourtesyServed`
+  (filas), `uploadBarberPhoto` / `deleteBarberPhoto` (`/app/mis-fotos` para el barbero y desde
+  `/admin/barberos` para el dueño).
+- Cliente: portada `/[slug]` con "Lo que vendemos" (REQ-038.2); formulario con cumpleaños
+  (si la ficha no lo tiene, se sabe con la misma consulta del barbero preferido, REQ-022),
+  "Bebida de cortesía" y "Ver cortes" (hoja inferior con las fotos, REQ-039.5); "Mi turno" con
+  cambio de bebida en espera y, al terminar, "¡Gracias por venir!" + botón de reseña.
+- Barbero y dueño: en cada turno, una línea "🥤 <bebida>" con botón "Servida ✓" (≥ 48 px).
+
+### 11.6 Pruebas
+
+- pgTAP `0033_customer_experience.sql`: columnas y checks (fecha imposible, 29-feb válido, URL sin
+  `https`), `join_queue` no reemplaza cumpleaños, cortesía inválida (inactiva, no cortesía, otro
+  negocio), cambio fuera de `waiting`, `mark_courtesy_served` por barbero e idempotente, límite de
+  12 fotos, RLS de `barber_photos` (barbero ajeno no sube ni borra; otro negocio no ve),
+  `birthdays_this_week` (borde de semana, 29-feb, no contactar, anonimizado), permisos (ADR-019).
+- Unitarias: validación de día/mes, `resize` (cálculo de dimensiones), armado del texto de la
+  plantilla de cumpleaños.
+- Integración: `joinQueue` con cumpleaños y cortesía contra Postgres local; `setTicketCourtesy`.
+- E2E (Pixel 7 + iPhone 13): tomar turno con bebida → el barbero la ve y la marca servida; Mi turno
+  terminado muestra reseña; subir foto con confirmación y verla en "Ver cortes".
