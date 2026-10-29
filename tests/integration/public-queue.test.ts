@@ -176,3 +176,52 @@ describe("REQ-001 / REQ-004 / REQ-005 lectura pública", () => {
     });
   });
 });
+
+describe("REQ-035 servicios por barbero en el formulario (server action)", () => {
+  it("REQ-035.8 un barbero que no hace el servicio → error en el campo barbero", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      await q(`delete from barber_services where barber_id = $1 and service_id = $2`, [
+        c.juan,
+        c.corte,
+      ]);
+      const r = await joinQueue(
+        createPgGateway(q),
+        { ...base(c), preferredBarberId: c.juan },
+        "1.1.1.1",
+      );
+      expect(r).toMatchObject({ ok: false, field: "preferredBarberId" });
+      if (!r.ok) expect(r.error).toContain("no hace ese servicio");
+    });
+  });
+  it("REQ-035.7 un servicio que hoy ninguno de los presentes hace → error en el campo servicio", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      await q(`delete from barber_services where service_id = $1 and barber_id in ($2, $3)`, [
+        c.corte,
+        c.juan,
+        c.luis,
+      ]);
+      await q(`update barbers set status = 'off' where business_id = $1 and id not in ($2, $3)`, [
+        c.biz,
+        c.juan,
+        c.luis,
+      ]);
+      const r = await joinQueue(createPgGateway(q), base(c), "1.1.1.1");
+      expect(r).toMatchObject({ ok: false, field: "serviceId" });
+    });
+  });
+  it("REQ-035.6 la portada trae quién hace cada servicio", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      await q(`delete from barber_services where barber_id = $1 and service_id = $2`, [
+        c.juan,
+        c.corte,
+      ]);
+      const biz = await getPublicBusiness(createPgGateway(q), "la-33");
+      const corte = biz!.services.find((s) => s.id === c.corte)!;
+      expect(corte.barberIds).not.toContain(c.juan);
+      expect(corte.barberIds).toContain(c.luis);
+    });
+  });
+});

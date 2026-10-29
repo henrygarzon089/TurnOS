@@ -712,11 +712,18 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   después de las 7 p. m. de Bogotá; ahora usan `business_day_bogota()` (solo pruebas; la app ya
   lo hacía bien).
 
-### [ ] T-054 · Formulario del cliente
+### [x] T-054 · Formulario del cliente — 2026-10-28
 - REQ: REQ-035.6, REQ-035.7
 - Archivos: `get_public_business`, formulario `/[slug]/turno`
 - Terminado: E2E: al escoger "Cepillado" solo aparece la estilista; al cambiar a un servicio que
   el preferido no hace vuelve a "El que esté libre"; servicio en gris "Hoy no hay quién lo haga".
+- Notas: reglas puras en `src/lib/domain/barber-services.ts` (`barbersForService`,
+  `serviceAvailability`, unitarias); `JoinForm` filtra los chips por servicio, vuelve a "El que
+  esté libre" si el escogido (o el preferido prellenado, REQ-022) no hace el servicio, y muestra en
+  gris los servicios que hoy nadie hace (arranca en el primero disponible). `joinQueue` traduce
+  P0010 → campo barbero y P0011 → campo servicio (integración +3). E2E
+  `services-by-barber.spec.ts` 6/6 (Pixel 7 + iPhone 13) contra el Supabase local: `.env.local`
+  apunta a producción, así que el E2E de la Mac se corre con las variables de `supabase status`.
 
 ### [ ] T-055 · Pantallas del dueño: Barberos y Servicios
 - REQ: REQ-035.1–35.3, REQ-035.11
