@@ -725,12 +725,21 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `services-by-barber.spec.ts` 6/6 (Pixel 7 + iPhone 13) contra el Supabase local: `.env.local`
   apunta a producción, así que el E2E de la Mac se corre con las variables de `supabase status`.
 
-### [ ] T-055 · Pantallas del dueño: Barberos y Servicios
+### [x] T-055 · Pantallas del dueño: Barberos y Servicios — 2026-10-28
 - REQ: REQ-035.1–35.3, REQ-035.11
 - Archivos: `/admin/barberos`, `/admin/servicios`, `src/lib/actions/admin.ts`, "Agregar cliente" y
   menú del turno en `/admin/fila`
 - Terminado: E2E: desmarcar servicios de un barbero, "Marca al menos un servicio", "Quién lo
   hace" al crear un servicio, y en "Agregar cliente" solo aparecen los que hacen el servicio.
+- Notas: `CheckList` ("Servicios que hace" en Barberos, "Quién lo hace" en Servicios; todos
+  marcados al crear). `createBarber`/`updateBarber`/`upsertService` guardan con
+  `set_barber_services`/`set_service_barbers` y validan "Marca al menos un servicio." antes de
+  escribir. La tarjeta del barbero dice "Hace todos los servicios" o "Hace: …". En `/admin/fila`,
+  "Agregar cliente", "Llamar con…" y "Reasignar" ofrecen solo los que hacen el servicio (el
+  preferido anterior se sigue viendo, REQ-035.12); P0010/P0011 con texto en español. E2E
+  `services-by-barber.spec.ts` 12/12 con `--workers=1`. Suite E2E completa en la Mac contra el
+  Supabase local: 166/174; las fallas no son de REQ-035 (invitación con la IP de `.env.local`,
+  inicios de sesión lentos y `barber-flow` intermitente en WebKit con `pnpm dev`).
 
 ### [ ] T-056 · Fila del barbero y "Mi turno"
 - REQ: REQ-035.9, REQ-035.10

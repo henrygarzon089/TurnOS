@@ -181,6 +181,24 @@ const barberSchema = z.object({
   commission_pct: z.coerce.number().int().min(0).max(100),
 });
 
+/** REQ-035.3: un barbero activo no queda sin servicios (lo valida también la base, NO_SERVICES). */
+const NO_SERVICES = "Marca al menos un servicio.";
+const ids = (formData: FormData, key: string) =>
+  formData.getAll(key).filter((v): v is string => typeof v === "string" && v.length > 0);
+
+/** REQ-035.1 / REQ-035.2: guarda la relación barbero ↔ servicio con las funciones de 0030. */
+async function saveBarberServices(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  fn: "set_barber_services" | "set_service_barbers",
+  args: Record<string, unknown>,
+): Promise<string | null> {
+  const { error } = await supabase.rpc(fn, args);
+  if (!error) return null;
+  return error.message.includes("NO_SERVICES")
+    ? "Un barbero quedaría sin ningún servicio. Marca al menos uno para cada barbero."
+    : "No se pudo guardar quién hace qué.";
+}
+
 /** REQ-016.1: crea el barbero y su invitación; devuelve el enlace para compartir. */
 export async function createBarber(
   _prev: { error?: string; ok?: boolean; inviteUrl?: string },
@@ -192,6 +210,8 @@ export async function createBarber(
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
   const phone = normalizePhoneCO(parsed.data.phone);
   if (!phone) return { error: "Escribe un celular colombiano de 10 dígitos." };
+  const serviceIds = ids(formData, "service_ids");
+  if (formData.has("services_shown") && serviceIds.length === 0) return { error: NO_SERVICES };
 
   const supabase = await createSupabaseServerClient();
   const inserted = await supabase
@@ -205,6 +225,14 @@ export async function createBarber(
     .select("id")
     .single();
   if (inserted.error) return { error: "No se pudo crear el barbero." };
+  // REQ-035.1: el trigger lo marcó con todos; se guarda lo que el dueño dejó marcado
+  if (formData.has("services_shown")) {
+    const err = await saveBarberServices(supabase, "set_barber_services", {
+      p_barber_id: inserted.data.id,
+      p_service_ids: serviceIds,
+    });
+    if (err) return { error: err };
+  }
 
   const invite = await inviteBarber(inserted.data.id);
   if ("error" in invite) return { error: invite.error };
@@ -256,11 +284,19 @@ export async function upsertService(_prev: FormState, formData: FormData): Promi
   const id = formData.get("id");
   const supabase = await createSupabaseServerClient();
   const row = { ...parsed.data, business_id: session.business.id };
-  const { error } =
+  const saved =
     typeof id === "string" && id
-      ? await supabase.from("services").update(row).eq("id", id)
-      : await supabase.from("services").insert(row);
-  if (error) return { error: "No se pudo guardar el servicio." };
+      ? await supabase.from("services").update(row).eq("id", id).select("id").single()
+      : await supabase.from("services").insert(row).select("id").single();
+  if (saved.error) return { error: "No se pudo guardar el servicio." };
+  // REQ-035.2: quién lo hace (al crear vienen todos marcados; el trigger ya los marcó)
+  if (formData.has("barbers_shown")) {
+    const err = await saveBarberServices(supabase, "set_service_barbers", {
+      p_service_id: saved.data.id,
+      p_barber_ids: ids(formData, "barber_ids"),
+    });
+    if (err) return { error: err };
+  }
   return { ok: true };
 }
 
@@ -321,7 +357,16 @@ export async function updateBarber(_prev: FormState, formData: FormData): Promis
   if (!phone) return { error: "Escribe un celular colombiano de 10 dígitos." };
   const id = formData.get("id");
   if (typeof id !== "string") return { error: "Barbero inválido." };
+  const serviceIds = ids(formData, "service_ids");
+  if (formData.has("services_shown") && serviceIds.length === 0) return { error: NO_SERVICES };
   const supabase = await createSupabaseServerClient();
+  if (formData.has("services_shown")) {
+    const err = await saveBarberServices(supabase, "set_barber_services", {
+      p_barber_id: id,
+      p_service_ids: serviceIds,
+    });
+    if (err) return { error: err };
+  }
   const { error } = await supabase
     .from("barbers")
     .update({

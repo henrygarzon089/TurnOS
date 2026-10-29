@@ -2,6 +2,7 @@
 
 import { useActionState, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { CheckList } from "@/components/admin/CheckList";
 import { ErrorText, Field } from "@/components/auth/LoginForm";
 import {
   createBarber,
@@ -23,7 +24,11 @@ export type BarberRow = {
   is_active: boolean;
   status: "available" | "busy" | "paused" | "off";
   user_id: string | null;
+  /** REQ-035.1: servicios que hace (ids) */
+  service_ids: string[];
 };
+
+export type ServiceOption = { id: string; name: string };
 
 const STATUS_LABEL: Record<BarberRow["status"], string> = {
   available: "Disponible",
@@ -33,7 +38,7 @@ const STATUS_LABEL: Record<BarberRow["status"], string> = {
 };
 
 /** Botón "Nuevo barbero" + formulario que crea e invita (REQ-016.1, REQ-030.2). */
-export function NewBarberForm() {
+export function NewBarberForm({ services }: { services: ServiceOption[] }) {
   const [open, setOpen] = useState(false);
   const [state, action, pending] = useActionState<BarberFormState, FormData>(createBarber, {});
   const router = useRouter();
@@ -95,6 +100,13 @@ export function NewBarberForm() {
           className="input"
         />
       </Field>
+      <CheckList
+        legend="Servicios que hace"
+        name="service_ids"
+        shown="services_shown"
+        options={services.map((s) => ({ id: s.id, label: s.name }))}
+        checked={null}
+      />
       {state?.error && <ErrorText>{state.error}</ErrorText>}
       <div className="flex gap-2">
         <button type="submit" className="btn-primary" disabled={pending}>
@@ -135,7 +147,7 @@ function InviteButtons({ url }: { url: string }) {
 }
 
 /** Tarjeta de barbero: presente hoy, editar, reinvitar, retirar (REQ-016). */
-export function BarberCard({ barber }: { barber: BarberRow }) {
+export function BarberCard({ barber, services }: { barber: BarberRow; services: ServiceOption[] }) {
   const [state, action, pending] = useActionState<FormState, FormData>(updateBarber, undefined);
   const [busy, startTransition] = useTransition();
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
@@ -161,6 +173,16 @@ export function BarberCard({ barber }: { barber: BarberRow }) {
             {barber.phone_e164 ? formatPhoneCO(barber.phone_e164) : "Sin celular"} · comisión{" "}
             {barber.commission_pct} %
           </p>
+          {barber.is_active && services.length > 0 && (
+            <p className="text-muted text-sm">
+              {services.every((s) => barber.service_ids.includes(s.id))
+                ? "Hace todos los servicios"
+                : `Hace: ${services
+                    .filter((s) => barber.service_ids.includes(s.id))
+                    .map((s) => s.name)
+                    .join(", ")}`}
+            </p>
+          )}
           <p className="text-sm">
             {barber.is_active ? STATUS_LABEL[barber.status] : "Retirado"}
             {barber.is_active && !barber.user_id && " · sin acceso todavía"}
@@ -219,6 +241,13 @@ export function BarberCard({ barber }: { barber: BarberRow }) {
               className="input"
             />
           </Field>
+          <CheckList
+            legend="Servicios que hace"
+            name="service_ids"
+            shown="services_shown"
+            options={services.map((s) => ({ id: s.id, label: s.name }))}
+            checked={barber.service_ids}
+          />
           {state?.error && <ErrorText>{state.error}</ErrorText>}
           <div className="flex gap-2">
             <button type="submit" className="btn-primary" disabled={pending}>
