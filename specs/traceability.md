@@ -162,3 +162,26 @@
 | REQ-035.11 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | services-by-barber.spec.ts, 0031_queue_by_service.sql | cubierto |
 | REQ-035.12 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | 0031_queue_by_service.sql | cubierto |
 | REQ-035.13 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | 0031_queue_by_service.sql | cubierto |
+| REQ-036.1 | Reseña en Google después del corte | T-058 (pendiente), T-059 (pendiente), T-063 (pendiente) | — | sin prueba |
+| REQ-036.2 | Reseña en Google después del corte | T-058 (pendiente), T-059 (pendiente), T-063 (pendiente) | — | sin prueba |
+| REQ-036.3 | Reseña en Google después del corte | T-058 (pendiente), T-059 (pendiente), T-063 (pendiente) | — | sin prueba |
+| REQ-036.4 | Reseña en Google después del corte | T-058 (pendiente), T-059 (pendiente), T-063 (pendiente) | — | sin prueba |
+| REQ-037.1 | Cumpleaños del cliente | T-058 (pendiente), T-060 (pendiente) | — | sin prueba |
+| REQ-037.2 | Cumpleaños del cliente | T-058 (pendiente), T-060 (pendiente) | — | sin prueba |
+| REQ-037.3 | Cumpleaños del cliente | T-058 (pendiente), T-060 (pendiente) | — | sin prueba |
+| REQ-037.4 | Cumpleaños del cliente | T-058 (pendiente), T-060 (pendiente) | — | sin prueba |
+| REQ-037.5 | Cumpleaños del cliente | T-058 (pendiente), T-060 (pendiente) | — | sin prueba |
+| REQ-037.6 | Cumpleaños del cliente | T-058 (pendiente), T-060 (pendiente) | — | sin prueba |
+| REQ-038.1 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
+| REQ-038.2 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
+| REQ-038.3 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
+| REQ-038.4 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
+| REQ-038.5 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
+| REQ-038.6 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
+| REQ-038.7 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
+| REQ-039.1 | Fotos de cortes por barbero | T-058 (pendiente), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |
+| REQ-039.2 | Fotos de cortes por barbero | T-058 (pendiente), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |
+| REQ-039.3 | Fotos de cortes por barbero | T-058 (pendiente), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |
+| REQ-039.4 | Fotos de cortes por barbero | T-058 (pendiente), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |
+| REQ-039.5 | Fotos de cortes por barbero | T-058 (pendiente), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |
+| REQ-039.6 | Fotos de cortes por barbero | T-058 (pendiente), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |

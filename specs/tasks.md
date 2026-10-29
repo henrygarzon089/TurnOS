@@ -763,6 +763,61 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ---
 
+## Hito 5 — Experiencia del cliente (ADR-025)
+
+> REQ-036…REQ-039 y ADR-025 aprobados por Henry (2026-10-28). Diseño en `design.md` §11. La
+> migración es la `0033`.
+
+### [ ] T-058 · Migración y pgTAP: datos del Hito 5
+- REQ: REQ-036.1, REQ-037.1, REQ-037.3, REQ-037.5, REQ-038.1, REQ-038.6, REQ-038.7, REQ-039.1,
+  REQ-039.2, REQ-039.6
+- Archivos: `supabase/migrations/0033_customer_experience.sql` (columnas de §11.1, `barber_photos`
+  con RLS y trigger de 12, plantilla `birthday`, bucket `media` y políticas de `storage.objects`,
+  `join_queue` con cumpleaños y cortesía, `set_ticket_courtesy`, `mark_courtesy_served`,
+  `birthdays_this_week`, `get_barber_photos`, lecturas ampliadas, permisos de ADR-019),
+  `supabase/tests/0033_customer_experience.sql`, `0029_function_grants` actualizado, seed (aviso
+  con cumpleaños, 2 bebidas de cortesía, algunos cumpleaños esta semana)
+- Terminado: pgTAP de §11.6 en verde; suite completa sin regresiones; productos existentes siguen
+  en caja igual (REQ-038.7).
+
+### [ ] T-059 · Reseña en Google
+- REQ: REQ-036.1–036.4
+- Archivos: `/admin/negocio` (campo y validación), `get_ticket_by_token`, "Mi turno"
+- Terminado: unitaria de validación del enlace; E2E: con enlace, turno terminado muestra
+  "¡Gracias por venir!" y el botón; sin enlace solo el gracias; cancelado y "no llegó" sin botón.
+
+### [ ] T-060 · Cumpleaños
+- REQ: REQ-037.1–037.6
+- Archivos: formulario de turno, ficha del cliente, `/admin/recordar` ("Cumplen esta semana"),
+  `/admin/mensajes` (plantilla "cumpleaños"), aviso de privacidad por defecto
+- Terminado: unitarias de día/mes (31-abr, 30-feb, 29-feb) y plantilla; integración: `joinQueue`
+  guarda el cumpleaños solo si no había; E2E: el campo no reaparece la segunda vez; la lista muestra
+  al que cumple mañana con botón de WhatsApp.
+
+### [ ] T-061 · Menú y bebida de cortesía
+- REQ: REQ-038.1–038.7
+- Archivos: `/admin/productos` (A la venta / De cortesía / foto), portada `/[slug]` ("Lo que
+  vendemos"), formulario de turno, "Mi turno", fila del barbero y del dueño, `src/lib/media/resize.ts`
+- Terminado: integración: cortesía inválida → error en el campo; `setTicketCourtesy` solo en
+  espera; E2E: tomar turno con bebida → el barbero la ve y la marca "Servida ✓" (se actualiza en
+  "Mi turno" sin recargar); la caja no registra nada.
+
+### [ ] T-062 · Fotos de cortes
+- REQ: REQ-039.1–039.6
+- Archivos: `/app/mis-fotos`, `/admin/barberos` (fotos por barbero), formulario ("Ver cortes"),
+  `src/lib/media/resize.ts`, acciones `uploadBarberPhoto` / `deleteBarberPhoto` / `getBarberPhotos`
+- Terminado: unitaria de dimensiones de `resize`; E2E: subir sin confirmar no deja; con
+  confirmación sube y aparece en "Ver cortes" sin perder lo escrito; la foto 13 se rechaza; barbero
+  desactivado no muestra fotos.
+
+### [ ] T-063 · Validación Hito 5: matriz de trazabilidad
+- REQ: REQ-036…REQ-039
+- Archivos: `scripts/traceability.ts` (`HITOS["5"] = [[36, 39]]`), `docs/estado-del-proyecto.md`
+- Terminado: `pnpm trace --hito=5` sin huecos; CI verde; prueba en el celular con Henry en la
+  barbería; aprobación de Henry (ADR nuevo).
+
+---
+
 ## Dependencias principales
 
 ```mermaid
@@ -775,4 +830,5 @@ flowchart LR
   T030 --> T031 --> T032 --> T033 --> T034 --> T035 --> T036 --> T037 --> T038 --> T039
   T039 --> T040 --> T041 --> T042 --> T043 --> T044 --> T045 --> T046 --> T047 --> T048 --> T049 --> T050
   T050 --> T051 --> T052 --> T053 --> T054 --> T055 --> T056 --> T057
+  T057 --> T058 --> T059 --> T060 --> T061 --> T062 --> T063
 ```

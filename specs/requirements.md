@@ -24,6 +24,7 @@
 4. Hito 3 — Caja y comisiones (REQ-023 a REQ-029)
 5. Transversales: cuentas, negocio, configuración (REQ-030 a REQ-034)
 5b. Hito 4 — Servicios por barbero (REQ-035)
+5c. Hito 5 — Experiencia del cliente (REQ-036 a REQ-039)
 6. Requisitos no funcionales (NFR)
 7. Casos borde consolidados
 8. Fuera de alcance del MVP
@@ -528,7 +529,7 @@ cuánto le corresponde a cada barbero.
 
 ### REQ-033 · Plantillas de mensajes de WhatsApp — M
 - REQ-033.1 El dueño DEBE poder editar las plantillas: "faltan 2 turnos", "recordatorio de
-  cliente inactivo" y "compartir la fila", con variables `{nombre}`, `{negocio}`, `{tiempo}`,
+  cliente inactivo", "compartir la fila" y "cumpleaños" (REQ-037.4, Hito 5), con variables `{nombre}`, `{negocio}`, `{tiempo}`,
   `{enlace}`, con valores por defecto en español colombiano y vista previa.
 
 ### REQ-034 · Datos de ejemplo (seed) — M
@@ -596,6 +597,91 @@ Caja
   registra lo que pasó y la comisión se calcula igual (REQ-025).
 
 Fuera de alcance de REQ-035: duración o precio distintos por barbero (PA-09 sigue vigente).
+
+---
+
+## 5c. Hito 5 — Experiencia del cliente
+
+> Estado: **APROBADA** (Henry, 2026-10-28). TurnOS es para una sola barbería; cada requisito se
+> mide por si mejora la experiencia del cliente. Ver ADR-025 (incluye los valores por defecto de
+> las preguntas del borrador).
+
+### REQ-036 · Reseña en Google después del corte — M
+**Como** dueño, **quiero** que el cliente pueda dejarnos una reseña en Google justo después del
+corte, **para** que más gente del barrio nos encuentre.
+
+- REQ-036.1 El dueño DEBE poder guardar, en `/admin/negocio`, el enlace de reseñas de Google de
+  la barbería; EL SISTEMA DEBE aceptar solo enlaces `https://` y mostrar "Ese enlace no parece
+  válido" si no lo es.
+- REQ-036.2 CUANDO el turno del cliente pasa a terminado y hay enlace guardado, "Mi turno" DEBE
+  mostrar "¡Gracias por venir!" y un botón "Déjanos tu reseña en Google" que abre el enlace en una
+  pestaña nueva.
+- REQ-036.3 SI no hay enlace guardado, ENTONCES EL SISTEMA NO DEBE mostrar el botón (el mensaje de
+  gracias sí).
+- REQ-036.4 El botón NO DEBE aparecer en turnos cancelados ni en "no llegó".
+
+### REQ-037 · Cumpleaños del cliente — M
+**Como** dueño, **quiero** saber quién cumple años esta semana, **para** saludarlo y que se sienta
+reconocido.
+
+- REQ-037.1 La ficha del cliente DEBE admitir día y mes de cumpleaños (sin año), opcional y
+  editable por el dueño y por el barbero con alcance sobre la ficha (ADR-016).
+- REQ-037.2 Al tomar turno, SI la ficha no tiene cumpleaños, EL SISTEMA DEBE mostrar un campo
+  opcional "¿Cuándo cumples años? (opcional)" con día y mes; SI ya lo tiene, NO DEBE volver a
+  pedirlo. Un cumpleaños escrito en el formulario nunca reemplaza uno ya guardado.
+- REQ-037.3 EL SISTEMA DEBE rechazar fechas imposibles (31 de abril, 30 de febrero) con "Esa fecha
+  no existe"; el 29 de febrero es válido.
+- REQ-037.4 El dueño DEBE ver la lista "Cumplen esta semana" (hoy y los 6 días siguientes, día de
+  Bogotá) junto a "Clientes para recordar", ordenada por fecha, con botón de WhatsApp que usa la
+  plantilla "cumpleaños" (REQ-033, variables `{nombre}`, `{negocio}`); en años no bisiestos, quien
+  cumple el 29 de febrero aparece el 28.
+- REQ-037.5 La lista NO DEBE incluir clientes con "no contactar" (REQ-020.5) ni fichas eliminadas
+  (REQ-018.6).
+- REQ-037.6 El texto por defecto del aviso de privacidad DEBE mencionar el cumpleaños como dato
+  opcional y para qué se usa; el dueño publica la versión nueva con el mecanismo de REQ-002.5.
+
+### REQ-038 · Menú de la barbería y bebida de cortesía — M
+**Como** cliente, **quiero** ver lo que venden en la barbería y escoger una bebida de cortesía al
+tomar turno, **para** que me la tengan lista cuando llegue.
+
+- REQ-038.1 Cada producto DEBE poder marcarse como "A la venta" (se muestra con precio), "De
+  cortesía" (se ofrece gratis con el turno), o ambas, y tener una foto opcional.
+- REQ-038.2 La portada `/[slug]` DEBE mostrar "Lo que vendemos" con foto, nombre y precio de los
+  productos activos a la venta; solo se muestran (se compran en persona). SI no hay ninguno, la
+  sección no aparece.
+- REQ-038.3 CUANDO hay productos activos de cortesía, el formulario de turno DEBE ofrecer
+  "Bebida de cortesía" con esas opciones y "No, gracias" (seleccionada por defecto); el cliente
+  escoge **una** como máximo.
+- REQ-038.4 Mientras el turno esté en espera, "Mi turno" DEBE dejar cambiar o quitar la bebida;
+  desde que lo llaman ya no se puede cambiar.
+- REQ-038.5 La fila del barbero y la del dueño DEBEN mostrar la bebida escogida en cada turno y un
+  botón "Servida ✓" que la marca (hora y quién); una vez servida se ve como "Servida ✓" y no se
+  puede desmarcar.
+- REQ-038.6 `join_queue` y el cambio desde "Mi turno" DEBEN rechazar un producto que no sea de
+  cortesía, esté inactivo o sea de otro negocio, con "Esa bebida ya no está disponible".
+- REQ-038.7 La cortesía NO DEBE generar cobro, venta ni comisión, ni aparecer en caja (ADR-025).
+  Si un producto se acaba, el dueño lo desactiva y deja de ofrecerse; los turnos que ya lo tenían
+  lo conservan.
+
+### REQ-039 · Fotos de cortes por barbero — D
+**Como** cliente nuevo, **quiero** ver fotos de los cortes de cada barbero, **para** escoger con
+quién me corto.
+
+- REQ-039.1 Cada barbero DEBE poder subir, desde el celular, hasta 12 fotos de sus cortes y borrar
+  las suyas; el dueño DEBE poder subir y borrar las de cualquier barbero.
+- REQ-039.2 SI el barbero ya tiene 12 fotos, ENTONCES EL SISTEMA DEBE impedir subir otra con
+  "Ya tienes 12 fotos. Borra una para subir otra".
+- REQ-039.3 Antes de subir cada foto, EL SISTEMA DEBE pedir confirmar "El cliente me dio permiso
+  de publicar esta foto" (Ley 1581: la imagen es dato personal); sin confirmar no se sube.
+- REQ-039.4 EL SISTEMA DEBE reducir la foto en el celular antes de subirla (lado mayor ≤ 1080 px,
+  ≤ 300 KB) y rechazar archivos que no sean imagen con "Ese archivo no es una foto".
+- REQ-039.5 En el formulario de turno, junto a cada barbero con fotos, DEBE haber "Ver cortes",
+  que abre sus fotos (de la más nueva a la más vieja) sin perder lo que el cliente ya escribió.
+- REQ-039.6 CUANDO se desactiva un barbero, sus fotos DEBEN dejar de mostrarse al público (se
+  conservan por si vuelve).
+
+Fuera de alcance del Hito 5: inventario de productos, pedidos o pagos en línea del menú, regalo de
+cumpleaños automático, envío automático por WhatsApp (va en el hito del aviso automático).
 
 ---
 
