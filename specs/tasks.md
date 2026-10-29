@@ -679,12 +679,20 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   revoca y concede explícitamente; (3) `barber_does_service` es interna (solo `service_role` y
   funciones `security definer`); la app y las pruebas con sesión leen `barber_services` por RLS.
 
-### [ ] T-052 · Fila: `join_queue`, `add_manual_ticket`, `call_next` y acciones del dueño
+### [x] T-052 · Fila: `join_queue`, `add_manual_ticket`, `call_next` y acciones del dueño — 2026-10-28
 - REQ: REQ-035.7–35.9, REQ-035.11–35.13 (incluye REQ-035.12, movido desde T-051)
 - Archivos: misma migración `0030` (o `0031`), `supabase/tests/0031_queue_by_service.sql`
 - Terminado: pgTAP: `BARBER_CANT_DO_SERVICE` y `NO_BARBER_FOR_SERVICE`; `call_next` salta lo que
   no hace y respeta `skip locked` (REQ-007.2); preferido conservado tras quitar el servicio
   (REQ-035.12); reasignar/llamar con barbero valida; `register_sale` sin validación (REQ-035.13).
+- Notas: migración `0031_queue_by_service.sql` + pgTAP `0031_queue_by_service.sql` (20); suite
+  510/510 y 33 de integración. Diseño: `in_barber_list(preferido, servicio, barbero)` en
+  `barber_queue_tickets`, `call_next` y la regla "el primero de su fila" de `transition_ticket`; un
+  trigger en `tickets` valida preferido y asignado (`BARBER_CANT_DO_SERVICE`, P0010), así cubre
+  `join_queue`, `add_manual_ticket`, reasignar (update directo) y llamar con barbero. Errores nuevos:
+  P0010 y `NO_BARBER_FOR_SERVICE` (P0011). Desvío de la spec (Q16, aprobado): REQ-035.7 solo aplica
+  si ya hay alguien presente; con nadie presente se toma turno como antes (lo destapó
+  `0020_close_expired_midnight`). Los textos en español de P0010/P0011 van en T-054/T-055.
 
 ### [ ] T-053 · Dominio: `estimateQueue` con `capableBarberIds`
 - REQ: REQ-035.10, REQ-004.1, REQ-004.5
