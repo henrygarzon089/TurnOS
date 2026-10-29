@@ -1,4 +1,4 @@
-# Estado del proyecto — traspaso (2026-10-24)
+# Estado del proyecto — traspaso (2026-10-28)
 
 Este documento resume la conversación en la que se construyó todo hasta aquí, para que cualquier
 persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `specs/`.
@@ -13,12 +13,32 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 
 ## Hecho
 
-| Hito                    | Tareas      | Estado                                                                     |
-| ----------------------- | ----------- | -------------------------------------------------------------------------- |
-| H0 Cimientos            | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (CI verde; falta E2E en CI y proteger `main`) |
-| H1 Fila virtual         | T-011…T-030 | **aprobado** (ADR-017); pasillo e instalación hechos (ADR-021)             |
-| H2 Clientes y fidelidad | T-031…T-039 | **aprobado** (ADR-017)                                                     |
-| H3 Caja y comisiones    | T-040…T-050 | **aprobado** (ADR-020); pasillo con el dueño hecho (ADR-021)               |
+| Hito                     | Tareas      | Estado                                                                     |
+| ------------------------ | ----------- | -------------------------------------------------------------------------- |
+| H0 Cimientos             | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (CI verde; falta E2E en CI y proteger `main`) |
+| H1 Fila virtual          | T-011…T-030 | **aprobado** (ADR-017); pasillo e instalación hechos (ADR-021)             |
+| H2 Clientes y fidelidad  | T-031…T-039 | **aprobado** (ADR-017)                                                     |
+| H3 Caja y comisiones     | T-040…T-050 | **aprobado** (ADR-020); pasillo con el dueño hecho (ADR-021)               |
+| H4 Servicios por barbero | T-051…T-057 | T-051–056 `[x]` (PRs #4–#9); T-057 `[~]` (falta aprobación de Henry)       |
+
+### Hito 4 — servicios por barbero (2026-10-28)
+
+- Origen: Filo (`/filo`, creado en producción el 2026-10-28 con `supabase/data/filo.sql`) tiene
+  4 sillas de hombre, 1 de mujer y manicure aparte. Grill → REQ-035 (13 CA) y ADR-023, aprobados.
+  Q16: "Hoy no hay quién lo haga" solo aplica si ya hay alguien presente.
+- Migraciones nuevas: `0030_barber_services`, `0031_queue_by_service`, `0032_estimate_by_service`.
+  **No están en producción**: se aplican con `supabase db push` cuando se fusione la cadena. Con
+  todos haciendo todo (estado inicial) no cambia nada visible.
+- PRs en cadena: #5 T-052 → #6 T-053 → #7 T-054 → #8 T-055 → #9 T-056 (cada uno sobre el anterior);
+  #2, #3 y #4 ya fusionados en `main`.
+- Pruebas (Mac): pgTAP 517 · unitarias 96 · integración 36 · E2E nuevos 16/16; suite E2E completa
+  166/174 (las 8 fallas no son de REQ-035: invitación con la IP de `.env.local`, inicios de sesión
+  lentos y `barber-flow` intermitente en WebKit con `pnpm dev`). `pnpm trace --hito=4` sin huecos.
+- **Ojo**: `.env.local` apunta a producción. Los E2E en la Mac se corren contra el Supabase local
+  con las variables de `supabase status` (no con `.env.local`), y siempre con `--workers=1`.
+- Pendiente para Filo: cuando lleguen los barberos, desmarcar en **Barberos** los servicios de mujer
+  a Stiven y Andrés y dejarle a la estilista solo los suyos; la persona de manicure se crea como
+  barbero con solo manicure/pedicure (y se activan esos servicios).
 
 Pruebas en verde (Mac, 2026-10-24): 303 pgTAP · 58 unitarias · 27 integración · E2E de H2 32/32 (Pixel 7 + iPhone 13,
 corrida conjunta). Trazabilidad Hito 2: 0 CA sin prueba (`pnpm trace --hito=2`).

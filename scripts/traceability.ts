@@ -23,6 +23,7 @@ const HITOS: Record<string, [number, number][]> = {
   ],
   "2": [[18, 22]],
   "3": [[23, 29]],
+  "4": [[35, 35]], // REQ-035 servicios por barbero (ADR-023)
 };
 
 const req = readFileSync("specs/requirements.md", "utf8");
