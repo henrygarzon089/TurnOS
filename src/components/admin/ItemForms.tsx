@@ -2,6 +2,7 @@
 
 import { useActionState, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { CheckList } from "@/components/admin/CheckList";
 import { ErrorText } from "@/components/auth/LoginForm";
 import {
   toggleProduct,
@@ -19,7 +20,10 @@ export type ServiceRow = {
   price: number;
   is_active: boolean;
   counts_for_loyalty: boolean;
+  /** REQ-035.2: quién lo hace (ids de barbero) */
+  barber_ids?: string[];
 };
+export type BarberOption = { id: string; name: string };
 export type ProductRow = { id: string; name: string; price: number; is_active: boolean };
 
 function useRefreshOnOk(state: FormState) {
@@ -32,7 +36,13 @@ function useRefreshOnOk(state: FormState) {
 }
 
 /** Fila editable de servicio (REQ-015.1) con activar/desactivar (REQ-015.2). */
-export function ServiceForm({ service }: { service?: ServiceRow }) {
+export function ServiceForm({
+  service,
+  barbers = [],
+}: {
+  service?: ServiceRow;
+  barbers?: BarberOption[];
+}) {
   const [state, action, pending] = useActionState<FormState, FormData>(upsertService, undefined);
   const [busy, startTransition] = useTransition();
   const router = useRouter();
@@ -93,6 +103,13 @@ export function ServiceForm({ service }: { service?: ServiceRow }) {
         />
         Suma para la tarjeta de fidelidad
       </label>
+      <CheckList
+        legend="Quién lo hace"
+        name="barber_ids"
+        shown="barbers_shown"
+        options={barbers.map((b) => ({ id: b.id, label: b.name }))}
+        checked={service ? (service.barber_ids ?? []) : null}
+      />
       {state?.error && <ErrorText>{state.error}</ErrorText>}
       <div className="flex gap-2">
         <button type="submit" className="btn-secondary" disabled={pending}>

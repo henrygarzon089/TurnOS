@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { adminDb, SEED } from "./helpers";
+import { adminDb, loginAsOwner, SEED } from "./helpers";
 
 /**
  * T-054 · REQ-035.6 / REQ-035.7: el formulario del cliente según quién hace cada servicio.
@@ -92,5 +92,103 @@ test.describe("REQ-035 formulario según quién hace cada servicio", () => {
     await expect(
       page.locator("label").filter({ hasText: TINTE }).getByText("Hoy no hay quién lo haga"),
     ).toBeVisible();
+  });
+});
+
+test.describe("REQ-035 el dueño configura quién hace qué", () => {
+  test.describe.configure({ mode: "serial" });
+  let ESTILISTA = "Estilista E2E";
+  let CEP = "Cepillado dueño E2E";
+
+  async function cleanupOwner() {
+    const { db, biz } = await ids();
+    await db.from("services").delete().eq("business_id", biz).eq("name", CEP);
+    await db.from("barbers").delete().eq("business_id", biz).eq("display_name", ESTILISTA);
+  }
+
+  test.beforeAll(async ({}, info) => {
+    ESTILISTA = `Estilista E2E ${info.project.name}`;
+    CEP = `Cepillado dueño E2E ${info.project.name}`;
+    await cleanupOwner();
+    const { db, biz, mateo } = await ids();
+    const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" });
+    const { data: est } = await db
+      .from("barbers")
+      .insert({
+        business_id: biz,
+        display_name: ESTILISTA,
+        phone_e164: info.project.name === "android" ? "+573005690001" : "+573005690002",
+        commission_pct: 50,
+        status: "available",
+        present_day: today,
+        sort_order: 99,
+      })
+      .select("id")
+      .single();
+    const { data: svc } = await db
+      .from("services")
+      .insert({ business_id: biz, name: CEP, duration_min: 30, price: 25000, sort_order: 92 })
+      .select("id")
+      .single();
+    await db
+      .from("barber_services")
+      .delete()
+      .eq("service_id", svc!.id)
+      .not("barber_id", "in", `(${mateo},${est!.id})`);
+    // La estilista solo hace su cepillado (no se cruza con los servicios de prueba del otro teléfono)
+    await db.from("barber_services").delete().eq("barber_id", est!.id).neq("service_id", svc!.id);
+    await db.from("barbers").update({ status: "available", present_day: today }).eq("id", mateo);
+  });
+  test.afterAll(cleanupOwner);
+
+  test("REQ-035.1 / REQ-035.3 en Barberos se marcan los servicios que hace (al menos uno)", async ({
+    page,
+  }) => {
+    await loginAsOwner(page);
+    await page.goto("/admin/barberos");
+    const card = page.getByRole("article", { name: `Barbero ${ESTILISTA}` });
+    await expect(card).toContainText(`Hace: ${CEP}`);
+    await card.getByRole("button", { name: "Editar" }).click();
+    const list = card.getByRole("group", { name: "Servicios que hace" });
+    for (const box of await list.getByRole("checkbox").all()) await box.uncheck();
+    await card.getByRole("button", { name: "Guardar" }).click();
+    await expect(card.getByText("Marca al menos un servicio.")).toBeVisible();
+
+    await list.getByRole("checkbox", { name: CEP }).check();
+    await list.getByRole("checkbox", { name: "Corte", exact: true }).check();
+    await card.getByRole("button", { name: "Guardar" }).click();
+    // la tarjeta se relee con router.refresh(); en WebKit tarda más
+    await expect(card).toContainText(/Hace: Corte, .*Cepillado dueño E2E/, { timeout: 15_000 });
+  });
+
+  test("REQ-035.2 en Servicios se ve y se cambia quién lo hace; uno nuevo viene con todos", async ({
+    page,
+  }) => {
+    await loginAsOwner(page);
+    await page.goto("/admin/servicios");
+    const form = page.getByRole("form", { name: `Servicio ${CEP}` });
+    const who = form.getByRole("group", { name: "Quién lo hace" });
+    await expect(who.getByRole("checkbox", { name: "Mateo" })).toBeChecked();
+    await expect(who.getByRole("checkbox", { name: "Juan" })).not.toBeChecked();
+    await expect(who.getByRole("checkbox", { name: ESTILISTA })).toBeChecked();
+
+    const nuevo = page
+      .getByRole("form", { name: "Nuevo servicio" })
+      .getByRole("group", { name: "Quién lo hace" });
+    for (const box of await nuevo.getByRole("checkbox").all()) await expect(box).toBeChecked();
+  });
+
+  test("REQ-035.11 al agregar un cliente solo se ofrecen los barberos que hacen el servicio", async ({
+    page,
+  }) => {
+    await loginAsOwner(page);
+    await page.goto("/admin/fila");
+    await page.getByRole("button", { name: "Agregar cliente" }).click();
+    const dialog = page.getByRole("dialog", { name: "Agregar cliente" });
+    await dialog.getByLabel("Servicio").selectOption({ label: `${CEP} · 30 min` });
+    const options = await dialog.getByLabel("Barbero").locator("option").allTextContents();
+    expect(options).toContain("Mateo");
+    expect(options).toContain(ESTILISTA);
+    expect(options).not.toContain("Juan");
   });
 });

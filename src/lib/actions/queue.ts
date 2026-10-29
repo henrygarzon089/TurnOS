@@ -13,6 +13,7 @@ export type QueueTicket = {
   customerPhone: string | null;
   serviceName: string;
   serviceDurationMin: number;
+  serviceId: string;
   preferredBarberId: string | null;
   assignedBarberId: string | null;
   status: "waiting" | "called" | "in_service" | "done" | "cancelled" | "no_show";
@@ -78,6 +79,7 @@ function toTicket(r: TicketRow, ahead: number): QueueTicket {
     customerPhone: r.customer_phone_e164,
     serviceName: r.service_name,
     serviceDurationMin: r.service_duration_min,
+    serviceId: r.service_id,
     preferredBarberId: r.preferred_barber_id,
     assignedBarberId: r.assigned_barber_id,
     status: r.status,
@@ -99,6 +101,8 @@ const ERRORS: Record<string, string> = {
   P0006: "No hay nadie en la fila.",
   P0004: "Ese turno ya cambió de estado. Se actualizó la fila.",
   "42501": "No tienes permiso para esta acción.",
+  P0010: "Ese barbero no hace ese servicio.", // REQ-035.8 / REQ-035.11
+  P0011: "Hoy no hay quién haga ese servicio.", // REQ-035.7
   P0002: "El turno ya no existe.",
 };
 
@@ -156,7 +160,10 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
         .eq("payment_status", "pending")
         .order("finished_at", { ascending: false })
         .limit(10),
-      supabase.from("barber_services").select("barber_id, service_id").eq("business_id", session.business.id),
+      supabase
+        .from("barber_services")
+        .select("barber_id, service_id")
+        .eq("business_id", session.business.id),
     ]);
 
   if (barberRes.error || !barberRes.data) return null;
@@ -298,7 +305,8 @@ export type OwnerQueueView = {
   };
   barbers: OwnerBarber[];
   active: QueueTicket[]; // waiting + called + in_service, en orden
-  services: { id: string; name: string; durationMin: number }[];
+  /** barberIds: quienes hacen el servicio (REQ-035.11). */
+  services: { id: string; name: string; durationMin: number; barberIds: string[] }[];
   pendingPayments: QueueTicket[];
   now: string;
 };
@@ -310,36 +318,41 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
   const supabase = await createSupabaseServerClient();
   const biz = session.business.id;
 
-  const [bizRes, barbersRes, ticketsRes, servicesRes, openRes, pendingRes, capRes] = await Promise.all([
-    supabase.from("businesses").select("queue_override, queue_override_day").eq("id", biz).single(),
-    supabase
-      .from("barbers")
-      .select("id, display_name, status, is_active")
-      .eq("business_id", biz)
-      .order("sort_order"),
-    supabase
-      .from("tickets")
-      .select(TICKET_COLS)
-      .eq("business_id", biz)
-      .in("status", ["waiting", "called", "in_service"])
-      .order("queue_order"),
-    supabase
-      .from("services")
-      .select("id, name, duration_min")
-      .eq("business_id", biz)
-      .eq("is_active", true)
-      .order("sort_order"),
-    supabase.rpc("is_business_open", { p_business_id: biz }),
-    supabase
-      .from("tickets")
-      .select(TICKET_COLS)
-      .eq("business_id", biz)
-      .eq("status", "done")
-      .eq("payment_status", "pending")
-      .order("finished_at", { ascending: false })
-      .limit(20),
-    supabase.from("barber_services").select("barber_id, service_id").eq("business_id", biz),
-  ]);
+  const [bizRes, barbersRes, ticketsRes, servicesRes, openRes, pendingRes, capRes] =
+    await Promise.all([
+      supabase
+        .from("businesses")
+        .select("queue_override, queue_override_day")
+        .eq("id", biz)
+        .single(),
+      supabase
+        .from("barbers")
+        .select("id, display_name, status, is_active")
+        .eq("business_id", biz)
+        .order("sort_order"),
+      supabase
+        .from("tickets")
+        .select(TICKET_COLS)
+        .eq("business_id", biz)
+        .in("status", ["waiting", "called", "in_service"])
+        .order("queue_order"),
+      supabase
+        .from("services")
+        .select("id, name, duration_min")
+        .eq("business_id", biz)
+        .eq("is_active", true)
+        .order("sort_order"),
+      supabase.rpc("is_business_open", { p_business_id: biz }),
+      supabase
+        .from("tickets")
+        .select(TICKET_COLS)
+        .eq("business_id", biz)
+        .eq("status", "done")
+        .eq("payment_status", "pending")
+        .order("finished_at", { ascending: false })
+        .limit(20),
+      supabase.from("barber_services").select("barber_id, service_id").eq("business_id", biz),
+    ]);
 
   const rows = (ticketsRes.data ?? []) as TicketRow[];
   const capable = capableByService(capRes.data ?? []);
@@ -373,6 +386,7 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
       id: s.id,
       name: s.name,
       durationMin: s.duration_min,
+      barberIds: capable.get(s.id) ?? [],
     })),
     pendingPayments: ((pendingRes.data ?? []) as TicketRow[]).map((r) => toTicket(r, 0)),
     now: new Date().toISOString(),

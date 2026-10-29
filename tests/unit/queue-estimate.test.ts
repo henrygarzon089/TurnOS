@@ -120,10 +120,34 @@ describe("REQ-035.10 posición y tiempo solo con quienes hacen el servicio", () 
       { id: "ana", status: "busy", busyUntil: t("10:30") },
     ],
     waiting: [
-      { id: "C1", queueOrder: 1000, durationMin: 30, preferredBarberId: null, capableBarberIds: ["ana"] },
-      { id: "K1", queueOrder: 2000, durationMin: 20, preferredBarberId: null, capableBarberIds: ["juan", "pedro"] },
-      { id: "C2", queueOrder: 3000, durationMin: 30, preferredBarberId: null, capableBarberIds: ["ana"] },
-      { id: "X1", queueOrder: 4000, durationMin: 20, preferredBarberId: null, capableBarberIds: all },
+      {
+        id: "C1",
+        queueOrder: 1000,
+        durationMin: 30,
+        preferredBarberId: null,
+        capableBarberIds: ["ana"],
+      },
+      {
+        id: "K1",
+        queueOrder: 2000,
+        durationMin: 20,
+        preferredBarberId: null,
+        capableBarberIds: ["juan", "pedro"],
+      },
+      {
+        id: "C2",
+        queueOrder: 3000,
+        durationMin: 30,
+        preferredBarberId: null,
+        capableBarberIds: ["ana"],
+      },
+      {
+        id: "X1",
+        queueOrder: 4000,
+        durationMin: 20,
+        preferredBarberId: null,
+        capableBarberIds: all,
+      },
     ],
   };
   const byId = Object.fromEntries(estimateQueue(input).map((e) => [e.id, e]));
@@ -150,7 +174,9 @@ describe("REQ-035.10 posición y tiempo solo con quienes hacen el servicio", () 
   });
   it("REQ-035.10 sin capableBarberIds (todos hacen todo) se comporta como antes", () => {
     expect(positions(example.waiting)).toEqual(
-      positions(example.waiting.map((w) => ({ ...w, capableBarberIds: ["juan", "pedro", "luis"] }))),
+      positions(
+        example.waiting.map((w) => ({ ...w, capableBarberIds: ["juan", "pedro", "luis"] })),
+      ),
     );
   });
   it("REQ-035.10 el estimado para quien va a tomar un cepillado ahora", () => {

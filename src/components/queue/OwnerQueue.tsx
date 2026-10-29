@@ -168,7 +168,8 @@ export function OwnerQueue({ initial }: { initial: OwnerQueueView }) {
                       ticket={t}
                       index={i}
                       waiting={waiting}
-                      barbers={activeBarbers}
+                      barbers={canDo(view, t.serviceId, activeBarbers)}
+                      allBarbers={view.barbers}
                       busy={busy}
                       run={run}
                     />
@@ -263,11 +264,22 @@ export function OwnerQueue({ initial }: { initial: OwnerQueueView }) {
   );
 }
 
+/** REQ-035.11: solo los barberos que hacen el servicio (si el servicio ya no está, todos). */
+function canDo<B extends { id: string }>(
+  view: OwnerQueueView,
+  serviceId: string,
+  barbers: B[],
+): B[] {
+  const s = view.services.find((x) => x.id === serviceId);
+  return s ? barbers.filter((b) => s.barberIds.includes(b.id)) : barbers;
+}
+
 function TicketMenu({
   ticket: t,
   index,
   waiting,
   barbers,
+  allBarbers,
   busy,
   run,
 }: {
@@ -275,6 +287,7 @@ function TicketMenu({
   index: number;
   waiting: QueueTicket[];
   barbers: OwnerQueueView["barbers"];
+  allBarbers: OwnerQueueView["barbers"];
   busy: boolean;
   run: (a: () => Promise<ActionResult>) => void;
 }) {
@@ -330,6 +343,12 @@ function TicketMenu({
                   {b.name}
                 </option>
               ))}
+              {/* REQ-035.12: el preferido que ya tenía se ve aunque ya no haga el servicio */}
+              {t.preferredBarberId && !barbers.some((b) => b.id === t.preferredBarberId) && (
+                <option value={t.preferredBarberId} disabled>
+                  {allBarbers.find((b) => b.id === t.preferredBarberId)?.name ?? "Barbero"}
+                </option>
+              )}
             </select>
           </div>
           <div className="flex gap-2">
@@ -465,7 +484,12 @@ function ManualTicketSheet({
           <select
             className="input"
             value={serviceId}
-            onChange={(e) => setServiceId(e.target.value)}
+            onChange={(e) => {
+              setServiceId(e.target.value);
+              // REQ-035.11: si el barbero escogido no hace el servicio nuevo, vuelve "El que esté libre"
+              const s = view.services.find((x) => x.id === e.target.value);
+              if (s && barberId && !s.barberIds.includes(barberId)) setBarberId("");
+            }}
           >
             {view.services.map((s) => (
               <option key={s.id} value={s.id}>
@@ -478,13 +502,15 @@ function ManualTicketSheet({
           Barbero
           <select className="input" value={barberId} onChange={(e) => setBarberId(e.target.value)}>
             <option value="">El que esté libre</option>
-            {view.barbers
-              .filter((b) => b.isActive && b.status !== "off")
-              .map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
+            {canDo(
+              view,
+              serviceId,
+              view.barbers.filter((b) => b.isActive && b.status !== "off"),
+            ).map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
+              </option>
+            ))}
           </select>
         </label>
         <div className="flex gap-2">
