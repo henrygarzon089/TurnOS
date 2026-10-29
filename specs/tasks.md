@@ -694,13 +694,23 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   si ya hay alguien presente; con nadie presente se toma turno como antes (lo destapó
   `0020_close_expired_midnight`). Los textos en español de P0010/P0011 van en T-054/T-055.
 
-### [ ] T-053 · Dominio: `estimateQueue` con `capableBarberIds`
+### [x] T-053 · Dominio: `estimateQueue` con `capableBarberIds` — 2026-10-28
 - REQ: REQ-035.10, REQ-004.1, REQ-004.5
 - Archivos: `src/lib/domain/queue-estimate.ts`, `tests/unit/queue-estimate.test.ts`, lecturas
   que arman la entrada (`get_ticket_by_token`, `get_barber_queue`, `get_business_queue`)
 - Terminado: el ejemplo de §4 sigue igual con "todos hacen todo"; ejemplo nuevo con estilista
   (cepillado solo con ella; ella en pausa → `null` y "Esperando a que haya quién te atienda");
   cobertura de ramas 100 %.
+- Notas: `queue-estimate.ts`: `capableBarberIds` opcional (sin dato = todos, como antes),
+  `positions` cuenta los de delante con `puede(W) ∩ puede(T) ≠ ∅`, motivo nuevo `no_capable`, y
+  `capableByService` arma el mapa desde `barber_services`. Migración `0032_estimate_by_service.sql`:
+  `queue_snapshot` agrega `capableBarberIds` a cada turno en espera y `get_public_business`
+  agrega `barberIds` a cada servicio (lo usa T-054) + pgTAP `0032` (3). Las acciones del barbero y
+  del dueño leen `barber_services` por RLS. "Mi turno" ya muestra "Esperando a que haya quién te
+  atienda" con `no_capable` (el E2E va en T-056). Unitarias 91/91 con 100 % de ramas; pgTAP 517;
+  integración 33. De paso: `rls-cash` y `my-numbers` usaban `current_date` (UTC) y fallaban
+  después de las 7 p. m. de Bogotá; ahora usan `business_day_bogota()` (solo pruebas; la app ya
+  lo hacía bien).
 
 ### [ ] T-054 · Formulario del cliente
 - REQ: REQ-035.6, REQ-035.7

@@ -31,7 +31,8 @@ export type PublicBusiness = {
   nextOpening: string | null;
   closesAt: string | null;
   privacyVersion: number | null;
-  services: { id: string; name: string; durationMin: number; price: number }[];
+  /** barberIds: quienes hacen el servicio (REQ-035.6); falta en datos viejos = todos. */
+  services: { id: string; name: string; durationMin: number; price: number; barberIds?: string[] }[];
   queue: QueueSnapshot;
   /** Derivados */
   waitingCount: number;
@@ -106,6 +107,7 @@ function toSnapshot(raw: unknown): QueueSnapshot {
       queueOrder: Number(t.queueOrder),
       durationMin: Number(t.durationMin),
       preferredBarberId: t.preferredBarberId ?? null,
+      capableBarberIds: t.capableBarberIds ?? null,
       displayNumber: Number(t.displayNumber),
     })),
   };
@@ -128,6 +130,7 @@ export async function getPublicBusiness(
         { now, barbers: queue.barbers, waiting: queue.waiting },
         first.durationMin,
         null,
+        first.barberIds ?? null,
       )
     : null;
   return {

@@ -107,3 +107,67 @@ describe("casos borde", () => {
     expect(estimateQueue({ ...example, waiting: [] })).toEqual([]);
   });
 });
+
+// REQ-035.10 (T-053): solo cuentan los barberos que hacen el servicio. Ana es la estilista: la
+// única que hace cepillado; Juan y Pedro solo cortes.
+describe("REQ-035.10 posición y tiempo solo con quienes hacen el servicio", () => {
+  const all = ["juan", "pedro", "ana"];
+  const input: QueueInput = {
+    now,
+    barbers: [
+      { id: "juan", status: "available" },
+      { id: "pedro", status: "busy", busyUntil: t("10:20") },
+      { id: "ana", status: "busy", busyUntil: t("10:30") },
+    ],
+    waiting: [
+      { id: "C1", queueOrder: 1000, durationMin: 30, preferredBarberId: null, capableBarberIds: ["ana"] },
+      { id: "K1", queueOrder: 2000, durationMin: 20, preferredBarberId: null, capableBarberIds: ["juan", "pedro"] },
+      { id: "C2", queueOrder: 3000, durationMin: 30, preferredBarberId: null, capableBarberIds: ["ana"] },
+      { id: "X1", queueOrder: 4000, durationMin: 20, preferredBarberId: null, capableBarberIds: all },
+    ],
+  };
+  const byId = Object.fromEntries(estimateQueue(input).map((e) => [e.id, e]));
+
+  it("REQ-035.10 el corte no cuenta el cepillado de delante: es el siguiente, con Juan ya", () => {
+    expect(byId.K1).toMatchObject({ position: 1, waitMin: 0, barberId: "juan" });
+  });
+  it("REQ-035.10 el cepillado espera a la estilista aunque Juan esté libre", () => {
+    expect(byId.C1).toMatchObject({ position: 1, waitMin: 30, barberId: "ana" });
+    expect(byId.C2).toMatchObject({ position: 2, waitMin: 60, barberId: "ana" });
+  });
+  it("REQ-035.10 un servicio que hacen todos cuenta a todos los de delante", () => {
+    // empate Juan/Pedro a las 10:20 → menor id
+    expect(byId.X1).toMatchObject({ position: 4, barberId: "juan", waitMin: 20 });
+  });
+  it("REQ-035.10 con la estilista en pausa: sin tiempo y con motivo propio", () => {
+    const paused: QueueInput = {
+      ...input,
+      barbers: input.barbers.map((b) => (b.id === "ana" ? { id: "ana", status: "paused" } : b)),
+    };
+    const e = Object.fromEntries(estimateQueue(paused).map((x) => [x.id, x]));
+    expect(e.C1).toMatchObject({ waitMin: null, barberId: null, reason: "no_capable" });
+    expect(e.K1).toMatchObject({ waitMin: 0, barberId: "juan" });
+  });
+  it("REQ-035.10 sin capableBarberIds (todos hacen todo) se comporta como antes", () => {
+    expect(positions(example.waiting)).toEqual(
+      positions(example.waiting.map((w) => ({ ...w, capableBarberIds: ["juan", "pedro", "luis"] }))),
+    );
+  });
+  it("REQ-035.10 el estimado para quien va a tomar un cepillado ahora", () => {
+    // delante: C1, C2 y X1 (X1 lo podría hacer Ana)
+    expect(estimateNewTicket(input, 30, null, ["ana"])).toMatchObject({ position: 4, waitMin: 90 });
+  });
+});
+
+describe("REQ-035.9 quién hace cada servicio", () => {
+  it("REQ-035.9 agrupa barber_services por servicio", async () => {
+    const { capableByService } = await import("@/lib/domain/queue-estimate");
+    const m = capableByService([
+      { barber_id: "ana", service_id: "cep" },
+      { barber_id: "juan", service_id: "corte" },
+      { barber_id: "ana", service_id: "corte" },
+    ]);
+    expect(m.get("cep")).toEqual(["ana"]);
+    expect(m.get("corte")).toEqual(["juan", "ana"]);
+  });
+});

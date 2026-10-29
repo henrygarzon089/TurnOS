@@ -62,6 +62,7 @@ export function JoinForm({ business, now }: Props) {
       { now: new Date(now), barbers: business.queue.barbers, waiting: business.queue.waiting },
       service.durationMin,
       barberId,
+      service.barberIds ?? null,
     );
     if (est.waitMin === null) return null;
     const [h, m] = business.closesAt.split(":").map(Number);
