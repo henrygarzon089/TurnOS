@@ -73,7 +73,7 @@ select is((select s ->> 'methods' from r, jsonb_array_elements(j -> 'sales') s w
   'REQ-027.1 cada venta muestra su medio de pago');
 select is((select s ->> 'items' from r, jsonb_array_elements(j -> 'sales') s where (s ->> 'total')::int = 29000), 'Corte, Gaseosa',
   'REQ-027.1 cada venta muestra lo vendido');
-select is((select (cash_day_summary((select biz from ctx), current_date - 1) ->> 'total')::int), 0, 'REQ-027.5 otro día no mezcla ventas');
+select is((select (cash_day_summary((select biz from ctx), business_day_bogota(now()) - 1) ->> 'total')::int), 0, 'REQ-027.5 otro día no mezcla ventas');
 
 select auth.test_login((select juan_u from ctx));
 select throws_ok($$ select cash_day_summary((select biz from ctx)) $$, '42501', null, 'REQ-029.1 el barbero no ve la caja del negocio');
