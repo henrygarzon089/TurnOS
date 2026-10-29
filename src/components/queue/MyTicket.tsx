@@ -154,7 +154,9 @@ function StatusCard({ ticket }: { ticket: Ticket }) {
                 {e.waitMin === null
                   ? e.reason === "preferred_unavailable"
                     ? "Tu barbero está en pausa"
-                    : "Sin barberos atendiendo ahora"
+                    : e.reason === "no_capable"
+                      ? "Esperando a que haya quién te atienda"
+                      : "Sin barberos atendiendo ahora"
                   : formatMinutes(e.waitMin)}
               </p>
               {e.waitMin !== null && e.waitMin > 0 && (

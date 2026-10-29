@@ -18,6 +18,8 @@ export type WaitingTicket = {
   queueOrder: number;
   durationMin: number;
   preferredBarberId: string | null;
+  /** REQ-035: barberos que hacen su servicio. Sin dato = todos (negocio sin restricciones). */
+  capableBarberIds?: string[] | null;
 };
 
 export type Estimate = {
@@ -30,7 +32,7 @@ export type Estimate = {
   /** Barbero que lo atendería según la simulación (null si no hay). */
   barberId: string | null;
   /** Motivo cuando waitMin es null. */
-  reason?: "no_barbers" | "preferred_unavailable";
+  reason?: "no_barbers" | "preferred_unavailable" | "no_capable";
 };
 
 export type QueueInput = {
@@ -47,23 +49,30 @@ export function activeBarbers(barbers: BarberState[]): BarberState[] {
   return barbers.filter((b) => b.status === "available" || b.status === "busy");
 }
 
+/** puede(W) de design.md §4: el preferido, o quienes hacen el servicio; null = cualquiera. */
+function canServe(t: WaitingTicket): Set<string> | null {
+  if (t.preferredBarberId !== null) return new Set([t.preferredBarberId]);
+  return t.capableBarberIds ? new Set(t.capableBarberIds) : null;
+}
+
+function overlaps(a: Set<string> | null, b: Set<string> | null): boolean {
+  if (a === null) return b === null || b.size > 0;
+  if (b === null) return a.size > 0;
+  for (const x of a) if (b.has(x)) return true;
+  return false;
+}
+
 /**
- * Posición de cada turno (REQ-004.1):
- *  - con barbero preferido b: 1 + turnos delante con preferido ∈ {b, null}
- *  - "el que esté libre": 1 + todos los turnos delante
+ * Posición de cada turno (REQ-004.1, REQ-035.10): 1 + turnos delante que podrían ocupar a alguno
+ * de los barberos que pueden atenderlo (puede(W) ∩ puede(T) ≠ ∅). Sin restricciones de servicio
+ * equivale a: con preferido b, los de b y los de "cualquiera"; sin preferido, todos.
  */
 export function positions(waiting: WaitingTicket[]): Map<string, number> {
   const sorted = [...waiting].sort((a, b) => a.queueOrder - b.queueOrder);
   const result = new Map<string, number>();
   sorted.forEach((t, i) => {
-    const ahead = sorted
-      .slice(0, i)
-      .filter(
-        (w) =>
-          t.preferredBarberId === null ||
-          w.preferredBarberId === null ||
-          w.preferredBarberId === t.preferredBarberId,
-      );
+    const mine = canServe(t);
+    const ahead = sorted.slice(0, i).filter((w) => overlaps(canServe(w), mine));
     result.set(t.id, ahead.length + 1);
   });
   return result;
@@ -88,10 +97,16 @@ export function estimateQueue(input: QueueInput): Estimate[] {
       out.push({ ...base, waitMin: null, barberId: null, reason: "no_barbers" });
       continue;
     }
-    const candidates =
-      t.preferredBarberId === null ? active : active.filter((b) => b.id === t.preferredBarberId);
+    const can = canServe(t);
+    const candidates = can === null ? active : active.filter((b) => can.has(b.id));
     if (candidates.length === 0) {
-      out.push({ ...base, waitMin: null, barberId: null, reason: "preferred_unavailable" });
+      out.push({
+        ...base,
+        waitMin: null,
+        barberId: null,
+        // REQ-035.10: nadie de los que hacen el servicio está atendiendo
+        reason: t.preferredBarberId === null ? "no_capable" : "preferred_unavailable",
+      });
       continue;
     }
     // argmin freeAt; empate → menor id (determinista)
@@ -113,6 +128,7 @@ export function estimateNewTicket(
   input: QueueInput,
   durationMin: number,
   preferredBarberId: string | null,
+  capableBarberIds?: string[] | null,
 ): Estimate {
   const maxOrder = input.waiting.reduce((m, t) => Math.max(m, t.queueOrder), 0);
   const ghost: WaitingTicket = {
@@ -120,9 +136,19 @@ export function estimateNewTicket(
     queueOrder: maxOrder + 1000,
     durationMin,
     preferredBarberId,
+    capableBarberIds,
   };
   const all = estimateQueue({ ...input, waiting: [...input.waiting, ghost] });
   return all.find((e) => e.id === "__new__")!;
+}
+
+/** REQ-035: filas de barber_services → barberos que hacen cada servicio. */
+export function capableByService(
+  rows: { barber_id: string; service_id: string }[],
+): Map<string, string[]> {
+  const m = new Map<string, string[]>();
+  for (const r of rows) m.set(r.service_id, [...(m.get(r.service_id) ?? []), r.barber_id]);
+  return m;
 }
 
 /** ¿Hay que avisar? Exactamente 2 delante (REQ-009.1). */

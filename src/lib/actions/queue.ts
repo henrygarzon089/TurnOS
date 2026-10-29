@@ -1,7 +1,7 @@
 "use server";
 
 import { getStaffSession } from "@/lib/auth/session";
-import { positions } from "@/lib/domain/queue-estimate";
+import { capableByService, positions } from "@/lib/domain/queue-estimate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 // ---------------------------------------------------------------- tipos ----
@@ -55,6 +55,7 @@ type TicketRow = {
   service_duration_min: number;
   preferred_barber_id: string | null;
   assigned_barber_id: string | null;
+  service_id: string;
   status: QueueTicket["status"];
   created_at: string;
   called_at: string | null;
@@ -67,7 +68,7 @@ type TicketRow = {
 };
 
 const TICKET_COLS =
-  "id, display_number, customer_name, customer_phone_e164, service_name, service_duration_min, preferred_barber_id, assigned_barber_id, status, created_at, called_at, started_at, notified_at, payment_status, public_token, queue_order, customer_id";
+  "id, display_number, customer_name, customer_phone_e164, service_name, service_duration_min, preferred_barber_id, assigned_barber_id, service_id, status, created_at, called_at, started_at, notified_at, payment_status, public_token, queue_order, customer_id";
 
 function toTicket(r: TicketRow, ahead: number): QueueTicket {
   return {
@@ -118,7 +119,7 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
   if (!session?.barberId) return null;
   const supabase = await createSupabaseServerClient();
 
-  const [barberRes, bizRes, listRes, currentRes, allWaitingRes, tplRes, pendingRes] =
+  const [barberRes, bizRes, listRes, currentRes, allWaitingRes, tplRes, pendingRes, capRes] =
     await Promise.all([
       supabase
         .from("barbers")
@@ -137,7 +138,7 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
         .maybeSingle(),
       supabase
         .from("tickets")
-        .select("id, queue_order, service_duration_min, preferred_barber_id")
+        .select("id, queue_order, service_duration_min, preferred_barber_id, service_id")
         .eq("business_id", session.business.id)
         .eq("status", "waiting")
         .order("queue_order"),
@@ -155,17 +156,20 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
         .eq("payment_status", "pending")
         .order("finished_at", { ascending: false })
         .limit(10),
+      supabase.from("barber_services").select("barber_id, service_id").eq("business_id", session.business.id),
     ]);
 
   if (barberRes.error || !barberRes.data) return null;
 
   // Posición global para "cualquiera" y por lista para los preferidos (design.md §4)
+  const capable = capableByService(capRes.data ?? []);
   const globalPos = positions(
     (allWaitingRes.data ?? []).map((t) => ({
       id: t.id as string,
       queueOrder: Number(t.queue_order),
       durationMin: t.service_duration_min as number,
       preferredBarberId: (t.preferred_barber_id as string | null) ?? null,
+      capableBarberIds: capable.get(t.service_id as string) ?? [],
     })),
   );
   const list = (listRes.data ?? []) as TicketRow[];
@@ -306,7 +310,7 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
   const supabase = await createSupabaseServerClient();
   const biz = session.business.id;
 
-  const [bizRes, barbersRes, ticketsRes, servicesRes, openRes, pendingRes] = await Promise.all([
+  const [bizRes, barbersRes, ticketsRes, servicesRes, openRes, pendingRes, capRes] = await Promise.all([
     supabase.from("businesses").select("queue_override, queue_override_day").eq("id", biz).single(),
     supabase
       .from("barbers")
@@ -334,9 +338,11 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
       .eq("payment_status", "pending")
       .order("finished_at", { ascending: false })
       .limit(20),
+    supabase.from("barber_services").select("barber_id, service_id").eq("business_id", biz),
   ]);
 
   const rows = (ticketsRes.data ?? []) as TicketRow[];
+  const capable = capableByService(capRes.data ?? []);
   const pos = positions(
     rows
       .filter((r) => r.status === "waiting")
@@ -345,6 +351,7 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
         queueOrder: Number(r.queue_order),
         durationMin: r.service_duration_min,
         preferredBarberId: r.preferred_barber_id,
+        capableBarberIds: capable.get(r.service_id) ?? [],
       })),
   );
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" });
