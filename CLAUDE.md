@@ -81,3 +81,36 @@ inmutables, reabrir solo el dueño con motivo.
 Barbería La 33 (`/la-33`). Dueño `dueno@la33.test` / `turnos123`. Barberos: celular `300 100 0001`
 a `0005`, PIN `111111` a `555555`. 30 clientes con historial, fidelidad activa (10 cortes).
 En un proyecto real: `pnpm seed:users` crea los usuarios de Auth antes de aplicar `supabase/seed.sql`.
+
+<!-- agent-kit:start -->
+## Seguridad
+- Nunca leer, imprimir ni pegar `.env*`, llaves, tokens, dumps de BD ni datos reales de clientes (barberos, clientes de la fila, PINs). `.claude/settings.json` bloquea la lectura de `.env*`.
+- Comandos destructivos (`rm -rf`, `git push --force`, migraciones, SQL en producción, deploys a prod) requieren confirmación explícita de Henry.
+- Supabase/Vercel: solo branches y previews desde el agente. Producción la ejecuta Henry.
+
+## Git
+- Sin atribución de IA en commits, PRs ni issues. Staging por rutas explícitas; nunca `git add -A`.
+- Una sesión = una tarea = una rama/PR.
+
+## Documentación (dónde vive cada cosa en este repo)
+- Estado: `docs/estado-del-proyecto.md` (es el ESTADO de este repo). Actualízalo al cerrar cada sesión.
+- Decisiones: `specs/decisions.md` (ADR-NNN). Requisitos y tareas: `specs/requirements.md`, `specs/tasks.md`.
+- Glosario: `CONTEXT.md`. Términos del dominio (fila, turno, barbero, dueño, cierre de caja, liquidación…).
+<!-- agent-kit:end -->
+
+<!-- skills-flow:start -->
+## Flujo de skills
+
+Propón la skill en el momento indicado; si Henry dice que no, sigue sin ella. El método SDD de este repo manda: las skills lo apoyan, no lo reemplazan.
+
+| Fase | Skill | Cuándo proponerla |
+|---|---|---|
+| Idea / decisión | `/abogado-del-diablo` | Antes de un ADR nuevo o una decisión cara (precios, pagos, datos de clientes) |
+| Diseño | `/grill-with-docs` | Requisito nuevo o ambiguo, antes de escribirlo en `specs/requirements.md` |
+| Construcción | `/tdd` | Cada tarea de `specs/tasks.md`, test primero |
+| Construcción | `/caveman` | Sesiones largas de código; apagar para grills, reviews y textos para el cliente |
+| Bugs | `/diagnosing-bugs` | Tras dos intentos fallidos con un bug |
+| Revisión | `/code-review` | Antes de abrir o fusionar un PR |
+| Cierre | `/handoff` | Al terminar: `docs/estado-del-proyecto.md` al día |
+| Cualquiera | `/wait-what` | Si Henry no entendió una respuesta |
+<!-- skills-flow:end -->

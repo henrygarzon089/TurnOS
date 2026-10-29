@@ -233,14 +233,15 @@ export function OwnerQueue({ initial }: { initial: OwnerQueueView }) {
           >
             Agregar cliente
           </button>
-          {view.business.queueOverride === "closed" ? (
+          {/* REQ-017.2: cerrada por horario o a mano, el dueño la abre por el resto del día */}
+          {!view.business.isOpen ? (
             <button
               type="button"
               className="btn-secondary"
               disabled={busy}
-              onClick={() => run(() => setQueueOverride("auto"))}
+              onClick={() => run(() => setQueueOverride("open"))}
             >
-              Abrir fila
+              Abrir fila hoy
             </button>
           ) : (
             <button
