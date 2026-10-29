@@ -283,3 +283,23 @@
   real de Supabase (cubre también los permisos de ADR-019, que el shim no reproduce).
 - Consecuencias: T-010 ya no depende de configurar secretos en GitHub; solo queda proteger `main`.
   `design.md` §8: "E2E contra Supabase local del CI (ADR-022)".
+
+## ADR-023 · Servicios por barbero (REQ-035)
+- Estado: **aceptada** (Henry, 2026-10-28)
+- Contexto: Filo tiene 4 sillas de hombre, 1 de mujer y una persona aparte para manicure y
+  pedicure. REQ-003, REQ-006 y REQ-007 suponen que cualquier barbero hace cualquier servicio: un
+  turno de "El que esté libre" le cae al primero que llame, y un cepillado le puede caer a quien
+  solo corta pelo de hombre.
+- Opciones: (a) lista de servicios por barbero (relación barbero ↔ servicio); (b) categorías
+  (servicio "hombre"/"mujer", barbero atiende una o ambas); (c) no modelarlo y que el dueño
+  reasigne a mano.
+- Decisión: (a), tabla `barber_services`. Por defecto cada barbero hace todo (negocios existentes
+  sin cambios). La fila respeta la relación (formulario, fila del barbero, `call_next`,
+  estimados, acciones del dueño); la caja no. La persona de manicure es un barbero con solo esos
+  servicios (sin rol nuevo). Duración y precio siguen iguales para todos (PA-09).
+- Consecuencias: precisa REQ-003.1 (lista de barberos según el servicio), REQ-006.1/REQ-007.1
+  (lista del barbero y "Llamar al siguiente"), REQ-004 (estimado) y REQ-016.1 (alta de barbero).
+  Cambian `join_queue`, `add_manual_ticket`, `call_next`, `get_barber_queue`,
+  `get_public_business`, `transition_ticket` (llamar/reasignar con barbero), `estimateQueue` y las
+  pantallas de Barberos y Servicios. Nuevo Hito 4 (T-051…T-057).
+

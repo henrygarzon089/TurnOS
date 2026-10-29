@@ -42,7 +42,7 @@ describe("REQ-025.5 / REQ-029.1 Mis números", () => {
       const rows = (
         await q(
           `select ${MY_NUMBERS_COLUMNS.replace("business_day", "business_day::text as business_day")}, exists (select 1 from sale_items i where i.sale_id = sales.id and i.kind = 'service') as has_service
-           from sales where business_day >= current_date - 6 order by created_at desc`,
+           from sales where business_day >= business_day_bogota(now()) - 6 order by created_at desc`,
         )
       ).rows as never[];
       expect(rows).toHaveLength(2);
@@ -50,7 +50,7 @@ describe("REQ-025.5 / REQ-029.1 Mis números", () => {
         new Set([f.barberA]),
       );
 
-      const today = (await q<{ d: string }>("select current_date::text as d")).rows[0].d;
+      const today = (await q<{ d: string }>("select business_day_bogota(now())::text as d")).rows[0].d;
       const n = summarizeMyNumbers(rows, today, today);
       // 25.000 al 60 % = 15.000 por venta
       expect(n.today).toEqual({ services: 2, sold: 50000, commission: 30000 });

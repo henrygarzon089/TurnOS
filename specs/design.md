@@ -199,6 +199,16 @@ REQ-030.2.
 **`services`** (id, business_id, name, duration_min int check (>0 and %5=0), price int check
 (≥0), is_active bool, counts_for_loyalty bool default true, sort_order). REQ-015.
 
+**`barber_services`** (business_id, barber_id, service_id, primary key (barber_id, service_id);
+FK compuestas con `business_id` para que barbero y servicio sean del mismo negocio). REQ-035,
+ADR-023. Qué servicios hace cada barbero. La migración llena todas las combinaciones existentes
+(REQ-035.4); triggers `after insert` en `barbers` y en `services` agregan la fila con todos los
+servicios activos / barberos activos (REQ-035.1–35.2: "todos marcados"), y las pantallas guardan
+después la selección con `set_barber_services(barber_id, service_ids[])` /
+`set_service_barbers(service_id, barber_ids[])`, que reemplazan el conjunto y fallan con
+`NO_SERVICES` si un barbero activo queda sin ninguno (REQ-035.3). Helper
+`barber_does_service(barber_id, service_id) returns bool` (stable).
+
 **`products`** (id, business_id, name, price int, is_active bool, sort_order). REQ-024.1.
 
 **`customers`**
@@ -342,6 +352,7 @@ identificador público y devuelven solo columnas seguras.
 | barbers | all | select todos del negocio; update **solo** `status` de su propia fila (trigger valida que no cambie otra columna) | REQ-010 |
 | invitations | all | — | aceptación vía función con `service_role` |
 | services, products | all | select | REQ-015, REQ-024 |
+| barber_services | all (cambios vía `set_barber_services` / `set_service_barbers`) | select | REQ-035 |
 | customers | all | select de su negocio; update `notes` y `preferred_barber_id` | REQ-018.4: la ficha es visible, los montos se filtran en `sales` |
 | privacy_policy_versions | all | select | |
 | tickets | select/update de su negocio; insert vía `add_manual_ticket`; nunca delete | select de su negocio; cambios de estado **solo** vía `transition_ticket` / `call_next` (no update directo) | Las funciones son `security definer` y validan `my_barber_id` |
@@ -444,8 +455,16 @@ Reglas adicionales que `transition_ticket` aplica:
 - **Un turno a la vez por barbero** (REQ-007.5): `call_next` falla con `BARBER_BUSY` si el
   barbero tiene un turno `called` o `in_service`.
 - **Carrera** (REQ-007.2): `call_next` hace `select … from tickets where status='waiting' and
-  (preferred_barber_id = $barber or preferred_barber_id is null) order by queue_order for update
-  skip locked limit 1`. Dos barberos simultáneos obtienen turnos distintos.
+  (preferred_barber_id = $barber or (preferred_barber_id is null and
+  barber_does_service($barber, service_id))) order by queue_order for update skip locked limit 1`.
+  Dos barberos simultáneos obtienen turnos distintos. El filtro por servicio es REQ-035.9; un
+  turno con `preferred_barber_id = $barber` entra aunque el barbero ya no haga el servicio
+  (REQ-035.12).
+- **Servicio por barbero** (REQ-035.8, REQ-035.11): `join_queue`, `add_manual_ticket`,
+  `transition_ticket` (llamar con un barbero, reasignar) y `reorder`/reasignar fallan con
+  `BARBER_CANT_DO_SERVICE` si el barbero elegido no hace el servicio; `join_queue` falla con
+  `NO_BARBER_FOR_SERVICE` si ningún barbero presente lo hace (REQ-035.7). `register_sale` no
+  valida esto (REQ-035.13).
 - **Pausa** (REQ-010): `set_barber_status(paused, reassign boolean)`: falla con `BARBER_BUSY` si
   tiene turno `called`/`in_service`; si `reassign=true`, pone `preferred_barber_id=null` a sus
   `waiting` conservando `queue_order` y escribe un evento `reassigned` por turno.
@@ -485,7 +504,8 @@ Función pura `estimateQueue(input): Estimate[]` en `src/lib/domain/queue-estima
 type BarberState = { id: string; status: 'available'|'busy'|'paused'|'off';
                      busyUntil?: Date /* started_at + duration, o called_at + duration */ };
 type WaitingTicket = { id: string; queueOrder: number; durationMin: number;
-                       preferredBarberId: string | null };
+                       preferredBarberId: string | null;
+                       capableBarberIds: string[] /* REQ-035: quienes hacen su servicio */ };
 type Input = { now: Date; barbers: BarberState[]; waiting: WaitingTicket[] /* status waiting, ordenado por queueOrder */ };
 ```
 
@@ -494,15 +514,16 @@ type Input = { now: Date; barbers: BarberState[]; waiting: WaitingTicket[] /* st
 - Barberos **activos** `A` = los que están `available` o `busy` (no `paused`, no `off`).
 - `freeAt[b]` = `now` si `available`; `max(now, busyUntil)` si `busy`. Para un turno `called` sin
   iniciar, `busyUntil = called_at + duración` (se asume que empieza ya).
-- **Lista del barbero b** (REQ-006.1) = turnos `waiting` con `preferredBarberId ∈ {b, null}`,
-  en orden de `queueOrder`.
+- **Lista del barbero b** (REQ-006.1) = turnos `waiting` con `preferredBarberId = b`, o
+  `preferredBarberId = null` y `b ∈ capableBarberIds` (REQ-035.9), en orden de `queueOrder`.
+- `puede(W)` = `{W.preferred}` si tiene preferido, si no `W.capableBarberIds` (REQ-035).
 
 **Posición** (REQ-004.1), para el turno T:
 
-- Si `T.preferredBarberId = b`: `posición = 1 + |{ W : W.queueOrder < T.queueOrder y
-  W.preferredBarberId ∈ {b, null} }|`.
-- Si `T.preferredBarberId = null`: `posición = 1 + |{ W : W.queueOrder < T.queueOrder }|` (todos
-  los que están delante importan, porque cualquiera de ellos puede ocupar al barbero que se libere).
+- `posición = 1 + |{ W : W.queueOrder < T.queueOrder y puede(W) ∩ puede(T) ≠ ∅ }|`: cuenta los
+  que están delante y podrían ocupar a alguno de los barberos que pueden atender a T. Sin
+  restricciones (todos hacen todo) se reduce a la regla original: con preferido b cuenta los de b
+  y los de "cualquiera"; sin preferido cuenta a todos (REQ-035.10).
 - "Personas delante" = posición − 1. "Eres el siguiente" cuando posición = 1.
 - La etiqueta **"Avisar"** (REQ-009.1) se muestra cuando `personas delante = 2`.
 
@@ -510,8 +531,9 @@ type Input = { now: Date; barbers: BarberState[]; waiting: WaitingTicket[] /* st
 
 ```
 para cada W en waiting (orden queueOrder):
-  candidatos = A si W.preferred es null, si no {W.preferred} ∩ A
-  si candidatos vacío → W.estimate = null ("tu barbero no está disponible")  (REQ-010.3 lo explica)
+  candidatos = puede(W) ∩ A
+  si candidatos vacío → W.estimate = null: con preferido, "tu barbero no está disponible"
+    (REQ-010.3); sin preferido, "Esperando a que haya quién te atienda" (REQ-035.10)
   b* = argmin freeAt[b] sobre candidatos (empate: menor id)
   W.startAt = freeAt[b*]
   freeAt[b*] = W.startAt + W.durationMin
@@ -686,7 +708,7 @@ REQ-013, REQ-030, REQ-032, REQ-033, NFR-002, NFR-004.
 
 | Action | Entrada (Zod) | Función SQL | Salida |
 |---|---|---|---|
-| `getPublicBusiness(slug)` | slug | `get_public_business` | nombre, abierto?, próximo horario, personas en fila, servicios activos, barberos presentes (con estado), versión del aviso |
+| `getPublicBusiness(slug)` | slug | `get_public_business` | nombre, abierto?, próximo horario, personas en fila, servicios activos (cada uno con los ids de barberos que lo hacen, REQ-035.6–35.7), barberos presentes (con estado), versión del aviso |
 | `joinQueue(slug, {name, phone, serviceId, preferredBarberId?, privacyAccepted})` | validación + `normalizePhoneCO` + rate limit | `join_queue` | `{token}` o `{existingToken}` (REQ-003.5) |
 | `getTicketByToken(token)` | token | `get_ticket_by_token` | turno (sin celulares de otros), posición, estimado, barbero, fidelidad |
 | `cancelTicketByToken(token)` | token | `transition_ticket(..., 'cancelled', 'customer')` | ok |
@@ -704,7 +726,8 @@ REQ-013, REQ-030, REQ-032, REQ-033, NFR-002, NFR-004.
 | `markNotified(ticketId)` | barbero/dueño | update `notified_at` | REQ-009.3 |
 | `getBusinessQueue()` | dueño | `get_business_queue` | REQ-012.1 |
 | `callTicket`, `uncallTicket`, `cancelTicket`, `reassignTicket`, `moveTicket(ticketId, afterTicketId)` | dueño | `transition_ticket`, `reorder_ticket` | REQ-012.2 |
-| `addManualTicket({name, phone?, serviceId, preferredBarberId?})` | dueño/barbero | `add_manual_ticket` | REQ-012.3 |
+| `addManualTicket({name, phone?, serviceId, preferredBarberId?})` | dueño/barbero | `add_manual_ticket` | REQ-012.3, REQ-035.8 |
+| `setBarberServices(barberId, serviceIds)`, `setServiceBarbers(serviceId, barberIds)` | dueño | `set_barber_services`, `set_service_barbers` | REQ-035.1–35.3 |
 | `setQueueOverride('open'|'closed'|'auto')` | dueño | update + `close_expired_queues` si `closed`; "Abrir fila hoy" usa `open` | REQ-012.4, REQ-017.2 |
 | `setBarberPresent(barberId, present)` | dueño (o barbero propio) | `set_barber_status('available'|'off')` | REQ-016.4 |
 | CRUD servicios, productos, barberos, horario, plantillas, fidelidad, negocio | dueño | inserts/updates con RLS | REQ-015…017, 019, 024, 033 |
@@ -784,8 +807,9 @@ nunca solo color).
 ```
 
 **`/[slug]/turno` — Formulario** (4 campos + aviso): Nombre · Celular · Servicio (lista con
-duración y precio) · Barbero (chips: "El que esté libre" seleccionado, luego barberos; en pausa o
-ausentes deshabilitados con etiqueta) · casilla de privacidad con enlace · botón "Confirmar
+duración y precio; en gris "Hoy no hay quién lo haga" si ningún barbero presente lo hace,
+REQ-035.7) · Barbero (chips: "El que esté libre" seleccionado, luego **los barberos que hacen el
+servicio escogido**, REQ-035.6; en pausa o ausentes deshabilitados con etiqueta) · casilla de privacidad con enlace · botón "Confirmar
 turno". Si el estimado supera el tiempo hasta el cierre: franja amarilla "Es posible que no
 alcancemos a atenderte hoy" (REQ-017.3).
 
@@ -972,4 +996,5 @@ turnos/
 | REQ-032 | 6.1 `manifest.ts`, 8 (Lighthouse) |
 | REQ-033 | 2.2 message_templates, 6.5 |
 | REQ-034 | 9 `supabase/seed.sql`, 8 |
+| REQ-035 | 2.2 `barber_services`, 2.4, 3 (servicio por barbero, carrera), 4 (`puede(W)`), 6.2 `getPublicBusiness`, 6.3, 7 (formulario), ADR-023 |
 | NFR-001…013 | 1, 2.4, 6.4, 6.6, 8 |
