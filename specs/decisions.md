@@ -303,3 +303,14 @@
   `get_public_business`, `transition_ticket` (llamar/reasignar con barbero), `estimateQueue` y las
   pantallas de Barberos y Servicios. Nuevo Hito 4 (T-051…T-057).
 
+## ADR-024 · Aprobación del Hito 4 (servicios por barbero)
+- Estado: **aceptada** (Henry, 2026-10-28)
+- Contexto: REQ-035 / ADR-023 implementados en T-051…T-056 (PRs #4–#9) con `pnpm trace --hito=4`
+  sin huecos y CI verde (unit, pgTAP, integración, E2E Pixel 7 + iPhone 13, Lighthouse).
+- Decisión: Henry aprueba el Hito 4 y autoriza fusionar la cadena #6–#10 y llevar las migraciones
+  0030–0032 a producción.
+- Consecuencias: T-057 `[x]`. En producción ya estaban 0030–0032 y la app desplegada desde la rama
+  de T-055 (por un `checkout` fallido en otra sesión); tras fusionar, se vuelve a desplegar desde
+  `main` limpio para que producción y `main` coincidan. Falta configurar Filo desde **Barberos**
+  cuando lleguen sus barberos.
+
