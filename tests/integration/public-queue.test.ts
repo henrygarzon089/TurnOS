@@ -1,6 +1,7 @@
 import { afterAll, describe, expect, it } from "vitest";
 import {
   cancelTicketByToken,
+  customerHasBirthday,
   getPublicBusiness,
   getTicketByToken,
   joinQueue,
@@ -43,6 +44,79 @@ const base = (c: { corte: string }) => ({
   privacyAccepted: true,
   privacyVersion: 1,
   source: "qr" as const,
+});
+
+describe("REQ-037 cumpleaños al tomar turno (server action)", () => {
+  const birthdayOf = async (q: Q, phone: string) => {
+    const { rows } = await q<{ birthday_day: number | null; birthday_month: number | null }>(
+      `select birthday_day, birthday_month from customers where phone_e164 = $1`,
+      [phone],
+    );
+    return rows[0];
+  };
+  const cancelActive = (q: Q, phone: string) =>
+    q(`update tickets set status = 'cancelled' where customer_phone_e164 = $1`, [phone]);
+
+  it("REQ-037.2 joinQueue guarda el cumpleaños si la ficha no tenía", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const gw = createPgGateway(q);
+      const r = await joinQueue(gw, { ...base(c), birthday: { day: "29", month: "2" } }, "1.1.1.1");
+      expect(r).toMatchObject({ ok: true, existing: false });
+      expect(await birthdayOf(q, "+573005557001")).toEqual({ birthday_day: 29, birthday_month: 2 });
+      expect(await customerHasBirthday(gw, "la-33", "300 555 7001")).toBe(true);
+    });
+  });
+
+  it("REQ-037.2 joinQueue nunca reemplaza un cumpleaños ya guardado", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const gw = createPgGateway(q);
+      await joinQueue(gw, { ...base(c), birthday: { day: "7", month: "11" } }, "1.1.1.1");
+      await cancelActive(q, "+573005557001");
+      const r = await joinQueue(gw, { ...base(c), birthday: { day: "1", month: "1" } }, "1.1.1.1");
+      expect(r).toMatchObject({ ok: true, existing: false });
+      expect(await birthdayOf(q, "+573005557001")).toEqual({ birthday_day: 7, birthday_month: 11 });
+    });
+  });
+
+  it("REQ-037.2 sin cumpleaños la ficha queda sin dato y el formulario lo sabe", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const gw = createPgGateway(q);
+      expect(await customerHasBirthday(gw, "la-33", "300 555 7001")).toBe(false);
+      await joinQueue(gw, base(c), "1.1.1.1");
+      expect(await birthdayOf(q, "+573005557001")).toEqual({
+        birthday_day: null,
+        birthday_month: null,
+      });
+      expect(await customerHasBirthday(gw, "la-33", "300 555 7001")).toBe(false);
+    });
+  });
+
+  it("REQ-037.3 fecha imposible → 'Esa fecha no existe' en el campo y no crea turno", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const r = await joinQueue(
+        createPgGateway(q),
+        { ...base(c), birthday: { day: "31", month: "4" } },
+        "1.1.1.1",
+      );
+      expect(r).toEqual({ ok: false, error: "Esa fecha no existe", field: "birthday" });
+      const { rows } = await q(`select 1 from tickets where customer_phone_e164 = $1`, [
+        "+573005557001",
+      ]);
+      expect(rows).toHaveLength(0);
+    });
+  });
+
+  it("REQ-037.2 un celular inválido o un negocio raro no consultan la ficha", async () => {
+    await withTx(async (q) => {
+      const gw = createPgGateway(q);
+      expect(await customerHasBirthday(gw, "la-33", "604 123 4567")).toBe(false);
+      expect(await customerHasBirthday(gw, "NO VALE", "300 555 7001")).toBe(false);
+    });
+  });
 });
 
 describe("REQ-003 tomar turno (server action)", () => {

@@ -802,13 +802,23 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   navegador; con botón de reseña, "Volver al inicio" pasa a `.btn-secondary` para no tener dos
   botones principales.
 
-### [ ] T-060 · Cumpleaños
+### [x] T-060 · Cumpleaños
 - REQ: REQ-037.1–037.6
 - Archivos: formulario de turno, ficha del cliente, `/admin/recordar` ("Cumplen esta semana"),
   `/admin/mensajes` (plantilla "cumpleaños"), aviso de privacidad por defecto
 - Terminado: unitarias de día/mes (31-abr, 30-feb, 29-feb) y plantilla; integración: `joinQueue`
   guarda el cumpleaños solo si no había; E2E: el campo no reaparece la segunda vez; la lista muestra
   al que cumple mañana con botón de WhatsApp.
+- Nota (2026-10-30): desvíos, ya reflejados en design.md §11: el cumpleaños de la ficha se guarda
+  en `updateCustomer` y no en un `setCustomerBirthday` aparte (la ficha tiene un solo botón
+  Guardar); día sin mes (o al revés) responde "Escribe el día y el mes."; el campo del formulario
+  aparece solo cuando se sabe que la ficha no lo tiene, para que no salte y desaparezca al
+  prellenar; `/admin/recordar` queda con dos secciones ("Cumplen esta semana" arriba, inactivos
+  debajo); el saludo de cumpleaños no se registra en `reminders` (no lo pide REQ-037 y no debe
+  afectar el enfriamiento de REQ-020). Pendiente de T-058 resuelto en
+  `0035_merge_customers_birthday.sql` (pgTAP `0035_merge_customers_birthday`): **falta aplicarla
+  en producción**. REQ-037.6 ya lo cubría `default_privacy_text` (T-058); un negocio existente
+  debe publicar la versión nueva con REQ-002.5.
 
 ### [ ] T-061 · Menú y bebida de cortesía
 - REQ: REQ-038.1–038.7

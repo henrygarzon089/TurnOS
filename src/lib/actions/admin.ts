@@ -396,11 +396,11 @@ export async function setBarberPresent(barberId: string, present: boolean): Prom
   return error ? { error: "No se pudo cambiar la asistencia." } : { ok: true };
 }
 
-/** REQ-033.1: plantillas de WhatsApp. Campos: notify_2_turns, reminder_inactive, share_queue */
+/** REQ-033.1: plantillas de WhatsApp. Campos: notify_2_turns, reminder_inactive, share_queue, birthday */
 export async function saveTemplates(_prev: FormState, formData: FormData): Promise<FormState> {
   const session = await getStaffSession();
   if (session?.role !== "owner") return { error: "Solo el dueño puede editar las plantillas." };
-  const keys = ["notify_2_turns", "reminder_inactive", "share_queue"] as const;
+  const keys = ["notify_2_turns", "reminder_inactive", "share_queue", "birthday"] as const;
   const rows = [];
   for (const key of keys) {
     const body = formData.get(key);

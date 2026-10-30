@@ -3,6 +3,7 @@
  * Sin dependencias de Next: recibe un Gateway y devuelve resultados tipados o errores conocidos.
  */
 import { z } from "zod";
+import { parseBirthday } from "@/lib/domain/birthday";
 import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
 import { GatewayError, type Gateway } from "@/lib/db/gateway";
 import { normalizePhoneCO } from "@/lib/domain/phone";
@@ -77,7 +78,7 @@ export type JoinResult =
   | {
       ok: false;
       error: string;
-      field?: "name" | "phone" | "serviceId" | "preferredBarberId" | "privacyAccepted";
+      field?: "name" | "phone" | "serviceId" | "preferredBarberId" | "privacyAccepted" | "birthday";
     };
 
 export const joinSchema = z.object({
@@ -89,6 +90,8 @@ export const joinSchema = z.object({
   privacyAccepted: z.boolean(),
   privacyVersion: z.number().int().nullable().optional(),
   source: z.enum(["qr", "link"]).default("qr"),
+  /** REQ-037.2: día y mes como los escribió el cliente; los valida `parseBirthday`. */
+  birthday: z.object({ day: z.string(), month: z.string() }).nullable().optional(),
 });
 export type JoinInput = z.input<typeof joinSchema>;
 
@@ -177,6 +180,19 @@ export async function getPreferredBarber(
   return id ?? null;
 }
 
+/** REQ-037.2: si la ficha de ese celular ya tiene cumpleaños, el formulario no lo vuelve a pedir. */
+export async function customerHasBirthday(
+  gw: Gateway,
+  slug: string,
+  phone: string,
+): Promise<boolean> {
+  if (!/^[a-z0-9-]{3,40}$/.test(slug)) return false;
+  const e164 = normalizePhoneCO(phone);
+  if (!e164) return false;
+  const has = await gw.rpc<boolean>("customer_has_birthday", { p_slug: slug, p_phone: e164 });
+  return Boolean(has);
+}
+
 /** REQ-003.2–3.5, NFR-004 */
 export async function joinQueue(
   gw: Gateway,
@@ -208,6 +224,9 @@ export async function joinQueue(
       field: "phone",
     };
   }
+  // REQ-037.3
+  const bday = parseBirthday(d.birthday?.day, d.birthday?.month);
+  if (!bday.ok) return { ok: false, error: bday.error, field: "birthday" };
 
   // Rate limiting (NFR-004): por celular y por IP
   const okPhone = await gw.rpc<boolean>("check_rate_limit", {
@@ -233,6 +252,8 @@ export async function joinQueue(
       p_preferred_barber_id: d.preferredBarberId ?? null,
       p_privacy_version: d.privacyVersion ?? null,
       p_source: d.source,
+      p_birthday_month: bday.birthday?.month ?? null,
+      p_birthday_day: bday.birthday?.day ?? null,
     });
     return { ok: true, token: r.token, existing: Boolean(r.existing) };
   } catch (e) {
