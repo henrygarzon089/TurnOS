@@ -16,7 +16,8 @@ select is(
    where n.nspname = 'public' and has_function_privilege('authenticated', p.oid, 'execute')
      and p.proname in ('join_queue', 'upsert_customer', 'check_rate_limit', 'get_ticket_by_token', 'get_public_business',
                        'cancel_ticket_by_token', 'get_preferred_barber', 'get_invitation', 'accept_invitation',
-                       'get_screen_queue', 'close_expired_queues', 'queue_snapshot', 'notify_queue_changed')),
+                       'get_screen_queue', 'close_expired_queues', 'queue_snapshot', 'notify_queue_changed',
+                       'set_ticket_courtesy', 'get_barber_photos', 'customer_has_birthday', 'courtesy_is_valid')),
   '', 'ADR-009 las funciones públicas del servidor no se llaman con la sesión del personal');
 
 select is(
@@ -28,17 +29,18 @@ select is(
                        'mark_ticket_notified', 'mark_ticket_unpaid', 'merge_customers', 'redeem_loyalty_card',
                        'register_sale', 'remove_barber', 'reopen_cash_day', 'reorder_ticket', 'search_customers',
                        'set_barber_services', 'set_barber_status', 'set_service_barbers', 'transition_ticket',
-                       'void_sale', 'weekly_summary')),
-  28, 'REQ-031.1 el personal ejecuta las funciones de su trabajo (cada una valida el negocio)');
+                       'void_sale', 'weekly_summary', 'mark_courtesy_served', 'birthdays_this_week')),
+  30, 'REQ-031.1 el personal ejecuta las funciones de su trabajo (cada una valida el negocio)');
 
 select ok(has_function_privilege('authenticated', 'is_member_of(uuid)', 'execute')
           and has_function_privilege('authenticated', 'is_owner_of(uuid)', 'execute')
-          and has_function_privilege('authenticated', 'my_barber_id(uuid)', 'execute'),
-  'REQ-031.1 las funciones de las políticas RLS siguen disponibles para el personal');
+          and has_function_privilege('authenticated', 'my_barber_id(uuid)', 'execute')
+          and has_function_privilege('authenticated', 'media_can_write(text)', 'execute'),
+  'REQ-031.1 las funciones de las políticas RLS (y de storage.objects, REQ-039.1) siguen disponibles para el personal');
 select ok(has_function_privilege('authenticated', 'gen_public_token(int)', 'execute'),
   'REQ-030.2 el token de invitación (default de la columna) se genera con la sesión del dueño');
 select ok(has_function_privilege('service_role', 'register_sale(uuid, uuid, uuid, jsonb, jsonb, uuid)', 'execute')
-          and has_function_privilege('service_role', 'join_queue(text, text, text, uuid, uuid, int, ticket_source)', 'execute'),
+          and has_function_privilege('service_role', 'join_queue(text, text, text, uuid, uuid, int, ticket_source, int, int, uuid)', 'execute'),
   'ADR-009 service_role ejecuta todo');
 
 select * from finish();

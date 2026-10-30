@@ -167,3 +167,23 @@ begin
 
   update customers set visits_count = visits_count + 1 where id = v_cust;
 end $$;
+
+-- ============================================================================
+-- T-058 · Hito 5 (REQ-037, REQ-038): 2 bebidas de cortesía (no se venden) y 3 clientes que
+-- cumplen años esta semana (hoy, en 2 y en 5 días). El aviso de privacidad v1 ya menciona el
+-- cumpleaños porque lo crea create_business (0033).
+-- ============================================================================
+do $$
+declare
+  v_biz uuid := (select id from businesses where slug = 'la-33');
+  v_today date := business_day_bogota(now());
+begin
+  insert into products (business_id, name, price, sort_order, for_sale, is_courtesy) values
+    (v_biz, 'Tinto',     0, 5, false, true),
+    (v_biz, 'Aromática', 0, 6, false, true);
+
+  update customers c set birthday_month = extract(month from v_today + x.k)::int,
+                         birthday_day = extract(day from v_today + x.k)::int
+  from (values ('+573002000001', 0), ('+573002000002', 2), ('+573002000003', 5)) as x(phone, k)
+  where c.business_id = v_biz and c.phone_e164 = x.phone;
+end $$;
