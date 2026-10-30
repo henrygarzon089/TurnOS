@@ -25,8 +25,8 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 
 - T-058 `[x]` (2026-10-29): migraciones `0033_customer_experience` y `0034_birthday_template`
   (columnas de reseña, cumpleaños, cortesía y fotos; `barber_photos` con límite de 12; bucket
-  `media` de Storage; funciones nuevas). **No están en producción**: Henry las aplica con
-  `supabase db push` cuando se fusione el PR. Sin pantallas todavía: nada cambia para el cliente
+  `media` de Storage; funciones nuevas). **En producción** desde el 2026-10-30 (PR #13, `supabase
+  db push` y `vercel --prod` desde `main`). Sin pantallas todavía: nada cambia para el cliente
   hasta T-059…T-062. pgTAP 610 · unitarias 96 · integración 36.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
@@ -35,7 +35,7 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
   4 sillas de hombre, 1 de mujer y manicure aparte. Grill → REQ-035 (13 CA) y ADR-023, aprobados.
   Q16: "Hoy no hay quién lo haga" solo aplica si ya hay alguien presente.
 - Migraciones nuevas: `0030_barber_services`, `0031_queue_by_service`, `0032_estimate_by_service`.
-  **No están en producción**: se aplican con `supabase db push` cuando se fusione la cadena. Con
+  **En producción** (toda la cadena fusionada en `main`). Con
   todos haciendo todo (estado inicial) no cambia nada visible.
 - PRs en cadena: #5 T-052 → #6 T-053 → #7 T-054 → #8 T-055 → #9 T-056 (cada uno sobre el anterior);
   #2, #3 y #4 ya fusionados en `main`.
