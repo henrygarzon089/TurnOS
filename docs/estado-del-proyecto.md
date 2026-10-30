@@ -21,6 +21,14 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 | H3 Caja y comisiones     | T-040…T-050 | **aprobado** (ADR-020); pasillo con el dueño hecho (ADR-021)               |
 | H4 Servicios por barbero | T-051…T-057 | **aprobado** (ADR-024); PRs #4–#10 en `main`       |
 
+### Hito 5 — experiencia del cliente (en curso, ADR-025)
+
+- T-058 `[x]` (2026-10-29): migraciones `0033_customer_experience` y `0034_birthday_template`
+  (columnas de reseña, cumpleaños, cortesía y fotos; `barber_photos` con límite de 12; bucket
+  `media` de Storage; funciones nuevas). **No están en producción**: Henry las aplica con
+  `supabase db push` cuando se fusione el PR. Sin pantallas todavía: nada cambia para el cliente
+  hasta T-059…T-062. pgTAP 610 · unitarias 96 · integración 36.
+
 ### Hito 4 — servicios por barbero (2026-10-28)
 
 - Origen: Filo (`/filo`, creado en producción el 2026-10-28 con `supabase/data/filo.sql`) tiene

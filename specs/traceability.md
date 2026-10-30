@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-10-29.
+> Generada por `scripts/traceability.ts` el 2026-10-30.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -28,7 +28,7 @@
 | REQ-004.4 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-004.5 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha) | customer-flow.spec.ts, domain-branches.test.ts, queue-estimate.test.ts, time.test.ts | cubierto |
 | REQ-004.6 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha) | customer-flow.spec.ts | cubierto |
-| REQ-004.7 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0008_public_fns.sql | cubierto |
+| REQ-004.7 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0008_public_fns.sql, 0033_customer_experience.sql | cubierto |
 | REQ-005.1 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-005.2 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0006_transitions.sql, 0008_public_fns.sql | cubierto |
 | REQ-005.3 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | hito1-gaps.spec.ts, public-queue.test.ts | cubierto |
@@ -94,7 +94,7 @@
 | REQ-018.3 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, 0013_customers_loyalty.sql | cubierto |
 | REQ-018.4 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, rls-customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | cubierto |
 | REQ-018.5 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | cubierto |
-| REQ-018.6 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers-delete.spec.ts, 0013_customers_loyalty.sql, 0014_customers_merge.sql, 0015_anonymize.sql | cubierto |
+| REQ-018.6 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers-delete.spec.ts, 0013_customers_loyalty.sql, 0014_customers_merge.sql, 0015_anonymize.sql, 0033_customer_experience.sql | cubierto |
 | REQ-019.1 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (hecha) | loyalty-config.spec.ts, loyalty.test.ts, 0016_loyalty_config.sql | cubierto |
 | REQ-019.2 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (hecha) | 0013_customers_loyalty.sql | cubierto |
 | REQ-019.3 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (hecha) | loyalty-progress.spec.ts, loyalty.test.ts, 0013_customers_loyalty.sql, 0017_loyalty_progress.sql | cubierto |
@@ -141,7 +141,7 @@
 | REQ-030.2 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | onboarding.spec.ts, 0004_invitations.sql, 0028_mvp_gaps.sql, 0029_function_grants.sql | cubierto |
 | REQ-030.3 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts | cubierto |
 | REQ-030.4 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts, 0004_invitations.sql | cubierto |
-| REQ-031.1 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-cash.test.ts, 0002_core.sql, 0003_rls_core.sql, 0017_loyalty_progress.sql, 0029_function_grants.sql, 0030_barber_services.sql | cubierto |
+| REQ-031.1 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-cash.test.ts, 0002_core.sql, 0003_rls_core.sql, 0017_loyalty_progress.sql, 0029_function_grants.sql, 0030_barber_services.sql, 0033_customer_experience.sql | cubierto |
 | REQ-031.2 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | 0008_public_fns.sql, 0009_realtime.sql | cubierto |
 | REQ-031.3 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | 0028_mvp_gaps.sql | cubierto |
 | REQ-031.4 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-core.test.ts, 0003_rls_core.sql | cubierto |
@@ -162,26 +162,26 @@
 | REQ-035.11 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | services-by-barber.spec.ts, 0031_queue_by_service.sql | cubierto |
 | REQ-035.12 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | 0031_queue_by_service.sql | cubierto |
 | REQ-035.13 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | 0031_queue_by_service.sql | cubierto |
-| REQ-036.1 | Reseña en Google después del corte | T-058 (pendiente), T-059 (pendiente), T-063 (pendiente) | — | sin prueba |
-| REQ-036.2 | Reseña en Google después del corte | T-058 (pendiente), T-059 (pendiente), T-063 (pendiente) | — | sin prueba |
-| REQ-036.3 | Reseña en Google después del corte | T-058 (pendiente), T-059 (pendiente), T-063 (pendiente) | — | sin prueba |
-| REQ-036.4 | Reseña en Google después del corte | T-058 (pendiente), T-059 (pendiente), T-063 (pendiente) | — | sin prueba |
-| REQ-037.1 | Cumpleaños del cliente | T-058 (pendiente), T-060 (pendiente) | — | sin prueba |
-| REQ-037.2 | Cumpleaños del cliente | T-058 (pendiente), T-060 (pendiente) | — | sin prueba |
-| REQ-037.3 | Cumpleaños del cliente | T-058 (pendiente), T-060 (pendiente) | — | sin prueba |
-| REQ-037.4 | Cumpleaños del cliente | T-058 (pendiente), T-060 (pendiente) | — | sin prueba |
-| REQ-037.5 | Cumpleaños del cliente | T-058 (pendiente), T-060 (pendiente) | — | sin prueba |
-| REQ-037.6 | Cumpleaños del cliente | T-058 (pendiente), T-060 (pendiente) | — | sin prueba |
-| REQ-038.1 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
-| REQ-038.2 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
-| REQ-038.3 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
-| REQ-038.4 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
-| REQ-038.5 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
-| REQ-038.6 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
-| REQ-038.7 | Menú de la barbería y bebida de cortesía | T-058 (pendiente), T-061 (pendiente) | — | sin prueba |
-| REQ-039.1 | Fotos de cortes por barbero | T-058 (pendiente), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |
-| REQ-039.2 | Fotos de cortes por barbero | T-058 (pendiente), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |
-| REQ-039.3 | Fotos de cortes por barbero | T-058 (pendiente), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |
-| REQ-039.4 | Fotos de cortes por barbero | T-058 (pendiente), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |
-| REQ-039.5 | Fotos de cortes por barbero | T-058 (pendiente), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |
-| REQ-039.6 | Fotos de cortes por barbero | T-058 (pendiente), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |
+| REQ-036.1 | Reseña en Google después del corte | T-058 (hecha), T-059 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-036.2 | Reseña en Google después del corte | T-058 (hecha), T-059 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-036.3 | Reseña en Google después del corte | T-058 (hecha), T-059 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-036.4 | Reseña en Google después del corte | T-058 (hecha), T-059 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-037.1 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-037.2 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-037.3 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-037.4 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0002_core.sql, 0009_seed.sql, 0033_customer_experience.sql | prueba escrita |
+| REQ-037.5 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-037.6 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0009_seed.sql, 0033_customer_experience.sql | prueba escrita |
+| REQ-038.1 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-038.2 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-038.3 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (pendiente) | 0009_seed.sql, 0033_customer_experience.sql | prueba escrita |
+| REQ-038.4 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-038.5 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-038.6 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-038.7 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-039.1 | Fotos de cortes por barbero | T-058 (hecha), T-062 (pendiente), T-063 (pendiente) | 0029_function_grants.sql, 0033_customer_experience.sql | prueba escrita |
+| REQ-039.2 | Fotos de cortes por barbero | T-058 (hecha), T-062 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-039.3 | Fotos de cortes por barbero | T-058 (hecha), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |
+| REQ-039.4 | Fotos de cortes por barbero | T-058 (hecha), T-062 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-039.5 | Fotos de cortes por barbero | T-058 (hecha), T-062 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-039.6 | Fotos de cortes por barbero | T-058 (hecha), T-062 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |

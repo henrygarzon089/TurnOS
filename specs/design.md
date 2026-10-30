@@ -1020,7 +1020,7 @@ ADR-019 (permisos explícitos: `revoke` de `public`/`anon`, `grant` a quien corr
 | `products` | `for_sale bool not null default true`, `is_courtesy bool not null default false`, `photo_path text null` | 038.1 |
 | `tickets` | `courtesy_product_id uuid null` (FK compuesta con `business_id` a `products`), `courtesy_served_at timestamptz null`, `courtesy_served_by uuid null` | 038.3–038.5 |
 | `barber_photos` (nueva) | `id, business_id, barber_id, path text, created_at`; FK compuesta (business_id, barber_id) | 039 |
-| enum `message_template_key` | agrega `'birthday'` con plantilla por defecto: "¡Feliz cumpleaños, {nombre}! En {negocio} te deseamos un gran día." | 037.4 |
+| enum `message_template_key` | agrega `'birthday'` con plantilla por defecto: "¡Feliz cumpleaños, {nombre}! En {negocio} te deseamos un gran día." (negocios nuevos: `create_business`; los que ya existen: `0034_birthday_template.sql`, porque un valor nuevo de enum no se usa en la misma transacción que lo agrega) | 037.4 |
 
 Los productos existentes quedan `for_sale = true`, `is_courtesy = false` (nada cambia en caja).
 El texto por defecto del aviso de privacidad (seed y `/crear-negocio`) agrega el cumpleaños como
@@ -1036,6 +1036,10 @@ dato opcional (REQ-037.6); publicar la versión nueva usa REQ-002.5 sin cambios.
 
 Trigger `barber_photos_limit` (`before insert`): más de 12 por barbero → `PHOTO_LIMIT` (P0013),
 REQ-039.2. El límite vive en la base, no solo en la UI.
+
+Al anonimizar una ficha (REQ-018.6) un trigger borra también `birthday_month/day` (T-058).
+`set_ticket_courtesy` fuera de espera → `TICKET_NOT_WAITING` y `mark_courtesy_served` sin bebida →
+`NO_COURTESY`, ambos con código P0004 (como `INVALID_TRANSITION`).
 
 ### 11.3 Almacenamiento (primer uso de Supabase Storage)
 
@@ -1057,11 +1061,12 @@ REQ-039.2. El límite vive en la base, no solo en la UI.
 | `join_queue(..., p_birthday_month, p_birthday_day, p_courtesy_product_id)` | service_role | Guarda el cumpleaños solo si la ficha no tiene (`coalesce`); valida la cortesía (activa, `is_courtesy`, mismo negocio) → `COURTESY_INVALID` (P0012) | 037.2, 038.3, 038.6 |
 | `set_ticket_courtesy(p_token, p_product_id null)` | service_role | Solo con el turno en `waiting`; si no → `TICKET_NOT_WAITING`; misma validación | 038.4, 038.6 |
 | `mark_courtesy_served(p_ticket_id)` | dueño, barbero | Pone hora y quién; idempotente (si ya está servida no cambia) | 038.5 |
-| `birthdays_this_week()` | dueño | Clientes con cumpleaños entre hoy y hoy+6 (`business_day_bogota()`), 29-feb → 28-feb en año no bisiesto, sin `do_not_contact` ni anonimizados | 037.4, 037.5 |
-| `get_public_business` | service_role | Agrega `products` (a la venta, activos, con `photoUrl`), `courtesies` (de cortesía, activos), y por barbero presente `photoCount` | 038.2, 038.3, 039.5 |
+| `birthdays_this_week(p_business_id, p_today null)` | dueño | Clientes con cumpleaños entre hoy y hoy+6 (`business_day_bogota()`), 29-feb → 28-feb en año no bisiesto, sin `do_not_contact` ni anonimizados; devuelve `celebrates_on`. Recibe el negocio como `inactive_customers`; `p_today` solo para pruebas (T-058) | 037.4, 037.5 |
+| `customer_has_birthday(p_slug, p_phone)` | service_role | Si la ficha ya tiene cumpleaños, para no volver a pedirlo en el formulario (T-058: `get_preferred_barber` devuelve un uuid y no se cambió su firma) | 037.2 |
+| `get_public_business` | service_role | Agrega `products` (a la venta, activos, con `photoPath`), `courtesies` (de cortesía, activos) y `photoCounts` (`{barberId: n}` de los barberos activos con fotos). Las fotos van como ruta del bucket `media`; la URL pública la arma la app (T-058) | 038.2, 038.3, 039.5 |
 | `get_barber_photos(p_slug, p_barber_id)` | service_role | Fotos de un barbero activo, de la más nueva a la más vieja | 039.5 |
 | `get_ticket_by_token` | service_role | Agrega `courtesy` (nombre, servida?) y `googleReviewUrl` si el turno está `done` | 036.2–036.4, 038.4 |
-| `get_barber_queue`, `get_business_queue` (lecturas) | personal | Cada turno trae la bebida y si está servida | 038.5 |
+| Filas del barbero y del dueño | personal | Cada turno trae la bebida y si está servida. No hay funciones `get_*_queue`: las filas leen `tickets` con RLS y `barber_queue_tickets` devuelve `setof tickets`, así que las columnas `courtesy_*` llegan sin cambios (T-058) | 038.5 |
 
 Cada cambio de cortesía (`set_ticket_courtesy`, `mark_courtesy_served`) emite `queue_changed`
 (ADR-008), así la fila del barbero y "Mi turno" se releen solos.

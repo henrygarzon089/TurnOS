@@ -5,6 +5,7 @@
 --   * roles anon / authenticated / service_role
 --   * auth.users y auth.uid() / auth.role() / auth.jwt()
 --   * realtime.send() (los mensajes se guardan en realtime.messages_local para las pruebas)
+--   * storage.buckets / storage.objects con RLS (bucket `media`, T-058)
 --
 -- NUNCA se aplica a un proyecto real de Supabase: allí todo esto ya existe.
 -- ============================================================================
@@ -84,6 +85,38 @@ begin
 end $$;
 
 grant usage on schema realtime to anon, authenticated, service_role;
+
+-- ------------------------------------------------------------- storage ----
+-- Lo mínimo de Supabase Storage para probar el bucket `media` y sus políticas (T-058):
+-- las tablas buckets/objects con RLS activa, como en un proyecto real.
+create schema if not exists storage;
+
+create table if not exists storage.buckets (
+  id text primary key,
+  name text not null unique,
+  owner uuid,
+  public boolean default false,
+  file_size_limit bigint,
+  allowed_mime_types text[],
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+create table if not exists storage.objects (
+  id uuid primary key default gen_random_uuid(),
+  bucket_id text references storage.buckets (id),
+  name text,
+  owner uuid default auth.uid(),
+  metadata jsonb,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique (bucket_id, name)
+);
+alter table storage.objects enable row level security;
+
+grant usage on schema storage to anon, authenticated, service_role;
+grant select on storage.buckets to anon, authenticated, service_role;
+grant select, insert, update, delete on storage.objects to anon, authenticated, service_role;
 
 -- --------------------------------------------------- utilidades de prueba ----
 -- Simula "soy el usuario X con rol Y" dentro de una transacción de prueba.

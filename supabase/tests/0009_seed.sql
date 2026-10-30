@@ -1,6 +1,6 @@
 -- Las pruebas pgTAP corren sobre la base ya sembrada por scripts/db-local.sh.
 begin;
-select plan(11);
+select plan(14);
 
 select is((select count(*)::int from businesses where slug = 'la-33'), 1,
   'REQ-034.1 existe Barbería La 33');
@@ -14,8 +14,11 @@ select is((select count(*)::int from services s join businesses z on z.id = s.bu
   6, 'REQ-034.1 servicios con precios en COP');
 select is((select price from services s join businesses z on z.id = s.business_id where z.slug = 'la-33' and s.name = 'Corte'),
   25000, 'REQ-034.1 Corte = $ 25.000');
-select is((select count(*)::int from products p join businesses z on z.id = p.business_id where z.slug = 'la-33'),
-  4, 'REQ-034.1 productos (helados y bebidas)');
+select is((select count(*)::int from products p join businesses z on z.id = p.business_id where z.slug = 'la-33' and p.for_sale),
+  4, 'REQ-034.1 productos a la venta (helados y bebidas)');
+select is((select count(*)::int from products p join businesses z on z.id = p.business_id where z.slug = 'la-33'
+           and p.is_courtesy and not p.for_sale and p.is_active),
+  2, 'REQ-038.3 dos bebidas de cortesía en el seed');
 select is((select count(*)::int from business_hours h join businesses z on z.id = h.business_id where z.slug = 'la-33' and not h.is_closed),
   7, 'PA-26 abre los 7 días');
 
@@ -25,5 +28,10 @@ select is((select count(*)::int from tickets t join businesses z on z.id = t.bus
   'REQ-034.1 historial de turnos terminados');
 select is((select enabled from loyalty_programs lp join businesses z on z.id = lp.business_id where z.slug = 'la-33'), true,
   'REQ-034.1 fidelidad activa en el seed');
+select ok((select count(*) from birthdays_this_week((select id from businesses where slug = 'la-33'))) >= 3,
+  'REQ-037.4 el seed tiene clientes que cumplen años esta semana');
+select ok((select body ilike '%cumpleaños%' from privacy_policy_versions p join businesses z on z.id = p.business_id
+           where z.slug = 'la-33' and p.version = 1),
+  'REQ-037.6 el aviso de privacidad del seed menciona el cumpleaños');
 select * from finish();
 rollback;

@@ -768,7 +768,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 > REQ-036…REQ-039 y ADR-025 aprobados por Henry (2026-10-28). Diseño en `design.md` §11. La
 > migración es la `0033`.
 
-### [ ] T-058 · Migración y pgTAP: datos del Hito 5
+### [x] T-058 · Migración y pgTAP: datos del Hito 5
 - REQ: REQ-036.1, REQ-037.1, REQ-037.3, REQ-037.5, REQ-038.1, REQ-038.6, REQ-038.7, REQ-039.1,
   REQ-039.2, REQ-039.6
 - Archivos: `supabase/migrations/0033_customer_experience.sql` (columnas de §11.1, `barber_photos`
@@ -779,6 +779,15 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   con cumpleaños, 2 bebidas de cortesía, algunos cumpleaños esta semana)
 - Terminado: pgTAP de §11.6 en verde; suite completa sin regresiones; productos existentes siguen
   en caja igual (REQ-038.7).
+- Nota (2026-10-29): hecho en 0033 + 0034 (pgTAP `0033_customer_experience`, 90 pruebas; suite
+  610 en verde). Desvíos, ya reflejados en design.md §11: la plantilla de cumpleaños de los
+  negocios existentes va en `0034_birthday_template.sql` (enum nuevo no se usa en la misma
+  transacción); `birthdays_this_week(p_business_id, p_today)` recibe el negocio; nueva
+  `customer_has_birthday(slug, phone)` para el formulario; las lecturas devuelven `photoPath` (la
+  app arma la URL) y `photoCounts`; las filas no necesitan funciones nuevas (leen `tickets`);
+  anonimizar borra el cumpleaños. El shim local agrega `storage.buckets/objects`. Pendiente para
+  T-060: `merge_customers` no copia el cumpleaños de la ficha fusionada. Para T-061: la caja debe
+  listar solo productos `for_sale` (Tinto y Aromática del seed son solo de cortesía).
 
 ### [ ] T-059 · Reseña en Google
 - REQ: REQ-036.1–036.4
