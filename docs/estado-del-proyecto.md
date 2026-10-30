@@ -34,9 +34,8 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 - T-060 `[x]` (2026-10-30): cumpleaños en la ficha y en el formulario de turno, "Cumplen esta
   semana" en `/admin/recordar`, plantilla en `/admin/mensajes`. Migración `0035_merge_customers_birthday`
   (fusionar fichas conserva el cumpleaños). **En producción** desde el 2026-10-30.
-  **Pendiente**: Filo debe publicar una versión nueva del aviso en `/admin/privacidad` para que
-  mencione el cumpleaños (REQ-037.6): el texto por defecto nuevo solo les llega a los negocios
-  creados desde 0033.
+  Aviso de Filo: versión 2 publicada el 2026-10-30 con el texto por defecto que menciona el
+  cumpleaños (REQ-037.6); los clientes que vuelvan a tomar turno deben aceptarla (REQ-002.5).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
