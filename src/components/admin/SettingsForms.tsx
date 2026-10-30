@@ -2,7 +2,12 @@
 
 import { useActionState, useMemo, useState } from "react";
 import { ErrorText, Field } from "@/components/auth/LoginForm";
-import { saveTemplates, updateBusiness, type FormState } from "@/lib/actions/admin";
+import {
+  saveGoogleReviewUrl,
+  saveTemplates,
+  updateBusiness,
+  type FormState,
+} from "@/lib/actions/admin";
 import { renderTemplate } from "@/lib/notifications/render";
 
 export type TemplateKey = "notify_2_turns" | "reminder_inactive" | "share_queue" | "birthday";
@@ -155,6 +160,38 @@ export function BusinessForm({ business }: { business: BusinessSettings }) {
       {state?.ok && <p className="text-ok text-sm font-medium">Guardado.</p>}
       <button type="submit" className="btn-primary" disabled={pending}>
         {pending ? "Guardando…" : "Guardar"}
+      </button>
+    </form>
+  );
+}
+
+/** REQ-036.1 */
+export function GoogleReviewForm({ url }: { url: string | null }) {
+  const [state, action, pending] = useActionState<FormState, FormData>(
+    saveGoogleReviewUrl,
+    undefined,
+  );
+  return (
+    <form action={action} aria-label="Reseñas de Google" className="mt-8 flex flex-col gap-4">
+      <Field label="Enlace de reseñas de Google" htmlFor="google_review_url">
+        <input
+          id="google_review_url"
+          name="google_review_url"
+          inputMode="url"
+          autoCapitalize="none"
+          autoCorrect="off"
+          defaultValue={url ?? ""}
+          placeholder="https://g.page/r/…"
+          className="input"
+        />
+      </Field>
+      <p className="text-muted -mt-2 text-xs">
+        El cliente lo ve en &quot;Mi turno&quot; al terminar. Déjalo vacío para no pedir reseñas.
+      </p>
+      {state?.error && <ErrorText>{state.error}</ErrorText>}
+      {state?.ok && <p className="text-ok text-sm font-medium">Enlace guardado.</p>}
+      <button type="submit" className="btn-primary" disabled={pending}>
+        {pending ? "Guardando…" : "Guardar enlace"}
       </button>
     </form>
   );

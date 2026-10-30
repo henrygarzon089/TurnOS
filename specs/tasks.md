@@ -789,11 +789,18 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   T-060: `merge_customers` no copia el cumpleaños de la ficha fusionada. Para T-061: la caja debe
   listar solo productos `for_sale` (Tinto y Aromática del seed son solo de cortesía).
 
-### [ ] T-059 · Reseña en Google
+### [x] T-059 · Reseña en Google
 - REQ: REQ-036.1–036.4
 - Archivos: `/admin/negocio` (campo y validación), `get_ticket_by_token`, "Mi turno"
 - Terminado: unitaria de validación del enlace; E2E: con enlace, turno terminado muestra
   "¡Gracias por venir!" y el botón; sin enlace solo el gracias; cancelado y "no llegó" sin botón.
+- Nota (2026-10-30): `src/lib/domain/review-link.ts`, `saveGoogleReviewUrl` y formulario propio en
+  `/admin/negocio` (botón "Guardar enlace"). Sin migración: `get_ticket_by_token` ya traía
+  `googleReviewUrl` desde T-058. Detalles que la spec no fijaba: dejar el campo vacío quita el
+  enlace; además de `https://` se exige un dominio con punto y máximo 500 caracteres (tope de la
+  base); el campo es de texto con `inputMode="url"` para que el error sea el nuestro y no el del
+  navegador; con botón de reseña, "Volver al inicio" pasa a `.btn-secondary` para no tener dos
+  botones principales.
 
 ### [x] T-060 · Cumpleaños
 - REQ: REQ-037.1–037.6

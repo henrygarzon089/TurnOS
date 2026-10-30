@@ -28,6 +28,9 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
   `media` de Storage; funciones nuevas). **No están en producción**: Henry las aplica con
   `supabase db push` cuando se fusione el PR. Sin pantallas todavía: nada cambia para el cliente
   hasta T-059…T-062. pgTAP 610 · unitarias 96 · integración 36.
+- T-059 `[x]` (2026-10-30): reseña en Google. Campo en `/admin/negocio` y botón en "Mi turno" al
+  terminar. Sin migración propia, pero **necesita 0033 en producción**: `/admin/negocio` lee
+  `google_review_url` y falla sin esa columna. Aplicar las migraciones antes de desplegar.
 - T-060 `[x]` (2026-10-30): cumpleaños en la ficha y en el formulario de turno, "Cumplen esta
   semana" en `/admin/recordar`, plantilla en `/admin/mensajes`. Migración `0035_merge_customers_birthday`
   (fusionar fichas conserva el cumpleaños) **pendiente de aplicar en producción**. Filo debe

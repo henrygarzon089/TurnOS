@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { AdminNav } from "@/components/admin/AdminNav";
-import { BusinessForm, type BusinessSettings } from "@/components/admin/SettingsForms";
+import {
+  BusinessForm,
+  GoogleReviewForm,
+  type BusinessSettings,
+} from "@/components/admin/SettingsForms";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -12,7 +16,7 @@ export default async function BusinessPage() {
   const { data } = await supabase
     .from("businesses")
     .select(
-      "name, slug, address, chairs_count, default_commission_pct, grace_minutes, inactive_days, reminder_cooldown_days, pwa_name",
+      "name, slug, address, chairs_count, default_commission_pct, grace_minutes, inactive_days, reminder_cooldown_days, pwa_name, google_review_url",
     )
     .eq("id", session.business.id)
     .single();
@@ -22,6 +26,7 @@ export default async function BusinessPage() {
       <AdminNav current="/admin/negocio" />
       <h1 className="text-2xl font-bold">Mi negocio</h1>
       <BusinessForm business={data as BusinessSettings} />
+      <GoogleReviewForm url={data?.google_review_url ?? null} />
     </main>
   );
 }
