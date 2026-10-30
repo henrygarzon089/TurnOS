@@ -118,7 +118,10 @@ export function MyTicket({
               {pending ? "Cancelando…" : "Cancelar mi turno"}
             </button>
           ) : (
-            <Link href={`/${ticket.business.slug}`} className="btn-primary">
+            <Link
+              href={`/${ticket.business.slug}`}
+              className={ticket.googleReviewUrl ? "btn-secondary" : "btn-primary"}
+            >
               {ticket.status === "done" ? "Volver al inicio" : "Tomar un turno nuevo"}
             </Link>
           )}
@@ -195,6 +198,16 @@ function StatusCard({ ticket }: { ticket: Ticket }) {
         <section className="rounded-2xl bg-green-50 p-6 text-center">
           <p className="text-2xl font-bold">¡Gracias por venir!</p>
           <p className="text-muted mt-1">Te esperamos la próxima.</p>
+          {ticket.googleReviewUrl && (
+            <a
+              href={ticket.googleReviewUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary mt-4"
+            >
+              Déjanos tu reseña en Google
+            </a>
+          )}
         </section>
       );
     case "no_show":

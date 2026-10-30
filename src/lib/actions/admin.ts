@@ -6,6 +6,7 @@ import { getStaffSession } from "@/lib/auth/session";
 import { parseLoyaltyForm } from "@/lib/domain/loyalty";
 import { parseCOP } from "@/lib/domain/money";
 import { normalizePhoneCO } from "@/lib/domain/phone";
+import { parseGoogleReviewUrl } from "@/lib/domain/review-link";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -438,6 +439,23 @@ export async function updateBusiness(_prev: FormState, formData: FormData): Prom
       address: parsed.data.address || null,
       pwa_name: parsed.data.pwa_name || null,
     })
+    .eq("id", session.business.id);
+  return error ? { error: "No se pudo guardar." } : { ok: true };
+}
+
+/** REQ-036.1 */
+export async function saveGoogleReviewUrl(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { error: "Solo el dueño puede editar el negocio." };
+  const parsed = parseGoogleReviewUrl(String(formData.get("google_review_url") ?? ""));
+  if (!parsed.ok) return { error: "Ese enlace no parece válido" };
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("businesses")
+    .update({ google_review_url: parsed.url })
     .eq("id", session.business.id);
   return error ? { error: "No se pudo guardar." } : { ok: true };
 }

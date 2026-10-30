@@ -68,6 +68,8 @@ export type MyTicket = {
   estimate: Estimate | null;
   /** REQ-019.7 progreso de la tarjeta del cliente (null si no hay ficha) */
   loyalty: LoyaltyStatus | null;
+  /** REQ-036.2: solo con el turno terminado y enlace guardado */
+  googleReviewUrl: string | null;
 };
 
 export type JoinResult =
@@ -302,6 +304,7 @@ export async function getTicketByToken(
     cancelReason: (raw.cancelReason as MyTicket["cancelReason"]) ?? null,
     estimate,
     loyalty: toLoyaltyStatus(raw.loyalty),
+    googleReviewUrl: (raw.googleReviewUrl as string | null) ?? null,
   };
 }
 

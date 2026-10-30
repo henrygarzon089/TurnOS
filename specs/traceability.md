@@ -68,7 +68,7 @@
 | REQ-011.6 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha) | customer-flow.spec.ts | cubierto |
 | REQ-012.1 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-012.2 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | owner-queue.spec.ts, 0006_transitions.sql, 0007_queue_ops.sql | cubierto |
-| REQ-012.3 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | customers.spec.ts, loyalty-progress.spec.ts, owner-queue.spec.ts, 0005_queue.sql, 0007_queue_ops.sql | cubierto |
+| REQ-012.3 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | customers.spec.ts, google-review.spec.ts, loyalty-progress.spec.ts, owner-queue.spec.ts, 0005_queue.sql, 0007_queue_ops.sql | cubierto |
 | REQ-012.4 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | owner-queue.spec.ts, 0008_public_fns.sql | cubierto |
 | REQ-012.5 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-013.1 | Pantalla pública para el televisor | T-027 (hecha) | screen.spec.ts, 0002_core.sql, 0011_screen.sql | cubierto |
@@ -162,10 +162,10 @@
 | REQ-035.11 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | services-by-barber.spec.ts, 0031_queue_by_service.sql | cubierto |
 | REQ-035.12 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | 0031_queue_by_service.sql | cubierto |
 | REQ-035.13 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | 0031_queue_by_service.sql | cubierto |
-| REQ-036.1 | Reseña en Google después del corte | T-058 (hecha), T-059 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
-| REQ-036.2 | Reseña en Google después del corte | T-058 (hecha), T-059 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
-| REQ-036.3 | Reseña en Google después del corte | T-058 (hecha), T-059 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
-| REQ-036.4 | Reseña en Google después del corte | T-058 (hecha), T-059 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-036.1 | Reseña en Google después del corte | T-058 (hecha), T-059 (hecha), T-063 (pendiente) | google-review.spec.ts, review-link.test.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-036.2 | Reseña en Google después del corte | T-058 (hecha), T-059 (hecha), T-063 (pendiente) | google-review.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-036.3 | Reseña en Google después del corte | T-058 (hecha), T-059 (hecha), T-063 (pendiente) | google-review.spec.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-036.4 | Reseña en Google después del corte | T-058 (hecha), T-059 (hecha), T-063 (pendiente) | google-review.spec.ts, 0033_customer_experience.sql | prueba escrita |
 | REQ-037.1 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0033_customer_experience.sql | prueba escrita |
 | REQ-037.2 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0033_customer_experience.sql | prueba escrita |
 | REQ-037.3 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0033_customer_experience.sql | prueba escrita |

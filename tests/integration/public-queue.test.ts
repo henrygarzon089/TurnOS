@@ -175,6 +175,22 @@ describe("REQ-001 / REQ-004 / REQ-005 lectura pública", () => {
       expect(await cancelTicketByToken(gw, r.token)).toEqual({ ok: true });
     });
   });
+
+  it("REQ-036.2 el enlace de reseña llega a Mi turno solo con el turno terminado", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const gw = createPgGateway(q);
+      const link = "https://g.page/r/la33/review";
+      await q(`update businesses set google_review_url = $1 where id = $2`, [link, c.biz]);
+      const r = await joinQueue(gw, base(c), null);
+      if (!r.ok) throw new Error("join falló");
+      expect((await getTicketByToken(gw, r.token))!.googleReviewUrl).toBeNull();
+      await q(`update tickets set status = 'done', finished_at = now() where public_token = $1`, [
+        r.token,
+      ]);
+      expect((await getTicketByToken(gw, r.token))!.googleReviewUrl).toBe(link);
+    });
+  });
 });
 
 describe("REQ-035 servicios por barbero en el formulario (server action)", () => {
