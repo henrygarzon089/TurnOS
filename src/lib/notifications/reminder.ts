@@ -20,3 +20,19 @@ export function buildReminderLink(input: {
     }) ?? ""
   );
 }
+
+/** REQ-037.4: saludo de cumpleaños con la plantilla "cumpleaños" (REQ-033). */
+export function buildBirthdayLink(input: {
+  phoneE164: string;
+  template: string;
+  customerName: string;
+  businessName: string;
+}): string {
+  return (
+    getChannel().buildLink({
+      phoneE164: input.phoneE164,
+      template: input.template,
+      vars: { nombre: input.customerName.split(" ")[0], negocio: input.businessName },
+    }) ?? ""
+  );
+}

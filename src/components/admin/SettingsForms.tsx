@@ -5,9 +5,9 @@ import { ErrorText, Field } from "@/components/auth/LoginForm";
 import { saveTemplates, updateBusiness, type FormState } from "@/lib/actions/admin";
 import { renderTemplate } from "@/lib/notifications/render";
 
-export type TemplateKey = "notify_2_turns" | "reminder_inactive" | "share_queue";
+export type TemplateKey = "notify_2_turns" | "reminder_inactive" | "share_queue" | "birthday";
 
-const TEMPLATE_META: Record<TemplateKey, { title: string; help: string }> = {
+const TEMPLATE_META: Record<TemplateKey, { title: string; help: string; vars?: string }> = {
   notify_2_turns: {
     title: "Aviso: faltan 2 turnos",
     help: "Lo envía el barbero con un toque cuando al cliente le faltan 2 turnos.",
@@ -19,6 +19,11 @@ const TEMPLATE_META: Record<TemplateKey, { title: string; help: string }> = {
   share_queue: {
     title: "Compartir la fila",
     help: "Mensaje con el enlace de la fila para mandar por WhatsApp.",
+  },
+  birthday: {
+    title: "Cumpleaños",
+    help: "Saludo para los clientes de la lista “Cumplen esta semana”.",
+    vars: "{nombre} {negocio}",
   },
 };
 
@@ -59,7 +64,7 @@ export function TemplatesForm({
             className="input min-h-24 py-2"
           />
           <p className="text-muted text-xs">
-            Variables: {"{nombre}"} {"{negocio}"} {"{tiempo}"} {"{enlace}"}
+            Variables: {TEMPLATE_META[key].vars ?? "{nombre} {negocio} {tiempo} {enlace}"}
           </p>
           <div className="rounded-lg bg-green-50 p-2 text-sm" aria-label="Vista previa">
             {renderTemplate(values[key], sample)}

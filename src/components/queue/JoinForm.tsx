@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { ErrorText, Field } from "@/components/auth/LoginForm";
-import { getPreferredBarber, joinQueue } from "@/lib/actions/public";
+import { customerHasBirthday, getPreferredBarber, joinQueue } from "@/lib/actions/public";
 import { barbersForService, serviceAvailability } from "@/lib/domain/barber-services";
+import { MONTH_NAMES } from "@/lib/domain/birthday";
 import { formatCOP } from "@/lib/domain/money";
 import { formatPhoneCO, normalizePhoneCO } from "@/lib/domain/phone";
 import { estimateNewTicket } from "@/lib/domain/queue-estimate";
@@ -34,6 +35,26 @@ export function JoinForm({ business, now }: Props) {
   const [privacy, setPrivacy] = useState(false);
   const [alreadyAccepted, setAlreadyAccepted] = useState(false);
   const [error, setError] = useState<{ message: string; field?: string } | null>(null);
+  const [birthdayDay, setBirthdayDay] = useState("");
+  const [birthdayMonth, setBirthdayMonth] = useState("");
+  const [birthdayOnFile, setBirthdayOnFile] = useState<{ phone: string; has: boolean } | null>(
+    null,
+  );
+
+  // REQ-037.2: se pregunta por el celular escrito o prellenado. Mientras no se sepa, el campo no
+  // aparece: así a quien ya lo dio no le salta y desaparece bajo el dedo.
+  const e164 = normalizePhoneCO(phone);
+  useEffect(() => {
+    if (!e164) return;
+    let stale = false;
+    void customerHasBirthday(business.slug, e164).then((has) => {
+      if (!stale) setBirthdayOnFile({ phone: e164, has });
+    });
+    return () => {
+      stale = true;
+    };
+  }, [business.slug, e164]);
+  const askBirthday = birthdayOnFile?.phone === e164 && !birthdayOnFile?.has;
 
   // REQ-003.7 / REQ-002.4: prellenar desde el navegador
   useEffect(() => {
@@ -109,12 +130,12 @@ export function JoinForm({ business, now }: Props) {
         privacyAccepted: privacy,
         privacyVersion: business.privacyVersion,
         source: "qr",
+        birthday: askBirthday ? { day: birthdayDay, month: birthdayMonth } : null,
       });
       if (!r.ok) {
         setError({ message: r.error, field: r.field });
         return;
       }
-      const e164 = normalizePhoneCO(phone);
       writePrefs({
         name: name.trim(),
         phone: e164 ?? undefined,
@@ -218,6 +239,45 @@ export function JoinForm({ business, now }: Props) {
         </div>
         {error?.field === "preferredBarberId" && <ErrorText>{error.message}</ErrorText>}
       </fieldset>
+
+      {askBirthday && (
+        <fieldset className="min-w-0">
+          <legend className="mb-2 text-sm font-medium">¿Cuándo cumples años? (opcional)</legend>
+          <div className="flex gap-2">
+            <label className="flex w-24 flex-col gap-1 text-sm">
+              Día
+              <input
+                name="birthdayDay"
+                type="text"
+                inputMode="numeric"
+                maxLength={2}
+                value={birthdayDay}
+                onChange={(e) => setBirthdayDay(e.target.value)}
+                className="input"
+                aria-invalid={error?.field === "birthday"}
+              />
+            </label>
+            <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm">
+              Mes
+              <select
+                name="birthdayMonth"
+                value={birthdayMonth}
+                onChange={(e) => setBirthdayMonth(e.target.value)}
+                className="input"
+                aria-invalid={error?.field === "birthday"}
+              >
+                <option value="">Sin elegir</option>
+                {MONTH_NAMES.map((m, i) => (
+                  <option key={m} value={i + 1}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          {error?.field === "birthday" && <ErrorText>{error.message}</ErrorText>}
+        </fieldset>
+      )}
 
       {warning && (
         <p role="status" className="text-warn rounded-xl bg-amber-50 p-3 text-sm font-medium">
