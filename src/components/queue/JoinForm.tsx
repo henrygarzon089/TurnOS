@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
@@ -10,6 +11,7 @@ import { MONTH_NAMES } from "@/lib/domain/birthday";
 import { formatCOP } from "@/lib/domain/money";
 import { formatPhoneCO, normalizePhoneCO } from "@/lib/domain/phone";
 import { estimateNewTicket } from "@/lib/domain/queue-estimate";
+import { mediaUrl } from "@/lib/media/paths";
 import type { PublicBusiness } from "@/lib/queue/public-queue";
 import { readPrefs, writePrefs } from "@/lib/storage/customer-prefs";
 
@@ -37,6 +39,9 @@ export function JoinForm({ business, now }: Props) {
   const [error, setError] = useState<{ message: string; field?: string } | null>(null);
   const [birthdayDay, setBirthdayDay] = useState("");
   const [birthdayMonth, setBirthdayMonth] = useState("");
+  // REQ-038.3: si la escogida se acaba (se relee tras el error), vuelve "No, gracias"
+  const [courtesyId, setCourtesyId] = useState<string | null>(null);
+  const shownCourtesyId = business.courtesies.some((c) => c.id === courtesyId) ? courtesyId : null;
   const [birthdayOnFile, setBirthdayOnFile] = useState<{ phone: string; has: boolean } | null>(
     null,
   );
@@ -131,9 +136,11 @@ export function JoinForm({ business, now }: Props) {
         privacyVersion: business.privacyVersion,
         source: "qr",
         birthday: askBirthday ? { day: birthdayDay, month: birthdayMonth } : null,
+        courtesyProductId: shownCourtesyId,
       });
       if (!r.ok) {
         setError({ message: r.error, field: r.field });
+        if (r.field === "courtesyProductId") router.refresh(); // REQ-038.6
         return;
       }
       writePrefs({
@@ -276,6 +283,42 @@ export function JoinForm({ business, now }: Props) {
             </label>
           </div>
           {error?.field === "birthday" && <ErrorText>{error.message}</ErrorText>}
+        </fieldset>
+      )}
+
+      {(business.courtesies.length > 0 || error?.field === "courtesyProductId") && (
+        <fieldset className="min-w-0">
+          <legend className="mb-2 text-sm font-medium">Bebida de cortesía</legend>
+          <div className="flex flex-col gap-2">
+            {[{ id: null, name: "No, gracias", photoPath: null }, ...business.courtesies].map(
+              (c) => (
+                <label
+                  key={c.id ?? "ninguna"}
+                  className={`border-line bg-card flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 ${shownCourtesyId === c.id ? "border-accent ring-2 ring-blue-200" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name="courtesyProductId"
+                    checked={shownCourtesyId === c.id}
+                    onChange={() => setCourtesyId(c.id)}
+                    className="h-5 w-5 shrink-0"
+                  />
+                  {c.photoPath && (
+                    <Image
+                      src={mediaUrl(c.photoPath)}
+                      alt=""
+                      width={32}
+                      height={32}
+                      unoptimized
+                      className="h-8 w-8 shrink-0 rounded-md object-cover"
+                    />
+                  )}
+                  <span className="min-w-0 break-words">{c.name}</span>
+                </label>
+              ),
+            )}
+          </div>
+          {error?.field === "courtesyProductId" && <ErrorText>{error.message}</ErrorText>}
         </fieldset>
       )}
 

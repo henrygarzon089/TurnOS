@@ -144,6 +144,11 @@ export async function cancelTicketByToken(token: string) {
   return queue.cancelTicketByToken(createAdminGateway(), token);
 }
 
+/** REQ-038.4 */
+export async function setTicketCourtesy(token: string, productId: string | null) {
+  return queue.setTicketCourtesy(createAdminGateway(), token, productId);
+}
+
 /** REQ-002.1: aviso de privacidad vigente del negocio. */
 export async function getPrivacyPolicy(slug: string) {
   if (!/^[a-z0-9-]{3,40}$/.test(slug)) return null;

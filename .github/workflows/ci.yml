@@ -58,7 +58,7 @@ jobs:
         with:
           version: latest
       - name: Supabase local (migraciones + seed)
-        run: supabase start -x storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+        run: supabase start -x imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
       - name: Variables de la app desde supabase status
         run: |
           supabase status -o env > /tmp/sb.env

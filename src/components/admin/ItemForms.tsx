@@ -1,17 +1,21 @@
 "use client";
 
+import Image from "next/image";
 import { useActionState, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CheckList } from "@/components/admin/CheckList";
 import { ErrorText } from "@/components/auth/LoginForm";
 import {
+  saveProduct,
   toggleProduct,
   toggleService,
-  upsertProduct,
   upsertService,
   type FormState,
 } from "@/lib/actions/admin";
 import { formatCOP } from "@/lib/domain/money";
+import { mediaUrl, newProductPhotoPath } from "@/lib/media/paths";
+import { resizePhoto } from "@/lib/media/resize";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export type ServiceRow = {
   id: string;
@@ -24,7 +28,15 @@ export type ServiceRow = {
   barber_ids?: string[];
 };
 export type BarberOption = { id: string; name: string };
-export type ProductRow = { id: string; name: string; price: number; is_active: boolean };
+export type ProductRow = {
+  id: string;
+  name: string;
+  price: number;
+  is_active: boolean;
+  for_sale: boolean;
+  is_courtesy: boolean;
+  photo_path: string | null;
+};
 
 function useRefreshOnOk(state: FormState) {
   const router = useRouter();
@@ -135,13 +147,112 @@ export function ServiceForm({
   );
 }
 
-/** Fila editable de producto (REQ-024.1). */
-export function ProductForm({ product }: { product?: ProductRow }) {
-  const [state, action, pending] = useActionState<FormState, FormData>(upsertProduct, undefined);
+/**
+ * REQ-038.1: la foto se sube desde el navegador con la sesión del dueño (políticas de `media`);
+ * el formulario guarda solo la ruta. Subida y sin guardar queda un huérfano inofensivo (§11.3).
+ */
+function ProductPhoto({
+  businessId,
+  name,
+  path,
+  onChange,
+  onBusy,
+}: {
+  businessId: string;
+  name: string;
+  path: string | null;
+  onChange: (path: string | null) => void;
+  onBusy: (busy: boolean) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function upload(file: File) {
+    setError(null);
+    setUploading(true);
+    onBusy(true);
+    try {
+      const blob = await resizePhoto(file);
+      if (!blob) {
+        setError("Esa foto pesa mucho. Prueba con otra.");
+        return;
+      }
+      const next = newProductPhotoPath(businessId);
+      const { error: failed } = await createSupabaseBrowserClient()
+        .storage.from("media")
+        .upload(next, blob, { contentType: blob.type });
+      if (failed) setError("No se pudo subir la foto. Revisa tu conexión.");
+      else onChange(next);
+    } catch {
+      setError("No pudimos leer esa foto. Prueba con otra.");
+    } finally {
+      setUploading(false);
+      onBusy(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="flex flex-col text-xs">
+        Foto (opcional)
+        <input
+          type="file"
+          accept="image/*"
+          disabled={uploading}
+          className="input"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = ""; // deja volver a escoger el mismo archivo
+            if (file) void upload(file);
+          }}
+        />
+      </label>
+      {uploading && <p className="text-muted text-sm">Subiendo foto…</p>}
+      {path && (
+        <div className="flex items-center gap-3">
+          <Image
+            src={mediaUrl(path)}
+            alt={name || "Foto del producto"}
+            width={64}
+            height={64}
+            unoptimized
+            className="h-16 w-16 rounded-lg object-cover"
+          />
+          <button
+            type="button"
+            className="text-accent min-h-12 text-sm underline"
+            onClick={() => onChange(null)}
+          >
+            Quitar foto
+          </button>
+        </div>
+      )}
+      {error && <ErrorText>{error}</ErrorText>}
+    </div>
+  );
+}
+
+/** Fila editable de producto (REQ-024.1, REQ-038.1). */
+export function ProductForm({ product, businessId }: { product?: ProductRow; businessId: string }) {
+  const [state, action, pending] = useActionState<FormState, FormData>(saveProduct, undefined);
   const [busy, startTransition] = useTransition();
   const router = useRouter();
   useRefreshOnOk(state);
   const isNew = !product;
+  // Controlados: React limpia el formulario al terminar la acción, también con error
+  const [forSale, setForSale] = useState(product?.for_sale ?? true);
+  const [isCourtesy, setIsCourtesy] = useState(product?.is_courtesy ?? false);
+  const [photoPath, setPhotoPath] = useState(product?.photo_path ?? null);
+  const [uploading, setUploading] = useState(false);
+  const [handled, setHandled] = useState(state);
+  if (state !== handled) {
+    setHandled(state);
+    if (state?.ok && isNew) {
+      setForSale(true);
+      setIsCourtesy(false);
+      setPhotoPath(null);
+    }
+  }
 
   return (
     <form
@@ -152,6 +263,7 @@ export function ProductForm({ product }: { product?: ProductRow }) {
       aria-label={isNew ? "Nuevo producto" : `Producto ${product.name}`}
     >
       {product && <input type="hidden" name="id" value={product.id} />}
+      <input type="hidden" name="photo_path" value={photoPath ?? ""} />
       <div className="grid grid-cols-[1fr_110px] gap-2">
         <label className="flex flex-col text-xs">
           Producto
@@ -170,14 +282,40 @@ export function ProductForm({ product }: { product?: ProductRow }) {
             inputMode="numeric"
             defaultValue={product ? formatCOP(product.price).replace("$ ", "") : ""}
             placeholder="3.000"
-            required
             className="input"
           />
         </label>
       </div>
+      <label className="flex min-h-10 items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          name="for_sale"
+          checked={forSale}
+          onChange={(e) => setForSale(e.target.checked)}
+          className="h-5 w-5"
+        />
+        A la venta
+      </label>
+      <label className="flex min-h-10 items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          name="is_courtesy"
+          checked={isCourtesy}
+          onChange={(e) => setIsCourtesy(e.target.checked)}
+          className="h-5 w-5"
+        />
+        De cortesía
+      </label>
+      <ProductPhoto
+        businessId={businessId}
+        name={product?.name ?? ""}
+        path={photoPath}
+        onChange={setPhotoPath}
+        onBusy={setUploading}
+      />
       {state?.error && <ErrorText>{state.error}</ErrorText>}
       <div className="flex gap-2">
-        <button type="submit" className="btn-secondary" disabled={pending}>
+        <button type="submit" className="btn-secondary" disabled={pending || uploading}>
           {pending ? "Guardando…" : isNew ? "Agregar producto" : "Guardar"}
         </button>
         {product && (

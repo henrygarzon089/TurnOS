@@ -820,13 +820,25 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   en producción**. REQ-037.6 ya lo cubría `default_privacy_text` (T-058); un negocio existente
   debe publicar la versión nueva con REQ-002.5.
 
-### [ ] T-061 · Menú y bebida de cortesía
+### [x] T-061 · Menú y bebida de cortesía
 - REQ: REQ-038.1–038.7
 - Archivos: `/admin/productos` (A la venta / De cortesía / foto), portada `/[slug]` ("Lo que
   vendemos"), formulario de turno, "Mi turno", fila del barbero y del dueño, `src/lib/media/resize.ts`
 - Terminado: integración: cortesía inválida → error en el campo; `setTicketCourtesy` solo en
   espera; E2E: tomar turno con bebida → el barbero la ve y la marca "Servida ✓" (se actualiza en
   "Mi turno" sin recargar); la caja no registra nada.
+- Nota (2026-10-30): sin migración; usa lo de 0033. Desvíos, ya reflejados en design.md §11:
+  `upsertProduct` pasa a `saveProduct` como dice el diseño; `get_ticket_by_token` no trae las
+  opciones, así que "Mi turno" las saca de `getPublicBusiness` y las relee al abrir; `src/lib/media/`
+  suma `paths.ts`; Safari no codifica WebP y ahí sube JPEG en la misma ruta `.webp` que exigen las
+  políticas (con su `Content-Type` real). Detalles que la spec no fijaba: un producto sin ninguna
+  marca se rechaza porque no saldría en ningún lado; solo de cortesía puede quedar sin precio
+  (guarda 0); ya servida no se ofrece cambiar la bebida aunque el turno siga en espera (la base lo
+  permitiría: REQ-038.4 solo habla de la espera, y la pantalla lo evita). `register_sale` no valida
+  `for_sale`: el filtro de REQ-038.7 está en el catálogo de la caja (`getCheckout`, único
+  camino de la app). El job E2E del CI ahora levanta `storage-api` para probar la foto; T-062 lo
+  aprovecha. `CourtesyLine` no usa `.btn-secondary`: esa clase va sin capa en `globals.css`, le gana
+  a `w-auto` y dejaba la línea de la bebida con ancho 0.
 
 ### [ ] T-062 · Fotos de cortes
 - REQ: REQ-039.1–039.6

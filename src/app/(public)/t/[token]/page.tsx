@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { MyTicket } from "@/components/queue/MyTicket";
-import { getTicketByToken } from "@/lib/actions/public";
+import { getPublicBusiness, getTicketByToken } from "@/lib/actions/public";
 import { businessPwaMetadata } from "@/lib/pwa";
 
 export const dynamic = "force-dynamic";
@@ -42,5 +42,16 @@ export default async function TicketPage({
     );
   }
 
-  return <MyTicket token={token} initial={ticket} alreadyHad={sp.ya === "1"} />;
+  // REQ-038.4: las opciones solo importan mientras el turno está en espera
+  const business =
+    ticket.status === "waiting" ? await getPublicBusiness(ticket.business.slug) : null;
+
+  return (
+    <MyTicket
+      token={token}
+      initial={ticket}
+      alreadyHad={sp.ya === "1"}
+      courtesies={business?.courtesies ?? []}
+    />
+  );
 }
