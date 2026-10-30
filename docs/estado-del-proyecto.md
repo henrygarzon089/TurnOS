@@ -29,13 +29,14 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
   db push` y `vercel --prod` desde `main`). Sin pantallas todavía: nada cambia para el cliente
   hasta T-059…T-062. pgTAP 610 · unitarias 96 · integración 36.
 - T-059 `[x]` (2026-10-30): reseña en Google. Campo en `/admin/negocio` y botón en "Mi turno" al
-  terminar. Sin migración propia, pero **necesita 0033 en producción**: `/admin/negocio` lee
-  `google_review_url` y falla sin esa columna. Aplicar las migraciones antes de desplegar.
+  terminar. Sin migración propia; usa `google_review_url` de 0033. **En producción** desde el
+  2026-10-30.
 - T-060 `[x]` (2026-10-30): cumpleaños en la ficha y en el formulario de turno, "Cumplen esta
   semana" en `/admin/recordar`, plantilla en `/admin/mensajes`. Migración `0035_merge_customers_birthday`
-  (fusionar fichas conserva el cumpleaños) **pendiente de aplicar en producción**. Filo debe
-  publicar una versión nueva del aviso en `/admin/privacidad` para que mencione el cumpleaños
-  (REQ-037.6): el texto por defecto nuevo solo les llega a los negocios creados desde 0033.
+  (fusionar fichas conserva el cumpleaños). **En producción** desde el 2026-10-30.
+  **Pendiente**: Filo debe publicar una versión nueva del aviso en `/admin/privacidad` para que
+  mencione el cumpleaños (REQ-037.6): el texto por defecto nuevo solo les llega a los negocios
+  creados desde 0033.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
