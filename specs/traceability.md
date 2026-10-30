@@ -93,7 +93,7 @@
 | REQ-018.2 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customer-history.test.ts | cubierto |
 | REQ-018.3 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, 0013_customers_loyalty.sql | cubierto |
 | REQ-018.4 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, rls-customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | cubierto |
-| REQ-018.5 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | cubierto |
+| REQ-018.5 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql, 0035_merge_customers_birthday.sql | cubierto |
 | REQ-018.6 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers-delete.spec.ts, 0013_customers_loyalty.sql, 0014_customers_merge.sql, 0015_anonymize.sql, 0033_customer_experience.sql | cubierto |
 | REQ-019.1 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (hecha) | loyalty-config.spec.ts, loyalty.test.ts, 0016_loyalty_config.sql | cubierto |
 | REQ-019.2 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (hecha) | 0013_customers_loyalty.sql | cubierto |
@@ -166,12 +166,12 @@
 | REQ-036.2 | Reseña en Google después del corte | T-058 (hecha), T-059 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
 | REQ-036.3 | Reseña en Google después del corte | T-058 (hecha), T-059 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
 | REQ-036.4 | Reseña en Google después del corte | T-058 (hecha), T-059 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
-| REQ-037.1 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0033_customer_experience.sql | prueba escrita |
-| REQ-037.2 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0033_customer_experience.sql | prueba escrita |
-| REQ-037.3 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0033_customer_experience.sql | prueba escrita |
-| REQ-037.4 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0002_core.sql, 0009_seed.sql, 0033_customer_experience.sql | prueba escrita |
-| REQ-037.5 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0033_customer_experience.sql | prueba escrita |
-| REQ-037.6 | Cumpleaños del cliente | T-058 (hecha), T-060 (pendiente) | 0009_seed.sql, 0033_customer_experience.sql | prueba escrita |
+| REQ-037.1 | Cumpleaños del cliente | T-058 (hecha), T-060 (hecha) | birthdays.spec.ts, birthday.test.ts, 0033_customer_experience.sql, 0035_merge_customers_birthday.sql | cubierto |
+| REQ-037.2 | Cumpleaños del cliente | T-058 (hecha), T-060 (hecha) | birthdays.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
+| REQ-037.3 | Cumpleaños del cliente | T-058 (hecha), T-060 (hecha) | birthdays.spec.ts, public-queue.test.ts, birthday.test.ts, 0033_customer_experience.sql | cubierto |
+| REQ-037.4 | Cumpleaños del cliente | T-058 (hecha), T-060 (hecha) | birthdays.spec.ts, birthday.test.ts, 0002_core.sql, 0009_seed.sql, 0033_customer_experience.sql | cubierto |
+| REQ-037.5 | Cumpleaños del cliente | T-058 (hecha), T-060 (hecha) | birthdays.spec.ts, 0033_customer_experience.sql | cubierto |
+| REQ-037.6 | Cumpleaños del cliente | T-058 (hecha), T-060 (hecha) | 0009_seed.sql, 0033_customer_experience.sql | cubierto |
 | REQ-038.1 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (pendiente) | 0033_customer_experience.sql | prueba escrita |
 | REQ-038.2 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (pendiente) | 0033_customer_experience.sql | prueba escrita |
 | REQ-038.3 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (pendiente) | 0009_seed.sql, 0033_customer_experience.sql | prueba escrita |

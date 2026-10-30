@@ -8,7 +8,9 @@ import {
   type HistoryTicket,
   type TicketStatus,
 } from "@/lib/domain/customer-history";
+import { parseBirthday } from "@/lib/domain/birthday";
 import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
+import { businessDayBogota } from "@/lib/domain/time";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 // ---------------------------------------------------------------- tipos ----
@@ -37,6 +39,8 @@ export type CustomerView = {
     privacyAcceptedAt: string | null;
     privacyVersion: number | null;
     doNotContact: boolean;
+    birthdayDay: number | null;
+    birthdayMonth: number | null;
   };
   barbers: { id: string; name: string }[];
   history: HistoryRow[];
@@ -136,7 +140,7 @@ export async function getCustomer(id: string): Promise<CustomerView | null> {
     supabase
       .from("customers")
       .select(
-        "id, name, phone_e164, visits_count, first_visit_at, last_visit_at, created_at, notes, preferred_barber_id, privacy_accepted_at, privacy_version, do_not_contact, anonymized_at",
+        "id, name, phone_e164, visits_count, first_visit_at, last_visit_at, created_at, notes, preferred_barber_id, privacy_accepted_at, privacy_version, do_not_contact, anonymized_at, birthday_day, birthday_month",
       )
       .eq("id", id)
       .maybeSingle(),
@@ -199,6 +203,8 @@ export async function getCustomer(id: string): Promise<CustomerView | null> {
       privacyAcceptedAt: c.privacy_accepted_at,
       privacyVersion: c.privacy_version,
       doNotContact: c.do_not_contact,
+      birthdayDay: c.birthday_day,
+      birthdayMonth: c.birthday_month,
     },
     barbers: barbers.filter((b) => b.is_active).map((b) => ({ id: b.id, name: b.display_name })),
     history: toHistoryRows(tickets, viewer),
@@ -219,9 +225,11 @@ const updateSchema = z.object({
   notes: z.string().trim().max(500, "Las notas son muy largas (máximo 500 caracteres)."),
   preferred_barber_id: z.union([z.uuid(), z.literal("")]),
   do_not_contact: z.literal("on").optional(),
+  birthday_day: z.string(),
+  birthday_month: z.string(),
 });
 
-/** REQ-018.5 el dueño edita nombre y notas; REQ-018.4 el barbero, notas y preferido. */
+/** REQ-018.5 el dueño edita nombre y notas; REQ-018.4 el barbero, notas y preferido; REQ-037.1 ambos, el cumpleaños. */
 export async function updateCustomer(
   _prev: CustomerFormState,
   formData: FormData,
@@ -231,6 +239,8 @@ export async function updateCustomer(
   const parsed = updateSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
   const { id, name, notes, preferred_barber_id, do_not_contact } = parsed.data;
+  const bday = parseBirthday(parsed.data.birthday_day, parsed.data.birthday_month);
+  if (!bday.ok) return { error: bday.error }; // REQ-037.3
   const supabase = await createSupabaseServerClient();
   if (session.role !== "owner") {
     const { data: allowed } = await supabase.rpc("barber_can_see_customer", { p_customer_id: id });
@@ -245,7 +255,12 @@ export async function updateCustomer(
   if (!current) return { error: "No encontramos esa ficha." };
 
   const preferred = preferred_barber_id || null;
-  const patch: Record<string, unknown> = { notes: notes || null, preferred_barber_id: preferred };
+  const patch: Record<string, unknown> = {
+    notes: notes || null,
+    preferred_barber_id: preferred,
+    birthday_day: bday.birthday?.day ?? null,
+    birthday_month: bday.birthday?.month ?? null,
+  };
   if (session.role === "owner") {
     if (name) patch.name = name;
     patch.do_not_contact = do_not_contact === "on"; // REQ-020.5
@@ -393,6 +408,45 @@ export async function getInactiveCustomers(): Promise<RemindersView | null> {
       visitsCount: c.visits_count,
       preferredBarberName: c.preferred_barber_name,
     })),
+  };
+}
+
+export type BirthdayCustomer = { id: string; name: string; phone: string; celebratesOn: string };
+
+export type BirthdaysView = {
+  today: string;
+  template: string;
+  businessName: string;
+  customers: BirthdayCustomer[];
+};
+
+/** REQ-037.4 / REQ-037.5 quienes cumplen años hoy y los 6 días siguientes, por fecha. */
+export async function getBirthdaysThisWeek(): Promise<BirthdaysView | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  const supabase = await createSupabaseServerClient();
+  const biz = session.business.id;
+  const [listRes, tplRes] = await Promise.all([
+    supabase.rpc("birthdays_this_week", { p_business_id: biz }),
+    supabase
+      .from("message_templates")
+      .select("body")
+      .eq("business_id", biz)
+      .eq("key", "birthday")
+      .maybeSingle(),
+  ]);
+  return {
+    today: businessDayBogota(),
+    template: tplRes.data?.body ?? "",
+    businessName: session.business.name,
+    customers: (
+      (listRes.data ?? []) as {
+        id: string;
+        name: string;
+        phone_e164: string;
+        celebrates_on: string;
+      }[]
+    ).map((c) => ({ id: c.id, name: c.name, phone: c.phone_e164, celebratesOn: c.celebrates_on })),
   };
 }
 

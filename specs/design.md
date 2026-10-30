@@ -1037,7 +1037,9 @@ dato opcional (REQ-037.6); publicar la versión nueva usa REQ-002.5 sin cambios.
 Trigger `barber_photos_limit` (`before insert`): más de 12 por barbero → `PHOTO_LIMIT` (P0013),
 REQ-039.2. El límite vive en la base, no solo en la UI.
 
-Al anonimizar una ficha (REQ-018.6) un trigger borra también `birthday_month/day` (T-058).
+Al anonimizar una ficha (REQ-018.6) un trigger borra también `birthday_month/day` (T-058). Al
+fusionar fichas (REQ-018.5) queda el cumpleaños de la que se conserva; si no tiene, el de la otra
+(`0035_merge_customers_birthday.sql`, T-060).
 `set_ticket_courtesy` fuera de espera → `TICKET_NOT_WAITING` y `mark_courtesy_served` sin bebida →
 `NO_COURTESY`, ambos con código P0004 (como `INVALID_TRANSITION`).
 
@@ -1076,13 +1078,15 @@ Cada cambio de cortesía (`set_ticket_courtesy`, `mark_courtesy_served`) emite `
 - Públicas (`src/lib/actions/public.ts`): `joinQueue` recibe `birthday` y `courtesyProductId`;
   nuevas `setTicketCourtesy(token, productId|null)` y `getBarberPhotos(slug, barberId)`. Errores
   P0012 → "Esa bebida ya no está disponible" en el campo; P0013 → texto de REQ-039.2.
-- Personal: `saveGoogleReviewUrl` (dueño, `/admin/negocio`), `setCustomerBirthday` (ficha),
-  `getBirthdaysThisWeek` (`/admin/recordar`, pestaña o sección "Cumplen esta semana"),
+- Personal: `saveGoogleReviewUrl` (dueño, `/admin/negocio`), `updateCustomer` con día y mes de
+  cumpleaños (la ficha guarda todo con un solo botón, T-060), `getBirthdaysThisWeek`
+  (`/admin/recordar`, sección "Cumplen esta semana" encima de los clientes inactivos),
   `saveProduct` con `forSale`, `isCourtesy` y foto (`/admin/productos`), `markCourtesyServed`
   (filas), `uploadBarberPhoto` / `deleteBarberPhoto` (`/app/mis-fotos` para el barbero y desde
   `/admin/barberos` para el dueño).
 - Cliente: portada `/[slug]` con "Lo que vendemos" (REQ-038.2); formulario con cumpleaños
-  (si la ficha no lo tiene, se sabe con la misma consulta del barbero preferido, REQ-022),
+  (`customerHasBirthday`, con el celular prellenado o escrito; el campo aparece solo cuando se
+  sabe que la ficha no lo tiene, T-060),
   "Bebida de cortesía" y "Ver cortes" (hoja inferior con las fotos, REQ-039.5); "Mi turno" con
   cambio de bebida en espera y, al terminar, "¡Gracias por venir!" + botón de reseña.
 - Barbero y dueño: en cada turno, una línea "🥤 <bebida>" con botón "Servida ✓" (≥ 48 px).

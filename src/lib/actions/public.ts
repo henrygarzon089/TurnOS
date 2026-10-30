@@ -124,6 +124,11 @@ export async function getPreferredBarber(slug: string, phone: string): Promise<s
   return queue.getPreferredBarber(createAdminGateway(), slug, phone);
 }
 
+/** REQ-037.2: ¿la ficha de este celular ya tiene cumpleaños? */
+export async function customerHasBirthday(slug: string, phone: string): Promise<boolean> {
+  return queue.customerHasBirthday(createAdminGateway(), slug, phone);
+}
+
 /** REQ-003: tomar turno. Devuelve el token (o el existente, REQ-003.5). */
 export async function joinQueue(input: queue.JoinInput): Promise<queue.JoinResult> {
   return queue.joinQueue(createAdminGateway(), input, await clientIp());
