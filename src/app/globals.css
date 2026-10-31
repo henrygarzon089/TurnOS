@@ -31,15 +31,21 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Botón principal: grande, usable con una mano (NFR-008: >= 48 px) */
-.btn-primary {
-  @apply bg-accent text-accent-ink flex min-h-12 w-full items-center justify-center rounded-xl px-4 text-lg font-semibold active:opacity-90 disabled:opacity-50;
-}
-.btn-secondary {
-  @apply border-line bg-card text-ink active:bg-surface flex min-h-12 w-full items-center justify-center rounded-xl border px-4 text-lg font-semibold disabled:opacity-50;
-}
-.btn-danger {
-  @apply border-danger text-danger flex min-h-12 w-full items-center justify-center rounded-xl border px-4 text-lg font-semibold active:bg-red-50 disabled:opacity-50;
+/*
+  Botón principal: grande, usable con una mano (NFR-008: >= 48 px).
+  En @layer components para que las utilidades (`w-auto`, `w-12`) ganen: CSS sin capa le gana a
+  cualquier capa, y con `w-full` el botón dejaba en 0 px el texto vecino.
+*/
+@layer components {
+  .btn-primary {
+    @apply bg-accent text-accent-ink flex min-h-12 w-full items-center justify-center rounded-xl px-4 text-lg font-semibold active:opacity-90 disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply border-line bg-card text-ink active:bg-surface flex min-h-12 w-full items-center justify-center rounded-xl border px-4 text-lg font-semibold disabled:opacity-50;
+  }
+  .btn-danger {
+    @apply border-danger text-danger flex min-h-12 w-full items-center justify-center rounded-xl border px-4 text-lg font-semibold active:bg-red-50 disabled:opacity-50;
+  }
 }
 
 /* Campos de formulario: altos, legibles con una mano (NFR-008) */

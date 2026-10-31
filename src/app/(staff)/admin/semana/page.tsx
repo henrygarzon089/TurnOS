@@ -28,7 +28,7 @@ export default async function WeekPage({
       <nav aria-label="Elegir semana" className="mt-2 flex items-center justify-between gap-2">
         <Link
           href={`/admin/semana?semana=${shiftWeek(w.weekStart, -1)}`}
-          className="btn-secondary w-auto px-4"
+          className="btn-secondary w-auto shrink-0 px-3 text-base"
         >
           ← Anterior
         </Link>
@@ -38,7 +38,7 @@ export default async function WeekPage({
         {w.weekStart < thisWeek ? (
           <Link
             href={`/admin/semana?semana=${shiftWeek(w.weekStart, 1)}`}
-            className="btn-secondary w-auto px-4"
+            className="btn-secondary w-auto shrink-0 px-3 text-base"
           >
             Siguiente →
           </Link>

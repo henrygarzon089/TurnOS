@@ -111,6 +111,11 @@ Pendientes (H3): `/admin/caja`,
   Se editó la migración porque aún no se había aplicado a ningún proyecto remoto.
 - Mac de Henry: `supabase/config.toml` usa los puertos 573xx (543xx ocupados por otro proyecto);
   `next.config.ts` permite `allowedDevOrigins` de la red local para probar desde el celular.
+- `.btn-*` pasaron a `@layer components` en `globals.css` (2026-10-30): sin capa, su `w-full` les
+  ganaba a las utilidades y en "Cobro pendiente" el nombre del cliente medía 0 px. Ahora sí aplican
+  `w-auto`, `w-12`, `px-0` y `bg-warn` ("No llegó" tras la gracia sale en ámbar). `.input` sigue sin
+  capa: `min-h-24`, `min-h-64`, `py-2` y `text-sm` no le aplican; al moverla, `text-sm` en
+  `PrivacyForm` bajaría de 16 px el campo (NFR-008).
 
 ## Pendientes externos (los tenía que resolver Henry; verificar estado)
 
