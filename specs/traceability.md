@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-10-30.
+> Generada por `scripts/traceability.ts` el 2026-10-31.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -179,9 +179,9 @@
 | REQ-038.5 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (hecha) | menu-courtesy.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
 | REQ-038.6 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (hecha) | menu-courtesy.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
 | REQ-038.7 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (hecha) | menu-courtesy.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
-| REQ-039.1 | Fotos de cortes por barbero | T-058 (hecha), T-062 (pendiente), T-063 (pendiente) | 0029_function_grants.sql, 0033_customer_experience.sql | prueba escrita |
-| REQ-039.2 | Fotos de cortes por barbero | T-058 (hecha), T-062 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
-| REQ-039.3 | Fotos de cortes por barbero | T-058 (hecha), T-062 (pendiente), T-063 (pendiente) | — | sin prueba |
-| REQ-039.4 | Fotos de cortes por barbero | T-058 (hecha), T-062 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
-| REQ-039.5 | Fotos de cortes por barbero | T-058 (hecha), T-062 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
-| REQ-039.6 | Fotos de cortes por barbero | T-058 (hecha), T-062 (pendiente), T-063 (pendiente) | 0033_customer_experience.sql | prueba escrita |
+| REQ-039.1 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (pendiente) | barber-photos.spec.ts, barber-photos.test.ts, 0029_function_grants.sql, 0033_customer_experience.sql | prueba escrita |
+| REQ-039.2 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (pendiente) | barber-photos.spec.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-039.3 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (pendiente) | barber-photos.spec.ts, barber-photos.test.ts | prueba escrita |
+| REQ-039.4 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (pendiente) | barber-photos.spec.ts, barber-photos.test.ts, resize.test.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-039.5 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (pendiente) | barber-photos.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-039.6 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (pendiente) | barber-photos.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | prueba escrita |

@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: "Barberos" };
 export default async function BarbersPage() {
   const session = (await getStaffSession())!;
   const supabase = await createSupabaseServerClient();
-  const [{ data }, { data: svc }, { data: rel }] = await Promise.all([
+  const [{ data }, { data: svc }, { data: rel }, { data: photos }] = await Promise.all([
     supabase
       .from("barbers")
       .select("id, display_name, phone_e164, commission_pct, is_active, status, user_id")
@@ -34,11 +34,19 @@ export default async function BarbersPage() {
       .from("barber_services")
       .select("barber_id, service_id")
       .eq("business_id", session.business.id),
+    // REQ-039.1 el dueño maneja las fotos de cualquier barbero
+    supabase
+      .from("barber_photos")
+      .select("id, path, barber_id")
+      .eq("business_id", session.business.id)
+      .order("created_at", { ascending: false })
+      .order("id"),
   ]);
   const services = (svc ?? []) as ServiceOption[];
   const barbers = (data ?? []).map((b) => ({
     ...b,
     service_ids: (rel ?? []).filter((r) => r.barber_id === b.id).map((r) => r.service_id),
+    photos: (photos ?? []).filter((p) => p.barber_id === b.id),
   })) as BarberRow[];
 
   return (

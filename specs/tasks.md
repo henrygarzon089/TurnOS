@@ -840,13 +840,24 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   aprovecha. `CourtesyLine` no usa `.btn-secondary`: esa clase va sin capa en `globals.css`, le gana
   a `w-auto` y dejaba la línea de la bebida con ancho 0.
 
-### [ ] T-062 · Fotos de cortes
+### [x] T-062 · Fotos de cortes
 - REQ: REQ-039.1–039.6
 - Archivos: `/app/mis-fotos`, `/admin/barberos` (fotos por barbero), formulario ("Ver cortes"),
   `src/lib/media/resize.ts`, acciones `uploadBarberPhoto` / `deleteBarberPhoto` / `getBarberPhotos`
 - Terminado: unitaria de dimensiones de `resize`; E2E: subir sin confirmar no deja; con
   confirmación sube y aparece en "Ver cortes" sin perder lo escrito; la foto 13 se rechaza; barbero
   desactivado no muestra fotos.
+- Nota (2026-10-30): sin migración; usa lo de 0033. Desvío, ya reflejado en design.md §11:
+  `uploadBarberPhoto` sube desde el servidor (no desde el navegador como la foto de producto) para
+  revisar también allá el permiso de REQ-039.3 y el tipo de archivo, y contar las 12 antes de subir;
+  si el trigger rechaza la foto 13 igual, borra el objeto. Las acciones del personal van en
+  `src/lib/actions/photos.ts`, y los topes y textos compartidos en `src/lib/media/barber-photos.ts`.
+  Detalles que la spec no fijaba: el permiso se marca foto por foto y la casilla se limpia al
+  escoger otra; un archivo que dice ser imagen pero no se puede leer también da "Ese archivo no es
+  una foto"; el dueño ve el mismo texto de REQ-039.2 aunque hable en segunda persona; `/admin/barberos`
+  muestra las fotos también de los retirados, para poder borrarlas; "Mis fotos" va en el menú del
+  barbero; si el barbero se desactiva con el formulario abierto, la hoja dice "Este barbero no
+  tiene fotos para mostrar".
 
 ### [ ] T-063 · Validación Hito 5: matriz de trazabilidad
 - REQ: REQ-036…REQ-039

@@ -124,6 +124,11 @@ export async function getPreferredBarber(slug: string, phone: string): Promise<s
   return queue.getPreferredBarber(createAdminGateway(), slug, phone);
 }
 
+/** REQ-039.5: "Ver cortes" en el formulario de turno. */
+export async function getBarberPhotos(slug: string, barberId: string) {
+  return queue.getBarberPhotos(createAdminGateway(), slug, barberId);
+}
+
 /** REQ-037.2: ¿la ficha de este celular ya tiene cumpleaños? */
 export async function customerHasBirthday(slug: string, phone: string): Promise<boolean> {
   return queue.customerHasBirthday(createAdminGateway(), slug, phone);

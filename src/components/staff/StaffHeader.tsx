@@ -39,6 +39,12 @@ export function StaffHeader({ session }: { session: StaffSession }) {
           >
             Mis números
           </Link>
+          <Link
+            href="/app/mis-fotos"
+            className="text-accent min-h-10 px-2 py-2 text-sm font-semibold"
+          >
+            Mis fotos
+          </Link>
         </nav>
       )}
     </header>

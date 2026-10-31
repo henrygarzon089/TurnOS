@@ -10,6 +10,11 @@ export function isProductPhotoPath(businessId: string, path: string): boolean {
   return new RegExp(`^${businessId}/products/${UUID}\\.webp$`).test(path);
 }
 
+/** REQ-039.1: `<negocio>/barbers/<barbero>/<uuid>.webp`. */
+export function newBarberPhotoPath(businessId: string, barberId: string): string {
+  return `${businessId}/barbers/${barberId}/${crypto.randomUUID()}.webp`;
+}
+
 /** Las fotos salen en páginas sin sesión: URL pública del bucket. */
 export function mediaUrl(path: string): string {
   return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/media/${path}`;
