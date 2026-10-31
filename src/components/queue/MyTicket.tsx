@@ -4,10 +4,15 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { StampCard } from "@/components/loyalty/StampCard";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
-import { cancelTicketByToken, getTicketByToken } from "@/lib/actions/public";
+import {
+  cancelTicketByToken,
+  getPublicBusiness,
+  getTicketByToken,
+  setTicketCourtesy,
+} from "@/lib/actions/public";
 import { formatMinutes } from "@/lib/domain/time";
 import { useQueueSubscription } from "@/lib/realtime/use-queue-subscription";
-import type { MyTicket as Ticket } from "@/lib/queue/public-queue";
+import type { CourtesyOption, MyTicket as Ticket } from "@/lib/queue/public-queue";
 import { writePrefs } from "@/lib/storage/customer-prefs";
 
 const CACHE_KEY = (token: string) => `turnos:ticket:${token}`;
@@ -19,10 +24,12 @@ export function MyTicket({
   token,
   initial,
   alreadyHad,
+  courtesies,
 }: {
   token: string;
   initial: Ticket;
   alreadyHad: boolean;
+  courtesies: CourtesyOption[];
 }) {
   const [ticket, setTicket] = useState<Ticket>(initial);
   const [error, setError] = useState<string | null>(null);
@@ -86,7 +93,7 @@ export function MyTicket({
 
       <StatusCard ticket={ticket} />
 
-      <section className="mt-4 text-sm">
+      <section className="mt-4 text-sm" aria-label="Tu turno">
         <p>
           <span className="text-muted">Servicio:</span> {ticket.serviceName} (
           {ticket.serviceDurationMin} min)
@@ -95,6 +102,7 @@ export function MyTicket({
           <span className="text-muted">Barbero:</span>{" "}
           {ticket.assignedBarberName ?? ticket.preferredBarberName ?? "El que esté libre"}
         </p>
+        <Courtesy ticket={ticket} token={token} initialOptions={courtesies} onChanged={reload} />
       </section>
 
       <div className="mt-4">
@@ -128,6 +136,106 @@ export function MyTicket({
         </div>
       </div>
     </main>
+  );
+}
+
+/**
+ * REQ-038.4: en espera se cambia o se quita la bebida. Ya servida tampoco: el barbero la llevó.
+ * Las opciones se releen al abrir, para no ofrecer lo que se acabó mientras esperaba (REQ-038.7).
+ */
+function Courtesy({
+  ticket,
+  token,
+  initialOptions,
+  onChanged,
+}: {
+  ticket: Ticket;
+  token: string;
+  initialOptions: CourtesyOption[];
+  onChanged: () => Promise<void>;
+}) {
+  const [options, setOptions] = useState(initialOptions);
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, startSaving] = useTransition();
+  const { courtesy } = ticket;
+  const canChange =
+    ticket.status === "waiting" && !courtesy?.served && (options.length > 0 || !!courtesy);
+  if (!courtesy && !canChange) return null;
+
+  const refreshOptions = () =>
+    getPublicBusiness(ticket.business.slug)
+      .then((b) => {
+        if (b) setOptions(b.courtesies);
+      })
+      .catch(() => {}); // sin red se queda con las que ya tenía
+
+  function toggle() {
+    setError(null);
+    if (!open) void refreshOptions();
+    setOpen(!open);
+  }
+
+  function pick(productId: string | null) {
+    setError(null);
+    startSaving(async () => {
+      try {
+        const r = await setTicketCourtesy(token, productId);
+        if (r.ok) setOpen(false);
+        else {
+          setError(r.error);
+          await refreshOptions();
+        }
+        await onChanged();
+      } catch {
+        setError("No se pudo guardar. Revisa tu conexión.");
+      }
+    });
+  }
+
+  return (
+    <div className="mt-1">
+      <div className="flex items-center justify-between gap-2">
+        <p className="min-w-0 break-words">
+          <span>🥤 {courtesy?.name ?? "Sin bebida"}</span>
+          {courtesy?.served && <span className="text-ok font-semibold"> · Servida ✓</span>}
+        </p>
+        {canChange && (
+          <button
+            type="button"
+            className="text-accent min-h-12 shrink-0 underline"
+            onClick={toggle}
+          >
+            {courtesy ? "Cambiar bebida" : "Escoger bebida"}
+          </button>
+        )}
+      </div>
+      {open && canChange && (
+        <fieldset className="mt-1 flex min-w-0 flex-col gap-2" disabled={saving}>
+          <legend className="mb-2 font-medium">Bebida de cortesía</legend>
+          {[{ id: null, name: "No, gracias" }, ...options].map((o) => (
+            <label
+              key={o.id ?? "ninguna"}
+              className="border-line bg-card flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3"
+            >
+              <input
+                type="radio"
+                name="courtesy"
+                checked={(courtesy?.productId ?? null) === o.id}
+                onChange={() => pick(o.id)}
+                className="h-5 w-5 shrink-0"
+              />
+              {o.name}
+            </label>
+          ))}
+        </fieldset>
+      )}
+      {error && (
+        <p role="alert" className="text-danger mt-1 font-medium">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }
 

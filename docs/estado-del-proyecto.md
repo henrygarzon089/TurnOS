@@ -36,6 +36,11 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
   (fusionar fichas conserva el cumpleaños). **En producción** desde el 2026-10-30.
   Aviso de Filo: versión 2 publicada el 2026-10-30 con el texto por defecto que menciona el
   cumpleaños (REQ-037.6); los clientes que vuelvan a tomar turno deben aceptarla (REQ-002.5).
+- T-061 `[x]` (2026-10-30): "A la venta", "De cortesía" y foto en `/admin/productos`; "Lo que
+  vendemos" en la portada; "Bebida de cortesía" en el formulario y en "Mi turno"; línea con
+  "Servida ✓" en las filas del barbero y del dueño; la caja lista solo lo que está a la venta. Sin
+  migración. **Falta el deploy a producción** (lo hace Henry). En Filo los productos existentes
+  siguen a la venta y no se ofrece bebida hasta marcar alguno "De cortesía".
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

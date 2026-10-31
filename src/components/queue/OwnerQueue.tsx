@@ -3,6 +3,7 @@
 import { useCallback, useState, useTransition } from "react";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { CheckoutSheet } from "@/components/cash/CheckoutSheet";
+import { CourtesyLine } from "@/components/queue/CourtesyLine";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
 import { setBarberPresent } from "@/lib/actions/admin";
 import {
@@ -11,6 +12,7 @@ import {
   cancelTicket,
   finishService,
   getBusinessQueue,
+  markCourtesyServed,
   markNoShow,
   moveTicket,
   reassignTicket,
@@ -163,6 +165,14 @@ export function OwnerQueue({ initial }: { initial: OwnerQueueView }) {
                       {TSTATUS[t.status]}
                     </span>
                   </button>
+                  {t.courtesyName && (
+                    <CourtesyLine
+                      name={t.courtesyName}
+                      served={t.courtesyServed}
+                      disabled={busy}
+                      onServe={() => run(() => markCourtesyServed(t.id))}
+                    />
+                  )}
                   {open && (
                     <TicketMenu
                       ticket={t}

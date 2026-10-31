@@ -6,6 +6,7 @@ import {
   getTicketByToken,
   joinQueue,
   RATE_LIMITS,
+  setTicketCourtesy,
 } from "@/lib/queue/public-queue";
 import { pool, withTx, type Q } from "./db";
 import { createPgGateway } from "./pg-gateway";
@@ -312,6 +313,213 @@ describe("REQ-035 servicios por barbero en el formulario (server action)", () =>
       const corte = biz!.services.find((s) => s.id === c.corte)!;
       expect(corte.barberIds).not.toContain(c.juan);
       expect(corte.barberIds).toContain(c.luis);
+    });
+  });
+});
+
+describe("REQ-038 menú y bebida de cortesía (server action)", () => {
+  const BAD = "Esa bebida ya no está disponible";
+  const productId = async (q: Q, name: string) => {
+    const { rows } = await q<{ id: string }>(
+      `select p.id from products p join businesses z on z.id = p.business_id
+       where z.slug = 'la-33' and p.name = $1`,
+      [name],
+    );
+    return rows[0].id;
+  };
+  const ticketOf = async (q: Q, token: string) => {
+    const { rows } = await q<{ id: string; courtesy_product_id: string | null }>(
+      `select id, courtesy_product_id from tickets where public_token = $1`,
+      [token],
+    );
+    return rows[0];
+  };
+  /** Un error SQL aborta la transacción de la prueba: se devuelve al punto anterior. */
+  const attempt = async <T>(q: Q, fn: () => Promise<T>) => {
+    await q(`savepoint attempt`);
+    const r = await fn();
+    await q(`rollback to savepoint attempt`);
+    return r;
+  };
+  const joinWith = async (q: Q, c: { corte: string }, courtesyProductId: string | null) => {
+    const r = await joinQueue(createPgGateway(q), { ...base(c), courtesyProductId }, "1.1.1.1");
+    if (!r.ok) throw new Error(r.error);
+    return r.token;
+  };
+
+  it("REQ-038.2 la portada recibe solo productos activos a la venta", async () => {
+    await withTx(async (q) => {
+      await q(`update products set is_active = false where name = 'Jugo'`);
+      const b = await getPublicBusiness(createPgGateway(q), "la-33");
+      expect(b!.products.map((p) => p.name)).toEqual(["Helado", "Gaseosa", "Agua"]);
+      expect(b!.products[0]).toMatchObject({ price: 3000, photoPath: null });
+    });
+  });
+
+  it("REQ-038.2 sin productos a la venta la lista llega vacía", async () => {
+    await withTx(async (q) => {
+      await q(`update products set for_sale = false`);
+      const b = await getPublicBusiness(createPgGateway(q), "la-33");
+      expect(b!.products).toEqual([]);
+    });
+  });
+
+  it("REQ-038.3 el formulario recibe las bebidas activas de cortesía", async () => {
+    await withTx(async (q) => {
+      const gw = createPgGateway(q);
+      expect((await getPublicBusiness(gw, "la-33"))!.courtesies.map((c) => c.name)).toEqual([
+        "Tinto",
+        "Aromática",
+      ]);
+      await q(`update products set is_active = false where name = 'Tinto'`);
+      expect((await getPublicBusiness(gw, "la-33"))!.courtesies.map((c) => c.name)).toEqual([
+        "Aromática",
+      ]);
+    });
+  });
+
+  it("REQ-038.3 joinQueue guarda la bebida escogida; sin escoger queda sin bebida", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const tinto = await productId(q, "Tinto");
+      const token = await joinWith(q, c, tinto);
+      expect((await ticketOf(q, token)).courtesy_product_id).toBe(tinto);
+      await q(`update tickets set status = 'cancelled' where public_token = $1`, [token]);
+      const without = await joinQueue(createPgGateway(q), base(c), "1.1.1.1");
+      expect(without.ok && (await ticketOf(q, without.token)).courtesy_product_id).toBeNull();
+    });
+  });
+
+  it("REQ-038.6 joinQueue rechaza en el campo un producto que no es de cortesía, inactivo o ajeno", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const other = await q<{ id: string }>(
+        `insert into businesses (name, slug) values ('Otra', 'otra-t061') returning id`,
+      );
+      const foreign = await q<{ id: string }>(
+        `insert into products (business_id, name, price, is_courtesy) values ($1, 'Té', 0, true) returning id`,
+        [other.rows[0].id],
+      );
+      const tinto = await productId(q, "Tinto");
+      await q(`update products set is_active = false where id = $1`, [tinto]);
+      for (const id of [await productId(q, "Helado"), tinto, foreign.rows[0].id]) {
+        const r = await attempt(q, () =>
+          joinQueue(createPgGateway(q), { ...base(c), courtesyProductId: id }, "1.1.1.1"),
+        );
+        expect(r).toEqual({ ok: false, error: BAD, field: "courtesyProductId" });
+      }
+      const { rows } = await q(`select 1 from tickets where customer_phone_e164 = $1`, [
+        "+573005557001",
+      ]);
+      expect(rows).toHaveLength(0);
+    });
+  });
+
+  it("REQ-038.6 un id que no es uuid responde lo mismo, en el campo", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const r = await joinQueue(
+        createPgGateway(q),
+        { ...base(c), courtesyProductId: "no-es-uuid" },
+        "1.1.1.1",
+      );
+      expect(r).toEqual({ ok: false, error: BAD, field: "courtesyProductId" });
+    });
+  });
+
+  it("REQ-038.4 en espera se cambia y se quita la bebida; Mi turno lo refleja", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const gw = createPgGateway(q);
+      const [tinto, aromatica] = [await productId(q, "Tinto"), await productId(q, "Aromática")];
+      const token = await joinWith(q, c, tinto);
+      expect((await getTicketByToken(gw, token))!.courtesy).toMatchObject({
+        productId: tinto,
+        name: "Tinto",
+        served: false,
+      });
+
+      expect(await setTicketCourtesy(gw, token, aromatica)).toEqual({ ok: true });
+      expect((await getTicketByToken(gw, token))!.courtesy?.name).toBe("Aromática");
+
+      expect(await setTicketCourtesy(gw, token, null)).toEqual({ ok: true });
+      expect((await getTicketByToken(gw, token))!.courtesy).toBeNull();
+    });
+  });
+
+  it("REQ-038.4 setTicketCourtesy solo en espera: llamado ya no cambia", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const gw = createPgGateway(q);
+      const tinto = await productId(q, "Tinto");
+      const token = await joinWith(q, c, tinto);
+      await q(
+        `update tickets set status = 'called', called_at = now(), assigned_barber_id = $1
+               where public_token = $2`,
+        [c.juan, token],
+      );
+      const aromatica = await productId(q, "Aromática");
+      expect(await attempt(q, () => setTicketCourtesy(gw, token, aromatica))).toEqual({
+        ok: false,
+        error: "Ya te llamaron: la bebida no se puede cambiar.",
+      });
+      expect((await ticketOf(q, token)).courtesy_product_id).toBe(tinto);
+    });
+  });
+
+  it("REQ-038.6 setTicketCourtesy rechaza lo que no es cortesía, y un turno que no existe", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const gw = createPgGateway(q);
+      const tinto = await productId(q, "Tinto");
+      const token = await joinWith(q, c, tinto);
+      for (const id of [await productId(q, "Helado"), "no-es-uuid"]) {
+        expect(await attempt(q, () => setTicketCourtesy(gw, token, id))).toEqual({
+          ok: false,
+          error: BAD,
+        });
+      }
+      expect((await ticketOf(q, token)).courtesy_product_id).toBe(tinto);
+      expect(await setTicketCourtesy(gw, "corto", null)).toEqual({
+        ok: false,
+        error: "Este turno no existe.",
+      });
+      expect(await attempt(q, () => setTicketCourtesy(gw, "x".repeat(32), null))).toEqual({
+        ok: false,
+        error: "Este turno no existe.",
+      });
+    });
+  });
+
+  it("REQ-038.5 Mi turno ve la bebida servida", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const gw = createPgGateway(q);
+      const token = await joinWith(q, c, await productId(q, "Tinto"));
+      await q(`select mark_courtesy_served($1)`, [(await ticketOf(q, token)).id]);
+      expect((await getTicketByToken(gw, token))!.courtesy).toMatchObject({ served: true });
+    });
+  });
+
+  it("REQ-038.7 si el producto se desactiva, el turno que ya lo tenía lo conserva", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const gw = createPgGateway(q);
+      const tinto = await productId(q, "Tinto");
+      const token = await joinWith(q, c, tinto);
+      await q(`update products set is_active = false where id = $1`, [tinto]);
+      expect((await getTicketByToken(gw, token))!.courtesy?.name).toBe("Tinto");
+    });
+  });
+
+  it("REQ-038.7 la bebida no genera venta ni comisión", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const token = await joinWith(q, c, await productId(q, "Tinto"));
+      const id = (await ticketOf(q, token)).id;
+      await q(`select mark_courtesy_served($1)`, [id]);
+      const { rows } = await q(`select 1 from sales where ticket_id = $1`, [id]);
+      expect(rows).toHaveLength(0);
     });
   });
 });

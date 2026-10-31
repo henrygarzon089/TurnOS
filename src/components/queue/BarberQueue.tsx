@@ -3,11 +3,13 @@
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { CheckoutSheet } from "@/components/cash/CheckoutSheet";
 import { NewSaleButton } from "@/components/cash/NewSaleSheet";
+import { CourtesyLine } from "@/components/queue/CourtesyLine";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
 import {
   callNext,
   finishService,
   getMyQueue,
+  markCourtesyServed,
   markNoShow,
   markNotified,
   setMyStatus,
@@ -289,6 +291,14 @@ function CurrentCard({
         <span className="text-muted text-sm font-normal">· {ticket.serviceName}</span>
       </p>
       {ticket.rewardAvailable && <RewardBadge />}
+      {ticket.courtesyName && (
+        <CourtesyLine
+          name={ticket.courtesyName}
+          served={ticket.courtesyServed}
+          disabled={busy !== null}
+          onServe={() => run(`courtesy-${ticket.id}`, () => markCourtesyServed(ticket.id))}
+        />
+      )}
       {ticket.status === "called" ? (
         <>
           <p className="text-sm">
@@ -379,35 +389,45 @@ function WaitingRow({
 
   return (
     <li
-      className={`border-line bg-card flex items-center justify-between gap-3 rounded-xl border p-3 ${shouldNotify ? "border-amber-400" : ""}`}
+      className={`border-line bg-card rounded-xl border p-3 ${shouldNotify ? "border-amber-400" : ""}`}
     >
-      <div className="min-w-0">
-        <p className="truncate font-semibold">
-          {index + 1}. {ticket.customerName}
-        </p>
-        {ticket.rewardAvailable && <RewardBadge />}
-        <p className="text-muted text-sm">
-          {ticket.serviceName} {ticket.serviceDurationMin}&apos; · hace {waitedMin}&apos; ·{" "}
-          {ticket.preferredBarberId === me ? "te eligió" : "cualquiera"}
-        </p>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate font-semibold">
+            {index + 1}. {ticket.customerName}
+          </p>
+          {ticket.rewardAvailable && <RewardBadge />}
+          <p className="text-muted text-sm">
+            {ticket.serviceName} {ticket.serviceDurationMin}&apos; · hace {waitedMin}&apos; ·{" "}
+            {ticket.preferredBarberId === me ? "te eligió" : "cualquiera"}
+          </p>
+        </div>
+        {canNotify && link && (
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener"
+            onClick={() => run(`notify-${ticket.id}`, () => markNotified(ticket.id))}
+            aria-disabled={busy !== null}
+            className={`flex min-h-12 shrink-0 items-center rounded-full px-3 text-sm font-semibold ${
+              ticket.notifiedAt
+                ? "text-ok bg-green-50"
+                : shouldNotify
+                  ? "bg-accent text-accent-ink"
+                  : "border-line border"
+            }`}
+          >
+            {ticket.notifiedAt ? "Avisado ✓" : "📲 Avisar"}
+          </a>
+        )}
       </div>
-      {canNotify && link && (
-        <a
-          href={link}
-          target="_blank"
-          rel="noopener"
-          onClick={() => run(`notify-${ticket.id}`, () => markNotified(ticket.id))}
-          aria-disabled={busy !== null}
-          className={`flex min-h-12 shrink-0 items-center rounded-full px-3 text-sm font-semibold ${
-            ticket.notifiedAt
-              ? "text-ok bg-green-50"
-              : shouldNotify
-                ? "bg-accent text-accent-ink"
-                : "border-line border"
-          }`}
-        >
-          {ticket.notifiedAt ? "Avisado ✓" : "📲 Avisar"}
-        </a>
+      {ticket.courtesyName && (
+        <CourtesyLine
+          name={ticket.courtesyName}
+          served={ticket.courtesyServed}
+          disabled={busy !== null}
+          onServe={() => run(`courtesy-${ticket.id}`, () => markCourtesyServed(ticket.id))}
+        />
       )}
     </li>
   );
