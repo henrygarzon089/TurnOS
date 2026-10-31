@@ -11,7 +11,7 @@ export default async function ProductsPage() {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("products")
-    .select("id, name, price, is_active")
+    .select("id, name, price, is_active, for_sale, is_courtesy, photo_path")
     .eq("business_id", session.business.id)
     .order("is_active", { ascending: false })
     .order("sort_order")
@@ -22,13 +22,15 @@ export default async function ProductsPage() {
     <main className="pb-6">
       <AdminNav current="/admin/productos" />
       <h1 className="text-2xl font-bold">Productos</h1>
-      <p className="text-muted mt-1 text-sm">Helados, bebidas y lo que vendas sin cita.</p>
+      <p className="text-muted mt-1 text-sm">
+        Helados, bebidas y lo que vendas sin cita. Los de cortesía se ofrecen gratis con el turno.
+      </p>
       <div className="mt-4 flex flex-col gap-3">
         {products.map((p) => (
-          <ProductForm key={p.id} product={p} />
+          <ProductForm key={p.id} product={p} businessId={session.business.id} />
         ))}
         <h2 className="mt-2 font-semibold">Nuevo producto</h2>
-        <ProductForm />
+        <ProductForm businessId={session.business.id} />
       </div>
     </main>
   );

@@ -30,6 +30,9 @@ export type QueueTicket = {
   rewardAvailable: boolean;
   /** REQ-020.5: el cliente pidió no ser contactado (sin botón "Avisar"). */
   doNotContact: boolean;
+  /** REQ-038.5: bebida de cortesía del turno. */
+  courtesyName: string | null;
+  courtesyServed: boolean;
 };
 
 export type BarberQueueView = {
@@ -66,12 +69,18 @@ type TicketRow = {
   public_token: string;
   queue_order: number;
   customer_id: string | null;
+  courtesy_product_id: string | null;
+  courtesy_served_at: string | null;
 };
 
 const TICKET_COLS =
-  "id, display_number, customer_name, customer_phone_e164, service_name, service_duration_min, preferred_barber_id, assigned_barber_id, service_id, status, created_at, called_at, started_at, notified_at, payment_status, public_token, queue_order, customer_id";
+  "id, display_number, customer_name, customer_phone_e164, service_name, service_duration_min, preferred_barber_id, assigned_barber_id, service_id, status, created_at, called_at, started_at, notified_at, payment_status, public_token, queue_order, customer_id, courtesy_product_id, courtesy_served_at";
 
-function toTicket(r: TicketRow, ahead: number): QueueTicket {
+function toTicket(
+  r: TicketRow,
+  ahead: number,
+  courtesyNames = new Map<string, string>(),
+): QueueTicket {
   return {
     id: r.id,
     displayNumber: r.display_number,
@@ -93,7 +102,20 @@ function toTicket(r: TicketRow, ahead: number): QueueTicket {
     customerId: r.customer_id ?? null,
     rewardAvailable: false,
     doNotContact: false,
+    courtesyName: (r.courtesy_product_id && courtesyNames.get(r.courtesy_product_id)) || null,
+    courtesyServed: r.courtesy_served_at !== null,
   };
+}
+
+/** REQ-038.5: nombre de las bebidas; incluye productos ya inactivos (REQ-038.7). */
+async function fetchCourtesyNames(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  rows: TicketRow[],
+): Promise<Map<string, string>> {
+  const ids = [...new Set(rows.map((r) => r.courtesy_product_id).filter((id) => id !== null))];
+  if (ids.length === 0) return new Map();
+  const { data } = await supabase.from("products").select("id, name").in("id", ids);
+  return new Map((data ?? []).map((p) => [p.id as string, p.name as string]));
 }
 
 const ERRORS: Record<string, string> = {
@@ -206,8 +228,15 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
     rewardAvailable: !!t.customerId && withReward.has(t.customerId),
     doNotContact: !!t.customerId && noContact.has(t.customerId),
   });
+  const currentRow = (currentRes.data as TicketRow | null) ?? null;
+  const courtesyNames = await fetchCourtesyNames(supabase, [
+    ...list,
+    ...(currentRow ? [currentRow] : []),
+  ]);
   const waiting = list.map((r, i) =>
-    mark(toTicket(r, r.preferred_barber_id ? i : (globalPos.get(r.id) ?? i + 1) - 1)),
+    mark(
+      toTicket(r, r.preferred_barber_id ? i : (globalPos.get(r.id) ?? i + 1) - 1, courtesyNames),
+    ),
   );
 
   return {
@@ -217,7 +246,7 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
       status: barberRes.data.status,
     },
     business: { ...session.business, graceMinutes: bizRes.data?.grace_minutes ?? 5 },
-    current: currentRes.data ? mark(toTicket(currentRes.data as TicketRow, 0)) : null,
+    current: currentRow ? mark(toTicket(currentRow, 0, courtesyNames)) : null,
     waiting,
     mineWaiting: list.filter((r) => r.preferred_barber_id === session.barberId).length,
     pendingPayments: ((pendingRes.data ?? []) as TicketRow[]).map((r) => toTicket(r, 0)),
@@ -283,6 +312,15 @@ export async function markNotified(ticketId: string): Promise<ActionResult> {
   if (!session) return { ok: false, error: "Sesión vencida." };
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("mark_ticket_notified", { p_ticket_id: ticketId });
+  return error ? mapError(error) : { ok: true };
+}
+
+/** REQ-038.5: "Servida ✓". La función es idempotente y no deja desmarcar. */
+export async function markCourtesyServed(ticketId: string): Promise<ActionResult> {
+  const session = await getStaffSession();
+  if (!session) return { ok: false, error: "Sesión vencida." };
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("mark_courtesy_served", { p_ticket_id: ticketId });
   return error ? mapError(error) : { ok: true };
 }
 
@@ -367,6 +405,7 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
         capableBarberIds: capable.get(r.service_id) ?? [],
       })),
   );
+  const courtesyNames = await fetchCourtesyNames(supabase, rows);
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" });
   const override =
     bizRes.data?.queue_override_day === today
@@ -381,7 +420,7 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
       status: b.status,
       isActive: b.is_active,
     })),
-    active: rows.map((r) => toTicket(r, (pos.get(r.id) ?? 1) - 1)),
+    active: rows.map((r) => toTicket(r, (pos.get(r.id) ?? 1) - 1, courtesyNames)),
     services: (servicesRes.data ?? []).map((s) => ({
       id: s.id,
       name: s.name,

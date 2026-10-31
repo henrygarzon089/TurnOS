@@ -40,6 +40,10 @@ export type PublicBusiness = {
     price: number;
     barberIds?: string[];
   }[];
+  /** REQ-038.2: activos a la venta. `photoPath` es la ruta en el bucket `media`. */
+  products: { id: string; name: string; price: number; photoPath: string | null }[];
+  /** REQ-038.3: activos de cortesía. */
+  courtesies: CourtesyOption[];
   queue: QueueSnapshot;
   /** Derivados */
   waitingCount: number;
@@ -47,6 +51,8 @@ export type PublicBusiness = {
   estimatedWaitMin: number | null;
   barbersToday: { id: string; name: string; status: BarberState["status"] }[];
 };
+
+export type CourtesyOption = { id: string; name: string; photoPath: string | null };
 
 export type TicketStatus = "waiting" | "called" | "in_service" | "done" | "cancelled" | "no_show";
 
@@ -69,6 +75,8 @@ export type MyTicket = {
   estimate: Estimate | null;
   /** REQ-019.7 progreso de la tarjeta del cliente (null si no hay ficha) */
   loyalty: LoyaltyStatus | null;
+  /** REQ-038.4 / REQ-038.5: bebida escogida; se conserva aunque el producto se desactive */
+  courtesy: { productId: string; name: string; photoPath: string | null; served: boolean } | null;
   /** REQ-036.2: solo con el turno terminado y enlace guardado */
   googleReviewUrl: string | null;
 };
@@ -78,8 +86,17 @@ export type JoinResult =
   | {
       ok: false;
       error: string;
-      field?: "name" | "phone" | "serviceId" | "preferredBarberId" | "privacyAccepted" | "birthday";
+      field?:
+        | "name"
+        | "phone"
+        | "serviceId"
+        | "preferredBarberId"
+        | "privacyAccepted"
+        | "birthday"
+        | "courtesyProductId";
     };
+
+const COURTESY_INVALID = "Esa bebida ya no está disponible"; // REQ-038.6
 
 export const joinSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]{3,40}$/),
@@ -92,6 +109,8 @@ export const joinSchema = z.object({
   source: z.enum(["qr", "link"]).default("qr"),
   /** REQ-037.2: día y mes como los escribió el cliente; los valida `parseBirthday`. */
   birthday: z.object({ day: z.string(), month: z.string() }).nullable().optional(),
+  /** REQ-038.3: una bebida como máximo; null = "No, gracias". */
+  courtesyProductId: z.string().uuid(COURTESY_INVALID).nullable().optional(),
 });
 export type JoinInput = z.input<typeof joinSchema>;
 
@@ -155,6 +174,8 @@ export async function getPublicBusiness(
     closesAt: (raw.closesAt as string | null) ?? null,
     privacyVersion: (raw.privacyVersion as number | null) ?? null,
     services,
+    products: (raw.products ?? []) as PublicBusiness["products"],
+    courtesies: (raw.courtesies ?? []) as PublicBusiness["courtesies"],
     queue,
     waitingCount: queue.waiting.length,
     estimatedWaitMin: est?.waitMin ?? null,
@@ -254,6 +275,7 @@ export async function joinQueue(
       p_source: d.source,
       p_birthday_month: bday.birthday?.month ?? null,
       p_birthday_day: bday.birthday?.day ?? null,
+      p_courtesy_product_id: d.courtesyProductId ?? null,
     });
     return { ok: true, token: r.token, existing: Boolean(r.existing) };
   } catch (e) {
@@ -281,6 +303,8 @@ export async function joinQueue(
             error: "Hoy no hay quién haga ese servicio. Elige otro.",
             field: "serviceId",
           };
+        case "P0012": // REQ-038.6
+          return { ok: false, error: COURTESY_INVALID, field: "courtesyProductId" };
       }
     }
     throw e;
@@ -325,8 +349,34 @@ export async function getTicketByToken(
     cancelReason: (raw.cancelReason as MyTicket["cancelReason"]) ?? null,
     estimate,
     loyalty: toLoyaltyStatus(raw.loyalty),
+    courtesy: (raw.courtesy as MyTicket["courtesy"]) ?? null,
     googleReviewUrl: (raw.googleReviewUrl as string | null) ?? null,
   };
+}
+
+/** REQ-038.4 / REQ-038.6: cambiar o quitar (null) la bebida desde "Mi turno", solo en espera. */
+export async function setTicketCourtesy(
+  gw: Gateway,
+  token: string,
+  productId: string | null,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!/^[A-Za-z0-9_-]{16,64}$/.test(token)) return { ok: false, error: "Este turno no existe." };
+  if (productId !== null && !z.string().uuid().safeParse(productId).success) {
+    return { ok: false, error: COURTESY_INVALID };
+  }
+  try {
+    await gw.rpc("set_ticket_courtesy", { p_token: token, p_product_id: productId });
+    return { ok: true };
+  } catch (e) {
+    if (e instanceof GatewayError) {
+      if (e.code === "P0012") return { ok: false, error: COURTESY_INVALID };
+      if (e.code === "P0004") {
+        return { ok: false, error: "Ya te llamaron: la bebida no se puede cambiar." };
+      }
+      if (e.code === "P0002") return { ok: false, error: "Este turno no existe." };
+    }
+    throw e;
+  }
 }
 
 /** REQ-005.2 */
