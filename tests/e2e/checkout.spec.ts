@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
-import { expect, test, type Browser, type Page } from "@playwright/test";
+import { expect, test, type Browser, type Locator, type Page } from "@playwright/test";
 import { loginAsBarber, loginAsOwner, SEED } from "./helpers";
 
 /**
@@ -58,6 +58,25 @@ const activeRow = (owner: Page, name: string) =>
     .getByRole("region", { name: "Turnos activos" })
     .getByRole("listitem")
     .filter({ hasText: name });
+
+const pendingRow = (page: Page, name: string) =>
+  page
+    .getByRole("region", { name: "Cobros pendientes" })
+    .getByRole("listitem")
+    .filter({ hasText: name });
+
+/** El nombre del cliente se lee junto a "Cobrar": el botón no se come la fila (NFR-008: >= 48 px). */
+async function expectLegiblePendingRow(row: Locator, name: string) {
+  const label = row.getByText(name);
+  const button = row.getByRole("button", { name: "Cobrar" });
+  await expect(label).toBeVisible();
+  const labelBox = (await label.boundingBox())!;
+  const buttonBox = (await button.boundingBox())!;
+  const rowBox = (await row.boundingBox())!;
+  expect(labelBox.width).toBeGreaterThan(100);
+  expect(buttonBox.x + buttonBox.width).toBeLessThanOrEqual(rowBox.x + rowBox.width);
+  expect(buttonBox.height).toBeGreaterThanOrEqual(48);
+}
 
 /** El dueño agrega el turno para Juan y lo llama; Juan lo pone en la silla y toca "Terminado". */
 async function serveUntilFinished(owner: Page, barber: Page, name: string, phone: string) {
@@ -145,20 +164,19 @@ test.describe("REQ-023 panel de cobro", () => {
       await sheet.getByRole("button", { name: "Cobrar después" }).click();
       await expect(sheet).toBeHidden();
       await expect(barber.getByRole("region", { name: "Cobros pendientes" })).toContainText(name);
+      await expectLegiblePendingRow(pendingRow(barber, name), name);
 
       await owner.goto("/admin/fila");
-      const pendingRow = owner
-        .getByRole("region", { name: "Cobros pendientes" })
-        .getByRole("listitem")
-        .filter({ hasText: name });
-      await expect(pendingRow).toBeVisible({ timeout: 15_000 });
+      const ownerRow = pendingRow(owner, name);
+      await expect(ownerRow).toBeVisible({ timeout: 15_000 });
+      await expectLegiblePendingRow(ownerRow, name);
       // REQ-023.7 el dueño cobra cualquier turno pendiente
-      await pendingRow.getByRole("button", { name: "Cobrar" }).click();
+      await ownerRow.getByRole("button", { name: "Cobrar" }).click();
       const ownerSheet = owner.getByRole("dialog", { name: "Registrar cobro" });
       await ownerSheet.getByRole("radio", { name: "Efectivo" }).click();
       await ownerSheet.getByRole("button", { name: "Registrar $ 25.000" }).click();
       await expect(ownerSheet).toBeHidden();
-      await expect(pendingRow).toBeHidden({ timeout: 15_000 });
+      await expect(ownerRow).toBeHidden({ timeout: 15_000 });
     } finally {
       await close();
     }
