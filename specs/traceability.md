@@ -162,10 +162,10 @@
 | REQ-035.11 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | services-by-barber.spec.ts, 0031_queue_by_service.sql | cubierto |
 | REQ-035.12 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | 0031_queue_by_service.sql | cubierto |
 | REQ-035.13 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | 0031_queue_by_service.sql | cubierto |
-| REQ-036.1 | Reseña en Google después del corte | T-058 (hecha), T-059 (hecha), T-063 (pendiente) | google-review.spec.ts, review-link.test.ts, 0033_customer_experience.sql | prueba escrita |
-| REQ-036.2 | Reseña en Google después del corte | T-058 (hecha), T-059 (hecha), T-063 (pendiente) | google-review.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | prueba escrita |
-| REQ-036.3 | Reseña en Google después del corte | T-058 (hecha), T-059 (hecha), T-063 (pendiente) | google-review.spec.ts, 0033_customer_experience.sql | prueba escrita |
-| REQ-036.4 | Reseña en Google después del corte | T-058 (hecha), T-059 (hecha), T-063 (pendiente) | google-review.spec.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-036.1 | Reseña en Google después del corte | T-058 (hecha), T-059 (hecha), T-063 (en curso) | google-review.spec.ts, review-link.test.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-036.2 | Reseña en Google después del corte | T-058 (hecha), T-059 (hecha), T-063 (en curso) | google-review.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-036.3 | Reseña en Google después del corte | T-058 (hecha), T-059 (hecha), T-063 (en curso) | google-review.spec.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-036.4 | Reseña en Google después del corte | T-058 (hecha), T-059 (hecha), T-063 (en curso) | google-review.spec.ts, 0033_customer_experience.sql | prueba escrita |
 | REQ-037.1 | Cumpleaños del cliente | T-058 (hecha), T-060 (hecha) | birthdays.spec.ts, birthday.test.ts, 0033_customer_experience.sql, 0035_merge_customers_birthday.sql | cubierto |
 | REQ-037.2 | Cumpleaños del cliente | T-058 (hecha), T-060 (hecha) | birthdays.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
 | REQ-037.3 | Cumpleaños del cliente | T-058 (hecha), T-060 (hecha) | birthdays.spec.ts, public-queue.test.ts, birthday.test.ts, 0033_customer_experience.sql | cubierto |
@@ -179,9 +179,9 @@
 | REQ-038.5 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (hecha) | menu-courtesy.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
 | REQ-038.6 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (hecha) | menu-courtesy.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
 | REQ-038.7 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (hecha) | menu-courtesy.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
-| REQ-039.1 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (pendiente) | barber-photos.spec.ts, barber-photos.test.ts, 0029_function_grants.sql, 0033_customer_experience.sql | prueba escrita |
-| REQ-039.2 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (pendiente) | barber-photos.spec.ts, 0033_customer_experience.sql | prueba escrita |
-| REQ-039.3 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (pendiente) | barber-photos.spec.ts, barber-photos.test.ts | prueba escrita |
-| REQ-039.4 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (pendiente) | barber-photos.spec.ts, barber-photos.test.ts, resize.test.ts, 0033_customer_experience.sql | prueba escrita |
-| REQ-039.5 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (pendiente) | barber-photos.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | prueba escrita |
-| REQ-039.6 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (pendiente) | barber-photos.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-039.1 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (en curso) | barber-photos.spec.ts, barber-photos.test.ts, 0029_function_grants.sql, 0033_customer_experience.sql | prueba escrita |
+| REQ-039.2 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (en curso) | barber-photos.spec.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-039.3 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (en curso) | barber-photos.spec.ts, barber-photos.test.ts | prueba escrita |
+| REQ-039.4 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (en curso) | barber-photos.spec.ts, barber-photos.test.ts, resize.test.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-039.5 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (en curso) | barber-photos.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | prueba escrita |
+| REQ-039.6 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (en curso) | barber-photos.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | prueba escrita |

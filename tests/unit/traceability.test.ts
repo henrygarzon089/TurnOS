@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 describe("NFR-009 pruebas trazables", () => {
   it("NFR-009 cada criterio de aceptación del MVP tiene al menos una prueba (matriz sin huecos)", () => {
-    for (const hito of ["0", "1", "2", "3", "4"]) {
+    for (const hito of ["0", "1", "2", "3", "4", "5"]) {
       const out = execFileSync(
         "node_modules/.bin/tsx",
         ["scripts/traceability.ts", "--check", `--hito=${hito}`],
