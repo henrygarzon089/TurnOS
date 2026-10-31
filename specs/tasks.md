@@ -858,6 +858,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   muestra las fotos también de los retirados, para poder borrarlas; "Mis fotos" va en el menú del
   barbero; si el barbero se desactiva con el formulario abierto, la hoja dice "Este barbero no
   tiene fotos para mostrar".
+  El E2E del CI destapó un bug de REQ-011.1 ajeno a las fotos: un `SUBSCRIBED` tardío apagaba la
+  franja "Sin conexión" estando sin red y, si el socket no se caía, no volvía. Corregido en
+  `use-queue-subscription.ts`, que además escucha `online` para quitarla, con prueba de regresión.
 
 ### [ ] T-063 · Validación Hito 5: matriz de trazabilidad
 - REQ: REQ-036…REQ-039
