@@ -6,6 +6,7 @@ import { z } from "zod";
 import { parseBirthday } from "@/lib/domain/birthday";
 import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
 import { GatewayError, type Gateway } from "@/lib/db/gateway";
+import type { BarberPhoto } from "@/lib/media/barber-photos";
 import { normalizePhoneCO } from "@/lib/domain/phone";
 import {
   estimateNewTicket,
@@ -44,6 +45,8 @@ export type PublicBusiness = {
   products: { id: string; name: string; price: number; photoPath: string | null }[];
   /** REQ-038.3: activos de cortesía. */
   courtesies: CourtesyOption[];
+  /** REQ-039.5: fotos por barbero activo que tenga alguna. */
+  photoCounts: Record<string, number>;
   queue: QueueSnapshot;
   /** Derivados */
   waitingCount: number;
@@ -176,6 +179,7 @@ export async function getPublicBusiness(
     services,
     products: (raw.products ?? []) as PublicBusiness["products"],
     courtesies: (raw.courtesies ?? []) as PublicBusiness["courtesies"],
+    photoCounts: (raw.photoCounts ?? {}) as PublicBusiness["photoCounts"],
     queue,
     waitingCount: queue.waiting.length,
     estimatedWaitMin: est?.waitMin ?? null,
@@ -199,6 +203,20 @@ export async function getPreferredBarber(
   if (!e164) return null;
   const id = await gw.rpc<string | null>("get_preferred_barber", { p_slug: slug, p_phone: e164 });
   return id ?? null;
+}
+
+/** REQ-039.5 / REQ-039.6: fotos de un barbero activo, de la más nueva a la más vieja. */
+export async function getBarberPhotos(
+  gw: Gateway,
+  slug: string,
+  barberId: string,
+): Promise<BarberPhoto[]> {
+  if (!/^[a-z0-9-]{3,40}$/.test(slug) || !z.string().uuid().safeParse(barberId).success) return [];
+  const raw = await gw.rpc<BarberPhoto[] | null>("get_barber_photos", {
+    p_slug: slug,
+    p_barber_id: barberId,
+  });
+  return (raw ?? []).map(({ id, path }) => ({ id, path }));
 }
 
 /** REQ-037.2: si la ficha de ese celular ya tiene cumpleaños, el formulario no lo vuelve a pedir. */

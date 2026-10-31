@@ -4,6 +4,7 @@ import { useActionState, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CheckList } from "@/components/admin/CheckList";
 import { ErrorText, Field } from "@/components/auth/LoginForm";
+import { BarberPhotos } from "@/components/photos/BarberPhotos";
 import {
   createBarber,
   inviteBarber,
@@ -13,6 +14,7 @@ import {
   type FormState,
 } from "@/lib/actions/admin";
 import { formatPhoneCO } from "@/lib/domain/phone";
+import type { BarberPhoto } from "@/lib/media/barber-photos";
 
 type BarberFormState = { error?: string; ok?: boolean; inviteUrl?: string };
 
@@ -26,6 +28,8 @@ export type BarberRow = {
   user_id: string | null;
   /** REQ-035.1: servicios que hace (ids) */
   service_ids: string[];
+  /** REQ-039.1: de la más nueva a la más vieja */
+  photos: BarberPhoto[];
 };
 
 export type ServiceOption = { id: string; name: string };
@@ -268,6 +272,17 @@ export function BarberCard({ barber, services }: { barber: BarberRow; services: 
           <InviteButtons url={inviteUrl} />
         </div>
       )}
+
+      <details>
+        <summary className="flex min-h-12 cursor-pointer items-center text-sm font-semibold">
+          Fotos de cortes ({barber.photos.length})
+        </summary>
+        <BarberPhotos
+          barberId={barber.id}
+          barberName={barber.display_name}
+          photos={barber.photos}
+        />
+      </details>
 
       {barber.is_active && !editing && (
         <div className="flex flex-wrap gap-2">

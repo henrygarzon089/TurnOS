@@ -2,6 +2,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import {
   cancelTicketByToken,
   customerHasBirthday,
+  getBarberPhotos,
   getPublicBusiness,
   getTicketByToken,
   joinQueue,
@@ -520,6 +521,60 @@ describe("REQ-038 menú y bebida de cortesía (server action)", () => {
       await q(`select mark_courtesy_served($1)`, [id]);
       const { rows } = await q(`select 1 from sales where ticket_id = $1`, [id]);
       expect(rows).toHaveLength(0);
+    });
+  });
+});
+
+describe("REQ-039 fotos de cortes (server action)", () => {
+  const addPhoto = (q: Q, c: { biz: string }, barber: string, path: string, ago: string) =>
+    q(
+      `insert into barber_photos (business_id, barber_id, path, created_at)
+       values ($1, $2, $3, now() - $4::interval)`,
+      [c.biz, barber, path, ago],
+    );
+
+  it("REQ-039.5 trae las fotos del barbero de la más nueva a la más vieja", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      await addPhoto(q, c, c.juan, "vieja.webp", "2 days");
+      await addPhoto(q, c, c.juan, "nueva.webp", "1 minute");
+      const photos = await getBarberPhotos(createPgGateway(q), "la-33", c.juan);
+      expect(photos.map((p) => p.path)).toEqual(["nueva.webp", "vieja.webp"]);
+    });
+  });
+
+  it("REQ-039.5 la portada dice cuántas fotos tiene cada barbero con fotos", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      await addPhoto(q, c, c.juan, "uno.webp", "1 minute");
+      await addPhoto(q, c, c.juan, "dos.webp", "2 minutes");
+      const b = await getPublicBusiness(createPgGateway(q), "la-33");
+      expect(b?.photoCounts[c.juan]).toBe(2);
+      expect(b?.photoCounts[c.luis]).toBeUndefined();
+    });
+  });
+
+  it("REQ-039.6 barbero desactivado: no se muestran, pero se conservan", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      await addPhoto(q, c, c.juan, "uno.webp", "1 minute");
+      await q(`update barbers set is_active = false where id = $1`, [c.juan]);
+      const gw = createPgGateway(q);
+      expect(await getBarberPhotos(gw, "la-33", c.juan)).toEqual([]);
+      expect((await getPublicBusiness(gw, "la-33"))?.photoCounts[c.juan]).toBeUndefined();
+      const { rows } = await q(`select 1 from barber_photos where barber_id = $1`, [c.juan]);
+      expect(rows).toHaveLength(1);
+    });
+  });
+
+  it("REQ-039.5 datos inválidos o de otro negocio no traen nada", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      await addPhoto(q, c, c.juan, "uno.webp", "1 minute");
+      const gw = createPgGateway(q);
+      expect(await getBarberPhotos(gw, "la-33", "no-es-uuid")).toEqual([]);
+      expect(await getBarberPhotos(gw, "NO VALE", c.juan)).toEqual([]);
+      expect(await getBarberPhotos(gw, "otra-barberia", c.juan)).toEqual([]);
     });
   });
 });

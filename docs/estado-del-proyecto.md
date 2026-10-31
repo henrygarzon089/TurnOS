@@ -41,6 +41,10 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
   "Servida ✓" en las filas del barbero y del dueño; la caja lista solo lo que está a la venta. Sin
   migración. **Falta el deploy a producción** (lo hace Henry). En Filo los productos existentes
   siguen a la venta y no se ofrece bebida hasta marcar alguno "De cortesía".
+- T-062 `[x]` (2026-10-30): "Mis fotos" del barbero (`/app/mis-fotos`), "Fotos de cortes" en cada
+  tarjeta de `/admin/barberos` y "Ver cortes" en el formulario de turno. Hasta 12 por barbero, con
+  confirmación de permiso foto por foto. Sin migración. **Falta el deploy a producción** (lo hace
+  Henry). Sigue T-063 (validación del Hito 5).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

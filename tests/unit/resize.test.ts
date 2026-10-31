@@ -41,3 +41,11 @@ describe("REQ-038.1 reducir la foto antes de subirla (design.md §11.3)", () => 
     expect(await encodeUnderLimit(async () => null)).toBeNull();
   });
 });
+
+describe("REQ-039 fotos de cortes: mismo tope que los productos", () => {
+  it("REQ-039.4 el lado mayor queda en 1080 px o menos y el tope son 300 KB", () => {
+    expect(fitWithin(4032, 3024)).toEqual({ width: 1080, height: 810 });
+    expect(fitWithin(3024, 4032)).toEqual({ width: 810, height: 1080 });
+    expect(MAX_PHOTO_BYTES).toBe(300 * 1024);
+  });
+});

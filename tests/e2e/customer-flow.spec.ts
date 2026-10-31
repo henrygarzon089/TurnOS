@@ -133,4 +133,24 @@ test.describe("Hito 1 · flujo del cliente", () => {
     await expect(page.getByText(/Actualizado hace/)).toBeVisible();
     await context.setOffline(false);
   });
+
+  test("REQ-011.1 la franja no se apaga si el canal confirma tarde, y se va al volver la red", async ({
+    page,
+    context,
+  }) => {
+    // El navegador corta la red pero el socket ya abierto entrega el SUBSCRIBED después
+    await page.routeWebSocket(/\/realtime\/v1\/websocket/, (ws) => {
+      const server = ws.connectToServer();
+      ws.onMessage((m) => server.send(m));
+      server.onMessage((m) => void setTimeout(() => ws.send(m), 1500));
+    });
+    await takeTicket(page, "Offline tarde", phone());
+    await context.setOffline(true);
+    const banner = page.getByRole("status").filter({ hasText: "Sin conexión" });
+    await expect(banner).toBeVisible({ timeout: 10000 });
+    await page.waitForTimeout(3000); // deja llegar la confirmación retenida
+    await expect(banner).toBeVisible();
+    await context.setOffline(false);
+    await expect(banner).toHaveCount(0, { timeout: 10000 });
+  });
 });

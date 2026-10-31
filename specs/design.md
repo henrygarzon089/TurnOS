@@ -1055,6 +1055,9 @@ fusionar fichas (REQ-018.5) queda el cumpleaños de la que se conserva; si no ti
 - Foto de producto (T-061): el navegador la sube al escogerla, con la sesión del dueño, y
   `saveProduct` guarda solo la ruta tras validar que sea del negocio. Quitar o reemplazar la foto
   borra el objeto anterior al guardar; subida y sin guardar queda un huérfano inofensivo.
+- Foto de barbero (T-062): el navegador la reduce y `uploadBarberPhoto` la sube desde el servidor
+  con la sesión del usuario (mismas políticas), tras revisar permiso (REQ-039.3), tipo y peso y
+  contar las 12. Si el trigger la rechaza igual, borra el objeto.
 - Borrar una foto borra la fila y el objeto (la acción hace las dos cosas; si falla el objeto,
   la fila igual se borra y queda un huérfano inofensivo).
 - Barbero desactivado (REQ-039.6): las lecturas públicas filtran por `barbers.is_active`; las
@@ -1086,8 +1089,8 @@ Cada cambio de cortesía (`set_ticket_courtesy`, `mark_courtesy_served`) emite `
   cumpleaños (la ficha guarda todo con un solo botón, T-060), `getBirthdaysThisWeek`
   (`/admin/recordar`, sección "Cumplen esta semana" encima de los clientes inactivos),
   `saveProduct` con `forSale`, `isCourtesy` y foto (`/admin/productos`), `markCourtesyServed`
-  (filas), `uploadBarberPhoto` / `deleteBarberPhoto` (`/app/mis-fotos` para el barbero y desde
-  `/admin/barberos` para el dueño).
+  (filas), `uploadBarberPhoto` / `deleteBarberPhoto` (`src/lib/actions/photos.ts`; `/app/mis-fotos`
+  para el barbero y desde `/admin/barberos` para el dueño).
 - Cliente: portada `/[slug]` con "Lo que vendemos" (REQ-038.2); formulario con cumpleaños
   (`customerHasBirthday`, con el celular prellenado o escrito; el campo aparece solo cuando se
   sabe que la ficha no lo tiene, T-060),

@@ -30,13 +30,17 @@ export function useQueueSubscription(
         await reloadRef.current();
         setLastUpdated(new Date());
       },
-      onConnection: setOnline,
+      // Un SUBSCRIBED tardío llega por el socket ya abierto: no apaga la franja si no hay red
+      onConnection: (up) => setOnline(up && navigator.onLine),
     });
     const onBrowserOffline = () => setOnline(false);
+    const onBrowserOnline = () => setOnline(true);
     window.addEventListener("offline", onBrowserOffline);
+    window.addEventListener("online", onBrowserOnline);
     return () => {
       unsubscribe();
       window.removeEventListener("offline", onBrowserOffline);
+      window.removeEventListener("online", onBrowserOnline);
     };
   }, [businessId]);
 

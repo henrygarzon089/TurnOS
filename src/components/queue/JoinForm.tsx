@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { ErrorText, Field } from "@/components/auth/LoginForm";
+import { BarberCutsSheet } from "@/components/queue/BarberCutsSheet";
 import { customerHasBirthday, getPreferredBarber, joinQueue } from "@/lib/actions/public";
 import { barbersForService, serviceAvailability } from "@/lib/domain/barber-services";
 import { MONTH_NAMES } from "@/lib/domain/birthday";
@@ -42,6 +43,7 @@ export function JoinForm({ business, now }: Props) {
   // REQ-038.3: si la escogida se acaba (se relee tras el error), vuelve "No, gracias"
   const [courtesyId, setCourtesyId] = useState<string | null>(null);
   const shownCourtesyId = business.courtesies.some((c) => c.id === courtesyId) ? courtesyId : null;
+  const [cutsOf, setCutsOf] = useState<{ id: string; name: string } | null>(null);
   const [birthdayOnFile, setBirthdayOnFile] = useState<{ phone: string; has: boolean } | null>(
     null,
   );
@@ -232,20 +234,35 @@ export function JoinForm({ business, now }: Props) {
           {barbers.map((b) => {
             const unavailable = b.status === "paused";
             return (
-              <Chip
-                key={b.id}
-                selected={shownBarberId === b.id}
-                disabled={unavailable}
-                onClick={() => pickBarber(b.id)}
-              >
-                {b.name}
-                {unavailable && <span className="text-muted ml-1 text-xs">(en pausa)</span>}
-              </Chip>
+              <span key={b.id} className="inline-flex items-center">
+                <Chip
+                  selected={shownBarberId === b.id}
+                  disabled={unavailable}
+                  onClick={() => pickBarber(b.id)}
+                >
+                  {b.name}
+                  {unavailable && <span className="text-muted ml-1 text-xs">(en pausa)</span>}
+                </Chip>
+                {/* REQ-039.5 */}
+                {business.photoCounts[b.id] > 0 && (
+                  <button
+                    type="button"
+                    aria-label={`Ver cortes de ${b.name}`}
+                    className="text-accent min-h-12 px-2 text-sm font-medium underline"
+                    onClick={() => setCutsOf(b)}
+                  >
+                    Ver cortes
+                  </button>
+                )}
+              </span>
             );
           })}
         </div>
         {error?.field === "preferredBarberId" && <ErrorText>{error.message}</ErrorText>}
       </fieldset>
+      {cutsOf && (
+        <BarberCutsSheet slug={business.slug} barber={cutsOf} onClose={() => setCutsOf(null)} />
+      )}
 
       {askBirthday && (
         <fieldset className="min-w-0">
