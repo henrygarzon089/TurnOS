@@ -1049,8 +1049,12 @@ fusionar fichas (REQ-018.5) queda el cumpleaños de la que se conserva; si no ti
   escritura con políticas de `storage.objects` por ruta: `<business_id>/barbers/<barber_id>/<uuid>.webp`
   (dueño del negocio o ese barbero) y `<business_id>/products/<uuid>.webp` (dueño).
 - El celular reduce y convierte a WebP antes de subir (`src/lib/media/resize.ts`, canvas: lado
-  mayor ≤ 1080 px, calidad hasta quedar ≤ 300 KB), REQ-039.4. El servidor rechaza tipos que no
-  sean `image/*` y más de 300 KB (límite del bucket).
+  mayor ≤ 1080 px, calidad hasta quedar ≤ 300 KB), REQ-039.4. Safari no codifica WebP: ahí sale
+  JPEG con el `Content-Type` real, en la misma ruta `.webp` que exigen las políticas (T-061). El
+  servidor rechaza tipos que no sean `image/*` y más de 300 KB (límite del bucket).
+- Foto de producto (T-061): el navegador la sube al escogerla, con la sesión del dueño, y
+  `saveProduct` guarda solo la ruta tras validar que sea del negocio. Quitar o reemplazar la foto
+  borra el objeto anterior al guardar; subida y sin guardar queda un huérfano inofensivo.
 - Borrar una foto borra la fila y el objeto (la acción hace las dos cosas; si falla el objeto,
   la fila igual se borra y queda un huérfano inofensivo).
 - Barbero desactivado (REQ-039.6): las lecturas públicas filtran por `barbers.is_active`; las
@@ -1088,7 +1092,8 @@ Cada cambio de cortesía (`set_ticket_courtesy`, `mark_courtesy_served`) emite `
   (`customerHasBirthday`, con el celular prellenado o escrito; el campo aparece solo cuando se
   sabe que la ficha no lo tiene, T-060),
   "Bebida de cortesía" y "Ver cortes" (hoja inferior con las fotos, REQ-039.5); "Mi turno" con
-  cambio de bebida en espera y, al terminar, "¡Gracias por venir!" + botón de reseña.
+  cambio de bebida en espera (las opciones salen de `getPublicBusiness`, releídas al abrir; ya
+  servida no se ofrece el cambio, T-061) y, al terminar, "¡Gracias por venir!" + botón de reseña.
 - Barbero y dueño: en cada turno, una línea "🥤 <bebida>" con botón "Servida ✓" (≥ 48 px).
 
 ### 11.6 Pruebas

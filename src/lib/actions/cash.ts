@@ -108,6 +108,7 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
       .select("id, name, price")
       .eq("business_id", biz)
       .eq("is_active", true)
+      .eq("for_sale", true) // REQ-038.7: lo que es solo de cortesía no se cobra
       .order("sort_order"),
     supabase
       .from("loyalty_programs")

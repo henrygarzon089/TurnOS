@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LiveRefresh } from "@/components/queue/LiveRefresh";
 import { getPublicBusiness } from "@/lib/actions/public";
 import { formatCOP } from "@/lib/domain/money";
 import { formatMinutes } from "@/lib/domain/time";
+import { mediaUrl } from "@/lib/media/paths";
 
 export const dynamic = "force-dynamic";
 
@@ -95,6 +97,33 @@ export default async function PublicBusinessPage({ params }: Props) {
           ))}
         </ul>
       </section>
+
+      {b.products.length > 0 && (
+        <section className="mt-5" aria-labelledby="lo-que-vendemos">
+          <h2 id="lo-que-vendemos" className="text-muted text-sm font-semibold uppercase">
+            Lo que vendemos
+          </h2>
+          <ul className="divide-line mt-1 divide-y">
+            {b.products.map((p) => (
+              <li key={p.id} className="flex items-center gap-3 py-2">
+                {p.photoPath && (
+                  <Image
+                    src={mediaUrl(p.photoPath)}
+                    alt={p.name}
+                    width={56}
+                    height={56}
+                    unoptimized
+                    className="h-14 w-14 shrink-0 rounded-lg object-cover"
+                  />
+                )}
+                <span className="min-w-0 flex-1 break-words">{p.name}</span>
+                <span className="shrink-0 font-semibold">{formatCOP(p.price)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="text-muted mt-1 text-sm">Se compran en el local.</p>
+        </section>
+      )}
 
       <div className="bg-surface fixed inset-x-0 bottom-0 p-4">
         <div className="mx-auto max-w-md">

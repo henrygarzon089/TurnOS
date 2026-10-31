@@ -6,6 +6,7 @@ import { getStaffSession } from "@/lib/auth/session";
 import { parseLoyaltyForm } from "@/lib/domain/loyalty";
 import { parseCOP } from "@/lib/domain/money";
 import { normalizePhoneCO } from "@/lib/domain/phone";
+import { parseProductForm } from "@/lib/domain/product-form";
 import { parseGoogleReviewUrl } from "@/lib/domain/review-link";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -309,35 +310,43 @@ export async function toggleService(id: string, isActive: boolean): Promise<Form
   return error ? { error: "No se pudo cambiar el estado." } : { ok: true };
 }
 
-const productSchema = z.object({
-  name: z.string().trim().min(1, "El producto necesita un nombre.").max(60),
-  price: z.string().transform((s, ctx) => {
-    const n = parseCOP(s);
-    if (n === null) {
-      ctx.addIssue({ code: "custom", message: "El precio debe ser un número entero en pesos." });
-      return z.NEVER;
-    }
-    return n;
-  }),
-});
-
-/** Crea o edita un producto (REQ-024.1). */
-export async function upsertProduct(_prev: FormState, formData: FormData): Promise<FormState> {
+/** Crea o edita un producto (REQ-024.1, REQ-038.1). La foto ya la subió el navegador al bucket. */
+export async function saveProduct(_prev: FormState, formData: FormData): Promise<FormState> {
   const session = await getStaffSession();
   if (session?.role !== "owner") return { error: "Solo el dueño puede editar productos." };
-  const parsed = productSchema.safeParse({
-    name: formData.get("name"),
-    price: formData.get("price"),
-  });
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+  const parsed = parseProductForm(
+    {
+      name: String(formData.get("name") ?? ""),
+      price: String(formData.get("price") ?? ""),
+      forSale: formData.get("for_sale") === "on",
+      isCourtesy: formData.get("is_courtesy") === "on",
+      photoPath: String(formData.get("photo_path") ?? ""),
+    },
+    session.business.id,
+  );
+  if (!parsed.ok) return { error: parsed.error };
   const id = formData.get("id");
   const supabase = await createSupabaseServerClient();
-  const row = { ...parsed.data, business_id: session.business.id };
-  const { error } =
-    typeof id === "string" && id
-      ? await supabase.from("products").update(row).eq("id", id)
-      : await supabase.from("products").insert(row);
+  const row = { ...parsed.row, business_id: session.business.id };
+  if (typeof id !== "string" || !id) {
+    const { error } = await supabase.from("products").insert(row);
+    return error ? { error: "No se pudo guardar el producto." } : { ok: true };
+  }
+  const { data: previous } = await supabase
+    .from("products")
+    .select("photo_path")
+    .eq("id", id)
+    .maybeSingle();
+  const { error } = await supabase.from("products").update(row).eq("id", id);
   if (error) return { error: "No se pudo guardar el producto." };
+  // §11.3: si falla borrar el objeto queda un huérfano inofensivo
+  const old = previous?.photo_path as string | null | undefined;
+  if (old && old !== row.photo_path) {
+    await supabase.storage
+      .from("media")
+      .remove([old])
+      .catch(() => {});
+  }
   return { ok: true };
 }
 
