@@ -862,7 +862,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   franja "Sin conexión" estando sin red y, si el socket no se caía, no volvía. Corregido en
   `use-queue-subscription.ts`, que además escucha `online` para quitarla, con prueba de regresión.
 
-### [~] T-063 · Validación Hito 5: matriz de trazabilidad
+### [x] T-063 · Validación Hito 5: matriz de trazabilidad
 - REQ: REQ-036…REQ-039
 - Archivos: `scripts/traceability.ts` (`HITOS["5"] = [[36, 39]]`), `docs/estado-del-proyecto.md`
 - Terminado: `pnpm trace --hito=5` sin huecos; CI verde; prueba en el celular con Henry en la
@@ -871,6 +871,8 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   prueba (180 criterios). Faltan: CI de `main` en verde tras #20 y #21 (el #21 se fusionó sin
   esperar E2E ni Lighthouse: `main` no está protegida y `gh pr merge --auto` no esperó), deploy a
   producción, prueba en la barbería y aprobación de Henry.
+- Cierre (2026-11-01): CI de `main` verde, desplegado en producción, prueba en la barbería hecha y
+  Hito 5 aprobado por Henry (ADR-026).
 
 ---
 

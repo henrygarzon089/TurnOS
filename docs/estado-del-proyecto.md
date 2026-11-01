@@ -21,7 +21,7 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 | H3 Caja y comisiones     | T-040…T-050 | **aprobado** (ADR-020); pasillo con el dueño hecho (ADR-021)               |
 | H4 Servicios por barbero | T-051…T-057 | **aprobado** (ADR-024); PRs #4–#10 en `main`                               |
 
-### Hito 5 — experiencia del cliente (en curso, ADR-025)
+### Hito 5 — experiencia del cliente (**aprobado**, ADR-026, 2026-11-01)
 
 - T-058 `[x]` (2026-10-29): migraciones `0033_customer_experience` y `0034_birthday_template`
   (columnas de reseña, cumpleaños, cortesía y fotos; `barber_photos` con límite de 12; bucket
@@ -45,9 +45,8 @@ db push` y `vercel --prod` desde `main`). Sin pantallas todavía: nada cambia pa
   el formulario. Sin migración. PR #21 fusionado sin esperar E2E ni Lighthouse (`main` no está
   protegida: `gh pr merge --auto` fusiona de una); hay que mirar la corrida de CI en `main`.
   **En producción** desde el 2026-11-01, junto con T-061 y el arreglo de `.btn-*` (PR #20).
-- T-063 `[~]`: `pnpm trace --hito=5` sin huecos. CI de `main` verde y desplegado el 2026-11-01. Faltan la prueba en la barbería
-  y aprobación de Henry. En Filo falta marcar bebidas de cortesía, guardar el enlace de Google y
-  subir fotos.
+- T-063 `[x]` (2026-11-01, aprobado por Henry): `pnpm trace --hito=5` sin huecos. CI de `main` verde, desplegado el 2026-11-01, prueba en la barbería
+  hecha y Hito 5 aprobado (ADR-026).
 - T-062 `[x]` (2026-10-30): "Mis fotos" del barbero (`/app/mis-fotos`), "Fotos de cortes" en cada
   tarjeta de `/admin/barberos` y "Ver cortes" en el formulario de turno. Hasta 12 por barbero, con
   confirmación de permiso foto por foto. Sin migración. **En producción** desde el
