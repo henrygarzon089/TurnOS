@@ -115,6 +115,9 @@ Cómo lo hacen las apps que vimos: revenden la API oficial con margen. AgendaPro
 luego $10.000 por cada 50 (≈ $200 por mensaje). Beunik: paquetes desde USD 6 por 150. Bukea dice
 "ilimitado" (probablemente absorbe el costo). Ir directo con Meta evita ese margen.
 
+> Reemplazado por ADR-027 (2026-11-01): solo WhatsApp oficial, con plantillas de utilidad, sin que
+> el cliente escriba primero. Lo de abajo queda como registro.
+
 **Recomendación:** B + C combinadas. Push para quien instaló la app (gratis) y WhatsApp oficial para
 el resto, haciendo que el cliente escriba primero al tomar turno. Una barbería de 5 sillas con ~40
 turnos al día y 2 avisos por turno manda ~2.000 mensajes al mes: la mitad entra en el cupo gratis;

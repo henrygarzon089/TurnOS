@@ -350,3 +350,27 @@
 - Decisión: Henry aprueba el Hito 5.
 - Consecuencias: T-063 `[x]`. Siguen las mejoras de ADR-025 (aviso automático, membresía familiar,
   citas a hora fija, gift cards, asistente en WhatsApp), cada una con su grill y su ADR.
+
+## ADR-027 · Aviso automático por WhatsApp oficial (Hito 6)
+- Estado: **aceptada** (Henry, 2026-11-01, tras grill de 15 preguntas)
+- Contexto: hoy el aviso depende de que el barbero toque el botón de `wa.me` (REQ-009), y con las
+  manos ocupadas se le olvida. Comparación de canales en `docs/propuesta-mejoras-clientes.md`.
+  Desde el 1-oct-2026 Meta cobra los mensajes de utilidad también dentro de la ventana de 24 h, y
+  deja 1.000 mensajes de servicio gratis al mes por número. Tarifa de utilidad en Colombia: unos
+  USD 0,0008 o $2,95 COP por mensaje según fuentes secundarias (por verificar en la tabla oficial).
+- Opciones: (a) push web; (b) WhatsApp Cloud API directo con Meta; (c) las dos; (d) librerías no
+  oficiales, descartadas porque violan las reglas de WhatsApp y arriesgan el número.
+- Decisión: (b), plantillas de utilidad sin que el cliente escriba primero. Reemplaza la
+  recomendación del borrador (push + "Hola" para abrir la ventana): por unos $3 COP el mensaje no
+  vale la pena un paso más para el cliente ni un segundo canal. Costo esperado: unos $6.000 COP al
+  mes con 2.000 avisos. Número nuevo (SIM aparte); el WhatsApp actual de la barbería no se toca.
+  Dos avisos por turno como máximo: "faltan 2" y "te están llamando". Permiso con casilla aparte sin
+  marcar. El botón manual queda como respaldo. Tope de 3.000 avisos al mes. Solo se activa en Filo.
+  Los textos automáticos son fijos porque Meta los aprueba. Trámite con Meta a cargo de Henry
+  (`docs/guia-whatsapp-meta.md`).
+- Consecuencias: REQ-040…REQ-043 nuevos (§5d), `design.md` §12, tareas T-064…T-069. Precisa REQ-009
+  (el envío automático marca "Avisado ✓") y REQ-033 (los textos automáticos no se editan). Sale de
+  "Fuera de alcance" el envío por WhatsApp Cloud API; la notificación push sigue fuera. El celular y
+  el nombre del cliente pasan por Meta: el aviso de privacidad debe decirlo y publicarse una versión
+  nueva (REQ-002.5). Los mensajes de cumpleaños e inactivos siguen manuales porque son de marketing
+  (unas 15 veces más caros), y la IA sigue en un hito aparte.

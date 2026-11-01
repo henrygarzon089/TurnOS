@@ -762,7 +762,7 @@ interface NotificationChannel {
   buildNotifyLink(input: { phoneE164: string; template: string; vars: Record<string,string> }): string;
 }
 // MVP: WaMeChannel → `https://wa.me/${phone}?text=${encodeURIComponent(render(template, vars))}`
-// Futuro: CloudApiChannel (envío servidor a servidor); misma interfaz, selección por configuración del negocio.
+// Hito 6: CloudApiChannel (envío servidor a servidor), ver §12.3.
 ```
 
 Plantillas por defecto (editables, REQ-033):
@@ -1002,6 +1002,10 @@ turnos/
 | REQ-037 | 11.1 `customers.birthday_*`, 11.2, 11.4 `join_queue`/`birthdays_this_week`, 11.5 |
 | REQ-038 | 11.1 `products`/`tickets.courtesy_*`, 11.4, 11.5 |
 | REQ-039 | 11.1 `barber_photos`, 11.2, 11.3 Storage, 11.4, 11.5 |
+| REQ-040 | 12.1, 12.2 `claim_notification`, 12.3, 12.4 |
+| REQ-041 | 12.1 `customers.whatsapp_*`, 12.2 `join_queue`, 12.6 |
+| REQ-042 | 12.2, 12.5, 12.6 |
+| REQ-043 | 12.1, 12.2, 12.3, 12.5, 12.6 |
 | NFR-001…013 | 1, 2.4, 6.4, 6.6, 8 |
 
 ---
@@ -1111,3 +1115,119 @@ Cada cambio de cortesía (`set_ticket_courtesy`, `mark_courtesy_served`) emite `
 - Integración: `joinQueue` con cumpleaños y cortesía contra Postgres local; `setTicketCourtesy`.
 - E2E (Pixel 7 + iPhone 13): tomar turno con bebida → el barbero la ve y la marca servida; Mi turno
   terminado muestra reseña; subir foto con confirmación y verla en "Ver cortes".
+
+---
+
+## 12. Hito 6 — Aviso automático por WhatsApp (REQ-040…REQ-043, ADR-027)
+
+Migración `0036_whatsapp_notifications.sql` con su pgTAP y permisos explícitos (ADR-019).
+
+### 12.1 Datos
+
+| Tabla | Cambio | REQ |
+|---|---|---|
+| `businesses` | `whatsapp_auto_enabled bool not null default false`, `whatsapp_contact_phone text null` (número que da la respuesta automática) | 043.3, 042.4 |
+| `customers` | `whatsapp_opt_in_at timestamptz null`, `whatsapp_opt_out_at timestamptz null`. Permiso vigente: `opt_in_at` no nulo y (`opt_out_at` nulo o anterior a `opt_in_at`) | 041.2, 042.3 |
+| `ticket_notifications` (nueva) | `id, business_id, ticket_id, kind enum('two_left','called'), status enum('skipped','claimed','sent','delivered','failed'), meta_message_id text null, error_code text null, created_at, updated_at`; `unique (ticket_id, kind)`; índices por `meta_message_id` y por `(business_id, created_at)` | 040.3, 040.5, 043.2 |
+
+`unique (ticket_id, kind)` es lo que garantiza "una sola vez": dos ejecuciones simultáneas compiten
+por el mismo insert y solo una gana. `skipped` deja constancia de REQ-040.2.
+
+`ticket_notifications` tiene RLS forzada: el dueño lee las de su negocio; nadie escribe por RLS, solo
+las funciones `security definer` de abajo.
+
+### 12.2 Funciones SQL
+
+| Función | Quién | Qué | REQ |
+|---|---|---|---|
+| `join_queue(..., p_whatsapp_opt_in bool)` | service_role | Si viene `true`, pone `whatsapp_opt_in_at = now()` en la ficha | 041.2 |
+| `set_whatsapp_opt_out(p_token)` | service_role | Baja desde "Mi turno" | 042.1, 042.3 |
+| `whatsapp_opt_out_by_phone(p_business_id, p_phone)` | service_role | Baja por respuesta "PARAR" | 042.2, 042.3 |
+| `claim_notification(p_ticket_id, p_kind)` | service_role | Revisa negocio activo, permiso vigente y tope del mes; inserta `claimed` con `on conflict do nothing`; pone `tickets.notified_at = now()`, `notified_by = null`. Devuelve `claimed`, `duplicate`, `no_consent`, `disabled` o `cap_reached` | 040.3, 040.6, 041.5, 043.1, 043.3 |
+| `skip_two_left(p_ticket_id)` | service_role | Inserta `skipped` para el turno recién creado | 040.2 |
+| `set_notification_status(p_id o p_meta_message_id, p_status, p_error)` | service_role | Actualiza estado; con `failed` limpia `notified_at` solo si `notified_by` es nulo (no borra un aviso manual) | 040.7 |
+| `notification_month_stats()` | dueño | Enviados, fallidos y si llegó al tope, mes de Bogotá | 043.2 |
+
+El tope cuenta las filas que no son `skipped` del mes, dentro de `claim_notification` con un bloqueo
+por negocio (`pg_advisory_xact_lock`) para que no se pase por concurrencia.
+
+### 12.3 Canal
+
+`NotificationChannel` (§6.5) gana `CloudApiChannel` en `src/lib/notifications/cloud-api.ts`:
+
+- `sendTemplate({ phoneE164, template, params })` → `POST /{phone_number_id}/messages` de la Graph
+  API con `fetch`, timeout de 5 s y sin reintentos en línea. Devuelve `{ ok, messageId }` o
+  `{ ok: false, code }`. Nunca lanza.
+- `sendText(...)` para la respuesta automática y la confirmación de baja (dentro de la ventana de 24 h
+  que abrió el cliente al escribir).
+- Variables de entorno de solo servidor: `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`,
+  `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`. Las pone Henry en Vercel. Sin ellas el canal queda
+  inactivo (REQ-043.3).
+- En pruebas se inyecta un canal falso; ninguna prueba toca la red (REQ-043.4).
+
+Plantillas de utilidad a registrar en Meta (idioma español):
+
+- `turno_faltan_dos`: "Hola {{1}}, en {{2}} ya casi es tu turno (≈ {{3}}). Ve saliendo. Sigue tu turno aquí: {{4}}"
+- `turno_te_llaman`: "{{1}}, te están llamando en {{2}}. Tienes {{3}} minutos para llegar. Tu turno: {{4}}"
+
+### 12.4 Quién decide y cuándo se envía
+
+No hay pg_net ni un proceso aparte. El estimado vive en TypeScript (§4), así que la decisión también:
+
+- `pickNotifications(input)` en `src/lib/domain/queue-notifications.ts`, función pura y probada con
+  unitarias: recibe el resultado de `estimateQueue`, los turnos `called` y los avisos ya registrados;
+  devuelve qué enviar. Regla de "faltan 2": `ahead <= 2`, `waitMin` no nulo y sin motivo de bloqueo
+  (`reason` vacío), lo que cubre barbero en pausa y "Esperando a que haya quién te atienda" (REQ-040.4).
+- `dispatchQueueNotifications(businessId)` en `src/lib/notifications/dispatch.ts`: si el negocio no
+  tiene el aviso activo sale de una; si no, lee la fila, llama `pickNotifications`, hace
+  `claim_notification` y envía solo si devolvió `claimed`. Si Meta rechaza, `set_notification_status`
+  con `failed`.
+- Se llama con `after()` de Next.js al final de **toda** acción que cambia la fila: tomar turno,
+  turno manual, llamar, llamar con barbero, deshacer llamado, iniciar, terminar, no llegó, cancelar,
+  reasignar, mover, cambio de estado del barbero y cancelar desde "Mi turno". Va después de responder:
+  una falla o demora de Meta no afecta la acción (REQ-040.7). Se centraliza en un helper
+  `afterQueueChange(businessId)` y una prueba revisa que cada acción lo use.
+- Tomar turno y turno manual llaman antes `skip_two_left` si el turno quedó con `ahead <= 2` (REQ-040.2).
+- La función de cierre automático (`close_expired_queues`) no pasa por aquí y no hace falta: solo
+  cancela turnos.
+- **Autocorrección**: si una ejecución muere antes de enviar, el `claimed` queda sin mensaje. Una fila
+  `claimed` de más de 2 minutos sin `meta_message_id` se marca `failed` al siguiente
+  `dispatchQueueNotifications` y vuelve al botón manual.
+
+### 12.5 Webhook
+
+`src/app/api/whatsapp/webhook/route.ts`:
+
+- `GET`: verificación de Meta con `WHATSAPP_VERIFY_TOKEN`.
+- `POST`: valida `X-Hub-Signature-256` (HMAC-SHA256 del cuerpo crudo con `WHATSAPP_APP_SECRET`,
+  comparación en tiempo constante); firma inválida → 401 (REQ-043.5). Responde 200 rápido y procesa
+  con `after()`. Meta puede repetir eventos, así que todo es idempotente.
+- Estados de mensaje: `sent`, `delivered`, `failed` → `set_notification_status` por
+  `meta_message_id` (un `delivered` no retrocede a `sent`).
+- Mensajes entrantes: `normalizeOptOut(text)` (quita tildes, espacios y mayúsculas) igual a `PARAR` →
+  baja y confirmación. Cualquier otro → respuesta automática, con contador en `rate_limits` (clave
+  `wa-reply:<celular>`, ventana de 24 h, REQ-042.4). El contenido del mensaje no se guarda.
+- `src/proxy.ts` debe dejar pasar esta ruta sin sesión.
+
+### 12.6 Pantallas
+
+- Formulario de turno: casilla o línea de REQ-041.1/041.3. El estado sale de una acción pública
+  análoga a `customerHasBirthday`; `getPublicBusiness` agrega `whatsappAutoEnabled` (requiere flag y
+  credenciales).
+- "Mi turno": "No quiero avisos por WhatsApp" (REQ-042.1) con confirmación.
+- Filas del barbero y del dueño: "Avisado ✓" igual que hoy; el botón sigue (REQ-040.8).
+- `/admin/mensajes`: textos automáticos de solo lectura y contadores del mes (REQ-040.9, REQ-043.2).
+- `/admin/negocio`: interruptor del aviso y número de contacto (REQ-043.3, REQ-042.4).
+- Aviso de privacidad por defecto: párrafo de WhatsApp (REQ-041.6).
+
+### 12.7 Pruebas
+
+- pgTAP `0036`: permiso vigente con sus fechas; `claim_notification` en cada resultado, duplicado,
+  tope 3.000 y mes siguiente; `failed` no borra un aviso manual; RLS y permisos (ADR-019).
+- Unitarias: `pickNotifications` (2, 1 y 0 delante, salto de 4 a 1, sube y baja, pausa, sin tiempo,
+  `no_capable`, sin celular), `normalizeOptOut`, firma del webhook, `CloudApiChannel` con `fetch`
+  falso, y que cada acción de la fila llame `afterQueueChange`.
+- Integración: `dispatchQueueNotifications` contra Postgres local con canal falso; webhook de estado
+  y de "PARAR".
+- E2E (Pixel 7 + iPhone 13): casilla, línea con permiso vigente, baja en "Mi turno", y "Avisado ✓" con
+  canal falso. Ninguna manda mensajes reales.

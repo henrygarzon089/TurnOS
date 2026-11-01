@@ -876,6 +876,54 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ---
 
+## Hito 6 — Aviso automático por WhatsApp (ADR-027)
+
+> REQ-040…REQ-043 y ADR-027 aprobados por Henry (2026-11-01). Diseño en `design.md` §12. La migración
+> es la `0036`. Lo que depende de Meta se prueba con su número de prueba; el trámite real va en T-069.
+
+### [ ] T-064 · Migración y pgTAP: permisos y registro de avisos
+- REQ: REQ-040.3, REQ-040.5, REQ-040.6, REQ-041.2, REQ-041.5, REQ-042.3, REQ-043.1, REQ-043.3
+- Archivos: `supabase/migrations/0036_whatsapp_notifications.sql`,
+  `supabase/tests/0036_whatsapp_notifications.sql`, `0029_function_grants`, seed
+- Terminado: pgTAP de §12.7 en verde; suite completa sin regresiones; con el flag apagado nada cambia.
+
+### [ ] T-065 · Dominio y canal: `pickNotifications` y `CloudApiChannel`
+- REQ: REQ-040.1–040.4, REQ-043.4
+- Archivos: `src/lib/domain/queue-notifications.ts`, `src/lib/notifications/cloud-api.ts`, sus pruebas
+- Terminado: unitarias con 100 % de ramas en `pickNotifications`, incluido el salto de 4 a 1; canal
+  probado con `fetch` falso: nunca lanza y respeta el timeout.
+
+### [ ] T-066 · Envío automático en las acciones de la fila
+- REQ: REQ-040.1–040.8
+- Archivos: `src/lib/notifications/dispatch.ts`, `src/lib/actions/{queue,public}.ts`,
+  `src/lib/queue/public-queue.ts`
+- Terminado: integración con canal falso: cada aviso sale una vez aunque corran dos ejecuciones
+  juntas; un error de Meta no afecta la acción y vuelve "Avisar"; prueba de que toda acción de la fila
+  llama `afterQueueChange`.
+
+### [ ] T-067 · Webhook de Meta: estados, baja y respuesta automática
+- REQ: REQ-040.7, REQ-042.2–042.5, REQ-043.5
+- Archivos: `src/app/api/whatsapp/webhook/route.ts`, `src/proxy.ts`
+- Terminado: firma inválida → 401; eventos repetidos no cambian nada; "parar", "PARAR " y "párar" dan
+  de baja; la respuesta automática sale una vez en 24 h; el contenido del mensaje no se guarda.
+
+### [ ] T-068 · Pantallas: casilla, baja, contadores y activación
+- REQ: REQ-040.9, REQ-041.1, REQ-041.3, REQ-041.4, REQ-041.6, REQ-042.1, REQ-043.2, REQ-043.3
+- Archivos: formulario de turno, "Mi turno", `/admin/mensajes`, `/admin/negocio`, aviso de privacidad
+- Terminado: E2E de §12.7; con el aviso apagado no aparece nada nuevo.
+
+### [ ] T-069 · Validación Hito 6: Meta real y matriz de trazabilidad
+- REQ: REQ-040…REQ-043
+- Archivos: `scripts/traceability.ts` (`HITOS["6"] = [[40, 43]]`), `tests/unit/traceability.test.ts`,
+  `docs/estado-del-proyecto.md`
+- Depende de Henry: `docs/guia-whatsapp-meta.md` hecha (SIM, verificación, tarjeta, plantillas
+  aprobadas, variables en Vercel), tarifa confirmada en la tabla oficial de Meta y versión nueva del
+  aviso publicada en Filo.
+- Terminado: `pnpm trace --hito=6` sin huecos; CI verde; prueba real en la barbería con los dos avisos
+  y "PARAR"; aprobación de Henry (ADR nuevo).
+
+---
+
 ## Dependencias principales
 
 ```mermaid
@@ -889,4 +937,5 @@ flowchart LR
   T039 --> T040 --> T041 --> T042 --> T043 --> T044 --> T045 --> T046 --> T047 --> T048 --> T049 --> T050
   T050 --> T051 --> T052 --> T053 --> T054 --> T055 --> T056 --> T057
   T057 --> T058 --> T059 --> T060 --> T061 --> T062 --> T063
+  T063 --> T064 --> T065 --> T066 --> T067 --> T068 --> T069
 ```
