@@ -1055,12 +1055,19 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `PLAN_DISABLED` (la spec no nombraba el error). `0021_cash.sql` (pgTAP) ahora espera el valor
   `'membership'` del enum. Detalles en `design.md` §13.3.
 
-### [ ] T-073 · Membresía en el cobro
+### [x] T-073 · Membresía en el cobro
 - REQ: REQ-047.1, REQ-047.2, REQ-047.3, REQ-047.4, REQ-047.5, REQ-047.6, REQ-047.7, REQ-047.8
 - Archivos: `0042_membership_sales.sql` (`register_sale`, `void_sale`, `membership_status`), su
   pgTAP, `src/lib/domain/commission.ts` y sus unitarias
 - Terminado: pgTAP con los ejemplos E y F, sello quitado y repuesto, premio que queda disponible y
   corte devuelto al anular; unitarias de comisión.
+- Nota (2026-11-02): pgTAP en `supabase/tests/0042_membership_checkout.sql` (46 nuevas, 912 en
+  total); unitarias de `commission.ts` con los ejemplos E y F (`membershipDiscount`, campo
+  `membership` en la línea). Detalles que la spec no fijaba, anotados en `design.md` §13.3: la cuota
+  mandada al cobro (`kind = 'membership'`) → `INVALID_LINE`; membresía en un producto →
+  `NOT_MEMBERSHIP_SERVICE`; `qty` ≠ 1 en la línea de membresía → `ONE_BENEFIT_PER_SALE`; el sello
+  se repone con las reglas de `tickets_after_done`, sin columna nueva. 0042 probada también con
+  `psql -1`.
 
 ### [ ] T-074 · Pantalla "Membresías" del dueño
 - REQ: REQ-044.2, REQ-044.3, REQ-044.5, REQ-045.1, REQ-046.2, REQ-046.4, REQ-048.4

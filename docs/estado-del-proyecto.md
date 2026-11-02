@@ -145,9 +145,15 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
   ni comisión, periodo de 30 días desde hoy o encadenado al último) y `void_sale` con
   `MEMBERSHIP_IN_USE`. pgTAP 44 nuevas (866 en total), integración 102. Sin aplicar en producción.
   Sigue T-073 (cobro con membresía, en la misma 0042).
+- T-073 (2026-11-02): en la misma `0042`, `membership_status` (periodo vigente y cortes que quedan,
+  null con el plan apagado), `register_sale` con la línea `"membership": true` (corte en $ 0 o
+  descuento del plan al agotar, comisión sobre la lista, un solo beneficio por venta, el barbero la
+  aplica sin motivo) y el sello del corte: se quita al cobrar y `void_sale` lo repone. Espejo en
+  `commission.ts` (ejemplos E y F). pgTAP 46 nuevas (912 en total), unitarias 270, integración 102.
+  Sin aplicar en producción. Sigue T-074 (pantalla "Membresías" del dueño).
 - Decisión que cambia la caja: la comisión del corte de membresía y del descuento al agotar los
   cortes se calcula sobre el precio de lista (como el premio de fidelidad); la cuota no paga comisión.
-- `pnpm trace`: 235 criterios, 13 sin prueba (los del Hito 7 que vienen en T-073…T-077).
+- `pnpm trace`: 235 criterios, 5 sin prueba (los del Hito 7 que vienen en T-074…T-077).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

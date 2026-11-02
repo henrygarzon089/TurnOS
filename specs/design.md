@@ -1395,6 +1395,13 @@ agregar a alguien que ya está en esa familia devuelve su fila sin error.
   `ONE_BENEFIT_PER_SALE` (REQ-047.5). La línea con membresía no necesita `discount_reason` y el
   barbero puede mandarla (REQ-047.3). `kind = 'membership'` no se acepta aquí: la cuota va por su
   función.
+  Implementado en T-073 (2026-11-02): `membership_status` exige ser del negocio (`FORBIDDEN` si no)
+  y no se abre a `anon`; cortes disponibles nunca bajan de 0. En `register_sale`: la línea con
+  membresía va con `qty = 1` (si no, `ONE_BENEFIT_PER_SALE`); el descuento que mande la pantalla se
+  ignora; membresía en un producto → `NOT_MEMBERSHIP_SERVICE` (REQ-047.2); `kind = 'membership'` →
+  `INVALID_LINE`; venta sin cliente → `NO_MEMBERSHIP`. Para que dos cobros a la vez no gasten el
+  mismo corte, los usados se cuentan otra vez con el periodo bloqueado (`for update`). El descuento
+  del plan se redondea al peso, .5 hacia arriba (`membershipDiscount` en `commission.ts`).
 - Sello (REQ-047.7): el sello se pone cuando el turno pasa a `done`, antes del cobro. Si la venta
   gasta un corte (`'cut'`) y tiene turno, `register_sale` borra el sello de ese turno y descuenta la
   tarjeta; si ese sello la había completado y el premio no se canjeó, la tarjeta vuelve a `active`.
@@ -1402,6 +1409,10 @@ agregar a alguien que ya está en esa familia devuelve su fila sin error.
 - `void_sale` (redefinida): venta de cuota → solo si el periodo no tiene cortes usados en ventas
   `active` (si no, `MEMBERSHIP_IN_USE`), y el periodo pasa a `voided` (REQ-045.7). Venta con corte →
   el corte vuelve solo, por la definición de "usados" (REQ-047.8), y el sello quitado se repone.
+  Implementado en T-073: no se guarda qué sello se quitó. Si la venta tiene una línea `'cut'`, turno
+  y cliente, y el turno no tiene sello, se le pone con las reglas de `tickets_after_done` (programa
+  encendido, servicio que cuenta para fidelidad, sin premio pendiente); si con él la tarjeta llega a
+  la meta, vuelve a `completed`. Una venta con `'discount'` nunca tocó el sello, y anularla no lo toca.
 - `cash_day_summary` / `close_cash_day` / `weekly_summary` agregan `membershipFees` (Σ
   `membership_total`) y `membershipCuts` `{count, listValue}` (líneas `'cut'`), REQ-048.3.
 - `get_ticket_by_token` agrega `membership` (lo de `membership_status`, sin datos de otros miembros,
