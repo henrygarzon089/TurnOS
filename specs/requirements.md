@@ -25,6 +25,7 @@
 5. Transversales: cuentas, negocio, configuración (REQ-030 a REQ-034)
 5b. Hito 4 — Servicios por barbero (REQ-035)
 5c. Hito 5 — Experiencia del cliente (REQ-036 a REQ-039)
+5d. Hito 6 — Aviso automático por WhatsApp (REQ-040 a REQ-043)
 6. Requisitos no funcionales (NFR)
 7. Casos borde consolidados
 8. Fuera de alcance del MVP
@@ -219,6 +220,9 @@ que salga de la casa a tiempo.
 - REQ-009.5 La implementación DEBE aislar el envío en un único módulo/interfaz
   (`NotificationChannel`) de modo que reemplazar `wa.me` por WhatsApp Cloud API no toque el resto
   del código (preparación, no implementación).
+
+> Hito 6 (ADR-027): con el aviso automático activo, este botón queda como respaldo (REQ-040.7,
+> REQ-040.8).
 
 ### REQ-010 · Barbero que se ausenta (pausa) — M
 **Como** barbero, **quiero** ponerme en pausa (almuerzo, salida), **para** que no me asignen turnos
@@ -532,6 +536,8 @@ cuánto le corresponde a cada barbero.
   cliente inactivo", "compartir la fila" y "cumpleaños" (REQ-037.4, Hito 5), con variables `{nombre}`, `{negocio}`, `{tiempo}`,
   `{enlace}`, con valores por defecto en español colombiano y vista previa.
 
+> Hito 6 (ADR-027): los textos del aviso automático son fijos y no se editan aquí (REQ-040.9).
+
 ### REQ-034 · Datos de ejemplo (seed) — M
 - REQ-034.1 EL SISTEMA DEBE incluir un seed reproducible con una barbería de ejemplo en Sabaneta,
   5 barberos con distintos porcentajes de comisión, 5–6 servicios con precios en COP, 4–5
@@ -685,6 +691,87 @@ cumpleaños automático, envío automático por WhatsApp (va en el hito del avis
 
 ---
 
+## 5d. Hito 6 — Aviso automático por WhatsApp
+
+> Estado: **APROBADA** (Henry, 2026-11-01, tras grill). Ver ADR-027. Hasta que Meta apruebe el
+> número y las plantillas se construye y prueba con el número de prueba de Meta.
+
+### REQ-040 · Avisos automáticos del turno — M
+**Como** cliente, **quiero** que me llegue un WhatsApp cuando falte poco y cuando me llamen, **para**
+no depender de que el barbero se acuerde.
+
+- REQ-040.1 CUANDO un turno en espera con permiso (REQ-041) tiene **2 turnos o menos delante** por
+  primera vez, EL SISTEMA DEBE enviar el aviso "faltan 2" sin que nadie toque nada, con nombre,
+  negocio, tiempo estimado y enlace a "Mi turno".
+- REQ-040.2 SI el turno ya tenía 2 o menos delante al crearse, ENTONCES EL SISTEMA NO DEBE enviar
+  el aviso "faltan 2".
+- REQ-040.3 Un turno DEBE recibir "faltan 2" una sola vez, aunque su posición suba y vuelva a bajar.
+- REQ-040.4 MIENTRAS el barbero que lo va a atender esté en pausa, o el cliente vea "Esperando a que
+  haya quién te atienda" o no haya tiempo estimado, EL SISTEMA NO DEBE enviar "faltan 2"; CUANDO
+  vuelva a haber quién lo atienda y siga con 2 o menos delante, EL SISTEMA DEBE enviarlo.
+- REQ-040.5 CUANDO un turno con permiso pasa a `llamado`, EL SISTEMA DEBE enviar el aviso "te están
+  llamando" con el tiempo de gracia (REQ-008.1), una sola vez por turno.
+- REQ-040.6 CUANDO un aviso se acepta para envío, EL SISTEMA DEBE marcar el turno como "Avisado ✓"
+  (REQ-009.3), sin barbero asociado: lo avisó el sistema.
+- REQ-040.7 SI el envío de un aviso falla, ENTONCES EL SISTEMA DEBE quitar "Avisado ✓" y volver a
+  mostrar "Avisar" con el botón manual de `wa.me` (REQ-009); ningún error de envío DEBE impedir ni
+  demorar tomar turno, llamar ni ninguna otra acción de la fila.
+- REQ-040.8 El botón manual DEBE seguir disponible en todos los turnos (REQ-009.4), tengan o no
+  permiso.
+- REQ-040.9 Los textos automáticos son fijos (aprobados por Meta): `/admin/mensajes` DEBE mostrarlos
+  solo para leer, y las plantillas de `wa.me` siguen editables (REQ-033).
+
+### REQ-041 · Permiso del cliente para los avisos — M
+**Como** cliente, **quiero** decidir si me escriben por WhatsApp, **para** que no me llegue nada que
+no pedí.
+
+- REQ-041.1 CUANDO el aviso automático está activo y la ficha no tiene permiso vigente, el formulario
+  de turno DEBE mostrar una casilla aparte, **no marcada por defecto**: "Avísame por WhatsApp cuando
+  falte poco"; no marcarla NO DEBE impedir tomar turno.
+- REQ-041.2 CUANDO el cliente la marca, EL SISTEMA DEBE guardar en la ficha la fecha y hora del
+  permiso.
+- REQ-041.3 SI la ficha ya tiene permiso vigente, ENTONCES el formulario DEBE mostrar en una línea
+  "Te avisamos por WhatsApp cuando falte poco" sin casilla.
+- REQ-041.4 CUANDO el barbero o el dueño agregan un turno a mano, EL SISTEMA DEBE enviar avisos solo
+  si la ficha ya tiene permiso vigente; la pantalla no DEBE dejar marcar el permiso por el cliente.
+- REQ-041.5 Un turno sin celular o sin permiso vigente NO DEBE recibir avisos automáticos.
+- REQ-041.6 El aviso de privacidad por defecto DEBE decir que el celular y el nombre pasan por
+  WhatsApp (Meta) para enviar estos avisos; se publica con el mecanismo de REQ-002.5.
+
+### REQ-042 · Baja y respuestas del cliente — M
+**Como** cliente, **quiero** poder dejar de recibir avisos, **para** que me escriban solo si quiero.
+
+- REQ-042.1 "Mi turno" DEBE ofrecer "No quiero avisos por WhatsApp" mientras la ficha tenga permiso
+  vigente y el turno esté activo.
+- REQ-042.2 CUANDO el cliente responde "PARAR" (sin importar mayúsculas, tildes ni espacios) al
+  número de los avisos, EL SISTEMA DEBE retirar el permiso y confirmarle con un mensaje.
+- REQ-042.3 CUANDO se retira el permiso, EL SISTEMA DEBE guardar fecha y hora en la ficha y no enviar
+  más avisos, tampoco en un turno ya activo; solo vuelve a recibirlos si marca la casilla en un turno
+  futuro.
+- REQ-042.4 CUANDO el cliente escribe cualquier otra cosa al número de los avisos, EL SISTEMA DEBE
+  responder "Este número solo envía avisos. Para hablar con la barbería escribe al <número>", como
+  máximo una vez cada 24 horas por celular.
+- REQ-042.5 SI el negocio no tiene número de contacto guardado, ENTONCES la respuesta automática DEBE
+  omitir esa parte.
+
+### REQ-043 · Control y activación — M
+**Como** dueño, **quiero** ver cuántos avisos van y que el gasto tenga tope, **para** que un error
+no dispare mensajes sin parar.
+
+- REQ-043.1 EL SISTEMA DEBE dejar de enviar avisos automáticos al llegar a **3.000 en el mes**
+  (día de Bogotá); los turnos vuelven al botón manual.
+- REQ-043.2 `/admin/mensajes` DEBE mostrar los avisos enviados y fallidos del mes, y un aviso visible
+  si se llegó al tope.
+- REQ-043.3 El aviso automático DEBE venir **apagado por defecto** y activarse por negocio; apagado o
+  sin credenciales del servidor, todo sigue como hoy con `wa.me` y sin casilla.
+- REQ-043.4 Las pruebas automáticas NO DEBEN enviar mensajes reales.
+- REQ-043.5 El sistema DEBE rechazar las notificaciones de Meta cuya firma no sea válida.
+
+Fuera de alcance del Hito 6: mensajes automáticos de cumpleaños e inactivos, notificación push,
+bandeja para leer o contestar mensajes, y el asistente con IA.
+
+---
+
 ## 6. Requisitos no funcionales
 
 | ID | Requisito | Criterio verificable |
@@ -741,7 +828,7 @@ Explícitamente **no** se construye en el MVP (el modelo de datos sí debe dejar
 - Reservas con hora fija (citas). El modelo de turno llevará campo de hora programada opcional.
 - Planes familiares por suscripción. Habrá entidad cliente y ventas que puedan referenciar un plan.
 - Referidos. La ficha de cliente admitirá `referred_by`.
-- WhatsApp Cloud API (envío automático). Solo la interfaz `NotificationChannel` (REQ-009.5).
+- ~~WhatsApp Cloud API (envío automático).~~ Sale de esta lista: Hito 6, REQ-040 (ADR-027).
 - Varios negocios por dueño en la interfaz. La tabla de membresías ya lo permite (REQ-031.3).
 - Control de inventario de productos.
 - Pagos en línea, facturación electrónica DIAN, integración con Nequi/bancos.
