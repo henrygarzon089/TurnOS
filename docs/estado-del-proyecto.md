@@ -86,6 +86,37 @@ push`, pedido por Henry). Verificado: `anon` no ejecuta ninguna función, el per
   Verificado: `/filo/turno` sin casilla ni línea de WhatsApp. Ningún negocio tiene el aviso activo. Los E2E usan
   `WHATSAPP_FAKE_CHANNEL=1`, que se ignora en Vercel. Ojo: con las credenciales en Vercel, todo dueño
   verá el interruptor. Sigue T-069. pgTAP 762 · unitarias 263 · integración 102.
+- T-069 `[ ]` (2026-11-02, parte de código hecha): `pnpm trace --hito=6` sin huecos (205 criterios, 0
+  sin prueba) y la prueba de NFR-009 cubre los hitos 0 a 6. Un `--hito` desconocido ahora falla en
+  vez de pasar sin revisar nada. Sin migración ni cambios en la app. unitarias 264.
+
+#### Checklist de Henry para cerrar T-069 (Hito 6)
+
+Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agente.
+
+- [ ] SIM nueva activa, que recibe SMS y sin WhatsApp instalado (§1).
+- [ ] Portafolio en Meta y verificación del negocio iniciada y aprobada (§2).
+- [ ] App de WhatsApp creada y número real agregado, con nombre visible aprobado y PIN de dos pasos
+      guardado (§3 y §4).
+- [ ] Tarjeta en la cuenta de WhatsApp (§5).
+- [ ] Tarifa del mensaje de utilidad en COP confirmada en la tabla oficial de Meta y anotada aquí
+      (§5; esperamos unos $3).
+- [ ] Plantillas `turno_faltan_dos` y `turno_te_llaman` aprobadas como **Utilidad**, idioma `es` sin
+      variante regional (§6).
+- [ ] Las cuatro variables `WHATSAPP_*` en Vercel, producción, y un despliegue nuevo para que las tome
+      (§7). Desde ese momento todo dueño ve el interruptor en `/admin/negocio`: solo se enciende en Filo
+      (ADR-027).
+- [ ] Webhook apuntando a `/api/whatsapp/webhook` y suscrito a `messages` (§8). El código ya está en
+      producción.
+- [ ] Versión de la Graph API: `v26.0`, constante `GRAPH_API_URL` en
+      `src/lib/notifications/cloud-api.ts`. Confirmar con el primer envío al número de prueba o en el
+      registro de cambios de Meta; si es otra, se cambia la constante en un PR.
+- [ ] Versión nueva del aviso de privacidad, la que menciona WhatsApp, publicada en Filo desde
+      `/admin/privacidad` (§9).
+- [ ] Número de la barbería guardado y aviso encendido **solo en Filo** (§9).
+- [ ] Prueba real en la barbería: turno con la casilla marcada, llega "faltan 2", llega "te llaman" y
+      responder "PARAR" da de baja (§9).
+- [ ] ADR de aprobación del Hito 6 (ADR-029) y T-069 marcada `[x]`.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
