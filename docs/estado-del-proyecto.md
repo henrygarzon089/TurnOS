@@ -62,6 +62,13 @@ db push` y `vercel --prod` desde `main`). Sin pantallas todavía: nada cambia pa
 - T-065 `[x]` (2026-11-01): `pickNotifications` decide qué avisos tocan y `CloudApiChannel` los envía
   a Meta. Sin migración y sin uso todavía: nada llama este código hasta T-066, así que nada cambia
   para el cliente. Falta confirmar la versión de la Graph API (`v26.0`) en T-069. unitarias 168 · integración 58.
+- T-066 `[x]` (2026-11-01): `dispatchQueueNotifications` y `afterQueueChange` en toda acción de la
+  fila, `skip_two_left` al tomar turno y en turno manual, y autocorrección de `claimed` vencidos.
+  Migración `0037_notification_queue` (lecturas, solo service_role). **Sin aplicar en producción**:
+  Henry aplica `0036` y `0037` juntas antes de activar el aviso. Sin las variables `WHATSAPP_*` el
+  envío no corre ni consulta la base, y si `0036` falta, marcar el turno falla sin afectarlo: desplegar
+  este código antes de migrar no cambia nada para el cliente. Limitaciones conocidas en la nota de
+  T-066. pgTAP 721 · unitarias 201 · integración 78.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

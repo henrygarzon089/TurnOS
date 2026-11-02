@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createAdminGateway } from "@/lib/db/supabase-gateway";
+import { afterQueueChange } from "@/lib/notifications/after-queue-change";
 import * as queue from "@/lib/queue/public-queue";
 import { barberEmailFromPhone } from "@/lib/auth/session";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -136,7 +137,10 @@ export async function customerHasBirthday(slug: string, phone: string): Promise<
 
 /** REQ-003: tomar turno. Devuelve el token (o el existente, REQ-003.5). */
 export async function joinQueue(input: queue.JoinInput): Promise<queue.JoinResult> {
-  return queue.joinQueue(createAdminGateway(), input, await clientIp());
+  const gw = createAdminGateway();
+  const result = await queue.joinQueue(gw, input, await clientIp());
+  if (result.ok) afterQueueChange(await queue.registerNewTicket(gw, result.token, result.existing));
+  return result;
 }
 
 /** REQ-004 */
@@ -146,7 +150,10 @@ export async function getTicketByToken(token: string) {
 
 /** REQ-005 */
 export async function cancelTicketByToken(token: string) {
-  return queue.cancelTicketByToken(createAdminGateway(), token);
+  const gw = createAdminGateway();
+  const result = await queue.cancelTicketByToken(gw, token);
+  if (result.ok) afterQueueChange(await queue.ticketBusinessId(gw, token));
+  return result;
 }
 
 /** REQ-038.4 */

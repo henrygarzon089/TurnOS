@@ -1,7 +1,10 @@
 "use server";
 
 import { getStaffSession } from "@/lib/auth/session";
+import { createAdminGateway } from "@/lib/db/supabase-gateway";
 import { capableByService, positions } from "@/lib/domain/queue-estimate";
+import { afterQueueChange } from "@/lib/notifications/after-queue-change";
+import { registerNewTicket } from "@/lib/queue/public-queue";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 // ---------------------------------------------------------------- tipos ----
@@ -260,8 +263,10 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
 /** REQ-007.1 */
 export async function callNext(): Promise<ActionResult> {
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.rpc("call_next");
-  return error ? mapError(error) : { ok: true };
+  const { data, error } = await supabase.rpc("call_next");
+  if (error) return mapError(error);
+  afterQueueChange(data.business_id);
+  return { ok: true };
 }
 
 async function transition(ticketId: string, to: string, reason?: string): Promise<ActionResult> {
@@ -274,7 +279,9 @@ async function transition(ticketId: string, to: string, reason?: string): Promis
     p_actor: session.role === "owner" ? "owner" : "barber",
     p_reason: reason ?? null,
   });
-  return error ? mapError(error) : { ok: true };
+  if (error) return mapError(error);
+  afterQueueChange(session.business.id);
+  return { ok: true };
 }
 
 /** REQ-007.3 */
@@ -303,7 +310,9 @@ export async function setMyStatus(
     p_status: status,
     p_reassign: reassign,
   });
-  return error ? mapError(error) : { ok: true };
+  if (error) return mapError(error);
+  afterQueueChange(session.business.id);
+  return { ok: true };
 }
 
 /** REQ-009.3: registrar que se envió el aviso por WhatsApp. */
@@ -437,7 +446,9 @@ async function ownerRpc(fn: string, args: Record<string, unknown>): Promise<Acti
   if (session?.role !== "owner") return { ok: false, error: "Solo el dueño puede hacer esto." };
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc(fn, args);
-  return error ? mapError(error) : { ok: true };
+  if (error) return mapError(error);
+  afterQueueChange(session.business.id);
+  return { ok: true };
 }
 
 /** REQ-012.2: llamar un turno específico con un barbero. */
@@ -482,6 +493,7 @@ export async function reassignTicket(
     .eq("status", "waiting");
   if (error) return mapError(error);
   if (!count) return { ok: false, error: "Solo se reasignan turnos en espera." };
+  afterQueueChange(session.business.id);
   return { ok: true };
 }
 /** REQ-012.2 / ADR-012: mover después de otro turno (null = al principio). */
@@ -507,7 +519,7 @@ export async function addManualTicket(input: {
     if (!phone) return { ok: false, error: "Celular inválido (10 dígitos, empieza por 3)." };
   }
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.rpc("add_manual_ticket", {
+  const { data, error } = await supabase.rpc("add_manual_ticket", {
     p_business_id: session.business.id,
     p_name: name,
     p_phone: phone,
@@ -518,6 +530,8 @@ export async function addManualTicket(input: {
     return error.code === "23505"
       ? { ok: false, error: "Ese celular ya tiene un turno activo." }
       : mapError(error);
+  await registerNewTicket(createAdminGateway(), data.public_token, false);
+  afterQueueChange(session.business.id);
   return { ok: true };
 }
 /** REQ-012.4: abrir/cerrar la fila hoy. */

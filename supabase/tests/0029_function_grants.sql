@@ -19,7 +19,8 @@ select is(
                        'get_screen_queue', 'close_expired_queues', 'queue_snapshot', 'notify_queue_changed',
                        'set_ticket_courtesy', 'get_barber_photos', 'customer_has_birthday', 'courtesy_is_valid',
                        'set_whatsapp_opt_in', 'set_whatsapp_opt_out', 'whatsapp_opt_out_by_phone', 'whatsapp_consent_active',
-                       'claim_notification', 'skip_two_left', 'set_notification_status', 'notification_cap_reached')),
+                       'claim_notification', 'skip_two_left', 'set_notification_status', 'notification_cap_reached',
+                       'get_notification_queue', 'notification_id')),
   '', 'ADR-009 las funciones públicas del servidor no se llaman con la sesión del personal');
 
 select is(
