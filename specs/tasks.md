@@ -1000,6 +1000,12 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   aviso publicada en Filo.
 - Terminado: `pnpm trace --hito=6` sin huecos; CI verde; prueba real en la barbería con los dos avisos
   y "PARAR"; aprobación de Henry (ADR nuevo).
+- Avance (2026-11-02): parte de código hecha. `HITOS["6"] = [[40, 43]]` y la prueba de NFR-009 recorre
+  los hitos 0 a 6: `pnpm trace --hito=6` da 205 criterios, 0 sin prueba en el hito 6, sin pruebas
+  nuevas. Agregado sin estar en la tarea: un `--hito` que no está en `HITOS` ahora falla; antes daba
+  "0 sin prueba" sin revisar nada, y la prueba del hito 6 pasaba aun sin la línea nueva. Falta lo de
+  Henry (checklist en `docs/estado-del-proyecto.md`): guía de Meta, tarifa, versión `v26.0` de la
+  Graph API, aviso de privacidad nuevo en Filo, prueba real y ADR de aprobación.
 
 ---
 

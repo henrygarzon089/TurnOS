@@ -25,6 +25,7 @@ const HITOS: Record<string, [number, number][]> = {
   "3": [[23, 29]],
   "4": [[35, 35]], // REQ-035 servicios por barbero (ADR-023)
   "5": [[36, 39]], // experiencia del cliente (ADR-025)
+  "6": [[40, 43]], // aviso automático por WhatsApp (ADR-027)
 };
 
 const req = readFileSync("specs/requirements.md", "utf8");
@@ -83,8 +84,13 @@ const missing: string[] = [];
 const hitoArg = process.argv.find((a) => a.startsWith("--hito="))?.split("=")[1];
 /** --check: solo verifica (no reescribe specs/traceability.md); lo usa la prueba de NFR-009. */
 const checkOnly = process.argv.includes("--check");
+// Un hito desconocido no tiene REQ: sin esto daría "0 sin prueba" sin revisar nada.
+if (hitoArg && !HITOS[hitoArg]) {
+  console.error(`traceability: el hito ${hitoArg} no existe en HITOS.`);
+  process.exit(1);
+}
 const inHito = (reqNum: number) =>
-  !hitoArg || (HITOS[hitoArg] ?? []).some(([a, b]) => reqNum >= a && reqNum <= b);
+  !hitoArg || HITOS[hitoArg].some(([a, b]) => reqNum >= a && reqNum <= b);
 
 for (const ca of criteria) {
   const reqId = ca.split(".")[0];
