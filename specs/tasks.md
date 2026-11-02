@@ -881,11 +881,22 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 > REQ-040…REQ-043 y ADR-027 aprobados por Henry (2026-11-01). Diseño en `design.md` §12. La migración
 > es la `0036`. Lo que depende de Meta se prueba con su número de prueba; el trámite real va en T-069.
 
-### [ ] T-064 · Migración y pgTAP: permisos y registro de avisos
+### [x] T-064 · Migración y pgTAP: permisos y registro de avisos
 - REQ: REQ-040.3, REQ-040.5, REQ-040.6, REQ-041.2, REQ-041.5, REQ-042.3, REQ-043.1, REQ-043.3
 - Archivos: `supabase/migrations/0036_whatsapp_notifications.sql`,
   `supabase/tests/0036_whatsapp_notifications.sql`, `0029_function_grants`, seed
 - Terminado: pgTAP de §12.7 en verde; suite completa sin regresiones; con el flag apagado nada cambia.
+- Nota (2026-11-01): 91 pruebas pgTAP nuevas (704 en verde). Desvíos, ya reflejados en design.md §12:
+  `claim_notification` no pisa un aviso manual previo (si no, un `failed` lo borraba); `join_queue`
+  guarda el permiso solo con el aviso activo y también cuando devuelve un turno existente;
+  `notification_month_stats` recibe el negocio; `set_notification_status` empieza por `p_status`.
+  Agregado sin estar en §12: el personal no puede escribir las fechas de permiso (REQ-041.4),
+  eliminar la ficha las borra (REQ-018.6) y `merge_customers` conserva la baja (REQ-042.3). Sin cambios
+  en `seed.sql`: el aviso nace apagado.
+- Pendiente para T-066: `claim_notification` devuelve solo texto y el gateway solo hace `rpc`, así que
+  `dispatchQueueNotifications` necesita una función de lectura para los avisos registrados y sus `id`
+  (también para la autocorrección de §12.4). `do_not_contact` no bloquea avisos: REQ-020.5 habla de
+  recordatorios y aquí manda el permiso del cliente.
 
 ### [ ] T-065 · Dominio y canal: `pickNotifications` y `CloudApiChannel`
 - REQ: REQ-040.1–040.4, REQ-043.4

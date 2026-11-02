@@ -1136,20 +1136,28 @@ por el mismo insert y solo una gana. `skipped` deja constancia de REQ-040.2.
 `ticket_notifications` tiene RLS forzada: el dueño lee las de su negocio; nadie escribe por RLS, solo
 las funciones `security definer` de abajo.
 
+Las dos fechas de la ficha solo cambian con `service_role` o dentro de una función interna: el trigger
+`customers_whatsapp_consent_guard` rechaza al personal, dueño incluido, porque el permiso lo da solo
+el cliente (REQ-041.4). Eliminar la ficha borra ambas (REQ-018.6). `merge_customers` deja la fecha más
+nueva de cada una, así una baja de la ficha fusionada no se pierde (REQ-042.3).
+
 ### 12.2 Funciones SQL
 
 | Función | Quién | Qué | REQ |
 |---|---|---|---|
-| `join_queue(..., p_whatsapp_opt_in bool)` | service_role | Si viene `true`, pone `whatsapp_opt_in_at = now()` en la ficha | 041.2 |
+| `join_queue(..., p_whatsapp_opt_in bool)` | service_role | Si viene `true` y el negocio tiene el aviso activo, pone `whatsapp_opt_in_at = now()` en la ficha, también si devuelve un turno que ya existía | 041.2, 043.3 |
 | `set_whatsapp_opt_out(p_token)` | service_role | Baja desde "Mi turno" | 042.1, 042.3 |
 | `whatsapp_opt_out_by_phone(p_business_id, p_phone)` | service_role | Baja por respuesta "PARAR" | 042.2, 042.3 |
-| `claim_notification(p_ticket_id, p_kind)` | service_role | Revisa negocio activo, permiso vigente y tope del mes; inserta `claimed` con `on conflict do nothing`; pone `tickets.notified_at = now()`, `notified_by = null`. Devuelve `claimed`, `duplicate`, `no_consent`, `disabled` o `cap_reached` | 040.3, 040.6, 041.5, 043.1, 043.3 |
+| `claim_notification(p_ticket_id, p_kind)` | service_role | Revisa negocio activo, permiso vigente y tope del mes; inserta `claimed` con `on conflict do nothing`; pone `tickets.notified_at = now()` salvo que el turno ya tenga un aviso manual (`notified_by` no nulo), que se conserva. Devuelve `claimed`, `duplicate`, `no_consent`, `disabled` o `cap_reached` | 040.3, 040.6, 041.5, 043.1, 043.3 |
 | `skip_two_left(p_ticket_id)` | service_role | Inserta `skipped` para el turno recién creado | 040.2 |
-| `set_notification_status(p_id o p_meta_message_id, p_status, p_error)` | service_role | Actualiza estado; con `failed` limpia `notified_at` solo si `notified_by` es nulo (no borra un aviso manual) | 040.7 |
-| `notification_month_stats()` | dueño | Enviados, fallidos y si llegó al tope, mes de Bogotá | 043.2 |
+| `set_notification_status(p_status, p_id, p_meta_message_id, p_error)` | service_role | Actualiza estado por `p_id` o, sin él, por `p_meta_message_id`. Solo avanza (`claimed` → `sent` → `delivered` o `failed`) y devuelve si hubo cambio. Con `failed` limpia `notified_at` solo si `notified_by` es nulo (no borra un aviso manual) | 040.7 |
+| `notification_month_stats(p_business_id)` | dueño | `{sent, failed, capReached}`, mes de Bogotá. Recibe el negocio como `birthdays_this_week` | 043.2 |
 
 El tope cuenta las filas que no son `skipped` del mes, dentro de `claim_notification` con un bloqueo
 por negocio (`pg_advisory_xact_lock`) para que no se pase por concurrencia.
+
+Auxiliares de `service_role`: `whatsapp_consent_active(opt_in, opt_out)` (regla de permiso vigente),
+`set_whatsapp_opt_in(negocio, celular)` y `notification_cap_reached(negocio)`.
 
 ### 12.3 Canal
 
