@@ -56,7 +56,7 @@ db push` y `vercel --prod` desde `main`). Sin pantallas todavía: nada cambia pa
 
 - T-064 `[x]` (2026-11-01): migración `0036_whatsapp_notifications` (columnas de negocio y ficha,
   `ticket_notifications`, `join_queue` con casilla, baja, `claim_notification`, tope de 3.000 al mes,
-  estados y contadores). **Sin aplicar en producción**: la aplica Henry antes de desplegar T-066.
+  estados y contadores). En producción (ver abajo).
   Viene apagada y sin pantallas, así que nada cambia para el cliente. pgTAP 704 · unitarias 130 ·
   integración 58.
 - T-065 `[x]` (2026-11-01): `pickNotifications` decide qué avisos tocan y `CloudApiChannel` los envía
@@ -64,19 +64,21 @@ db push` y `vercel --prod` desde `main`). Sin pantallas todavía: nada cambia pa
   para el cliente. Falta confirmar la versión de la Graph API (`v26.0`) en T-069. unitarias 168 · integración 58.
 - T-066 `[x]` (2026-11-01): `dispatchQueueNotifications` y `afterQueueChange` en toda acción de la
   fila, `skip_two_left` al tomar turno y en turno manual, y autocorrección de `claimed` vencidos.
-  Migración `0037_notification_queue` (lecturas, solo service_role). **Sin aplicar en producción**:
-  Henry aplica `0036` y `0037` juntas antes de activar el aviso. Sin las variables `WHATSAPP_*` el
+  Migración `0037_notification_queue` (lecturas, solo service_role). Sin las variables `WHATSAPP_*` el
   envío no corre ni consulta la base, y si `0036` falta, marcar el turno falla sin afectarlo: desplegar
   este código antes de migrar no cambia nada para el cliente. Limitaciones conocidas en la nota de
   T-066. pgTAP 721 · unitarias 201 · integración 78.
 - T-067 `[x]` (2026-11-01): webhook de Meta en `/api/whatsapp/webhook`: firma, estados, "PARAR" y
   respuesta automática una vez cada 24 h; el contenido de los mensajes no se guarda. ADR-028: con un
   número compartido, "PARAR" da de baja en todos los negocios. Migración `0038_whatsapp_inbound`.
-  **Sin aplicar en producción**: Henry aplica `0036`, `0037` y `0038` juntas, en orden, antes de
-  activar el aviso. Desplegar este código antes de migrar no cambia nada para el cliente: sin las
-  variables `WHATSAPP_*` la ruta responde 401 o 403. No se ha probado con eventos reales de Meta: queda
-  para T-069. Falta T-068 (pantallas) para que un cliente pueda dar permiso. pgTAP 745 · unitarias 244
-  · integración 95.
+  Sin las variables `WHATSAPP_*` la ruta responde 401 o 403 y nada cambia para el cliente. No se ha
+  probado con eventos reales de Meta: queda para T-069. Falta T-068 (pantallas) para que un cliente
+  pueda dar permiso. pgTAP 745 · unitarias 244 · integración 95.
+- Migraciones del Hito 6: `0036`, `0037` y `0038` **en producción** desde el 2026-11-01 (`supabase db
+  push`, pedido por Henry). Verificado: `anon` no ejecuta ninguna función, el personal no ejecuta las
+  de `service_role`, `ticket_notifications` con RLS forzada, ningún negocio con el aviso activo y 0
+  avisos registrados. Esa noche el código de T-064…T-067 aún no estaba desplegado (el webhook daba 404
+  en producción): falta `vercel --prod` desde `main`, que no se hizo.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
