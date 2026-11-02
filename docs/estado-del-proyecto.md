@@ -77,8 +77,8 @@ db push` y `vercel --prod` desde `main`). Sin pantallas todavía: nada cambia pa
 - Migraciones del Hito 6: `0036`, `0037` y `0038` **en producción** desde el 2026-11-01 (`supabase db
   push`, pedido por Henry). Verificado: `anon` no ejecuta ninguna función, el personal no ejecuta las
   de `service_role`, `ticket_notifications` con RLS forzada, ningún negocio con el aviso activo y 0
-  avisos registrados. Esa noche el código de T-064…T-067 aún no estaba desplegado (el webhook daba 404
-  en producción): falta `vercel --prod` desde `main`, que no se hizo.
+  avisos registrados. El código de T-064…T-067 está desplegado desde el 2026-11-01 (`vercel deploy
+  --prod` desde `main`, hecho por Henry): el webhook responde 403 sin token y 401 sin firma.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
