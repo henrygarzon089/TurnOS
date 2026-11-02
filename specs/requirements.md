@@ -766,6 +766,9 @@ no dispare mensajes sin parar.
   sin credenciales del servidor, todo sigue como hoy con `wa.me` y sin casilla.
 - REQ-043.4 Las pruebas automáticas NO DEBEN enviar mensajes reales.
 - REQ-043.5 El sistema DEBE rechazar las notificaciones de Meta cuya firma no sea válida.
+- REQ-043.6 El aviso automático SOLO DEBE poder activarse en los negocios que el operador de TurnOS
+  habilite; el dueño NO DEBE poder habilitar su propio negocio, y en un negocio no habilitado el
+  interruptor no aparece (ADR-029).
 
 Fuera de alcance del Hito 6: mensajes automáticos de cumpleaños e inactivos, notificación push,
 bandeja para leer o contestar mensajes, y el asistente con IA.

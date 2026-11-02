@@ -991,6 +991,19 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Pendiente para T-069: aplicar `0039` y publicar en Filo una versión nueva del aviso con el párrafo de
   WhatsApp: `default_privacy_text` solo rige para negocios nuevos.
 
+### [~] T-070 · Solo negocios habilitados encienden el aviso
+- REQ: REQ-043.6
+- Archivos: `supabase/migrations/0040_whatsapp_allowed.sql`, `supabase/tests/0040_whatsapp_allowed.sql`,
+  `/admin/negocio`, `saveWhatsAppSettings`
+- Terminado: pgTAP de §12.7 en verde; sin habilitación no aparece el interruptor y la acción no deja
+  activar; `0040` en producción antes de las variables `WHATSAPP_*`.
+- Nota (2026-11-02): ADR-029. Cierra la limitación anotada en T-068. Se agregó después de T-068 y
+  antes de cerrar T-069, que la espera. 11 pgTAP, 3 unitarias y 1 E2E nuevas; las pruebas que
+  encendían el aviso en `0036`…`0039`, integración y E2E ahora habilitan antes el negocio, porque el
+  `check` lo exige. pgTAP 773 · unitarias 267 · integración 102. `saveWhatsAppSettings` lee la
+  habilitación solo al encender, para dar un mensaje claro; apagar no la pide.
+- Pendiente: aplicar `0040` en producción y desplegar, antes de poner las variables `WHATSAPP_*`.
+
 ### [ ] T-069 · Validación Hito 6: Meta real y matriz de trazabilidad
 - REQ: REQ-040…REQ-043
 - Archivos: `scripts/traceability.ts` (`HITOS["6"] = [[40, 43]]`), `tests/unit/traceability.test.ts`,
@@ -1025,5 +1038,5 @@ flowchart LR
   T039 --> T040 --> T041 --> T042 --> T043 --> T044 --> T045 --> T046 --> T047 --> T048 --> T049 --> T050
   T050 --> T051 --> T052 --> T053 --> T054 --> T055 --> T056 --> T057
   T057 --> T058 --> T059 --> T060 --> T061 --> T062 --> T063
-  T063 --> T064 --> T065 --> T066 --> T067 --> T068 --> T069
+  T063 --> T064 --> T065 --> T066 --> T067 --> T068 --> T070 --> T069
 ```

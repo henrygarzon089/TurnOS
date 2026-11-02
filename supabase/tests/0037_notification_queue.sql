@@ -31,7 +31,7 @@ select is(get_notification_queue((select biz from ctx)), '{"enabled": false}'::j
 select is(get_notification_queue('00000000-0000-4000-8000-000000000000'), '{"enabled": false}'::jsonb,
   'un negocio que no existe se trata como apagado');
 
-update businesses set whatsapp_auto_enabled = true, grace_minutes = 7 where id = (select biz from ctx);
+update businesses set whatsapp_allowed = true, whatsapp_auto_enabled = true, grace_minutes = 7 where id = (select biz from ctx);
 
 -- ---------------------------------------------------------------- fila ----
 create temp table q as select get_notification_queue((select biz from ctx)) as v;

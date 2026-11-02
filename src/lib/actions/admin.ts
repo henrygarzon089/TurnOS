@@ -470,7 +470,7 @@ export async function saveGoogleReviewUrl(
   return error ? { error: "No se pudo guardar." } : { ok: true };
 }
 
-/** REQ-043.3 interruptor del aviso automático. REQ-042.4 número de la respuesta automática. */
+/** REQ-043.3/043.6 interruptor del aviso automático. REQ-042.4 número de la respuesta automática. */
 export async function saveWhatsAppSettings(
   _prev: FormState,
   formData: FormData,
@@ -487,6 +487,17 @@ export async function saveWhatsAppSettings(
     return { error: "Escribe un celular colombiano de 10 dígitos (empieza por 3)." };
   }
   const supabase = await createSupabaseServerClient();
+  if (enabled) {
+    // REQ-043.6 la base también lo impide; aquí se da un mensaje claro (ADR-029).
+    const { data } = await supabase
+      .from("businesses")
+      .select("whatsapp_allowed")
+      .eq("id", session.business.id)
+      .single();
+    if (!data?.whatsapp_allowed) {
+      return { error: "Este negocio no está habilitado para los avisos por WhatsApp." };
+    }
+  }
   const { error } = await supabase
     .from("businesses")
     .update({ whatsapp_auto_enabled: enabled, whatsapp_contact_phone: phone })

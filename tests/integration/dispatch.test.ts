@@ -36,7 +36,10 @@ function deps(q: Q, channel: DispatchDeps["channel"]): DispatchDeps {
 /** Negocio A con el aviso activo y su único barbero disponible. */
 async function activeBusiness(q: Q) {
   const s = await seedTwoBusinesses(q);
-  await q(`update businesses set whatsapp_auto_enabled = true where id = $1`, [s.businessA]);
+  await q(
+    `update businesses set whatsapp_allowed = true, whatsapp_auto_enabled = true where id = $1`,
+    [s.businessA],
+  );
   await q(`update barbers set status = 'available', present_day = current_date where id = $1`, [
     s.barberA,
   ]);
@@ -445,7 +448,7 @@ describe("REQ-040.3 / REQ-040.5 dos ejecuciones a la vez", () => {
   it("REQ-040.3 REQ-040.5 cada aviso sale una vez aunque corran dos ejecuciones juntas", async () => {
     await cleanup();
     const biz = await q<{ id: string }>(
-      `insert into businesses (name, slug, whatsapp_auto_enabled) values ('Carrera', $1, true) returning id`,
+      `insert into businesses (name, slug, whatsapp_allowed, whatsapp_auto_enabled) values ('Carrera', $1, true, true) returning id`,
       [SLUG],
     );
     const businessA = biz.rows[0].id;

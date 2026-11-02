@@ -590,7 +590,9 @@ describe("REQ-041 / REQ-042 permiso del aviso por WhatsApp (server action)", () 
     return rows[0];
   };
   const turnOn = (q: Q, biz: string) =>
-    q(`update businesses set whatsapp_auto_enabled = true where id = $1`, [biz]);
+    q(`update businesses set whatsapp_allowed = true, whatsapp_auto_enabled = true where id = $1`, [
+      biz,
+    ]);
 
   it("REQ-041.2 joinQueue guarda el permiso si el cliente marcó la casilla", async () => {
     await withTx(async (q) => {

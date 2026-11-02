@@ -14,10 +14,15 @@ function phone(): string {
   return `31${Math.floor(10_000_000 + Math.random() * 89_999_999)}`;
 }
 
-async function setAuto(enabled: boolean) {
+/** Encendido exige negocio habilitado (REQ-043.6); `allowed` solo lo cambia el operador. */
+async function setAuto(enabled: boolean, allowed = enabled) {
   const { error } = await adminDb()
     .from("businesses")
-    .update({ whatsapp_auto_enabled: enabled, whatsapp_contact_phone: null })
+    .update({
+      whatsapp_allowed: allowed,
+      whatsapp_auto_enabled: enabled,
+      whatsapp_contact_phone: null,
+    })
     .eq("slug", SEED.slug);
   expect(error).toBeNull();
 }
@@ -197,6 +202,7 @@ test.describe("REQ-043.3 interruptor del aviso", () => {
   test("REQ-043.3 / REQ-042.4 el dueño activa el aviso y guarda el número de contacto", async ({
     page,
   }) => {
+    await setAuto(false, true);
     await loginAsOwner(page);
     await page.goto("/admin/negocio");
     const form = page.getByRole("form", { name: "Avisos por WhatsApp" });
@@ -225,6 +231,15 @@ test.describe("REQ-043.3 interruptor del aviso", () => {
     await page.goto(`/${SEED.slug}/turno`);
     await page.getByLabel("Tu celular (WhatsApp)").fill(phone());
     await expect(page.getByRole("checkbox", { name: OPT_IN })).toBeVisible();
+  });
+
+  test("REQ-043.6 sin habilitación del operador el dueño no ve el interruptor", async ({
+    page,
+  }) => {
+    await loginAsOwner(page);
+    await page.goto("/admin/negocio");
+    await expect(page.getByRole("heading", { name: "Mi negocio" })).toBeVisible();
+    await expect(page.getByRole("form", { name: "Avisos por WhatsApp" })).toHaveCount(0);
   });
 
   test("REQ-043.3 apagado no aparece nada nuevo para el cliente ni en mensajes", async ({
