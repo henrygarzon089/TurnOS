@@ -108,9 +108,10 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
       (ADR-027).
 - [ ] Webhook apuntando a `/api/whatsapp/webhook` y suscrito a `messages` (§8). El código ya está en
       producción.
-- [ ] Versión de la Graph API: `v26.0`, constante `GRAPH_API_URL` en
-      `src/lib/notifications/cloud-api.ts`. Confirmar con el primer envío al número de prueba o en el
-      registro de cambios de Meta; si es otra, se cambia la constante en un PR.
+- [x] Versión de la Graph API: `v26.0`, constante `GRAPH_API_URL` en
+      `src/lib/notifications/cloud-api.ts`. Confirmada el 2026-11-02 en el registro de cambios
+      oficial de Meta (publicada el 2026-07-29, la más reciente). El primer envío al número de prueba
+      lo comprueba de punta a punta.
 - [ ] Versión nueva del aviso de privacidad, la que menciona WhatsApp, publicada en Filo desde
       `/admin/privacidad` (§9).
 - [ ] Número de la barbería guardado y aviso encendido **solo en Filo** (§9).
