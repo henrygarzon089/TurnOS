@@ -7,6 +7,7 @@ const m = vi.hoisted(() => ({
   session: vi.fn(),
   update: vi.fn(),
   eq: vi.fn(),
+  allowed: vi.fn(),
   getPublicBusiness: vi.fn(),
   getTicketByToken: vi.fn(),
 }));
@@ -24,6 +25,7 @@ vi.mock("@/lib/supabase/admin", () => ({ createSupabaseAdminClient: vi.fn() }));
 vi.mock("@/lib/supabase/server", () => ({
   createSupabaseServerClient: async () => ({
     from: () => ({
+      select: () => ({ eq: () => ({ single: async () => m.allowed() }) }),
       update: (patch: unknown) => {
         m.update(patch);
         return { eq: async () => m.eq() };
@@ -64,6 +66,7 @@ beforeEach(() => {
   vi.stubEnv("WHATSAPP_FAKE_CHANNEL", "");
   m.session.mockResolvedValue(OWNER);
   m.eq.mockResolvedValue({ error: null });
+  m.allowed.mockResolvedValue({ data: { whatsapp_allowed: true }, error: null });
 });
 
 afterEach(() => {
@@ -114,6 +117,29 @@ describe("REQ-043.3 / REQ-042.4 interruptor y número de contacto", () => {
     const r = await saveWhatsAppSettings(undefined, form({ whatsapp_auto_enabled: "on" }));
     expect(r?.error).toBeTruthy();
     expect(m.update).not.toHaveBeenCalled();
+  });
+
+  it("REQ-043.6 no se activa en un negocio que el operador no ha habilitado", async () => {
+    withCredentials();
+    m.allowed.mockResolvedValue({ data: { whatsapp_allowed: false }, error: null });
+    const r = await saveWhatsAppSettings(undefined, form({ whatsapp_auto_enabled: "on" }));
+    expect(r?.error).toMatch(/habilitad/);
+    expect(m.update).not.toHaveBeenCalled();
+  });
+
+  it("REQ-043.6 si no se puede leer la habilitación tampoco se activa", async () => {
+    withCredentials();
+    m.allowed.mockResolvedValue({ data: null, error: { message: "x" } });
+    const r = await saveWhatsAppSettings(undefined, form({ whatsapp_auto_enabled: "on" }));
+    expect(r?.error).toBeTruthy();
+    expect(m.update).not.toHaveBeenCalled();
+  });
+
+  it("REQ-043.6 sin habilitación igual se puede apagar", async () => {
+    withCredentials();
+    m.allowed.mockResolvedValue({ data: { whatsapp_allowed: false }, error: null });
+    const r = await saveWhatsAppSettings(undefined, form({}));
+    expect(r).toEqual({ ok: true });
   });
 
   it("REQ-042.4 guarda el número de contacto normalizado", async () => {

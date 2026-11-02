@@ -64,11 +64,11 @@ update businesses set whatsapp_contact_phone = '+573002220000' where id = (selec
 select is(whatsapp_inbound_context('+573008880010') ->> 'contactPhone', null,
   'REQ-042.5 sin aviso previo y sin negocio activo no hay número');
 
-update businesses set whatsapp_auto_enabled = true where id = (select biz from ctx);
+update businesses set whatsapp_allowed = true, whatsapp_auto_enabled = true where id = (select biz from ctx);
 select is(whatsapp_inbound_context('+573008880010') ->> 'contactPhone', '+573001110000',
   'REQ-042.4 sin aviso previo usa el único negocio activo');
 
-update businesses set whatsapp_auto_enabled = true where id = (select biz from ctx2);
+update businesses set whatsapp_allowed = true, whatsapp_auto_enabled = true where id = (select biz from ctx2);
 select is(whatsapp_inbound_context('+573008880010') ->> 'contactPhone', null,
   'REQ-042.5 sin aviso previo y con varios negocios activos no adivina');
 

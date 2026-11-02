@@ -90,6 +90,12 @@ push`, pedido por Henry). Verificado: `anon` no ejecuta ninguna función, el per
   sin prueba) y la prueba de NFR-009 cubre los hitos 0 a 6. Un `--hito` desconocido ahora falla en
   vez de pasar sin revisar nada. Sin migración ni cambios en la app. unitarias 264.
 
+- T-070 `[~]` (2026-11-02): solo los negocios que habilita el operador encienden el aviso (REQ-043.6,
+  ADR-029). Migración `0040_whatsapp_allowed`: columna `whatsapp_allowed` que el personal no puede
+  cambiar y `check` que impide encender el aviso sin ella; habilita a Filo. Sin habilitación,
+  `/admin/negocio` no muestra el interruptor. Cierra la limitación de T-068. Falta aplicar `0040` en
+  producción y desplegar. pgTAP 773 · unitarias 267 · integración 102.
+
 #### Checklist de Henry para cerrar T-069 (Hito 6)
 
 Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agente.
@@ -103,9 +109,10 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
       (§5; esperamos unos $3).
 - [ ] Plantillas `turno_faltan_dos` y `turno_te_llaman` aprobadas como **Utilidad**, idioma `es` sin
       variante regional (§6).
+- [ ] `0040_whatsapp_allowed` aplicada en producción y código de T-070 desplegado, **antes** de las
+      variables: así solo Filo ve el interruptor (ADR-029).
 - [ ] Las cuatro variables `WHATSAPP_*` en Vercel, producción, y un despliegue nuevo para que las tome
-      (§7). Desde ese momento todo dueño ve el interruptor en `/admin/negocio`: solo se enciende en Filo
-      (ADR-027).
+      (§7).
 - [ ] Webhook apuntando a `/api/whatsapp/webhook` y suscrito a `messages` (§8). El código ya está en
       producción.
 - [x] Versión de la Graph API: `v26.0`, constante `GRAPH_API_URL` en
@@ -117,7 +124,7 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
 - [ ] Número de la barbería guardado y aviso encendido **solo en Filo** (§9).
 - [ ] Prueba real en la barbería: turno con la casilla marcada, llega "faltan 2", llega "te llaman" y
       responder "PARAR" da de baja (§9).
-- [ ] ADR de aprobación del Hito 6 (ADR-029) y T-069 marcada `[x]`.
+- [ ] ADR de aprobación del Hito 6 (ADR-030) y T-069 marcada `[x]`.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

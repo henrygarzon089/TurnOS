@@ -51,7 +51,7 @@ select is(_consent('+573009990001'), false,
   'REQ-043.3 apagado, "Mi turno" no ofrece la baja aunque la ficha tenga permiso');
 
 -- ------------------------------------------------------ negocio activo ----
-update businesses set whatsapp_auto_enabled = true where id = (select biz from ctx);
+update businesses set whatsapp_allowed = true, whatsapp_auto_enabled = true where id = (select biz from ctx);
 
 select is((get_public_business('la-33') ->> 'whatsappAutoEnabled')::boolean, true,
   'REQ-041.1 activo, el formulario lo sabe');

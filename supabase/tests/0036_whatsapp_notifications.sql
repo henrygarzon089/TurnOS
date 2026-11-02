@@ -69,7 +69,7 @@ select is((select count(*)::int from ticket_notifications where ticket_id = _t('
 select is((select notified_at from tickets where id = _t('+573007770001')), null,
   'REQ-043.3 apagado, el turno sigue sin "Avisado ✓"');
 
-update businesses set whatsapp_auto_enabled = true where id = (select biz from ctx);
+update businesses set whatsapp_allowed = true, whatsapp_auto_enabled = true where id = (select biz from ctx);
 
 -- --------------------------------------------- REQ-041.2 permiso en la ficha ----
 select lives_ok($$ select _join('+573007770002') $$, 'REQ-041.1 no marcar la casilla no impide tomar turno');
@@ -186,7 +186,7 @@ from generate_series(1, 3000);
 insert into ticket_notifications (business_id, ticket_id, kind, status)
 select business_id, id, 'two_left', 'sent' from tickets
 where business_id = (select other_biz from ctx) and customer_name = 'Relleno H6' limit 2999;
-update businesses set whatsapp_auto_enabled = true where id = (select other_biz from ctx);
+update businesses set whatsapp_allowed = true, whatsapp_auto_enabled = true where id = (select other_biz from ctx);
 update customers set whatsapp_opt_in_at = now() where business_id = (select other_biz from ctx);
 with nuevos as (
   insert into customers (business_id, phone_e164, name, whatsapp_opt_in_at)

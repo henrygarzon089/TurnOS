@@ -61,7 +61,7 @@ async function optOutOf(q: Q, id: string) {
 /** Negocio A activo con número de contacto y un turno `called` ya avisado por el sistema. */
 async function notifiedTicket(q: Q, s: TwoBusinesses, messageId: string) {
   await q(
-    `update businesses set whatsapp_auto_enabled = true, whatsapp_contact_phone = $2 where id = $1`,
+    `update businesses set whatsapp_allowed = true, whatsapp_auto_enabled = true, whatsapp_contact_phone = $2 where id = $1`,
     [s.businessA, CONTACT],
   );
   const customerId = await customer(q, s.businessA);
@@ -215,7 +215,10 @@ describe("PARAR", () => {
   it("REQ-042.3 después de la baja el aviso ya no sale, tampoco en el turno activo", async () => {
     await withTx(async (q) => {
       const s = await seedTwoBusinesses(q);
-      await q(`update businesses set whatsapp_auto_enabled = true where id = $1`, [s.businessA]);
+      await q(
+        `update businesses set whatsapp_allowed = true, whatsapp_auto_enabled = true where id = $1`,
+        [s.businessA],
+      );
       await customer(q, s.businessA);
       const { rows } = await q<{ id: string }>(
         `insert into tickets (business_id, customer_id, customer_name, customer_phone_e164, service_id,

@@ -1121,14 +1121,15 @@ Cada cambio de cortesía (`set_ticket_courtesy`, `mark_courtesy_served`) emite `
 
 ## 12. Hito 6 — Aviso automático por WhatsApp (REQ-040…REQ-043, ADR-027)
 
-Migraciones `0036_whatsapp_notifications.sql`, `0037_notification_queue.sql`, `0038_whatsapp_inbound.sql`
-y `0039_whatsapp_screens.sql` con su pgTAP y permisos explícitos (ADR-019).
+Migraciones `0036_whatsapp_notifications.sql`, `0037_notification_queue.sql`, `0038_whatsapp_inbound.sql`,
+`0039_whatsapp_screens.sql` y `0040_whatsapp_allowed.sql` con su pgTAP y permisos explícitos (ADR-019).
 
 ### 12.1 Datos
 
 | Tabla | Cambio | REQ |
 |---|---|---|
 | `businesses` | `whatsapp_auto_enabled bool not null default false`, `whatsapp_contact_phone text null` (número que da la respuesta automática) | 043.3, 042.4 |
+| `businesses` (`0040`) | `whatsapp_allowed bool not null default false`; `check (not whatsapp_auto_enabled or whatsapp_allowed)` | 043.6 |
 | `customers` | `whatsapp_opt_in_at timestamptz null`, `whatsapp_opt_out_at timestamptz null`. Permiso vigente: `opt_in_at` no nulo y (`opt_out_at` nulo o anterior a `opt_in_at`) | 041.2, 042.3 |
 | `ticket_notifications` (nueva) | `id, business_id, ticket_id, kind enum('two_left','called'), status enum('skipped','claimed','sent','delivered','failed'), meta_message_id text null, error_code text null, created_at, updated_at`; `unique (ticket_id, kind)`; índices por `meta_message_id` y por `(business_id, created_at)` | 040.3, 040.5, 043.2 |
 
@@ -1142,6 +1143,12 @@ Las dos fechas de la ficha solo cambian con `service_role` o dentro de una funci
 `customers_whatsapp_consent_guard` rechaza al personal, dueño incluido, porque el permiso lo da solo
 el cliente (REQ-041.4). Eliminar la ficha borra ambas (REQ-018.6). `merge_customers` deja la fecha más
 nueva de cada una, así una baja de la ficha fusionada no se pierde (REQ-042.3).
+
+`whatsapp_allowed` lo cambia solo `service_role` (el operador, con SQL o una migración): el trigger
+`businesses_whatsapp_allowed_guard` rechaza al personal, dueño incluido (REQ-043.6, ADR-029). El
+`check` impide encender el aviso en un negocio no habilitado aunque el dueño escriba la columna por
+la API, así que las funciones de §12.2 que leen `whatsapp_auto_enabled` no cambian. `0040` habilita
+a Filo (`slug = 'filo'`); en local no hace nada porque el seed no lo trae.
 
 ### 12.2 Funciones SQL
 
@@ -1278,6 +1285,8 @@ guarde `meta_message_id` no encuentra la fila y se pierde.
   solo con el aviso activo y credenciales. Los textos viven en `src/lib/notifications/auto-messages.ts`.
 - `/admin/negocio`: interruptor del aviso y número de contacto (REQ-043.3, REQ-042.4). Sin credenciales
   del servidor la sección no aparece y `saveWhatsAppSettings` no deja activar: no habría qué activar.
+  Tampoco aparece si el negocio no está habilitado (`whatsapp_allowed`, REQ-043.6), y la acción no
+  deja activar.
 - Aviso de privacidad por defecto: párrafo de WhatsApp (REQ-041.6) en `default_privacy_text`. Rige para
   negocios nuevos; los que ya existen publican una versión nueva (REQ-002.5).
 
@@ -1289,6 +1298,8 @@ guarde `meta_message_id` no encuentra la fila y se pierde.
   24 h, que `check_rate_limit` no la borre y supresión.
 - pgTAP `0037`: lecturas con el aviso apagado y activo, `claimed` vencidos y permisos (ADR-019).
 - pgTAP `0039`: permiso de la ficha, campos nuevos apagado y activo, aviso por defecto y permisos.
+- pgTAP `0040`: el dueño no cambia `whatsapp_allowed`, no enciende el aviso sin habilitación y
+  `service_role` sí; nace en false.
 - Unitarias: `pickNotifications` (2, 1 y 0 delante, salto de 4 a 1, sube y baja, pausa, sin tiempo,
   `no_capable`, sin celular), `normalizeOptOut`, firma del webhook, `CloudApiChannel` con `fetch`
   falso, y que cada acción de la fila llame `afterQueueChange`: corre las acciones con Supabase falso

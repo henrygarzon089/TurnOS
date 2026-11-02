@@ -60,6 +60,10 @@ Meta puede tardar en aprobarlas. Si las rechaza o las pasa a marketing, avísame
 
 ## 7. Token y variables en Vercel
 
+Antes de este paso, la migración `0040_whatsapp_allowed` debe estar en producción: así solo Filo ve
+el interruptor del aviso (ADR-029). Después de agregar las variables, haz un despliegue nuevo para
+que las tome.
+
 1. En el portafolio crea un **usuario del sistema** con permisos `whatsapp_business_messaging` y
    `whatsapp_business_management`, y genera un token que no expire.
 2. En Vercel → proyecto `turnos` → Settings → Environment Variables, agrega en producción:

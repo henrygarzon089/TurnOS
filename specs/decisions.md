@@ -390,3 +390,18 @@
 - Consecuencias: migración `0038_whatsapp_inbound`, que se aplica en producción junto con `0036` y
   `0037`. `design.md` §12.5. Con solo Filo activo (ADR-027), (a) y (b) dan lo mismo hoy; la diferencia
   aparece si se activa un segundo negocio.
+
+## ADR-029 · WhatsApp solo en negocios habilitados por el operador
+- Estado: **aceptada** (Henry, 2026-11-02, antes de poner las credenciales en Vercel)
+- Contexto: ADR-027 dice que el aviso solo se activa en Filo, pero el interruptor dependía solo de las
+  credenciales del servidor, que son de toda la instalación. Con ellas en Vercel, cualquier dueño lo
+  vería, y además puede escribir `whatsapp_auto_enabled` directo por la API (política
+  `businesses_update`). Otro negocio activo mandaría mensajes por el número y la tarjeta de Filo, y
+  rompe la regla de "PARAR" de ADR-028 (el "único negocio activo").
+- Opciones: (a) lista de negocios en una variable de entorno, solo en las pantallas; (b) columna
+  `whatsapp_allowed` que solo cambia `service_role`, con `check` que exige habilitación para encender.
+- Decisión: (b). Cierra también la escritura directa y las funciones SQL sin tocarlas. Filo queda
+  habilitado en la misma migración.
+- Consecuencias: REQ-043.6, migración `0040_whatsapp_allowed`, `design.md` §12.1 y §12.6, tarea T-070.
+  Va a producción antes que las variables `WHATSAPP_*`. Habilitar otro negocio es un `update` del
+  operador. La aprobación del Hito 6 pasa a ser ADR-030.
