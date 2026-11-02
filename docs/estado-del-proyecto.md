@@ -90,11 +90,14 @@ push`, pedido por Henry). Verificado: `anon` no ejecuta ninguna función, el per
   sin prueba) y la prueba de NFR-009 cubre los hitos 0 a 6. Un `--hito` desconocido ahora falla en
   vez de pasar sin revisar nada. Sin migración ni cambios en la app. unitarias 264.
 
-- T-070 `[~]` (2026-11-02): solo los negocios que habilita el operador encienden el aviso (REQ-043.6,
+- T-070 `[x]` (2026-11-02): solo los negocios que habilita el operador encienden el aviso (REQ-043.6,
   ADR-029). Migración `0040_whatsapp_allowed`: columna `whatsapp_allowed` que el personal no puede
   cambiar y `check` que impide encender el aviso sin ella; habilita a Filo. Sin habilitación,
-  `/admin/negocio` no muestra el interruptor. Cierra la limitación de T-068. Falta aplicar `0040` en
-  producción y desplegar. pgTAP 773 · unitarias 267 · integración 102.
+  `/admin/negocio` no muestra el interruptor. Cierra la limitación de T-068. **En producción** desde el
+  2026-11-02: PR #34, `0040` aplicada con `supabase db push` y `main` desplegado. Verificado: la base
+  remota al día, `/filo/turno` sin casilla y el webhook responde 403 sin credenciales. No se pudo leer
+  la tabla para confirmar que solo Filo quedó habilitado: el conector de Supabase no tiene permiso en
+  el proyecto. pgTAP 773 · unitarias 267 · integración 102.
 
 #### Checklist de Henry para cerrar T-069 (Hito 6)
 
@@ -109,7 +112,7 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
       (§5; esperamos unos $3).
 - [ ] Plantillas `turno_faltan_dos` y `turno_te_llaman` aprobadas como **Utilidad**, idioma `es` sin
       variante regional (§6).
-- [ ] `0040_whatsapp_allowed` aplicada en producción y código de T-070 desplegado, **antes** de las
+- [x] `0040_whatsapp_allowed` aplicada en producción y código de T-070 desplegado, **antes** de las
       variables: así solo Filo ve el interruptor (ADR-029).
 - [ ] Las cuatro variables `WHATSAPP_*` en Vercel, producción, y un despliegue nuevo para que las tome
       (§7).
