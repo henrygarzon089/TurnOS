@@ -991,7 +991,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Pendiente para T-069: aplicar `0039` y publicar en Filo una versión nueva del aviso con el párrafo de
   WhatsApp: `default_privacy_text` solo rige para negocios nuevos.
 
-### [~] T-070 · Solo negocios habilitados encienden el aviso
+### [x] T-070 · Solo negocios habilitados encienden el aviso
 - REQ: REQ-043.6
 - Archivos: `supabase/migrations/0040_whatsapp_allowed.sql`, `supabase/tests/0040_whatsapp_allowed.sql`,
   `/admin/negocio`, `saveWhatsAppSettings`
@@ -1002,7 +1002,8 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   encendían el aviso en `0036`…`0039`, integración y E2E ahora habilitan antes el negocio, porque el
   `check` lo exige. pgTAP 773 · unitarias 267 · integración 102. `saveWhatsAppSettings` lee la
   habilitación solo al encender, para dar un mensaje claro; apagar no la pide.
-- Pendiente: aplicar `0040` en producción y desplegar, antes de poner las variables `WHATSAPP_*`.
+- En producción (2026-11-02): PR #34 fusionado con CI verde, `0040` aplicada con `supabase db push`
+  (simulación antes: solo `0040`) y `main` desplegado con `vercel deploy --prod`, pedido por Henry.
 
 ### [ ] T-069 · Validación Hito 6: Meta real y matriz de trazabilidad
 - REQ: REQ-040…REQ-043
