@@ -59,6 +59,9 @@ db push` y `vercel --prod` desde `main`). Sin pantallas todavía: nada cambia pa
   estados y contadores). **Sin aplicar en producción**: la aplica Henry antes de desplegar T-066.
   Viene apagada y sin pantallas, así que nada cambia para el cliente. pgTAP 704 · unitarias 130 ·
   integración 58.
+- T-065 `[x]` (2026-11-01): `pickNotifications` decide qué avisos tocan y `CloudApiChannel` los envía
+  a Meta. Sin migración y sin uso todavía: nada llama este código hasta T-066, así que nada cambia
+  para el cliente. Falta confirmar la versión de la Graph API (`v26.0`) en T-069. unitarias 168 · integración 58.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

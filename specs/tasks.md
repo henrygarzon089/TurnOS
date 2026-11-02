@@ -898,11 +898,23 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   (también para la autocorrección de §12.4). `do_not_contact` no bloquea avisos: REQ-020.5 habla de
   recordatorios y aquí manda el permiso del cliente.
 
-### [ ] T-065 · Dominio y canal: `pickNotifications` y `CloudApiChannel`
+### [x] T-065 · Dominio y canal: `pickNotifications` y `CloudApiChannel`
 - REQ: REQ-040.1–040.4, REQ-043.4
 - Archivos: `src/lib/domain/queue-notifications.ts`, `src/lib/notifications/cloud-api.ts`, sus pruebas
 - Terminado: unitarias con 100 % de ramas en `pickNotifications`, incluido el salto de 4 a 1; canal
   probado con `fetch` falso: nunca lanza y respeta el timeout.
+- Nota (2026-11-01): desvíos, ya reflejados en design.md §6.5, §12.3 y §12.4. `pickNotifications`
+  recibe también `waiting` con el celular, porque `Estimate` no lo trae y "sin celular" se decide ahí.
+  §6.5 decía `buildNotifyLink`; se corrigió al nombre real del código (`buildLink`, con `kind`).
+  `cloudApiChannelFromEnv()` exige las cuatro variables. Agregado sin estar en §12: el archivo entra
+  al umbral de 100 % de `vitest.config.ts`, y las pruebas también marcan REQ-040.5, REQ-040.7 y
+  REQ-042.4, que T-066 y T-067 terminan de cubrir de punta a punta. `cloud-api.ts` no importa
+  `server-only` porque rompería las pruebas que lo carguen; ninguna variable es `NEXT_PUBLIC_`.
+- Pendiente para T-069: la versión de la Graph API (`v26.0`, constante en `cloud-api.ts`) no se pudo
+  confirmar en el registro oficial de Meta. Verificarla con el número de prueba, y que las plantillas
+  queden aprobadas con el código `es`.
+- Pendiente para T-066: `getChannel()` sigue devolviendo wa.me (el botón manual). `dispatch` usa
+  `cloudApiChannelFromEnv()` y, si da null, no envía nada.
 
 ### [ ] T-066 · Envío automático en las acciones de la fila
 - REQ: REQ-040.1–040.8

@@ -10,6 +10,7 @@ export default defineConfig({
       provider: "v8",
       include: [
         "src/lib/domain/queue-estimate.ts",
+        "src/lib/domain/queue-notifications.ts",
         "src/lib/domain/commission.ts",
         "src/lib/domain/cash-closure.ts",
         "src/lib/domain/money.ts",
