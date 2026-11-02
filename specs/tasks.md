@@ -1045,11 +1045,15 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   después de las migraciones). `membership_periods.sale_id` queda `not null`: la prueba crea una
   venta mínima en $ 0.
 
-### [ ] T-072 · Cuota en la caja
+### [x] T-072 · Cuota en la caja
 - REQ: REQ-045.1, REQ-045.2, REQ-045.3, REQ-045.4, REQ-045.5, REQ-045.6, REQ-045.7
 - Archivos: `supabase/migrations/0042_membership_sales.sql` (`register_membership_fee`, `void_sale`),
   `supabase/tests/0042_membership_sales.sql`, `src/lib/domain/commission.ts`
 - Terminado: pgTAP de la cuota (ejemplo G), encadenado, vencimiento y anulación.
+- Nota (2026-11-02): pgTAP 44 nuevas (866 en total). `commission.ts` no cambia aquí: la cuota es una
+  venta aparte sin comisión; el espejo en TS de los ejemplos E y F va con T-073. Plan apagado →
+  `PLAN_DISABLED` (la spec no nombraba el error). `0021_cash.sql` (pgTAP) ahora espera el valor
+  `'membership'` del enum. Detalles en `design.md` §13.3.
 
 ### [ ] T-073 · Membresía en el cobro
 - REQ: REQ-047.1, REQ-047.2, REQ-047.3, REQ-047.4, REQ-047.5, REQ-047.6, REQ-047.7, REQ-047.8

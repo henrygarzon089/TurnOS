@@ -125,7 +125,7 @@
 | REQ-025.4 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | commission.test.ts, 0021_cash.sql, 0022_register_sale.sql | cubierto |
 | REQ-025.5 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | my-numbers.spec.ts, my-numbers.test.ts, my-numbers.test.ts | cubierto |
 | REQ-026.1 | Anular una venta | T-040 (hecha), T-045 (hecha) | cash-day.spec.ts, 0021_cash.sql, 0022_register_sale.sql, 0025_cash_summary.sql | cubierto |
-| REQ-026.2 | Anular una venta | T-040 (hecha), T-045 (hecha) | 0021_cash.sql, 0026_close_cash.sql | cubierto |
+| REQ-026.2 | Anular una venta | T-040 (hecha), T-045 (hecha) | 0021_cash.sql, 0026_close_cash.sql, 0042_membership_sales.sql | cubierto |
 | REQ-027.1 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | cash-day.spec.ts, 0025_cash_summary.sql | cubierto |
 | REQ-027.2 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | close-cash.spec.ts, 0021_cash.sql, 0025_cash_summary.sql, 0026_close_cash.sql | cubierto |
 | REQ-027.3 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | close-cash.spec.ts, 0021_cash.sql, 0026_close_cash.sql | cubierto |
@@ -214,15 +214,15 @@
 | REQ-044.1 | Plan de membresía | T-071 (hecha), T-074 (pendiente), T-077 (pendiente) | 0041_memberships.sql | prueba escrita |
 | REQ-044.2 | Plan de membresía | T-071 (hecha), T-074 (pendiente), T-077 (pendiente) | 0041_memberships.sql | prueba escrita |
 | REQ-044.3 | Plan de membresía | T-071 (hecha), T-074 (pendiente), T-077 (pendiente) | 0041_memberships.sql | prueba escrita |
-| REQ-044.4 | Plan de membresía | T-071 (hecha), T-074 (pendiente), T-077 (pendiente) | 0041_memberships.sql | prueba escrita |
-| REQ-044.5 | Plan de membresía | T-071 (hecha), T-074 (pendiente), T-077 (pendiente) | — | sin prueba |
-| REQ-045.1 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
-| REQ-045.2 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
-| REQ-045.3 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
-| REQ-045.4 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
-| REQ-045.5 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
-| REQ-045.6 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
-| REQ-045.7 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
+| REQ-044.4 | Plan de membresía | T-071 (hecha), T-074 (pendiente), T-077 (pendiente) | 0041_memberships.sql, 0042_membership_sales.sql | prueba escrita |
+| REQ-044.5 | Plan de membresía | T-071 (hecha), T-074 (pendiente), T-077 (pendiente) | 0042_membership_sales.sql | prueba escrita |
+| REQ-045.1 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | 0042_membership_sales.sql | prueba escrita |
+| REQ-045.2 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | 0042_membership_sales.sql | prueba escrita |
+| REQ-045.3 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | 0042_membership_sales.sql | prueba escrita |
+| REQ-045.4 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | 0042_membership_sales.sql | prueba escrita |
+| REQ-045.5 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | 0042_membership_sales.sql | prueba escrita |
+| REQ-045.6 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | 0042_membership_sales.sql | prueba escrita |
+| REQ-045.7 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | 0042_membership_sales.sql | prueba escrita |
 | REQ-046.1 | Familia | T-071 (hecha), T-074 (pendiente) | 0041_memberships.sql | prueba escrita |
 | REQ-046.2 | Familia | T-071 (hecha), T-074 (pendiente) | 0041_memberships.sql | prueba escrita |
 | REQ-046.3 | Familia | T-071 (hecha), T-074 (pendiente) | 0041_memberships.sql | prueba escrita |

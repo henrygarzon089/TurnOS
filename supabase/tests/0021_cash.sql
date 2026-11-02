@@ -11,7 +11,7 @@ select has_table('cash_closures', 'NFR-010 tabla cash_closures');
 select has_table('commission_changes', 'NFR-010 tabla commission_changes');
 select enum_has_labels('payment_method', array['cash', 'nequi', 'transfer', 'card'], 'REQ-023.1 medios de pago: efectivo, Nequi, transferencia, tarjeta');
 select enum_has_labels('sale_status', array['active', 'voided'], 'REQ-026.1 estados de venta como enum');
-select enum_has_labels('sale_item_kind', array['service', 'product'], 'REQ-024.2 líneas de servicio o producto');
+select enum_has_labels('sale_item_kind', array['service', 'product', 'membership'], 'REQ-024.2 líneas de servicio o producto (y la cuota de membresía, 0042)');
 select enum_has_labels('closure_status', array['active', 'voided'], 'REQ-027.3 estados de cierre como enum');
 select is(
   (select count(*)::int from information_schema.columns
