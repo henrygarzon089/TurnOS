@@ -8,6 +8,7 @@ import { parseCOP } from "@/lib/domain/money";
 import { normalizePhoneCO } from "@/lib/domain/phone";
 import { parseProductForm } from "@/lib/domain/product-form";
 import { parseGoogleReviewUrl } from "@/lib/domain/review-link";
+import { whatsappChannelReady } from "@/lib/notifications/cloud-api";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -465,6 +466,30 @@ export async function saveGoogleReviewUrl(
   const { error } = await supabase
     .from("businesses")
     .update({ google_review_url: parsed.url })
+    .eq("id", session.business.id);
+  return error ? { error: "No se pudo guardar." } : { ok: true };
+}
+
+/** REQ-043.3 interruptor del aviso automático. REQ-042.4 número de la respuesta automática. */
+export async function saveWhatsAppSettings(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { error: "Solo el dueño puede editar el negocio." };
+  const enabled = formData.get("whatsapp_auto_enabled") === "on";
+  if (enabled && !whatsappChannelReady()) {
+    return { error: "El servidor todavía no tiene WhatsApp configurado." };
+  }
+  const contact = String(formData.get("whatsapp_contact_phone") ?? "").trim();
+  const phone = contact ? normalizePhoneCO(contact) : null;
+  if (contact && !phone) {
+    return { error: "Escribe un celular colombiano de 10 dígitos (empieza por 3)." };
+  }
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("businesses")
+    .update({ whatsapp_auto_enabled: enabled, whatsapp_contact_phone: phone })
     .eq("id", session.business.id);
   return error ? { error: "No se pudo guardar." } : { ok: true };
 }

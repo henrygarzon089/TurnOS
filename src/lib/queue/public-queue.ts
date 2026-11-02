@@ -33,6 +33,8 @@ export type PublicBusiness = {
   nextOpening: string | null;
   closesAt: string | null;
   privacyVersion: number | null;
+  /** REQ-043.3: flag del negocio; la acción lo apaga si faltan credenciales del servidor. */
+  whatsappAutoEnabled: boolean;
   /** barberIds: quienes hacen el servicio (REQ-035.6); falta en datos viejos = todos. */
   services: {
     id: string;
@@ -82,6 +84,8 @@ export type MyTicket = {
   courtesy: { productId: string; name: string; photoPath: string | null; served: boolean } | null;
   /** REQ-036.2: solo con el turno terminado y enlace guardado */
   googleReviewUrl: string | null;
+  /** REQ-042.1: aviso activo y permiso vigente en la ficha */
+  whatsappConsent: boolean;
 };
 
 export type JoinResult =
@@ -114,6 +118,8 @@ export const joinSchema = z.object({
   birthday: z.object({ day: z.string(), month: z.string() }).nullable().optional(),
   /** REQ-038.3: una bebida como máximo; null = "No, gracias". */
   courtesyProductId: z.string().uuid(COURTESY_INVALID).nullable().optional(),
+  /** REQ-041.2: casilla del aviso por WhatsApp. */
+  whatsappOptIn: z.boolean().optional(),
 });
 export type JoinInput = z.input<typeof joinSchema>;
 
@@ -176,6 +182,7 @@ export async function getPublicBusiness(
     nextOpening: (raw.nextOpening as string | null) ?? null,
     closesAt: (raw.closesAt as string | null) ?? null,
     privacyVersion: (raw.privacyVersion as number | null) ?? null,
+    whatsappAutoEnabled: Boolean(raw.whatsappAutoEnabled),
     services,
     products: (raw.products ?? []) as PublicBusiness["products"],
     courtesies: (raw.courtesies ?? []) as PublicBusiness["courtesies"],
@@ -229,6 +236,22 @@ export async function customerHasBirthday(
   const e164 = normalizePhoneCO(phone);
   if (!e164) return false;
   const has = await gw.rpc<boolean>("customer_has_birthday", { p_slug: slug, p_phone: e164 });
+  return Boolean(has);
+}
+
+/** REQ-041.1 / REQ-041.3: casilla o línea según la ficha de ese celular. */
+export async function customerHasWhatsappConsent(
+  gw: Gateway,
+  slug: string,
+  phone: string,
+): Promise<boolean> {
+  if (!/^[a-z0-9-]{3,40}$/.test(slug)) return false;
+  const e164 = normalizePhoneCO(phone);
+  if (!e164) return false;
+  const has = await gw.rpc<boolean>("customer_has_whatsapp_consent", {
+    p_slug: slug,
+    p_phone: e164,
+  });
   return Boolean(has);
 }
 
@@ -294,6 +317,7 @@ export async function joinQueue(
       p_birthday_month: bday.birthday?.month ?? null,
       p_birthday_day: bday.birthday?.day ?? null,
       p_courtesy_product_id: d.courtesyProductId ?? null,
+      p_whatsapp_opt_in: d.whatsappOptIn ?? false,
     });
     return { ok: true, token: r.token, existing: Boolean(r.existing) };
   } catch (e) {
@@ -369,6 +393,7 @@ export async function getTicketByToken(
     loyalty: toLoyaltyStatus(raw.loyalty),
     courtesy: (raw.courtesy as MyTicket["courtesy"]) ?? null,
     googleReviewUrl: (raw.googleReviewUrl as string | null) ?? null,
+    whatsappConsent: Boolean(raw.whatsappConsent),
   };
 }
 
@@ -422,6 +447,23 @@ export async function setTicketCourtesy(
         return { ok: false, error: "Ya te llamaron: la bebida no se puede cambiar." };
       }
       if (e.code === "P0002") return { ok: false, error: "Este turno no existe." };
+    }
+    throw e;
+  }
+}
+
+/** REQ-042.1 / REQ-042.3: "No quiero avisos por WhatsApp" desde "Mi turno". */
+export async function optOutWhatsapp(
+  gw: Gateway,
+  token: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!/^[A-Za-z0-9_-]{16,64}$/.test(token)) return { ok: false, error: "Este turno no existe." };
+  try {
+    await gw.rpc("set_whatsapp_opt_out", { p_token: token });
+    return { ok: true };
+  } catch (e) {
+    if (e instanceof GatewayError && e.code === "P0002") {
+      return { ok: false, error: "Este turno no existe." };
     }
     throw e;
   }

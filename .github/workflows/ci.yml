@@ -73,6 +73,8 @@ jobs:
           } >> "$GITHUB_ENV"
       - run: pnpm build
       - name: Servidor de producción
+        env:
+          WHATSAPP_FAKE_CHANNEL: "1" # REQ-043.4: el aviso automático no sale a la red
         run: |
           pnpm start -p 3000 > /tmp/next.log 2>&1 &
           for i in $(seq 1 60); do curl -sf http://localhost:3000/salud >/dev/null && break; sleep 1; done

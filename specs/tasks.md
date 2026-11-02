@@ -966,10 +966,30 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Pendiente para T-069: probar el webhook con Meta real (firma, formato de `from` y entrega de
   estados). Las pruebas usan cuerpos escritos a mano según la documentación, no eventos reales.
 
-### [ ] T-068 · Pantallas: casilla, baja, contadores y activación
+### [x] T-068 · Pantallas: casilla, baja, contadores y activación
 - REQ: REQ-040.9, REQ-041.1, REQ-041.3, REQ-041.4, REQ-041.6, REQ-042.1, REQ-043.2, REQ-043.3
 - Archivos: formulario de turno, "Mi turno", `/admin/mensajes`, `/admin/negocio`, aviso de privacidad
 - Terminado: E2E de §12.7; con el aviso apagado no aparece nada nuevo.
+- Nota (2026-11-01): 17 pgTAP, 19 unitarias, 7 de integración y 9 E2E (18 con los dos celulares).
+  Desvíos, ya reflejados en design.md §12: migración nueva `0039_whatsapp_screens`, porque §12.6 pide
+  datos que ninguna función exponía (`customer_has_whatsapp_consent`, `whatsappAutoEnabled`,
+  `whatsappConsent`) y el párrafo de REQ-041.6 vive en `default_privacy_text`. Solo lee y cambia un
+  texto. Los E2E necesitan el servidor real con canal falso: `WHATSAPP_FAKE_CHANNEL=1` en `cloud-api.ts`,
+  en `playwright.config.ts` y en `ci.yml`; se ignora en Vercel para que producción nunca marque
+  "Avisado ✓" sin enviar.
+- Decisiones de pantalla: apagado o sin credenciales, `/admin/mensajes` sigue igual; sin credenciales
+  tampoco aparece la sección de `/admin/negocio`, y `saveWhatsAppSettings` no deja activar. La baja de
+  "Mi turno" sale también en `in_service` (turno activo según REQ-003.5). Casilla y línea aparecen con
+  un celular válido, como el cumpleaños; cambiar de celular desmarca la casilla. El número de contacto
+  acepta solo celulares colombianos.
+- Sin migrar `0039`, desplegar este código no rompe nada: los campos llegan vacíos y se leen como
+  apagado, así que el aviso no se ve aunque el negocio lo tenga activo.
+- REQ-041.4 no cambió código: el turno manual nunca tuvo casilla; la prueba lo fija.
+- Limitación conocida: con las credenciales en Vercel, todo dueño ve el interruptor, y ADR-027 dice que
+  solo se activa en Filo. La consulta de permiso responde a quien escriba un celular, igual que
+  `customerHasBirthday`.
+- Pendiente para T-069: aplicar `0039` y publicar en Filo una versión nueva del aviso con el párrafo de
+  WhatsApp: `default_privacy_text` solo rige para negocios nuevos.
 
 ### [ ] T-069 · Validación Hito 6: Meta real y matriz de trazabilidad
 - REQ: REQ-040…REQ-043

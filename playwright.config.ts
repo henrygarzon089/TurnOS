@@ -32,5 +32,7 @@ export default defineConfig({
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
+        // REQ-043.4: el aviso automático corre con el canal falso (cloud-api.ts)
+        env: { WHATSAPP_FAKE_CHANNEL: "1" },
       },
 });

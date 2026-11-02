@@ -6,7 +6,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { ErrorText, Field } from "@/components/auth/LoginForm";
 import { BarberCutsSheet } from "@/components/queue/BarberCutsSheet";
-import { customerHasBirthday, getPreferredBarber, joinQueue } from "@/lib/actions/public";
+import {
+  customerHasBirthday,
+  customerHasWhatsappConsent,
+  getPreferredBarber,
+  joinQueue,
+} from "@/lib/actions/public";
 import { barbersForService, serviceAvailability } from "@/lib/domain/barber-services";
 import { MONTH_NAMES } from "@/lib/domain/birthday";
 import { formatCOP } from "@/lib/domain/money";
@@ -47,6 +52,11 @@ export function JoinForm({ business, now }: Props) {
   const [birthdayOnFile, setBirthdayOnFile] = useState<{ phone: string; has: boolean } | null>(
     null,
   );
+  const [whatsappOnFile, setWhatsappOnFile] = useState<{ phone: string; has: boolean } | null>(
+    null,
+  );
+  // REQ-041.1: la casilla marcada vale para ese celular; otro celular la encuentra sin marcar
+  const [whatsappOptInPhone, setWhatsappOptInPhone] = useState<string | null>(null);
 
   // REQ-037.2: se pregunta por el celular escrito o prellenado. Mientras no se sepa, el campo no
   // aparece: así a quien ya lo dio no le salta y desaparece bajo el dedo.
@@ -62,6 +72,22 @@ export function JoinForm({ business, now }: Props) {
     };
   }, [business.slug, e164]);
   const askBirthday = birthdayOnFile?.phone === e164 && !birthdayOnFile?.has;
+
+  // REQ-041.1 / REQ-041.3: casilla o línea, con la misma espera que el cumpleaños
+  const whatsappEnabled = business.whatsappAutoEnabled;
+  useEffect(() => {
+    if (!whatsappEnabled || !e164) return;
+    let stale = false;
+    void customerHasWhatsappConsent(business.slug, e164).then((has) => {
+      if (!stale) setWhatsappOnFile({ phone: e164, has });
+    });
+    return () => {
+      stale = true;
+    };
+  }, [business.slug, whatsappEnabled, e164]);
+  const whatsappKnown = whatsappEnabled && whatsappOnFile?.phone === e164;
+  const askWhatsapp = whatsappKnown && !whatsappOnFile?.has;
+  const whatsappOptIn = askWhatsapp && !!e164 && whatsappOptInPhone === e164;
 
   // REQ-003.7 / REQ-002.4: prellenar desde el navegador
   useEffect(() => {
@@ -139,6 +165,7 @@ export function JoinForm({ business, now }: Props) {
         source: "qr",
         birthday: askBirthday ? { day: birthdayDay, month: birthdayMonth } : null,
         courtesyProductId: shownCourtesyId,
+        whatsappOptIn,
       });
       if (!r.ok) {
         setError({ message: r.error, field: r.field });
@@ -343,6 +370,22 @@ export function JoinForm({ business, now }: Props) {
         <p role="status" className="text-warn rounded-xl bg-amber-50 p-3 text-sm font-medium">
           {warning}
         </p>
+      )}
+
+      {askWhatsapp && (
+        <label className="flex min-h-12 items-start gap-3 text-sm">
+          <input
+            type="checkbox"
+            name="whatsappOptIn"
+            checked={whatsappOptIn}
+            onChange={(e) => setWhatsappOptInPhone(e.target.checked ? e164 : null)}
+            className="mt-0.5 h-6 w-6 shrink-0"
+          />
+          <span>Avísame por WhatsApp cuando falte poco</span>
+        </label>
+      )}
+      {whatsappKnown && !askWhatsapp && (
+        <p className="text-muted text-sm">Te avisamos por WhatsApp cuando falte poco</p>
       )}
 
       {alreadyAccepted ? (
