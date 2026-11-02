@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createAdminGateway } from "@/lib/db/supabase-gateway";
 import { afterQueueChange } from "@/lib/notifications/after-queue-change";
+import { whatsappChannelReady } from "@/lib/notifications/cloud-api";
 import * as queue from "@/lib/queue/public-queue";
 import { barberEmailFromPhone } from "@/lib/auth/session";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -117,7 +118,13 @@ async function clientIp(): Promise<string | null> {
 
 /** REQ-001.1 */
 export async function getPublicBusiness(slug: string) {
-  return queue.getPublicBusiness(createAdminGateway(), slug);
+  const business = await queue.getPublicBusiness(createAdminGateway(), slug);
+  if (!business) return null;
+  // REQ-043.3
+  return {
+    ...business,
+    whatsappAutoEnabled: business.whatsappAutoEnabled && whatsappChannelReady(),
+  };
 }
 
 /** REQ-022.1: barbero preferido para preseleccionar en "Tomar turno". */
@@ -135,6 +142,11 @@ export async function customerHasBirthday(slug: string, phone: string): Promise<
   return queue.customerHasBirthday(createAdminGateway(), slug, phone);
 }
 
+/** REQ-041.1 / REQ-041.3: ¿la ficha de este celular ya tiene permiso vigente? */
+export async function customerHasWhatsappConsent(slug: string, phone: string): Promise<boolean> {
+  return queue.customerHasWhatsappConsent(createAdminGateway(), slug, phone);
+}
+
 /** REQ-003: tomar turno. Devuelve el token (o el existente, REQ-003.5). */
 export async function joinQueue(input: queue.JoinInput): Promise<queue.JoinResult> {
   const gw = createAdminGateway();
@@ -145,7 +157,10 @@ export async function joinQueue(input: queue.JoinInput): Promise<queue.JoinResul
 
 /** REQ-004 */
 export async function getTicketByToken(token: string) {
-  return queue.getTicketByToken(createAdminGateway(), token);
+  const ticket = await queue.getTicketByToken(createAdminGateway(), token);
+  if (!ticket) return null;
+  // REQ-043.3
+  return { ...ticket, whatsappConsent: ticket.whatsappConsent && whatsappChannelReady() };
 }
 
 /** REQ-005 */
@@ -154,6 +169,11 @@ export async function cancelTicketByToken(token: string) {
   const result = await queue.cancelTicketByToken(gw, token);
   if (result.ok) afterQueueChange(await queue.ticketBusinessId(gw, token));
   return result;
+}
+
+/** REQ-042.1 */
+export async function optOutWhatsapp(token: string) {
+  return queue.optOutWhatsapp(createAdminGateway(), token);
 }
 
 /** REQ-038.4 */

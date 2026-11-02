@@ -75,8 +75,15 @@ db push` y `vercel --prod` desde `main`). Sin pantallas todavía: nada cambia pa
   **Sin aplicar en producción**: Henry aplica `0036`, `0037` y `0038` juntas, en orden, antes de
   activar el aviso. Desplegar este código antes de migrar no cambia nada para el cliente: sin las
   variables `WHATSAPP_*` la ruta responde 401 o 403. No se ha probado con eventos reales de Meta: queda
-  para T-069. Falta T-068 (pantallas) para que un cliente pueda dar permiso. pgTAP 745 · unitarias 244
-  · integración 95.
+  para T-069. pgTAP 745 · unitarias 244 · integración 95.
+- T-068 `[x]` (2026-11-01): pantallas del aviso: casilla o línea en el formulario de turno, baja en "Mi
+  turno", textos y contadores en `/admin/mensajes`, interruptor y número de contacto en
+  `/admin/negocio`, y párrafo de WhatsApp en el aviso por defecto. Migración `0039_whatsapp_screens`
+  (solo lecturas y un texto). **Sin aplicar en producción**: la aplica Henry; sin ella nada se rompe y el
+  aviso no se ve. `0036`–`0038` ya están en producción, el código de T-064 a T-068 todavía no. Ningún
+  negocio tiene el aviso activo. Los E2E usan `WHATSAPP_FAKE_CHANNEL=1`, que se ignora en Vercel. Ojo:
+  con las credenciales en Vercel, todo dueño verá el interruptor. Sigue T-069. pgTAP 762 · unitarias 263
+  · integración 102.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

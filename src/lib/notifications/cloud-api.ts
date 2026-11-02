@@ -98,13 +98,26 @@ export class CloudApiChannel implements NotificationChannel {
   }
 }
 
+/** Responde como Meta sin salir de la máquina: los E2E corren el servidor real (REQ-043.4). */
+const fakeGraphFetch: typeof fetch = async () =>
+  Response.json({ messages: [{ id: `fake.${crypto.randomUUID()}` }] });
+
 /**
  * Canal con las credenciales del entorno, o null si falta alguna: sin el secreto y el token del
  * webhook no llegarían los estados ni "PARAR", así que tampoco se envía (REQ-043.3).
+ * `WHATSAPP_FAKE_CHANNEL=1` da un canal falso para los E2E; en Vercel se ignora, para que producción
+ * nunca marque "Avisado ✓" sin haber enviado.
  */
 export function cloudApiChannelFromEnv(
   env: Record<string, string | undefined> = process.env,
 ): CloudApiChannel | null {
+  if (env.WHATSAPP_FAKE_CHANNEL === "1" && !env.VERCEL) {
+    return new CloudApiChannel({
+      accessToken: "fake",
+      phoneNumberId: "fake",
+      fetchImpl: fakeGraphFetch,
+    });
+  }
   const {
     WHATSAPP_ACCESS_TOKEN: accessToken,
     WHATSAPP_PHONE_NUMBER_ID: phoneNumberId,
@@ -113,4 +126,11 @@ export function cloudApiChannelFromEnv(
   } = env;
   if (!accessToken || !phoneNumberId || !appSecret || !verifyToken) return null;
   return new CloudApiChannel({ accessToken, phoneNumberId });
+}
+
+/** REQ-043.3: sin credenciales del servidor las pantallas siguen como hoy. */
+export function whatsappChannelReady(
+  env: Record<string, string | undefined> = process.env,
+): boolean {
+  return cloudApiChannelFromEnv(env) !== null;
 }

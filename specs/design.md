@@ -1121,8 +1121,8 @@ Cada cambio de cortesía (`set_ticket_courtesy`, `mark_courtesy_served`) emite `
 
 ## 12. Hito 6 — Aviso automático por WhatsApp (REQ-040…REQ-043, ADR-027)
 
-Migraciones `0036_whatsapp_notifications.sql` y `0037_notification_queue.sql` con su pgTAP y permisos
-explícitos (ADR-019).
+Migraciones `0036_whatsapp_notifications.sql`, `0037_notification_queue.sql`, `0038_whatsapp_inbound.sql`
+y `0039_whatsapp_screens.sql` con su pgTAP y permisos explícitos (ADR-019).
 
 ### 12.1 Datos
 
@@ -1158,6 +1158,8 @@ nueva de cada una, así una baja de la ficha fusionada no se pierde (REQ-042.3).
 | `notification_month_stats(p_business_id)` | dueño | `{sent, failed, capReached}`, mes de Bogotá. Recibe el negocio como `birthdays_this_week` | 043.2 |
 | `whatsapp_inbound_context(p_phone)` | service_role | `{optOutBusinessIds, contactPhone}` de un mensaje entrante (`0038`, §12.5) | 042.2, 042.4, 042.5 |
 | `claim_whatsapp_reply(p_phone)` | service_role | Ventana móvil de 24 h de la respuesta automática (`0038`, §12.5) | 042.4 |
+| `customer_has_whatsapp_consent(p_slug, p_phone)` | service_role | ¿La ficha de ese celular tiene permiso vigente? (`0039`, §12.6) | 041.1, 041.3 |
+| `get_public_business`, `get_ticket_by_token` | service_role | Agregan `whatsappAutoEnabled` y `whatsappConsent` (activo y con permiso vigente) (`0039`) | 042.1, 043.3 |
 
 El tope cuenta las filas que no son `skipped` del mes, dentro de `claim_notification` con un bloqueo
 por negocio (`pg_advisory_xact_lock`) para que no se pase por concurrencia.
@@ -1180,7 +1182,9 @@ Auxiliares de `service_role`: `whatsapp_consent_active(opt_in, opt_out)` (regla 
   `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`. Las pone Henry en Vercel. Sin cualquiera de las cuatro
   `cloudApiChannelFromEnv()` devuelve null y el canal queda inactivo (REQ-043.3): sin las del webhook
   no llegarían los estados ni "PARAR".
-- En pruebas se inyecta un canal falso; ninguna prueba toca la red (REQ-043.4).
+- En pruebas se inyecta un canal falso; ninguna prueba toca la red (REQ-043.4). Los E2E corren el
+  servidor real con `WHATSAPP_FAKE_CHANNEL=1`: `cloudApiChannelFromEnv()` devuelve el mismo canal con un
+  `fetch` falso, gana sobre las credenciales y se ignora en Vercel (`VERCEL` definido).
 
 Plantillas de utilidad a registrar en Meta (idioma español):
 
@@ -1264,13 +1268,18 @@ guarde `meta_message_id` no encuentra la fila y se pierde.
 ### 12.6 Pantallas
 
 - Formulario de turno: casilla o línea de REQ-041.1/041.3. El estado sale de una acción pública
-  análoga a `customerHasBirthday`; `getPublicBusiness` agrega `whatsappAutoEnabled` (requiere flag y
-  credenciales).
-- "Mi turno": "No quiero avisos por WhatsApp" (REQ-042.1) con confirmación.
+  análoga a `customerHasBirthday` (`customerHasWhatsappConsent`); `getPublicBusiness` agrega
+  `whatsappAutoEnabled` (requiere flag y credenciales). Igual que el cumpleaños, aparece cuando hay un
+  celular válido. La casilla marcada vale para ese celular: otro celular la encuentra sin marcar.
+- "Mi turno": "No quiero avisos por WhatsApp" (REQ-042.1) con confirmación, también en `in_service`
+  (turno activo según REQ-003.5).
 - Filas del barbero y del dueño: "Avisado ✓" igual que hoy; el botón sigue (REQ-040.8).
-- `/admin/mensajes`: textos automáticos de solo lectura y contadores del mes (REQ-040.9, REQ-043.2).
-- `/admin/negocio`: interruptor del aviso y número de contacto (REQ-043.3, REQ-042.4).
-- Aviso de privacidad por defecto: párrafo de WhatsApp (REQ-041.6).
+- `/admin/mensajes`: textos automáticos de solo lectura y contadores del mes (REQ-040.9, REQ-043.2),
+  solo con el aviso activo y credenciales. Los textos viven en `src/lib/notifications/auto-messages.ts`.
+- `/admin/negocio`: interruptor del aviso y número de contacto (REQ-043.3, REQ-042.4). Sin credenciales
+  del servidor la sección no aparece y `saveWhatsAppSettings` no deja activar: no habría qué activar.
+- Aviso de privacidad por defecto: párrafo de WhatsApp (REQ-041.6) en `default_privacy_text`. Rige para
+  negocios nuevos; los que ya existen publican una versión nueva (REQ-002.5).
 
 ### 12.7 Pruebas
 
@@ -1279,6 +1288,7 @@ guarde `meta_message_id` no encuentra la fila y se pierde.
 - pgTAP `0038`: a quién se le retira el permiso, número de contacto en cada caso, ventana móvil de
   24 h, que `check_rate_limit` no la borre y supresión.
 - pgTAP `0037`: lecturas con el aviso apagado y activo, `claimed` vencidos y permisos (ADR-019).
+- pgTAP `0039`: permiso de la ficha, campos nuevos apagado y activo, aviso por defecto y permisos.
 - Unitarias: `pickNotifications` (2, 1 y 0 delante, salto de 4 a 1, sube y baja, pausa, sin tiempo,
   `no_capable`, sin celular), `normalizeOptOut`, firma del webhook, `CloudApiChannel` con `fetch`
   falso, y que cada acción de la fila llame `afterQueueChange`: corre las acciones con Supabase falso

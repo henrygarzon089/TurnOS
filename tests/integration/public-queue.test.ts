@@ -2,10 +2,12 @@ import { afterAll, describe, expect, it } from "vitest";
 import {
   cancelTicketByToken,
   customerHasBirthday,
+  customerHasWhatsappConsent,
   getBarberPhotos,
   getPublicBusiness,
   getTicketByToken,
   joinQueue,
+  optOutWhatsapp,
   RATE_LIMITS,
   setTicketCourtesy,
 } from "@/lib/queue/public-queue";
@@ -575,6 +577,101 @@ describe("REQ-039 fotos de cortes (server action)", () => {
       expect(await getBarberPhotos(gw, "la-33", "no-es-uuid")).toEqual([]);
       expect(await getBarberPhotos(gw, "NO VALE", c.juan)).toEqual([]);
       expect(await getBarberPhotos(gw, "otra-barberia", c.juan)).toEqual([]);
+    });
+  });
+});
+
+describe("REQ-041 / REQ-042 permiso del aviso por WhatsApp (server action)", () => {
+  const consentOf = async (q: Q, phone: string) => {
+    const { rows } = await q<{ whatsapp_opt_in_at: Date | null; whatsapp_opt_out_at: Date | null }>(
+      `select whatsapp_opt_in_at, whatsapp_opt_out_at from customers where phone_e164 = $1`,
+      [phone],
+    );
+    return rows[0];
+  };
+  const turnOn = (q: Q, biz: string) =>
+    q(`update businesses set whatsapp_auto_enabled = true where id = $1`, [biz]);
+
+  it("REQ-041.2 joinQueue guarda el permiso si el cliente marcó la casilla", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      await turnOn(q, c.biz);
+      const r = await joinQueue(createPgGateway(q), { ...base(c), whatsappOptIn: true }, "1.1.1.1");
+      expect(r.ok).toBe(true);
+      expect((await consentOf(q, "+573005557001")).whatsapp_opt_in_at).toBeInstanceOf(Date);
+    });
+  });
+
+  it("REQ-041.1 no marcar la casilla no impide tomar turno ni da permiso", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      await turnOn(q, c.biz);
+      const r = await joinQueue(createPgGateway(q), base(c), "1.1.1.1");
+      expect(r.ok).toBe(true);
+      expect((await consentOf(q, "+573005557001")).whatsapp_opt_in_at).toBeNull();
+    });
+  });
+
+  it("REQ-043.3 con el aviso apagado no se guarda el permiso", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const r = await joinQueue(createPgGateway(q), { ...base(c), whatsappOptIn: true }, "1.1.1.1");
+      expect(r.ok).toBe(true);
+      expect((await consentOf(q, "+573005557001")).whatsapp_opt_in_at).toBeNull();
+    });
+  });
+
+  it("REQ-041.3 customerHasWhatsappConsent responde por el celular escrito", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      await turnOn(q, c.biz);
+      const gw = createPgGateway(q);
+      await joinQueue(gw, { ...base(c), whatsappOptIn: true }, "1.1.1.1");
+      expect(await customerHasWhatsappConsent(gw, "la-33", "300 555 7001")).toBe(true);
+      expect(await customerHasWhatsappConsent(gw, "la-33", "300 555 7002")).toBe(false);
+      expect(await customerHasWhatsappConsent(gw, "la-33", "123")).toBe(false);
+      expect(await customerHasWhatsappConsent(gw, "NO VALE", "300 555 7001")).toBe(false);
+    });
+  });
+
+  it('REQ-042.1 "No quiero avisos" retira el permiso desde "Mi turno"', async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      await turnOn(q, c.biz);
+      const gw = createPgGateway(q);
+      const join = await joinQueue(gw, { ...base(c), whatsappOptIn: true }, "1.1.1.1");
+      if (!join.ok) throw new Error(join.error);
+      expect((await getTicketByToken(gw, join.token))?.whatsappConsent).toBe(true);
+
+      expect(await optOutWhatsapp(gw, join.token)).toEqual({ ok: true });
+
+      expect((await consentOf(q, "+573005557001")).whatsapp_opt_out_at).toBeInstanceOf(Date);
+      expect((await getTicketByToken(gw, join.token))?.whatsappConsent).toBe(false);
+      expect(await customerHasWhatsappConsent(gw, "la-33", "300 555 7001")).toBe(false);
+    });
+  });
+
+  it("REQ-042.1 un token inválido o desconocido no da de baja a nadie", async () => {
+    await withTx(async (q) => {
+      const gw = createPgGateway(q);
+      expect(await optOutWhatsapp(gw, "corto")).toEqual({
+        ok: false,
+        error: "Este turno no existe.",
+      });
+      expect(await optOutWhatsapp(gw, "a".repeat(32))).toEqual({
+        ok: false,
+        error: "Este turno no existe.",
+      });
+    });
+  });
+
+  it("REQ-043.3 getPublicBusiness dice si el negocio tiene el aviso activo", async () => {
+    await withTx(async (q) => {
+      const c = await openLa33(q);
+      const gw = createPgGateway(q);
+      expect((await getPublicBusiness(gw, "la-33"))?.whatsappAutoEnabled).toBe(false);
+      await turnOn(q, c.biz);
+      expect((await getPublicBusiness(gw, "la-33"))?.whatsappAutoEnabled).toBe(true);
     });
   });
 });

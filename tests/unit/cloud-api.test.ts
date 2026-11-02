@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { NotificationChannel } from "@/lib/notifications/channel";
-import { CloudApiChannel, cloudApiChannelFromEnv } from "@/lib/notifications/cloud-api";
+import {
+  CloudApiChannel,
+  cloudApiChannelFromEnv,
+  whatsappChannelReady,
+} from "@/lib/notifications/cloud-api";
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
@@ -207,6 +211,60 @@ describe("cloudApiChannelFromEnv", () => {
     vi.stubGlobal("fetch", realFetch);
     cloudApiChannelFromEnv(env);
     expect(realFetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("whatsappChannelReady", () => {
+  it("REQ-043.3 solo con credenciales del servidor se muestran las pantallas del aviso", () => {
+    expect(whatsappChannelReady({})).toBe(false);
+    expect(
+      whatsappChannelReady({
+        WHATSAPP_ACCESS_TOKEN: "tok",
+        WHATSAPP_PHONE_NUMBER_ID: "123",
+        WHATSAPP_APP_SECRET: "secret",
+        WHATSAPP_VERIFY_TOKEN: "verify",
+      }),
+    ).toBe(true);
+  });
+});
+
+describe("REQ-043.4 canal falso de los E2E (WHATSAPP_FAKE_CHANNEL)", () => {
+  const fake = { WHATSAPP_FAKE_CHANNEL: "1" };
+
+  it("acepta cada envío sin tocar la red", async () => {
+    const realFetch = vi.fn();
+    vi.stubGlobal("fetch", realFetch);
+
+    const channel = cloudApiChannelFromEnv(fake);
+
+    expect(await channel?.sendTemplate(template)).toEqual({
+      ok: true,
+      messageId: expect.stringMatching(/^fake\./),
+    });
+    expect(await channel?.sendText({ phoneE164: "+573001234567", body: "Hola" })).toEqual({
+      ok: true,
+      messageId: expect.stringMatching(/^fake\./),
+    });
+    expect(realFetch).not.toHaveBeenCalled();
+  });
+
+  it("gana sobre credenciales reales: una prueba nunca envía de verdad", async () => {
+    const realFetch = vi.fn();
+    vi.stubGlobal("fetch", realFetch);
+    const channel = cloudApiChannelFromEnv({
+      ...fake,
+      WHATSAPP_ACCESS_TOKEN: "tok",
+      WHATSAPP_PHONE_NUMBER_ID: "123",
+      WHATSAPP_APP_SECRET: "secret",
+      WHATSAPP_VERIFY_TOKEN: "verify",
+    });
+    await channel?.sendTemplate(template);
+    expect(realFetch).not.toHaveBeenCalled();
+  });
+
+  it("en Vercel se ignora: producción no puede quedar con avisos de mentira", () => {
+    expect(cloudApiChannelFromEnv({ ...fake, VERCEL: "1" })).toBeNull();
+    expect(whatsappChannelReady({ ...fake, VERCEL: "1" })).toBe(false);
   });
 });
 

@@ -8,6 +8,7 @@ import {
   cancelTicketByToken,
   getPublicBusiness,
   getTicketByToken,
+  optOutWhatsapp,
   setTicketCourtesy,
 } from "@/lib/actions/public";
 import { formatMinutes } from "@/lib/domain/time";
@@ -104,6 +105,8 @@ export function MyTicket({
         </p>
         <Courtesy ticket={ticket} token={token} initialOptions={courtesies} onChanged={reload} />
       </section>
+
+      <WhatsappOptOut ticket={ticket} token={token} onChanged={reload} />
 
       <div className="mt-4">
         <StampCard status={ticket.loyalty} />
@@ -232,6 +235,63 @@ function Courtesy({
       )}
       {error && (
         <p role="alert" className="text-danger mt-1 font-medium">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** REQ-042.1: mientras la ficha tenga permiso vigente y el turno esté activo. */
+function WhatsappOptOut({
+  ticket,
+  token,
+  onChanged,
+}: {
+  ticket: Ticket;
+  token: string;
+  onChanged: () => Promise<void>;
+}) {
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, startSaving] = useTransition();
+  const active = ["waiting", "called", "in_service"].includes(ticket.status);
+
+  function optOut() {
+    if (!window.confirm("¿Seguro que no quieres recibir avisos por WhatsApp?")) return;
+    setError(null);
+    startSaving(async () => {
+      try {
+        const r = await optOutWhatsapp(token);
+        if (r.ok) setDone(true);
+        else setError(r.error);
+        await onChanged();
+      } catch {
+        setError("No se pudo guardar. Revisa tu conexión.");
+      }
+    });
+  }
+
+  if (done) {
+    return (
+      <p role="status" className="text-muted mt-2 text-sm">
+        Listo, ya no te avisamos por WhatsApp.
+      </p>
+    );
+  }
+  if (!active || !ticket.whatsappConsent) return null;
+  return (
+    <div className="mt-2 text-sm">
+      <button
+        type="button"
+        className="text-accent min-h-12 underline"
+        onClick={optOut}
+        disabled={saving}
+      >
+        No quiero avisos por WhatsApp
+      </button>
+      {error && (
+        <p role="alert" className="text-danger font-medium">
           {error}
         </p>
       )}

@@ -5,9 +5,11 @@ import { ErrorText, Field } from "@/components/auth/LoginForm";
 import {
   saveGoogleReviewUrl,
   saveTemplates,
+  saveWhatsAppSettings,
   updateBusiness,
   type FormState,
 } from "@/lib/actions/admin";
+import { formatPhoneCO } from "@/lib/domain/phone";
 import { renderTemplate } from "@/lib/notifications/render";
 
 export type TemplateKey = "notify_2_turns" | "reminder_inactive" | "share_queue" | "birthday";
@@ -192,6 +194,60 @@ export function GoogleReviewForm({ url }: { url: string | null }) {
       {state?.ok && <p className="text-ok text-sm font-medium">Enlace guardado.</p>}
       <button type="submit" className="btn-primary" disabled={pending}>
         {pending ? "Guardando…" : "Guardar enlace"}
+      </button>
+    </form>
+  );
+}
+
+/** REQ-043.3 interruptor del aviso automático. REQ-042.4 número de la respuesta automática. */
+export function WhatsAppForm({
+  enabled,
+  contactPhone,
+}: {
+  enabled: boolean;
+  contactPhone: string | null;
+}) {
+  const [state, action, pending] = useActionState<FormState, FormData>(
+    saveWhatsAppSettings,
+    undefined,
+  );
+  // Controlados: React limpia el formulario al enviar y un error apagaría el interruptor
+  const [on, setOn] = useState(enabled);
+  const [phone, setPhone] = useState(contactPhone ? formatPhoneCO(contactPhone) : "");
+  return (
+    <form action={action} aria-label="Avisos por WhatsApp" className="mt-8 flex flex-col gap-4">
+      <label className="flex min-h-12 items-center gap-3 font-medium">
+        <input
+          type="checkbox"
+          name="whatsapp_auto_enabled"
+          checked={on}
+          onChange={(e) => setOn(e.target.checked)}
+          className="h-6 w-6 shrink-0"
+        />
+        Avisos automáticos activos
+      </label>
+      <p className="text-muted -mt-2 text-xs">
+        Le avisa por WhatsApp al cliente que dio permiso cuando faltan 2 turnos y cuando lo llaman.
+      </p>
+      <Field label="Número de contacto" htmlFor="whatsapp_contact_phone">
+        <input
+          id="whatsapp_contact_phone"
+          name="whatsapp_contact_phone"
+          type="tel"
+          inputMode="numeric"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="300 123 4567"
+          className="input"
+        />
+      </Field>
+      <p className="text-muted -mt-2 text-xs">
+        Se lo damos a quien responda a los avisos. Déjalo vacío si no quieres darlo.
+      </p>
+      {state?.error && <ErrorText>{state.error}</ErrorText>}
+      {state?.ok && <p className="text-ok text-sm font-medium">Avisos guardados.</p>}
+      <button type="submit" className="btn-primary" disabled={pending}>
+        {pending ? "Guardando…" : "Guardar avisos"}
       </button>
     </form>
   );
