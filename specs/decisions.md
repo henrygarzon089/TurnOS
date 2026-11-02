@@ -374,3 +374,19 @@
   el nombre del cliente pasan por Meta: el aviso de privacidad debe decirlo y publicarse una versión
   nueva (REQ-002.5). Los mensajes de cumpleaños e inactivos siguen manuales porque son de marketing
   (unas 15 veces más caros), y la IA sigue en un hito aparte.
+
+## ADR-028 · Mensajes entrantes de WhatsApp en un número compartido
+- Estado: **aceptada** (Henry, 2026-11-01, en T-067)
+- Contexto: la instalación tiene un solo número de WhatsApp y un mismo celular puede tener ficha en
+  varios negocios. §12.5 no decía de qué negocio es un mensaje entrante, y `whatsapp_opt_out_by_phone`
+  y la respuesta automática necesitan saberlo. Además `check_rate_limit` usa ventanas fijas, que no
+  cumplen "máximo una vez cada 24 horas" (REQ-042.4), y borra al azar lo que tenga más de 2 horas.
+- Opciones para "PARAR": (a) baja solo en el negocio del último aviso; (b) baja en todos los negocios
+  donde ese celular tenga permiso vigente.
+- Decisión: (b). El cliente no elige negocio al responder y debe dejar de recibir avisos de ese
+  número. El número de contacto de la respuesta automática sale del negocio del último aviso enviado;
+  si no hay, del único negocio activo; si no, se omite (REQ-042.5). La ventana de 24 h es móvil, con
+  la función nueva `claim_whatsapp_reply`.
+- Consecuencias: migración `0038_whatsapp_inbound`, que se aplica en producción junto con `0036` y
+  `0037`. `design.md` §12.5. Con solo Filo activo (ADR-027), (a) y (b) dan lo mismo hoy; la diferencia
+  aparece si se activa un segundo negocio.
