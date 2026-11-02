@@ -52,6 +52,14 @@ db push` y `vercel --prod` desde `main`). Sin pantallas todavía: nada cambia pa
   confirmación de permiso foto por foto. Sin migración. **En producción** desde el
   2026-11-01. Sigue T-063 (validación del Hito 5).
 
+### Hito 6 — aviso automático por WhatsApp (en construcción, ADR-027)
+
+- T-064 `[x]` (2026-11-01): migración `0036_whatsapp_notifications` (columnas de negocio y ficha,
+  `ticket_notifications`, `join_queue` con casilla, baja, `claim_notification`, tope de 3.000 al mes,
+  estados y contadores). **Sin aplicar en producción**: la aplica Henry antes de desplegar T-066.
+  Viene apagada y sin pantallas, así que nada cambia para el cliente. pgTAP 704 · unitarias 130 ·
+  integración 58.
+
 ### Hito 4 — servicios por barbero (2026-10-28)
 
 - Origen: Filo (`/filo`, creado en producción el 2026-10-28 con `supabase/data/filo.sql`) tiene

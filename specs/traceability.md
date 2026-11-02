@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-01.
+> Generada por `scripts/traceability.ts` el 2026-11-02.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -94,7 +94,7 @@
 | REQ-018.3 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, 0013_customers_loyalty.sql | cubierto |
 | REQ-018.4 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, rls-customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | cubierto |
 | REQ-018.5 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql, 0035_merge_customers_birthday.sql | cubierto |
-| REQ-018.6 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers-delete.spec.ts, 0013_customers_loyalty.sql, 0014_customers_merge.sql, 0015_anonymize.sql, 0033_customer_experience.sql | cubierto |
+| REQ-018.6 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers-delete.spec.ts, 0013_customers_loyalty.sql, 0014_customers_merge.sql, 0015_anonymize.sql, 0033_customer_experience.sql, 0036_whatsapp_notifications.sql | cubierto |
 | REQ-019.1 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (hecha) | loyalty-config.spec.ts, loyalty.test.ts, 0016_loyalty_config.sql | cubierto |
 | REQ-019.2 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (hecha) | 0013_customers_loyalty.sql | cubierto |
 | REQ-019.3 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (hecha) | loyalty-progress.spec.ts, loyalty.test.ts, 0013_customers_loyalty.sql, 0017_loyalty_progress.sql | cubierto |
@@ -185,28 +185,28 @@
 | REQ-039.4 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, barber-photos.test.ts, resize.test.ts, 0033_customer_experience.sql | cubierto |
 | REQ-039.5 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
 | REQ-039.6 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
-| REQ-040.1 | Avisos automáticos del turno | T-064 (pendiente), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-040.2 | Avisos automáticos del turno | T-064 (pendiente), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-040.3 | Avisos automáticos del turno | T-064 (pendiente), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-040.4 | Avisos automáticos del turno | T-064 (pendiente), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-040.5 | Avisos automáticos del turno | T-064 (pendiente), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-040.6 | Avisos automáticos del turno | T-064 (pendiente), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-040.7 | Avisos automáticos del turno | T-064 (pendiente), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-040.8 | Avisos automáticos del turno | T-064 (pendiente), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-040.9 | Avisos automáticos del turno | T-064 (pendiente), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-041.1 | Permiso del cliente para los avisos | T-064 (pendiente), T-068 (pendiente) | — | sin prueba |
-| REQ-041.2 | Permiso del cliente para los avisos | T-064 (pendiente), T-068 (pendiente) | — | sin prueba |
-| REQ-041.3 | Permiso del cliente para los avisos | T-064 (pendiente), T-068 (pendiente) | — | sin prueba |
-| REQ-041.4 | Permiso del cliente para los avisos | T-064 (pendiente), T-068 (pendiente) | — | sin prueba |
-| REQ-041.5 | Permiso del cliente para los avisos | T-064 (pendiente), T-068 (pendiente) | — | sin prueba |
-| REQ-041.6 | Permiso del cliente para los avisos | T-064 (pendiente), T-068 (pendiente) | — | sin prueba |
-| REQ-042.1 | Baja y respuestas del cliente | T-064 (pendiente), T-067 (pendiente), T-068 (pendiente) | — | sin prueba |
-| REQ-042.2 | Baja y respuestas del cliente | T-064 (pendiente), T-067 (pendiente), T-068 (pendiente) | — | sin prueba |
-| REQ-042.3 | Baja y respuestas del cliente | T-064 (pendiente), T-067 (pendiente), T-068 (pendiente) | — | sin prueba |
-| REQ-042.4 | Baja y respuestas del cliente | T-064 (pendiente), T-067 (pendiente), T-068 (pendiente) | — | sin prueba |
-| REQ-042.5 | Baja y respuestas del cliente | T-064 (pendiente), T-067 (pendiente), T-068 (pendiente) | — | sin prueba |
-| REQ-043.1 | Control y activación | T-064 (pendiente), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-043.2 | Control y activación | T-064 (pendiente), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-043.3 | Control y activación | T-064 (pendiente), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-043.4 | Control y activación | T-064 (pendiente), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-043.5 | Control y activación | T-064 (pendiente), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
+| REQ-040.1 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
+| REQ-040.2 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-040.3 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-040.4 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
+| REQ-040.5 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-040.6 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-040.7 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-040.8 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
+| REQ-040.9 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
+| REQ-041.1 | Permiso del cliente para los avisos | T-064 (hecha), T-068 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-041.2 | Permiso del cliente para los avisos | T-064 (hecha), T-068 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-041.3 | Permiso del cliente para los avisos | T-064 (hecha), T-068 (pendiente) | — | sin prueba |
+| REQ-041.4 | Permiso del cliente para los avisos | T-064 (hecha), T-068 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-041.5 | Permiso del cliente para los avisos | T-064 (hecha), T-068 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-041.6 | Permiso del cliente para los avisos | T-064 (hecha), T-068 (pendiente) | — | sin prueba |
+| REQ-042.1 | Baja y respuestas del cliente | T-064 (hecha), T-067 (pendiente), T-068 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-042.2 | Baja y respuestas del cliente | T-064 (hecha), T-067 (pendiente), T-068 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-042.3 | Baja y respuestas del cliente | T-064 (hecha), T-067 (pendiente), T-068 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-042.4 | Baja y respuestas del cliente | T-064 (hecha), T-067 (pendiente), T-068 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-042.5 | Baja y respuestas del cliente | T-064 (hecha), T-067 (pendiente), T-068 (pendiente) | — | sin prueba |
+| REQ-043.1 | Control y activación | T-064 (hecha), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-043.2 | Control y activación | T-064 (hecha), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-043.3 | Control y activación | T-064 (hecha), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-043.4 | Control y activación | T-064 (hecha), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
+| REQ-043.5 | Control y activación | T-064 (hecha), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
