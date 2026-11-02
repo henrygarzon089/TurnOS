@@ -29,6 +29,8 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 
 ## Estado actual (2026-10-24)
 
+- **Hito 5 (experiencia del cliente, REQ-036…039, ADR-025)** aprobado (ADR-026, 2026-11-01): reseña
+  en Google, cumpleaños, menú con bebida de cortesía y fotos de cortes; migraciones 0033–0035.
 - **Hito 4 (servicios por barbero, REQ-035, ADR-023)** aprobado (ADR-024, 2026-10-28): migraciones
   0030–0032. Filo (`/filo`) es el primer negocio real.
 - **MVP completo**: Hitos 0–3 aprobados por Henry (ADR-017, ADR-020) y en producción. Matriz: 144 CA,

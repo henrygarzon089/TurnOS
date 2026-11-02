@@ -340,3 +340,13 @@
   T-058…T-063. "Fuera de alcance del MVP" no cambia, pero sus puntos de citas, planes familiares,
   WhatsApp Cloud API y push pasan a ser hitos futuros, no exclusiones. Primer uso de Supabase
   Storage (fotos).
+
+
+## ADR-026 · Aprobación del Hito 5 (experiencia del cliente)
+- Estado: **aceptada** (Henry, 2026-11-01)
+- Contexto: REQ-036…REQ-039 implementados en T-058…T-062 (PRs #13–#21), con `pnpm trace --hito=5`
+  sin huecos (180 criterios), CI de `main` en verde y desplegado en producción el 2026-11-01.
+  Henry hizo la prueba en la barbería con el celular.
+- Decisión: Henry aprueba el Hito 5.
+- Consecuencias: T-063 `[x]`. Siguen las mejoras de ADR-025 (aviso automático, membresía familiar,
+  citas a hora fija, gift cards, asistente en WhatsApp), cada una con su grill y su ADR.

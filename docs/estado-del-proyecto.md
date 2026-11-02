@@ -15,13 +15,13 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 
 | Hito                     | Tareas      | Estado                                                                     |
 | ------------------------ | ----------- | -------------------------------------------------------------------------- |
-| H0 Cimientos             | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (CI verde; falta E2E en CI y proteger `main`) |
+| H0 Cimientos             | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (CI y E2E en verde; falta proteger `main`) |
 | H1 Fila virtual          | T-011…T-030 | **aprobado** (ADR-017); pasillo e instalación hechos (ADR-021)             |
 | H2 Clientes y fidelidad  | T-031…T-039 | **aprobado** (ADR-017)                                                     |
 | H3 Caja y comisiones     | T-040…T-050 | **aprobado** (ADR-020); pasillo con el dueño hecho (ADR-021)               |
 | H4 Servicios por barbero | T-051…T-057 | **aprobado** (ADR-024); PRs #4–#10 en `main`                               |
 
-### Hito 5 — experiencia del cliente (en curso, ADR-025)
+### Hito 5 — experiencia del cliente (**aprobado**, ADR-026, 2026-11-01)
 
 - T-058 `[x]` (2026-10-29): migraciones `0033_customer_experience` y `0034_birthday_template`
   (columnas de reseña, cumpleaños, cortesía y fotos; `barber_photos` con límite de 12; bucket
@@ -39,19 +39,18 @@ db push` y `vercel --prod` desde `main`). Sin pantallas todavía: nada cambia pa
 - T-061 `[x]` (2026-10-30): "A la venta", "De cortesía" y foto en `/admin/productos`; "Lo que
   vendemos" en la portada; "Bebida de cortesía" en el formulario y en "Mi turno"; línea con
   "Servida ✓" en las filas del barbero y del dueño; la caja lista solo lo que está a la venta. Sin
-  migración. **Falta el deploy a producción** (lo hace Henry). En Filo los productos existentes
+  migración. **En producción** desde el 2026-11-01. En Filo los productos existentes
   siguen a la venta y no se ofrece bebida hasta marcar alguno "De cortesía".
 - T-062 `[x]` (2026-10-30): fotos de cortes en `/app/mis-fotos` y `/admin/barberos`, "Ver cortes" en
   el formulario. Sin migración. PR #21 fusionado sin esperar E2E ni Lighthouse (`main` no está
   protegida: `gh pr merge --auto` fusiona de una); hay que mirar la corrida de CI en `main`.
-  **Falta el deploy a producción** (lo hace Henry), junto con T-061 y el arreglo de `.btn-*` (PR #20).
-- T-063 `[~]`: `pnpm trace --hito=5` sin huecos. Faltan CI de `main`, deploy, prueba en la barbería
-  y aprobación de Henry. En Filo falta marcar bebidas de cortesía, guardar el enlace de Google y
-  subir fotos.
+  **En producción** desde el 2026-11-01, junto con T-061 y el arreglo de `.btn-*` (PR #20).
+- T-063 `[x]` (2026-11-01, aprobado por Henry): `pnpm trace --hito=5` sin huecos. CI de `main` verde, desplegado el 2026-11-01, prueba en la barbería
+  hecha y Hito 5 aprobado (ADR-026).
 - T-062 `[x]` (2026-10-30): "Mis fotos" del barbero (`/app/mis-fotos`), "Fotos de cortes" en cada
   tarjeta de `/admin/barberos` y "Ver cortes" en el formulario de turno. Hasta 12 por barbero, con
-  confirmación de permiso foto por foto. Sin migración. **Falta el deploy a producción** (lo hace
-  Henry). Sigue T-063 (validación del Hito 5).
+  confirmación de permiso foto por foto. Sin migración. **En producción** desde el
+  2026-11-01. Sigue T-063 (validación del Hito 5).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
