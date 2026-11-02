@@ -941,11 +941,30 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Pendiente para T-068: `joinQueue` todavía no pasa `p_whatsapp_opt_in`; nadie da permiso desde la
   pantalla, así que el envío queda inactivo hasta entonces.
 
-### [ ] T-067 · Webhook de Meta: estados, baja y respuesta automática
+### [x] T-067 · Webhook de Meta: estados, baja y respuesta automática
 - REQ: REQ-040.7, REQ-042.2–042.5, REQ-043.5
-- Archivos: `src/app/api/whatsapp/webhook/route.ts`, `src/proxy.ts`
+- Archivos: `src/app/api/whatsapp/webhook/route.ts`, `src/lib/notifications/webhook.ts`,
+  `src/lib/domain/whatsapp-webhook.ts`, `supabase/migrations/0038_whatsapp_inbound.sql`
 - Terminado: firma inválida → 401; eventos repetidos no cambian nada; "parar", "PARAR " y "párar" dan
   de baja; la respuesta automática sale una vez en 24 h; el contenido del mensaje no se guarda.
+- Nota (2026-11-01): 24 pgTAP, 43 unitarias y 17 de integración nuevas. Desvíos, aprobados
+  por Henry en ADR-028 y reflejados en design.md §12.2 y §12.5: migración nueva
+  `0038_whatsapp_inbound`, porque §12.5 no decía de qué negocio es un mensaje entrante en un número
+  compartido. La baja cubre todos los negocios con permiso vigente, y el número de contacto sale del
+  último aviso enviado o del único negocio activo. `claim_whatsapp_reply` reemplaza a
+  `check_rate_limit` para esta ventana, que era fija y no cumplía REQ-042.4.
+- Agregado sin estar en §12 al escribir la propuesta: `check_rate_limit` deja de limpiar las claves
+  `wa-reply:`, porque borraba al azar lo de más de 2 horas; la baja también gasta la ventana, para que
+  un "PARAR" repetido no reciba la respuesta automática. Por eso quien se da de baja y escribe otra
+  cosa en las siguientes 24 h no recibe respuesta. `anonymize_customer` borra `wa-reply:` (REQ-018.6).
+- `src/proxy.ts` no cambió: su `matcher` solo cubre `/app`, `/admin`, `/entrar` y `/crear-negocio`, así
+  que `/api` ya pasa sin sesión; una prueba lo fija. Los eventos y la lógica pura van fuera de la ruta
+  para probarlos sin Next. Un `read` de Meta se ignora: no cambia el estado del aviso.
+- Limitaciones conocidas: un `failed` que llegue antes de que el envío guarde `meta_message_id` se
+  pierde y "Avisado ✓" se queda. Una confirmación o respuesta que Meta rechace no se reintenta; la baja
+  sí queda. `normalizePhoneCO` deja afuera los números no colombianos.
+- Pendiente para T-069: probar el webhook con Meta real (firma, formato de `from` y entrega de
+  estados). Las pruebas usan cuerpos escritos a mano según la documentación, no eventos reales.
 
 ### [ ] T-068 · Pantallas: casilla, baja, contadores y activación
 - REQ: REQ-040.9, REQ-041.1, REQ-041.3, REQ-041.4, REQ-041.6, REQ-042.1, REQ-043.2, REQ-043.3

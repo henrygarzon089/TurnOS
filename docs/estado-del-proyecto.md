@@ -69,6 +69,14 @@ db push` y `vercel --prod` desde `main`). Sin pantallas todavía: nada cambia pa
   envío no corre ni consulta la base, y si `0036` falta, marcar el turno falla sin afectarlo: desplegar
   este código antes de migrar no cambia nada para el cliente. Limitaciones conocidas en la nota de
   T-066. pgTAP 721 · unitarias 201 · integración 78.
+- T-067 `[x]` (2026-11-01): webhook de Meta en `/api/whatsapp/webhook`: firma, estados, "PARAR" y
+  respuesta automática una vez cada 24 h; el contenido de los mensajes no se guarda. ADR-028: con un
+  número compartido, "PARAR" da de baja en todos los negocios. Migración `0038_whatsapp_inbound`.
+  **Sin aplicar en producción**: Henry aplica `0036`, `0037` y `0038` juntas, en orden, antes de
+  activar el aviso. Desplegar este código antes de migrar no cambia nada para el cliente: sin las
+  variables `WHATSAPP_*` la ruta responde 401 o 403. No se ha probado con eventos reales de Meta: queda
+  para T-069. Falta T-068 (pantallas) para que un cliente pueda dar permiso. pgTAP 745 · unitarias 244
+  · integración 95.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

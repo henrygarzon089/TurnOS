@@ -1156,6 +1156,8 @@ nueva de cada una, así una baja de la ficha fusionada no se pierde (REQ-042.3).
 | `get_notification_queue(p_business_id)` | service_role | Con el aviso activo: negocio, `queue_snapshot`, turnos `waiting` y `called` de hoy con celular, nombre y token, avisos registrados en cualquier estado y `staleClaims`. Apagado: solo `{enabled: false}` | 040.1, 040.3, 040.5, 040.7, 043.3 |
 | `notification_id(p_ticket_id, p_kind)` | service_role | Id del aviso recién reclamado, porque `claim_notification` devuelve solo texto | 040.7 |
 | `notification_month_stats(p_business_id)` | dueño | `{sent, failed, capReached}`, mes de Bogotá. Recibe el negocio como `birthdays_this_week` | 043.2 |
+| `whatsapp_inbound_context(p_phone)` | service_role | `{optOutBusinessIds, contactPhone}` de un mensaje entrante (`0038`, §12.5) | 042.2, 042.4, 042.5 |
+| `claim_whatsapp_reply(p_phone)` | service_role | Ventana móvil de 24 h de la respuesta automática (`0038`, §12.5) | 042.4 |
 
 El tope cuenta las filas que no son `skipped` del mes, dentro de `claim_notification` con un bloqueo
 por negocio (`pg_advisory_xact_lock`) para que no se pase por concurrencia.
@@ -1226,9 +1228,38 @@ No hay pg_net ni un proceso aparte. El estimado vive en TypeScript (§4), así q
 - Estados de mensaje: `sent`, `delivered`, `failed` → `set_notification_status` por
   `meta_message_id` (un `delivered` no retrocede a `sent`).
 - Mensajes entrantes: `normalizeOptOut(text)` (quita tildes, espacios y mayúsculas) igual a `PARAR` →
-  baja y confirmación. Cualquier otro → respuesta automática, con contador en `rate_limits` (clave
-  `wa-reply:<celular>`, ventana de 24 h, REQ-042.4). El contenido del mensaje no se guarda.
-- `src/proxy.ts` debe dejar pasar esta ruta sin sesión.
+  baja y confirmación. Cualquier otro → respuesta automática, como máximo una vez en 24 h por celular
+  (REQ-042.4). El contenido del mensaje no se guarda ni se registra.
+- `src/proxy.ts` deja pasar esta ruta sin sesión: su `matcher` no incluye `/api`.
+- Lógica pura en `src/lib/domain/whatsapp-webhook.ts` (firma, lectura del cuerpo, textos) y eventos en
+  `src/lib/notifications/webhook.ts`, con gateway y canal inyectados.
+
+**De qué negocio es un mensaje entrante** (ADR-028). La instalación tiene un solo número (variables de
+entorno globales): el `phone_number_id` del evento no distingue negocios y nada liga un celular a uno
+solo, porque `customers` es único por `(business_id, phone_e164)`. Migración `0038_whatsapp_inbound`
+(solo `service_role`):
+
+- **Baja en todos los negocios.** El cliente no elige negocio al responder "PARAR" a un número
+  compartido, así que se retira el permiso en cada ficha de ese celular con permiso vigente, tenga el
+  negocio el aviso activo o no. `whatsapp_inbound_context(p_phone)` devuelve
+  `{optOutBusinessIds, contactPhone}` y el webhook llama `whatsapp_opt_out_by_phone` por cada negocio.
+  Se confirma solo si alguno cambió.
+- **Número de contacto.** `contactPhone` sale del negocio que le envió el aviso más reciente a ese
+  celular (`sent` o `delivered`). Si nunca recibió uno, del único negocio con `whatsapp_auto_enabled`.
+  Si son varios o ninguno, null, y la respuesta omite el número (REQ-042.5).
+- **Ventana móvil de 24 h.** `check_rate_limit` usa ventanas fijas que cortan a las 19:00 de Bogotá y
+  dejaría pasar dos respuestas a las 18:59 y a las 19:01. `claim_whatsapp_reply(p_phone)` guarda en
+  `rate_limits` con la clave `wa-reply:<celular>` y solo devuelve `true` si no hay registro de esa
+  clave en las últimas 24 h. `check_rate_limit` deja de limpiar esas claves, porque borra al azar lo
+  que tenga más de 2 horas; las vencidas las limpia `claim_whatsapp_reply`.
+- **Eventos repetidos.** La baja también gasta la ventana de 24 h: un "PARAR" repetido ya no encuentra
+  permiso y sin esto recibiría la respuesta automática. Quien escribe "PARAR" sin tener permiso recibe
+  la respuesta automática como cualquier otro mensaje.
+- **Supresión.** `anonymize_customer` borra también `wa-reply:<celular>` (REQ-018.6).
+
+El celular llega como `from` sin `+` y se normaliza con `normalizePhoneCO`. Un número no colombiano no
+tiene ficha: se ignora, sin respuesta. Límite conocido: un `failed` que llegue antes de que el envío
+guarde `meta_message_id` no encuentra la fila y se pierde.
 
 ### 12.6 Pantallas
 
@@ -1245,6 +1276,8 @@ No hay pg_net ni un proceso aparte. El estimado vive en TypeScript (§4), así q
 
 - pgTAP `0036`: permiso vigente con sus fechas; `claim_notification` en cada resultado, duplicado,
   tope 3.000 y mes siguiente; `failed` no borra un aviso manual; RLS y permisos (ADR-019).
+- pgTAP `0038`: a quién se le retira el permiso, número de contacto en cada caso, ventana móvil de
+  24 h, que `check_rate_limit` no la borre y supresión.
 - pgTAP `0037`: lecturas con el aviso apagado y activo, `claimed` vencidos y permisos (ADR-019).
 - Unitarias: `pickNotifications` (2, 1 y 0 delante, salto de 4 a 1, sube y baja, pausa, sin tiempo,
   `no_capable`, sin celular), `normalizeOptOut`, firma del webhook, `CloudApiChannel` con `fetch`
