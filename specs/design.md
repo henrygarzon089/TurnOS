@@ -1326,7 +1326,7 @@ cambia en la fila ni en la caja.
 |---|---|---|
 | `membership_plans` (nueva) | `business_id` PK, `enabled bool not null default false`, `price int null check (> 0)`, `cuts_per_period int null check (1..100)`, `discount_pct int null check (0..100)`, `updated_at`; `check (not enabled or (price, cuts_per_period, discount_pct) no nulos)` | 044.1, 044.2 |
 | `services` | `counts_for_membership bool not null default false`. `0041` lo pone en true para los servicios que se llaman "Corte" (sin importar mayúsculas) | 044.1 |
-| `memberships` (nueva) | `id, business_id, holder_customer_id, created_at, created_by`; FK compuestas con `business_id` | 046.1 |
+| `family_memberships` (nueva) | `id, business_id, holder_customer_id, created_at, created_by`; FK compuestas con `business_id` (`customers_business_id_uniq` nueva). Se llama así porque `memberships` ya es el personal del negocio (§2, `0002`); corrección del 2026-11-02 en T-071, aprobada por Henry. Donde §13 dice "membresía" como tabla, es esta | 046.1 |
 | `membership_members` (nueva) | `id, business_id, membership_id, customer_id, added_at, removed_at null`; índice único parcial `(membership_id, customer_id) where removed_at is null`. El titular es un miembro más | 046.1, 046.4 |
 | `membership_periods` (nueva) | `id, business_id, membership_id, sale_id unique, starts_on date, ends_on date, cuts_total int, price int, discount_pct int, status enum('active','voided')`. `ends_on = starts_on + 29`. Copia del plan al pagar | 044.4, 045.3 |
 | `sale_items` | `kind` agrega `'membership'` (la cuota); columnas `membership_period_id uuid null` y `membership_benefit enum('cut','discount') null` en las líneas de servicio | 045.1, 047.1, 047.2 |
@@ -1345,14 +1345,21 @@ tiene periodo vigente ni futuro, se le pone `removed_at` allí y entra a la nuev
 
 Anonimizar una ficha (REQ-018.6) le pone `removed_at`; si era titular, la membresía queda sin
 titular visible pero conserva periodos y ventas. Fusionar fichas (REQ-018.5) pasa las filas de
-`membership_members` a la ficha que se conserva.
+`membership_members` y la titularidad a la ficha que se conserva. Si las dos fichas están en
+familias distintas con periodo vigente o futuro, `merge_customers` rechaza con `BOTH_IN_FAMILIES`
+(P0004), como `BOTH_REWARDS_PENDING`: el dueño primero saca a una de su familia (Henry,
+2026-11-02, T-071). Si solo una de las familias la retiene, se queda en esa; si ninguna, en la de la
+ficha que se conserva.
+
+Celular inválido en `create_membership` / `add_membership_member` → `INVALID_PHONE` (P0004);
+agregar a alguien que ya está en esa familia devuelve su fila sin error.
 
 ### 13.2 RLS
 
 | Tabla | Dueño | Barbero |
 |---|---|---|
 | `membership_plans` | select; cambios solo con `save_membership_plan` | sin acceso |
-| `memberships`, `membership_members`, `membership_periods` | select; cambios solo con funciones | sin acceso directo: lo que necesita sale de `membership_status` |
+| `family_memberships`, `membership_members`, `membership_periods` | select; cambios solo con funciones | sin acceso directo: lo que necesita sale de `membership_status` |
 
 `services.counts_for_membership` lo cambia el dueño con la política que ya tiene sobre `services`.
 

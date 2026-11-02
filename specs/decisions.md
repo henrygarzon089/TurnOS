@@ -425,3 +425,7 @@
   migraciones `0041`…`0044` y tareas T-071…T-077. Sale de "Fuera de alcance" el plan familiar. El
   aviso de privacidad por defecto agrega un párrafo; Filo publica una sola versión nueva con este y el
   de WhatsApp. La aprobación del Hito 6 pasa a ser ADR-031.
+- Corrección (Henry, 2026-11-02, T-071): la tabla de la familia se llama `family_memberships`
+  porque `memberships` ya guarda el personal de cada negocio desde `0002`. Al fusionar dos fichas
+  que están en familias distintas con periodo vigente o futuro, `merge_customers` rechaza con
+  `BOTH_IN_FAMILIES` (`design.md` §13.1).
