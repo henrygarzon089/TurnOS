@@ -916,13 +916,30 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Pendiente para T-066: `getChannel()` sigue devolviendo wa.me (el botón manual). `dispatch` usa
   `cloudApiChannelFromEnv()` y, si da null, no envía nada.
 
-### [ ] T-066 · Envío automático en las acciones de la fila
+### [x] T-066 · Envío automático en las acciones de la fila
 - REQ: REQ-040.1–040.8
 - Archivos: `src/lib/notifications/dispatch.ts`, `src/lib/actions/{queue,public}.ts`,
   `src/lib/queue/public-queue.ts`
 - Terminado: integración con canal falso: cada aviso sale una vez aunque corran dos ejecuciones
   juntas; un error de Meta no afecta la acción y vuelve "Avisar"; prueba de que toda acción de la fila
   llama `afterQueueChange`.
+- Nota (2026-11-01): 20 pruebas de integración, 33 unitarias y 17 pgTAP nuevas. Desvíos, ya reflejados
+  en design.md §12: migración nueva `0037_notification_queue` con `get_notification_queue` y
+  `notification_id`, porque el gateway solo hace `rpc` y `claim_notification` devuelve solo texto;
+  `dispatchQueueNotifications` recibe sus dependencias para probarlo sin red, y `afterQueueChange`
+  vive aparte (`after-queue-change.ts`) porque usa `server-only`; `afterQueueChange` acepta null y no
+  agenda nada: la lectura del negocio falló y la siguiente acción recoge el aviso. `{tiempo}` tiene
+  mínimo 5 min. `setQueueOverride` no llama `afterQueueChange`, igual que `close_expired_queues`: solo
+  cancela. La prueba de acciones es de comportamiento, no de búsqueda en el código.
+- Limitaciones conocidas: `skip_two_left` corre justo después de crear el turno, no en la misma
+  transacción: si otra ejecución lee la fila en ese instante podría salir "faltan 2" a quien acaba de
+  entrar con permiso (REQ-040.2). `claim_notification` no revisa el estado del turno: uno cancelado
+  entre la lectura y el reclamo aún recibe el aviso. Quitar un barbero o cambiar sus servicios en
+  `/admin` no está en la lista de §12.4: el aviso sale con la siguiente acción de la fila.
+- `skip_two_left` escribe la fila `skipped` aunque el aviso esté apagado: nadie la ve y no cuenta para
+  el tope. Antes de aplicar la `0036` esa llamada falla sin afectar el turno.
+- Pendiente para T-068: `joinQueue` todavía no pasa `p_whatsapp_opt_in`; nadie da permiso desde la
+  pantalla, así que el envío queda inactivo hasta entonces.
 
 ### [ ] T-067 · Webhook de Meta: estados, baja y respuesta automática
 - REQ: REQ-040.7, REQ-042.2–042.5, REQ-043.5

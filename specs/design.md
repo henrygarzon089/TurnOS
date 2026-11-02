@@ -1121,7 +1121,8 @@ Cada cambio de cortesía (`set_ticket_courtesy`, `mark_courtesy_served`) emite `
 
 ## 12. Hito 6 — Aviso automático por WhatsApp (REQ-040…REQ-043, ADR-027)
 
-Migración `0036_whatsapp_notifications.sql` con su pgTAP y permisos explícitos (ADR-019).
+Migraciones `0036_whatsapp_notifications.sql` y `0037_notification_queue.sql` con su pgTAP y permisos
+explícitos (ADR-019).
 
 ### 12.1 Datos
 
@@ -1152,6 +1153,8 @@ nueva de cada una, así una baja de la ficha fusionada no se pierde (REQ-042.3).
 | `claim_notification(p_ticket_id, p_kind)` | service_role | Revisa negocio activo, permiso vigente y tope del mes; inserta `claimed` con `on conflict do nothing`; pone `tickets.notified_at = now()` salvo que el turno ya tenga un aviso manual (`notified_by` no nulo), que se conserva. Devuelve `claimed`, `duplicate`, `no_consent`, `disabled` o `cap_reached` | 040.3, 040.6, 041.5, 043.1, 043.3 |
 | `skip_two_left(p_ticket_id)` | service_role | Inserta `skipped` para el turno recién creado | 040.2 |
 | `set_notification_status(p_status, p_id, p_meta_message_id, p_error)` | service_role | Actualiza estado por `p_id` o, sin él, por `p_meta_message_id`. Solo avanza (`claimed` → `sent` → `delivered` o `failed`) y devuelve si hubo cambio. Con `failed` limpia `notified_at` solo si `notified_by` es nulo (no borra un aviso manual) | 040.7 |
+| `get_notification_queue(p_business_id)` | service_role | Con el aviso activo: negocio, `queue_snapshot`, turnos `waiting` y `called` de hoy con celular, nombre y token, avisos registrados en cualquier estado y `staleClaims`. Apagado: solo `{enabled: false}` | 040.1, 040.3, 040.5, 040.7, 043.3 |
+| `notification_id(p_ticket_id, p_kind)` | service_role | Id del aviso recién reclamado, porque `claim_notification` devuelve solo texto | 040.7 |
 | `notification_month_stats(p_business_id)` | dueño | `{sent, failed, capReached}`, mes de Bogotá. Recibe el negocio como `birthdays_this_week` | 043.2 |
 
 El tope cuenta las filas que no son `skipped` del mes, dentro de `claim_notification` con un bloqueo
@@ -1191,21 +1194,26 @@ No hay pg_net ni un proceso aparte. El estimado vive en TypeScript (§4), así q
   `called` y los avisos ya registrados en cualquier estado; devuelve qué enviar, primero los llamados.
   No revisa permiso, activación ni tope: eso lo hace `claim_notification`. Regla de "faltan 2": `ahead <= 2`, `waitMin` no nulo y sin motivo de bloqueo
   (`reason` vacío), lo que cubre barbero en pausa y "Esperando a que haya quién te atienda" (REQ-040.4).
-- `dispatchQueueNotifications(businessId)` en `src/lib/notifications/dispatch.ts`: si el negocio no
-  tiene el aviso activo sale de una; si no, lee la fila, llama `pickNotifications`, hace
-  `claim_notification` y envía solo si devolvió `claimed`. Si Meta rechaza, `set_notification_status`
-  con `failed`.
+- `dispatchQueueNotifications(businessId, deps)` en `src/lib/notifications/dispatch.ts`, con `deps`
+  (gateway, canal, `appUrl`) inyectados: si el negocio no tiene el aviso activo sale de una; si no,
+  lee `get_notification_queue`, llama `pickNotifications`, hace `claim_notification` y envía solo si
+  devolvió `claimed`. Si Meta rechaza, `set_notification_status` con `failed`.
 - Se llama con `after()` de Next.js al final de **toda** acción que cambia la fila: tomar turno,
   turno manual, llamar, llamar con barbero, deshacer llamado, iniciar, terminar, no llegó, cancelar,
   reasignar, mover, cambio de estado del barbero y cancelar desde "Mi turno". Va después de responder:
   una falla o demora de Meta no afecta la acción (REQ-040.7). Se centraliza en un helper
-  `afterQueueChange(businessId)` y una prueba revisa que cada acción lo use.
-- Tomar turno y turno manual llaman antes `skip_two_left` si el turno quedó con `ahead <= 2` (REQ-040.2).
+  `afterQueueChange(businessId)` (`src/lib/notifications/after-queue-change.ts`) y una prueba revisa
+  que cada acción lo use. Usa `cloudApiChannelFromEnv()`: sin credenciales no agenda nada ni toca la
+  base (REQ-043.3). `getChannel()` sigue siendo wa.me para el botón manual.
+- Tomar turno y turno manual llaman antes `skip_two_left` si el turno quedó con `ahead <= 2` (REQ-040.2),
+  con `registerNewTicket(gw, token, existing)` en `src/lib/queue/public-queue.ts`. Una falla ahí no
+  hace fallar el turno. Un turno que ya existía no se marca.
+- `{tiempo}` de `turno_faltan_dos` es `waitMin` con mínimo 5 ("≈ 0 min" no se entiende).
 - La función de cierre automático (`close_expired_queues`) no pasa por aquí y no hace falta: solo
   cancela turnos.
 - **Autocorrección**: si una ejecución muere antes de enviar, el `claimed` queda sin mensaje. Una fila
-  `claimed` de más de 2 minutos sin `meta_message_id` se marca `failed` al siguiente
-  `dispatchQueueNotifications` y vuelve al botón manual.
+  `claimed` de más de 2 minutos sin `meta_message_id` se marca `failed` (`error_code = stale_claim`)
+  al siguiente `dispatchQueueNotifications` y vuelve al botón manual.
 
 ### 12.5 Webhook
 
@@ -1237,9 +1245,11 @@ No hay pg_net ni un proceso aparte. El estimado vive en TypeScript (§4), así q
 
 - pgTAP `0036`: permiso vigente con sus fechas; `claim_notification` en cada resultado, duplicado,
   tope 3.000 y mes siguiente; `failed` no borra un aviso manual; RLS y permisos (ADR-019).
+- pgTAP `0037`: lecturas con el aviso apagado y activo, `claimed` vencidos y permisos (ADR-019).
 - Unitarias: `pickNotifications` (2, 1 y 0 delante, salto de 4 a 1, sube y baja, pausa, sin tiempo,
   `no_capable`, sin celular), `normalizeOptOut`, firma del webhook, `CloudApiChannel` con `fetch`
-  falso, y que cada acción de la fila llame `afterQueueChange`.
+  falso, y que cada acción de la fila llame `afterQueueChange`: corre las acciones con Supabase falso
+  y una lista exhaustiva obliga a clasificar cualquier acción nueva.
 - Integración: `dispatchQueueNotifications` contra Postgres local con canal falso; webhook de estado
   y de "PARAR".
 - E2E (Pixel 7 + iPhone 13): casilla, línea con permiso vigente, baja en "Mi turno", y "Avisado ✓" con

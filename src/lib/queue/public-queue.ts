@@ -126,7 +126,7 @@ export const RATE_LIMITS = {
 
 // ----------------------------------------------------------------- lógica ----
 
-function toSnapshot(raw: unknown): QueueSnapshot {
+export function toSnapshot(raw: unknown): QueueSnapshot {
   const r = (raw ?? {}) as { barbers?: unknown[]; waiting?: unknown[] };
   return {
     barbers: ((r.barbers ?? []) as QueueSnapshot["barbers"]).map((b) => ({
@@ -370,6 +370,36 @@ export async function getTicketByToken(
     courtesy: (raw.courtesy as MyTicket["courtesy"]) ?? null,
     googleReviewUrl: (raw.googleReviewUrl as string | null) ?? null,
   };
+}
+
+/** Negocio del turno para `afterQueueChange`, o null: leerlo no puede tumbar la acción (REQ-040.7). */
+export async function ticketBusinessId(gw: Gateway, token: string): Promise<string | null> {
+  try {
+    return (await getTicketByToken(gw, token))?.business.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * REQ-040.2: el turno que nace con 2 o menos delante no recibe "faltan 2". Se llama justo después
+ * de crearlo y devuelve el negocio para `afterQueueChange`. Nunca hace fallar el turno (REQ-040.7).
+ */
+export async function registerNewTicket(
+  gw: Gateway,
+  token: string,
+  existing: boolean,
+): Promise<string | null> {
+  try {
+    const ticket = await getTicketByToken(gw, token);
+    if (!ticket) return null;
+    if (!existing && ticket.estimate && ticket.estimate.ahead <= 2) {
+      await gw.rpc("skip_two_left", { p_ticket_id: ticket.id });
+    }
+    return ticket.business.id;
+  } catch {
+    return null;
+  }
 }
 
 /** REQ-038.4 / REQ-038.6: cambiar o quitar (null) la bebida desde "Mi turno", solo en espera. */
