@@ -407,7 +407,7 @@
   operador. La aprobación del Hito 6 pasa a ser ADR-031 (ADR-030 quedó para la membresía familiar).
 
 ## ADR-030 · Membresía familiar (Hito 7)
-- Estado: **propuesta** (grill de 25 preguntas con Henry, 2026-11-02; falta aprobar la spec)
+- Estado: **aceptada** (Henry, 2026-11-02, tras grill de 25 preguntas; aprobó la spec en el PR #36)
 - Contexto: Henry escogió una cuota mensual con N cortes compartidos por la familia y descuento al
   agotarlos (`docs/propuesta-mejoras-clientes.md`, ADR-025). Toca caja y comisiones: hoy la comisión
   se calcula sobre el precio después de descuento (PA-18) y solo el premio de fidelidad se calcula

@@ -778,7 +778,7 @@ bandeja para leer o contestar mensajes, y el asistente con IA.
 
 ## 5e. Hito 7 — Membresía familiar
 
-> Estado: **BORRADOR para aprobación** (Henry, 2026-11-02, tras grill de 25 preguntas). Ver ADR-030.
+> Estado: **APROBADA** (Henry, 2026-11-02, tras grill de 25 preguntas). Ver ADR-030.
 > Una familia paga una cuota y comparte N cortes durante 30 días; al gastarlos tiene descuento.
 
 ### REQ-044 · Plan de membresía — M

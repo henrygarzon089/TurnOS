@@ -25,7 +25,7 @@
 | H4 | Servicios por barbero (Filo) — **aprobado** (ADR-024) | T-051…T-057 | REQ-035 |
 | H5 | Experiencia del cliente — **aprobado** (ADR-026) | T-058…T-063 | REQ-036…REQ-039 |
 | H6 | Aviso automático por WhatsApp (ADR-027) | T-064…T-070 | REQ-040…REQ-043 |
-| H7 | Membresía familiar (ADR-030) — **borrador** | T-071…T-077 | REQ-044…REQ-048 |
+| H7 | Membresía familiar (ADR-030) | T-071…T-077 | REQ-044…REQ-048 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -1031,8 +1031,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ## Hito 7 — Membresía familiar (ADR-030)
 
-> **Borrador para aprobación** (grill con Henry, 2026-11-02). REQ-044…REQ-048, diseño en `design.md`
-> §13. No depende del Hito 6: puede avanzar mientras T-069 espera el trámite con Meta.
+> REQ-044…REQ-048 y ADR-030 aprobados por Henry (2026-11-02). Diseño en `design.md` §13. No depende del Hito 6: puede avanzar mientras T-069 espera el trámite con Meta.
 
 ### [ ] T-071 · Migración y pgTAP: plan y familia
 - REQ: REQ-044.1, REQ-044.2, REQ-044.3, REQ-044.4, REQ-046.1, REQ-046.2, REQ-046.3, REQ-046.4
