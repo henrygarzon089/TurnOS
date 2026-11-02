@@ -53,7 +53,7 @@
 | REQ-009.2 | Aviso por WhatsApp cuando faltan 2 turnos | T-016 (hecha), T-021 (hecha), T-024 (hecha) | barber-flow.spec.ts, loyalty-progress.spec.ts, phone.test.ts, wa-me.test.ts | cubierto |
 | REQ-009.3 | Aviso por WhatsApp cuando faltan 2 turnos | T-016 (hecha), T-021 (hecha), T-024 (hecha) | barber-flow.spec.ts, 0010_notify.sql | cubierto |
 | REQ-009.4 | Aviso por WhatsApp cuando faltan 2 turnos | T-016 (hecha), T-021 (hecha), T-024 (hecha) | hito1-gaps.spec.ts | cubierto |
-| REQ-009.5 | Aviso por WhatsApp cuando faltan 2 turnos | T-016 (hecha), T-021 (hecha), T-024 (hecha) | wa-me.test.ts | cubierto |
+| REQ-009.5 | Aviso por WhatsApp cuando faltan 2 turnos | T-016 (hecha), T-021 (hecha), T-024 (hecha) | cloud-api.test.ts, wa-me.test.ts | cubierto |
 | REQ-010.1 | Barbero que se ausenta (pausa) | T-013 (hecha), T-016 (hecha), T-020 (hecha), T-023 (hecha), T-025 (hecha) | public-queue.test.ts, rls-core.test.ts, queue-estimate.test.ts, 0003_rls_core.sql, 0007_queue_ops.sql, 0008_public_fns.sql | cubierto |
 | REQ-010.2 | Barbero que se ausenta (pausa) | T-013 (hecha), T-016 (hecha), T-020 (hecha), T-023 (hecha), T-025 (hecha) | barber-flow.spec.ts, 0007_queue_ops.sql | cubierto |
 | REQ-010.3 | Barbero que se ausenta (pausa) | T-013 (hecha), T-016 (hecha), T-020 (hecha), T-023 (hecha), T-025 (hecha) | barber-flow.spec.ts, 0007_queue_ops.sql | cubierto |
@@ -185,13 +185,13 @@
 | REQ-039.4 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, barber-photos.test.ts, resize.test.ts, 0033_customer_experience.sql | cubierto |
 | REQ-039.5 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
 | REQ-039.6 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
-| REQ-040.1 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-040.2 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
-| REQ-040.3 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
-| REQ-040.4 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
-| REQ-040.5 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-040.1 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | cloud-api.test.ts, queue-notifications.test.ts | prueba escrita |
+| REQ-040.2 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | queue-notifications.test.ts, 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-040.3 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | queue-notifications.test.ts, 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-040.4 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | queue-notifications.test.ts | prueba escrita |
+| REQ-040.5 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | queue-notifications.test.ts, 0036_whatsapp_notifications.sql | prueba escrita |
 | REQ-040.6 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
-| REQ-040.7 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-040.7 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | cloud-api.test.ts, 0036_whatsapp_notifications.sql | prueba escrita |
 | REQ-040.8 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
 | REQ-040.9 | Avisos automáticos del turno | T-064 (hecha), T-065 (pendiente), T-066 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
 | REQ-041.1 | Permiso del cliente para los avisos | T-064 (hecha), T-068 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
@@ -203,10 +203,10 @@
 | REQ-042.1 | Baja y respuestas del cliente | T-064 (hecha), T-067 (pendiente), T-068 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
 | REQ-042.2 | Baja y respuestas del cliente | T-064 (hecha), T-067 (pendiente), T-068 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
 | REQ-042.3 | Baja y respuestas del cliente | T-064 (hecha), T-067 (pendiente), T-068 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
-| REQ-042.4 | Baja y respuestas del cliente | T-064 (hecha), T-067 (pendiente), T-068 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-042.4 | Baja y respuestas del cliente | T-064 (hecha), T-067 (pendiente), T-068 (pendiente) | cloud-api.test.ts, 0036_whatsapp_notifications.sql | prueba escrita |
 | REQ-042.5 | Baja y respuestas del cliente | T-064 (hecha), T-067 (pendiente), T-068 (pendiente) | — | sin prueba |
 | REQ-043.1 | Control y activación | T-064 (hecha), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
 | REQ-043.2 | Control y activación | T-064 (hecha), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
-| REQ-043.3 | Control y activación | T-064 (hecha), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | 0036_whatsapp_notifications.sql | prueba escrita |
-| REQ-043.4 | Control y activación | T-064 (hecha), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |
+| REQ-043.3 | Control y activación | T-064 (hecha), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | cloud-api.test.ts, 0036_whatsapp_notifications.sql | prueba escrita |
+| REQ-043.4 | Control y activación | T-064 (hecha), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | cloud-api.test.ts | prueba escrita |
 | REQ-043.5 | Control y activación | T-064 (hecha), T-065 (pendiente), T-067 (pendiente), T-068 (pendiente), T-069 (pendiente) | — | sin prueba |

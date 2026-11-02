@@ -759,10 +759,11 @@ Además, *polling* de respaldo cada 30 s en `/t/[token]` (NFR-003).
 
 ```ts
 interface NotificationChannel {
-  buildNotifyLink(input: { phoneE164: string; template: string; vars: Record<string,string> }): string;
+  readonly kind: "wa.me" | "cloud-api";
+  buildLink(input: { phoneE164: string; template: string; vars: TemplateVars }): string | null;
 }
 // MVP: WaMeChannel → `https://wa.me/${phone}?text=${encodeURIComponent(render(template, vars))}`
-// Hito 6: CloudApiChannel (envío servidor a servidor), ver §12.3.
+// Hito 6: CloudApiChannel (envío servidor a servidor, `buildLink` devuelve null), ver §12.3.
 ```
 
 Plantillas por defecto (editables, REQ-033):
@@ -1165,12 +1166,15 @@ Auxiliares de `service_role`: `whatsapp_consent_active(opt_in, opt_out)` (regla 
 
 - `sendTemplate({ phoneE164, template, params })` → `POST /{phone_number_id}/messages` de la Graph
   API con `fetch`, timeout de 5 s y sin reintentos en línea. Devuelve `{ ok, messageId }` o
-  `{ ok: false, code }`. Nunca lanza.
-- `sendText(...)` para la respuesta automática y la confirmación de baja (dentro de la ventana de 24 h
+  `{ ok: false, code }`. Nunca lanza. `code` es el de Meta o uno de `http_<estado>`,
+  `invalid_response`, `timeout` y `network`. El timeout cubre también la lectura del cuerpo. Plantillas
+  con idioma `es`, que debe coincidir con el aprobado en Meta.
+- `sendText({ phoneE164, body })` para la respuesta automática y la confirmación de baja (dentro de la ventana de 24 h
   que abrió el cliente al escribir).
 - Variables de entorno de solo servidor: `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`,
-  `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`. Las pone Henry en Vercel. Sin ellas el canal queda
-  inactivo (REQ-043.3).
+  `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`. Las pone Henry en Vercel. Sin cualquiera de las cuatro
+  `cloudApiChannelFromEnv()` devuelve null y el canal queda inactivo (REQ-043.3): sin las del webhook
+  no llegarían los estados ni "PARAR".
 - En pruebas se inyecta un canal falso; ninguna prueba toca la red (REQ-043.4).
 
 Plantillas de utilidad a registrar en Meta (idioma español):
@@ -1183,8 +1187,9 @@ Plantillas de utilidad a registrar en Meta (idioma español):
 No hay pg_net ni un proceso aparte. El estimado vive en TypeScript (§4), así que la decisión también:
 
 - `pickNotifications(input)` en `src/lib/domain/queue-notifications.ts`, función pura y probada con
-  unitarias: recibe el resultado de `estimateQueue`, los turnos `called` y los avisos ya registrados;
-  devuelve qué enviar. Regla de "faltan 2": `ahead <= 2`, `waitMin` no nulo y sin motivo de bloqueo
+  unitarias: recibe el resultado de `estimateQueue`, el celular de los turnos en espera, los turnos
+  `called` y los avisos ya registrados en cualquier estado; devuelve qué enviar, primero los llamados.
+  No revisa permiso, activación ni tope: eso lo hace `claim_notification`. Regla de "faltan 2": `ahead <= 2`, `waitMin` no nulo y sin motivo de bloqueo
   (`reason` vacío), lo que cubre barbero en pausa y "Esperando a que haya quién te atienda" (REQ-040.4).
 - `dispatchQueueNotifications(businessId)` en `src/lib/notifications/dispatch.ts`: si el negocio no
   tiene el aviso activo sale de una; si no, lee la fila, llama `pickNotifications`, hace

@@ -41,7 +41,8 @@ nombres de las pantallas de Meta cambian seguido; si algo no coincide, busca la 
 
 ## 6. Las dos plantillas
 
-En WhatsApp Manager crea dos plantillas de categoría **Utilidad**, idioma español:
+En WhatsApp Manager crea dos plantillas de categoría **Utilidad**, idioma **Spanish** (código `es`,
+no una variante regional: TurnOS las envía con ese código y debe coincidir):
 
 **`turno_faltan_dos`**
 
