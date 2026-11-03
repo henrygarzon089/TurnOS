@@ -1,4 +1,4 @@
-import { parseCOP } from "@/lib/domain/money";
+import { formatCOP, parseCOP } from "@/lib/domain/money";
 import { membershipDiscount, type MembershipBenefit } from "@/lib/domain/commission";
 
 /** Plan de membresía familiar (REQ-044.1, design.md §13.1 `membership_plans`). */
@@ -207,4 +207,30 @@ export function membershipLineKey(
 /** REQ-048.1 "Mi turno": sin datos de los demás miembros. */
 export function membershipTicketLine(status: MembershipStatus): string {
   return `Membresía familiar: quedan ${status.cutsLeft} de ${status.cutsTotal} cortes · vence el ${renewalDayLabel(status.endsOn)}`;
+}
+
+/** Lo que traen `cash_day_summary`, `weekly_summary` y la foto del cierre (REQ-048.3). */
+export type MembershipTotals = {
+  membershipFees?: number;
+  membershipCuts?: { count: number; listValue: number };
+};
+
+/**
+ * REQ-048.3 "Cuotas de membresía" y "Cortes de membresía" (cantidad · valor de lista), aparte del
+ * resto. Sin cuotas ni cortes (o en un cierre de antes del Hito 7) no hay líneas.
+ */
+export function membershipReportLines(
+  t: MembershipTotals,
+): { key: "fees" | "cuts"; label: string; value: string }[] {
+  const fees = t.membershipFees ?? 0;
+  const cuts = t.membershipCuts ?? { count: 0, listValue: 0 };
+  if (fees === 0 && cuts.count === 0) return [];
+  return [
+    { key: "fees", label: "Cuotas de membresía", value: formatCOP(fees) },
+    {
+      key: "cuts",
+      label: "Cortes de membresía",
+      value: `${cuts.count} · ${formatCOP(cuts.listValue)}`,
+    },
+  ];
 }

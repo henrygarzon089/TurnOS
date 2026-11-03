@@ -304,6 +304,8 @@ export type CashDaySummary = {
   rewards: number;
   commission: number;
   cashExpected: number;
+  membershipFees: number;
+  membershipCuts: { count: number; listValue: number };
   barbers: {
     barberId: string;
     name: string;
@@ -494,6 +496,8 @@ export type WeekSummary = {
   lostTickets: number;
   services: number;
   sold: number;
+  membershipFees: number;
+  membershipCuts: { count: number; listValue: number };
 };
 
 /** REQ-028.1–28.4 resumen de la semana (lunes a domingo) y la anterior para comparar. */

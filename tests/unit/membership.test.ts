@@ -3,6 +3,7 @@ import {
   membershipCheckoutLine,
   membershipErrorMessage,
   membershipLineKey,
+  membershipReportLines,
   membershipTicketLine,
   parseMembershipPlanForm,
   renewalDayLabel,
@@ -204,5 +205,35 @@ describe("REQ-047.1 / REQ-047.5 / REQ-048 membresía en el cobro, Mi turno y fil
     expect(membershipTicketLine(status)).toBe(
       "Membresía familiar: quedan 3 de 4 cortes · vence el 26 de noviembre",
     );
+  });
+});
+
+describe("REQ-048.3 cuotas y cortes de membresía en la caja, el cierre y la semana", () => {
+  it("REQ-048.3 ejemplos E y G: dos líneas aparte, los cortes con cantidad y valor de lista", () => {
+    expect(
+      membershipReportLines({
+        membershipFees: 80000,
+        membershipCuts: { count: 1, listValue: 25000 },
+      }),
+    ).toEqual([
+      { key: "fees", label: "Cuotas de membresía", value: "$ 80.000" },
+      { key: "cuts", label: "Cortes de membresía", value: "1 · $ 25.000" },
+    ]);
+  });
+
+  it("REQ-048.3 un día con cuotas y sin cortes muestra las dos líneas", () => {
+    expect(
+      membershipReportLines({ membershipFees: 80000, membershipCuts: { count: 0, listValue: 0 } }),
+    ).toEqual([
+      { key: "fees", label: "Cuotas de membresía", value: "$ 80.000" },
+      { key: "cuts", label: "Cortes de membresía", value: "0 · $ 0" },
+    ]);
+  });
+
+  it("REQ-048.3 sin membresía en el día (o un cierre de antes del Hito 7) no hay líneas", () => {
+    expect(
+      membershipReportLines({ membershipFees: 0, membershipCuts: { count: 0, listValue: 0 } }),
+    ).toEqual([]);
+    expect(membershipReportLines({})).toEqual([]);
   });
 });

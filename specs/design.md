@@ -1432,6 +1432,12 @@ agregar a alguien que ya está en esa familia devuelve su fila sin error.
   `membership_renewal` del enum y `create_business` con la plantilla van en `0043`; `0044` la agrega
   a los negocios existentes. La plantilla usa la variable nueva `{fecha}` ("8 de noviembre").
 - `default_privacy_text` agrega el párrafo de la membresía (REQ-048.5).
+  Implementado en T-076 (2026-11-03), en `0043`: `cash_day_summary` y `weekly_summary` redefinidas;
+  `close_cash_day` no hace falta redefinirla porque guarda la foto de `cash_day_summary` (las dos
+  líneas quedan en `cash_closures.totals`). `membershipCuts` cuenta las líneas `'cut'` de ventas
+  `active` y su valor de lista (`unit_price × qty`); un descuento de membresía no es un corte. El
+  párrafo del aviso: el titular entrega el nombre y el celular de los miembros solo para reconocerlos
+  al cobrar y declara que ellos lo autorizaron.
 
 ### 13.4 Comisión (cambia §5.1, ADR-030)
 
@@ -1479,6 +1485,9 @@ comisión 0, sin barbero. El cierre: "Cuotas de membresía: $ 80.000".
   también con el turno ya terminado.
 - Filas del barbero y del dueño: etiqueta "Membresía" (REQ-048.2).
 - Caja de hoy, cierre y semana: líneas "Cuotas de membresía" y "Cortes de membresía" (REQ-048.3).
+  Implementado en T-076: recuadro aparte (`MembershipTotals`) solo si hubo cuotas o cortes
+  ("Cortes de membresía: 1 · $ 25.000"); también en el texto del cierre por WhatsApp. En las ventas
+  del día la línea dice "(membresía)" y un corte en $ 0 "Sin pago (membresía)".
 - `/admin/mensajes`: plantilla "Membresía por vencer" editable (REQ-033).
 
 ### 13.6 Pruebas

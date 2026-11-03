@@ -1106,12 +1106,20 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   §13.3 y §13.5. Unitarias 284, integración 111, E2E `tests/e2e/membership-checkout.spec.ts` 4/4
   (Pixel 7 + iPhone 13) contra el Supabase local, al que Henry autorizó aplicar las dos funciones.
 
-### [ ] T-076 · Caja, semana y aviso de privacidad
+### [x] T-076 · Caja, semana y aviso de privacidad
 - REQ: REQ-048.3, REQ-048.5
 - Archivos: `0043_membership_reports.sql` (`cash_day_summary`, `close_cash_day`, `weekly_summary`,
   `default_privacy_text`), Caja de hoy, cierre y Semana
 - Terminado: pgTAP con los ejemplos E–G en el cierre y la semana; párrafo de membresía en el aviso por
   defecto.
+- Nota (2026-11-03): `0043` redefine `cash_day_summary` y `weekly_summary` (`membershipFees`,
+  `membershipCuts {count, listValue}`) y `default_privacy_text`. **Desvío:** `close_cash_day` no se
+  redefine: guarda la foto de `cash_day_summary`, así que el cierre ya trae las dos líneas (lo prueba
+  pgTAP). En el detalle del día la línea con membresía dice "(membresía)" y el corte en $ 0 "Sin pago
+  (membresía)". Las líneas salen solo si hubo cuotas o cortes (`membershipReportLines`), también en
+  el texto del cierre por WhatsApp. pgTAP 11 nuevas (954 en total; la prueba pone a Juan en 60 % como
+  §13.4), unitarias 288, integración 111, E2E `tests/e2e/membership-reports.spec.ts` 2/2 (Pixel 7 +
+  iPhone 13) contra el Supabase local, al que Henry autorizó aplicar la sección T-076.
 
 ### [ ] T-077 · Validación Hito 7
 - REQ: REQ-044…REQ-048
