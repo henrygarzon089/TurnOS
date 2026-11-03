@@ -124,7 +124,7 @@
 | REQ-025.3 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | 0021_cash.sql, 0022_register_sale.sql | cubierto |
 | REQ-025.4 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | commission.test.ts, 0021_cash.sql, 0022_register_sale.sql | cubierto |
 | REQ-025.5 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | my-numbers.spec.ts, my-numbers.test.ts, my-numbers.test.ts | cubierto |
-| REQ-026.1 | Anular una venta | T-040 (hecha), T-045 (hecha) | cash-day.spec.ts, 0021_cash.sql, 0022_register_sale.sql, 0025_cash_summary.sql, 0042_membership_checkout.sql | cubierto |
+| REQ-026.1 | Anular una venta | T-040 (hecha), T-045 (hecha) | cash-day.spec.ts, 0021_cash.sql, 0022_register_sale.sql, 0025_cash_summary.sql, 0042_membership_checkout.sql, 0043_membership_reports.sql | cubierto |
 | REQ-026.2 | Anular una venta | T-040 (hecha), T-045 (hecha) | 0021_cash.sql, 0026_close_cash.sql, 0042_membership_sales.sql | cubierto |
 | REQ-027.1 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | cash-day.spec.ts, 0025_cash_summary.sql | cubierto |
 | REQ-027.2 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | close-cash.spec.ts, 0021_cash.sql, 0025_cash_summary.sql, 0026_close_cash.sql | cubierto |
@@ -237,6 +237,6 @@
 | REQ-047.8 | Usar la membresía en el cobro | T-073 (hecha), T-075 (hecha) | 0042_membership_checkout.sql | cubierto |
 | REQ-048.1 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (pendiente), T-077 (pendiente) | membership-checkout.spec.ts, memberships.test.ts, membership.test.ts, 0043_membership_reports.sql | prueba escrita |
 | REQ-048.2 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (pendiente), T-077 (pendiente) | membership-checkout.spec.ts, memberships.test.ts, 0043_membership_reports.sql | prueba escrita |
-| REQ-048.3 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (pendiente), T-077 (pendiente) | — | sin prueba |
+| REQ-048.3 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (pendiente), T-077 (pendiente) | cash-closure.test.ts, membership.test.ts, 0043_membership_reports.sql | prueba escrita |
 | REQ-048.4 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (pendiente), T-077 (pendiente) | memberships.spec.ts, memberships.test.ts, membership.test.ts, 0002_core.sql, 0043_membership_reports.sql | prueba escrita |
-| REQ-048.5 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (pendiente), T-077 (pendiente) | — | sin prueba |
+| REQ-048.5 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (pendiente), T-077 (pendiente) | 0043_membership_reports.sql | prueba escrita |

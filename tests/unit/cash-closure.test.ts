@@ -52,4 +52,15 @@ describe("REQ-027.6 / REQ-027.4 texto del cierre para liquidar y compartir", () 
       closureText("Barbería La 33", example, 30000),
     );
   });
+
+  it("REQ-048.3 el texto del cierre trae las cuotas y los cortes de membresía", () => {
+    const text = closureText(
+      "Barbería La 33",
+      { ...example, membershipFees: 80000, membershipCuts: { count: 1, listValue: 25000 } },
+      30000,
+    );
+    expect(text).toContain("Cuotas de membresía: $ 80.000");
+    expect(text).toContain("Cortes de membresía: 1 · $ 25.000");
+    expect(closureText("Barbería La 33", example, 30000)).not.toContain("membresía");
+  });
 });
