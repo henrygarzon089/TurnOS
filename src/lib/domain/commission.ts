@@ -1,10 +1,20 @@
 /**
- * Cálculo de una venta y su comisión (design.md §5.1, REQ-025.2, REQ-025.4, PA-17/18/19).
+ * Cálculo de una venta y su comisión (design.md §5.1 y §13.4, REQ-025.2, REQ-025.4, REQ-047.4,
+ * PA-17/18/19, ADR-030).
  * Espejo exacto de `register_sale` (SQL): la UI lo usa para mostrar el total y la comisión antes
  * de registrar; la base de datos vuelve a calcular y es la fuente de verdad.
  */
 
-export type ServiceLine = { unitPrice: number; qty: number; discount: number; isReward: boolean };
+/** Beneficio de la membresía familiar en una línea de servicio (design.md §13.3). */
+export type MembershipBenefit = "cut" | "discount";
+
+export type ServiceLine = {
+  unitPrice: number;
+  qty: number;
+  discount: number;
+  isReward: boolean;
+  membership?: MembershipBenefit | null;
+};
 export type ProductLine = { unitPrice: number; qty: number };
 
 export type SaleAmounts = {
@@ -31,6 +41,22 @@ export function roundCommission(base: number, pct: number): number {
   return Math.floor((base * pct + 50) / 100);
 }
 
+/**
+ * Descuento de una línea con membresía (lo decide el servidor): un corte deja el servicio en $ 0;
+ * con los cortes agotados, el % del plan redondeado al peso (.5 hacia arriba). REQ-047.1, REQ-047.2.
+ */
+export function membershipDiscount(
+  unitPrice: number,
+  benefit: MembershipBenefit,
+  discountPct: number,
+): number {
+  if (benefit === "cut") {
+    assertPesos(unitPrice, "El precio");
+    return unitPrice;
+  }
+  return roundCommission(unitPrice, discountPct);
+}
+
 export function computeSale(input: {
   services: ServiceLine[];
   products: ProductLine[];
@@ -39,6 +65,7 @@ export function computeSale(input: {
   let servicesList = 0;
   let servicesDiscount = 0;
   let rewardsTotal = 0;
+  let listPaidByBusiness = 0; // premio y membresía: la comisión va sobre el precio de lista
   for (const s of input.services) {
     assertPesos(s.unitPrice, "El precio");
     assertPesos(s.discount, "El descuento");
@@ -47,6 +74,7 @@ export function computeSale(input: {
     if (s.discount > list) throw new Error("El descuento no puede superar el precio");
     servicesList += list;
     servicesDiscount += s.discount;
+    if (s.isReward || s.membership) listPaidByBusiness += s.discount;
     if (s.isReward) rewardsTotal += s.discount;
   }
   let productsTotal = 0;
@@ -56,7 +84,8 @@ export function computeSale(input: {
     productsTotal += p.unitPrice * p.qty;
   }
   const servicesTotal = servicesList - servicesDiscount;
-  const commissionBase = servicesTotal + rewardsTotal; // REQ-025.4: premio sobre precio de lista
+  // REQ-025.4 / REQ-047.4: premio y membresía sobre el precio de lista
+  const commissionBase = servicesTotal + listPaidByBusiness;
   const commissionAmount = roundCommission(commissionBase, input.commissionPct);
   return {
     servicesTotal,

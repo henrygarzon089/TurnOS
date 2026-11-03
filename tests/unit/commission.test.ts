@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeSale, roundCommission } from "@/lib/domain/commission";
+import { computeSale, membershipDiscount, roundCommission } from "@/lib/domain/commission";
 
 /** design.md §5.1 — los ejemplos A, B, C y D tal cual. */
 describe("REQ-025.2 comisión por venta (design.md §5.1)", () => {
@@ -111,5 +111,55 @@ describe("REQ-025.2 comisión por venta (design.md §5.1)", () => {
       }),
     ).toThrow();
     expect(() => roundCommission(1000, 101)).toThrow();
+  });
+});
+
+/** design.md §13.4 (ADR-030) — membresía familiar: comisión sobre el precio de lista. */
+describe("REQ-047.4 comisión con membresía (design.md §13.4)", () => {
+  it("REQ-047.4 ejemplo E: corte de membresía en $ 0, comisión sobre el precio de lista", () => {
+    const discount = membershipDiscount(25000, "cut", 20);
+    expect(discount).toBe(25000);
+    expect(
+      computeSale({
+        services: [{ unitPrice: 25000, qty: 1, discount, isReward: false, membership: "cut" }],
+        products: [],
+        commissionPct: 60,
+      }),
+    ).toEqual({
+      servicesTotal: 0,
+      productsTotal: 0,
+      discountTotal: 25000,
+      total: 0,
+      commissionBase: 25000,
+      commissionAmount: 15000,
+      businessAmount: 10000,
+      rewardsTotal: 0,
+    });
+  });
+
+  it("REQ-047.2 ejemplo F: cortes agotados, 20 % de descuento del plan", () => {
+    const discount = membershipDiscount(25000, "discount", 20);
+    expect(discount).toBe(5000);
+    expect(
+      computeSale({
+        services: [{ unitPrice: 25000, qty: 1, discount, isReward: false, membership: "discount" }],
+        products: [{ unitPrice: 4000, qty: 1 }],
+        commissionPct: 60,
+      }),
+    ).toMatchObject({
+      servicesTotal: 20000,
+      discountTotal: 5000,
+      total: 24000,
+      commissionBase: 25000,
+      commissionAmount: 15000, // no 12.000 (ADR-030)
+      businessAmount: 10000,
+    });
+  });
+
+  it("REQ-047.2 el descuento del plan se redondea al peso (.5 hacia arriba), como en SQL", () => {
+    expect(membershipDiscount(12500, "discount", 15)).toBe(1875);
+    expect(membershipDiscount(10001, "discount", 50)).toBe(5001);
+    expect(membershipDiscount(25000, "discount", 0)).toBe(0);
+    expect(() => membershipDiscount(25000, "discount", 101)).toThrow();
   });
 });
