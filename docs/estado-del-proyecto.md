@@ -168,9 +168,16 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
   con `membership` y `membership_member_ids`. pgTAP 943, unitarias 284, integración 111, E2E 4/4
   (Pixel 7 + iPhone 13). El Supabase local tiene las dos funciones nuevas (Henry lo autorizó). Sin
   aplicar en producción. Sigue T-076 (caja, semana y aviso de privacidad).
+- T-076 (2026-11-03): la Caja de hoy, el cierre (también el texto por WhatsApp) y la Semana muestran
+  aparte "Cuotas de membresía" y "Cortes de membresía" (cantidad · valor de lista); el aviso de
+  privacidad por defecto dice que el titular entrega el celular de los miembros. En `0043`:
+  `cash_day_summary`, `weekly_summary` y `default_privacy_text`. pgTAP 954, unitarias 288,
+  integración 111, E2E 2/2. El Supabase local tiene la sección T-076 (Henry lo autorizó). Sin
+  aplicar en producción. Los negocios que ya existen (Filo) deben publicar una versión nueva del
+  aviso (REQ-002.5): queda para T-077. Sigue T-077 (validación del hito, depende de Henry).
 - Decisión que cambia la caja: la comisión del corte de membresía y del descuento al agotar los
   cortes se calcula sobre el precio de lista (como el premio de fidelidad); la cuota no paga comisión.
-- `pnpm trace`: 235 criterios, 2 sin prueba (REQ-048.3 y 048.5: vienen en T-076).
+- `pnpm trace`: 235 criterios, 0 sin prueba.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
