@@ -1069,12 +1069,28 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   se repone con las reglas de `tickets_after_done`, sin columna nueva. 0042 probada también con
   `psql -1`.
 
-### [ ] T-074 · Pantalla "Membresías" del dueño
+### [x] T-074 · Pantalla "Membresías" del dueño
 - REQ: REQ-044.2, REQ-044.3, REQ-044.5, REQ-045.1, REQ-046.2, REQ-046.4, REQ-048.4
 - Archivos: `src/app/(staff)/admin/membresias/`, `src/lib/actions/memberships.ts`,
   `0044_membership_template.sql`, `0043_membership_reports.sql` (`memberships_expiring`)
 - Terminado: integración de las acciones; E2E: activar el plan, crear la familia, cobrar la cuota y
   ver "Vencen esta semana".
+- Nota (2026-11-02): `0043` agrega el valor `membership_renewal` al enum, redefine `create_business`
+  con la plantilla y crea `memberships_expiring(p_business_id, p_today default hoy)` (solo dueño);
+  `0044` le pone la plantilla a los negocios que ya existen. pgTAP en
+  `supabase/tests/0043_membership_reports.sql` (18 nuevas, 930 en total; `0002_core` y
+  `0033_customer_experience` contaban 4 plantillas y ahora son 5). Acciones en
+  `src/lib/actions/memberships.ts`, mapeos puros en `src/lib/domain/membership.ts` (unitarias) e
+  integración en `tests/integration/memberships.test.ts` (7). Pantalla en
+  `src/components/admin/MembershipForms.tsx`; chip "Membresías" en el menú; plantilla "Membresía por
+  vencer" en `/admin/mensajes` con la variable nueva `{fecha}` ("8 de noviembre"). Detalles que la
+  spec no fijaba, anotados en `design.md` §13.3: "próximos 7 días" = hoy y los 6 siguientes (como
+  "Cumplen esta semana"); no salen titulares quitados de su familia, eliminados ni marcados "No
+  contactar" (REQ-020.5). La cuota se cobra en un solo medio de pago. E2E `tests/e2e/memberships.spec.ts` 2/2 (Pixel 7 +
+  iPhone 13) contra el Supabase local, al que Henry autorizó aplicar 0035–0044. Al correrlo salió un
+  arreglo: los formularios se envían con `onSubmit` porque React limpiaba el formulario después de
+  un error y el segundo intento guardaba el plan vacío. La prueba anula la cuota con la sesión del
+  dueño (`sales_guard` exige quién anula).
 
 ### [ ] T-075 · Cobro, "Mi turno" y filas
 - REQ: REQ-047.1, REQ-047.5, REQ-048.1, REQ-048.2

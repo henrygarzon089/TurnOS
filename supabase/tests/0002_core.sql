@@ -37,7 +37,7 @@ select is(
 select is(
   (select count(*)::int from message_templates t join businesses b on b.id = t.business_id
     where b.slug = 'barberia-prueba'),
-  4, 'REQ-033.1 create_business crea las 4 plantillas por defecto (con cumpleaños, REQ-037.4)'
+  5, 'REQ-033.1 create_business crea las 5 plantillas por defecto (con cumpleaños, REQ-037.4, y membresía por vencer, REQ-048.4)'
 );
 select is(
   (select count(*)::int from privacy_policy_versions p join businesses b on b.id = p.business_id

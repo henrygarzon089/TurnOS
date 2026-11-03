@@ -361,7 +361,7 @@ select ok((select birthday_month is null and birthday_day is null from customers
 select ok((select body like '%{nombre}%' and body like '%{negocio}%' from message_templates
            where business_id = (select biz from ctx) and key = 'birthday'),
   'REQ-037.4 plantilla "cumpleaños" con {nombre} y {negocio}');
-select is((select count(*)::int from message_templates where business_id = (select other_biz from ctx)), 4,
+select is((select count(*)::int from message_templates where business_id = (select other_biz from ctx) and key = 'birthday'), 1,
   'REQ-037.4 un negocio nuevo trae también la plantilla de cumpleaños');
 select ok((select body ilike '%cumpleaños%' from privacy_policy_versions where business_id = (select other_biz from ctx) and version = 1),
   'REQ-037.6 el aviso de privacidad por defecto menciona el cumpleaños como dato opcional');
