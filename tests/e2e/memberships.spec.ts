@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { createClient } from "@supabase/supabase-js";
 import { adminDb, loginAsOwner, SEED } from "./helpers";
 
 /** Celular nuevo en cada corrida (300 + 7 dígitos), para no chocar con familias anteriores. */
@@ -44,7 +45,7 @@ test.describe("REQ-044 / REQ-045 / REQ-046 / REQ-048 Membresías del dueño", ()
       await form.getByRole("button", { name: "Crear familia" }).click();
       const card = page.getByRole("listitem", { name: `Familia de ${holder}` });
       await expect(card).toBeVisible();
-      await expect(card.getByText("Titular")).toBeVisible();
+      await expect(card.getByText("Titular", { exact: true })).toBeVisible();
       await expect(card.getByText("Sin periodo vigente.")).toBeVisible();
 
       // REQ-045.1 cobrar la cuota con Nequi
@@ -96,8 +97,18 @@ test.describe("REQ-044 / REQ-045 / REQ-046 / REQ-048 Membresías del dueño", ()
         /^Hola Titular, la membresía familiar en .+ vence el \d+ de [a-z]+\./,
       );
 
-      // La cuota no queda en la caja de las demás pruebas
-      await db.rpc("void_sale", { p_sale_id: sale!.id, p_reason: "Prueba E2E" });
+      // La cuota no queda en la caja de las demás pruebas. Anula el dueño: sales_guard exige quién anula.
+      const owner = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        { auth: { persistSession: false } },
+      );
+      await owner.auth.signInWithPassword(SEED.owner);
+      const { error } = await owner.rpc("void_sale", {
+        p_sale_id: sale!.id,
+        p_reason: "Prueba E2E",
+      });
+      expect(error).toBeNull();
     } finally {
       // Dejar el seed como estaba: membresía apagada
       await db.from("membership_plans").update({ enabled: false }).eq("business_id", biz!.id);

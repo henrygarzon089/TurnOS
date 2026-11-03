@@ -1086,9 +1086,11 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   vencer" en `/admin/mensajes` con la variable nueva `{fecha}` ("8 de noviembre"). Detalles que la
   spec no fijaba, anotados en `design.md` §13.3: "próximos 7 días" = hoy y los 6 siguientes (como
   "Cumplen esta semana"); no salen titulares quitados de su familia, eliminados ni marcados "No
-  contactar" (REQ-020.5). La cuota se cobra en un solo medio de pago. E2E escrito
-  (`tests/e2e/memberships.spec.ts`), sin correr: el Supabase local está en 0034 y aplicarle
-  0035–0044 espera el visto bueno de Henry.
+  contactar" (REQ-020.5). La cuota se cobra en un solo medio de pago. E2E `tests/e2e/memberships.spec.ts` 2/2 (Pixel 7 +
+  iPhone 13) contra el Supabase local, al que Henry autorizó aplicar 0035–0044. Al correrlo salió un
+  arreglo: los formularios se envían con `onSubmit` porque React limpiaba el formulario después de
+  un error y el segundo intento guardaba el plan vacío. La prueba anula la cuota con la sesión del
+  dueño (`sales_guard` exige quién anula).
 
 ### [ ] T-075 · Cobro, "Mi turno" y filas
 - REQ: REQ-047.1, REQ-047.5, REQ-048.1, REQ-048.2

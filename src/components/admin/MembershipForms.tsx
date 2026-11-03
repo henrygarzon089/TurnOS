@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ErrorText } from "@/components/auth/LoginForm";
 import type { PaymentMethod } from "@/lib/actions/cash";
@@ -28,17 +28,29 @@ const METHODS: { id: PaymentMethod; label: string }[] = [
 
 type FormAction = (prev: MembershipFormState, fd: FormData) => Promise<MembershipFormState>;
 
-/** Acción de formulario que, si termina bien, refresca la página (y avisa con onOk). */
-function useRefreshingAction(fn: FormAction, onOk?: () => void) {
+/**
+ * Acción de formulario que, si termina bien, refresca la página (y avisa con onOk). Se envía con
+ * onSubmit y no con `action`: React limpia el formulario al terminar una `action`, aunque falle,
+ * y el dueño perdería lo que escribió. `reset` limpia solo cuando termina bien.
+ */
+function useRefreshingAction(fn: FormAction, opts: { onOk?: () => void; reset?: boolean } = {}) {
   const router = useRouter();
-  return useActionState<MembershipFormState, FormData>(async (prev, fd) => {
-    const r = await fn(prev, fd);
-    if (r?.ok) {
-      onOk?.();
-      router.refresh();
-    }
-    return r;
-  }, undefined);
+  const [state, setState] = useState<MembershipFormState>(undefined);
+  const [pending, startTransition] = useTransition();
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    startTransition(async () => {
+      const r = await fn(state, new FormData(form));
+      setState(r);
+      if (r?.ok) {
+        if (opts.reset) form.reset();
+        opts.onOk?.();
+        router.refresh();
+      }
+    });
+  }
+  return [state, onSubmit, pending] as const;
 }
 
 // ------------------------------------------------------------------ plan ----
@@ -51,11 +63,11 @@ export function MembershipPlanForm({
   plan: MembershipsView["plan"];
   services: MembershipsView["services"];
 }) {
-  const [state, action, pending] = useRefreshingAction(saveMembershipPlan);
+  const [state, onSubmit, pending] = useRefreshingAction(saveMembershipPlan);
   const [enabled, setEnabled] = useState(plan.enabled);
 
   return (
-    <form action={action} className="mt-3 flex flex-col gap-4">
+    <form onSubmit={onSubmit} className="mt-3 flex flex-col gap-4">
       <label className="border-line bg-card flex min-h-14 items-center gap-3 rounded-xl border px-4">
         <input
           type="checkbox"
@@ -213,11 +225,11 @@ function PersonFields({ prefix }: { prefix: string }) {
 
 /** REQ-046.1 / REQ-046.2: nueva familia con su titular. */
 export function NewFamilyForm() {
-  const [state, action, pending] = useRefreshingAction(createFamily);
+  const [state, onSubmit, pending] = useRefreshingAction(createFamily, { reset: true });
 
   return (
     <form
-      action={action}
+      onSubmit={onSubmit}
       aria-label="Nueva familia"
       className="border-line bg-card mt-3 flex flex-col gap-3 rounded-xl border p-4"
     >
@@ -236,7 +248,9 @@ export function NewFamilyForm() {
 
 function AddMemberForm({ membershipId }: { membershipId: string }) {
   const [open, setOpen] = useState(false);
-  const [state, action, pending] = useRefreshingAction(addFamilyMember, () => setOpen(false));
+  const [state, onSubmit, pending] = useRefreshingAction(addFamilyMember, {
+    onOk: () => setOpen(false),
+  });
 
   if (!open) {
     return (
@@ -246,7 +260,7 @@ function AddMemberForm({ membershipId }: { membershipId: string }) {
     );
   }
   return (
-    <form action={action} aria-label="Agregar persona" className="flex flex-col gap-3">
+    <form onSubmit={onSubmit} aria-label="Agregar persona" className="flex flex-col gap-3">
       <input type="hidden" name="membership_id" value={membershipId} />
       <PersonFields prefix={`add-${membershipId}`} />
       {state?.error && <ErrorText>{state.error}</ErrorText>}
