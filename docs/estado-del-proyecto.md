@@ -133,10 +133,15 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
 
 - 2026-11-02: grill de 25 preguntas con Henry, todas con la respuesta recomendada. Escritos
   REQ-044…REQ-048 (29 criterios, §5e), `design.md` §13, ADR-030 (propuesta) y tareas T-071…T-077.
-  Henry aprobó la spec el mismo día (PR #36). Sin código todavía; sigue T-071. No depende del Hito 6.
+  Henry aprobó la spec el mismo día (PR #36). No depende del Hito 6.
+- T-071 (2026-11-02): `0041_memberships.sql` con plan, familias (`family_memberships`, porque
+  `memberships` ya es el personal), miembros y periodos; RLS solo lectura del dueño; funciones
+  `save_membership_plan`, `create_membership`, `add_membership_member`, `remove_membership_member`;
+  `merge_customers` y anonimizar ya conocen las familias (`BOTH_IN_FAMILIES`, decisión de Henry).
+  pgTAP 49 nuevas (822 en total). Sin aplicar en producción (se hace al cerrar el hito). Sigue T-072.
 - Decisión que cambia la caja: la comisión del corte de membresía y del descuento al agotar los
   cortes se calcula sobre el precio de lista (como el premio de fidelidad); la cuota no paga comisión.
-- `pnpm trace`: 235 criterios, 29 sin prueba (los del Hito 7, sin código aún).
+- `pnpm trace`: 235 criterios, 21 sin prueba (los del Hito 7 que vienen en T-072…T-077).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

@@ -64,13 +64,14 @@ begin
   end loop;
 
   -- Servicios (COP, duración en minutos)
-  insert into services (business_id, name, duration_min, price, sort_order, counts_for_loyalty) values
-    (v_biz, 'Corte',          20, 25000, 1, true),
-    (v_biz, 'Barba',          15, 15000, 2, true),
-    (v_biz, 'Corte + barba',  35, 40000, 3, true),
-    (v_biz, 'Corte niño',     20, 20000, 4, true),
-    (v_biz, 'Cejas',          10,  8000, 5, false),
-    (v_biz, 'Diseño de línea',10, 10000, 6, false);
+  -- counts_for_membership: como lo deja 0041, solo "Corte" gasta cortes de la membresía (REQ-044.1)
+  insert into services (business_id, name, duration_min, price, sort_order, counts_for_loyalty, counts_for_membership) values
+    (v_biz, 'Corte',          20, 25000, 1, true,  true),
+    (v_biz, 'Barba',          15, 15000, 2, true,  false),
+    (v_biz, 'Corte + barba',  35, 40000, 3, true,  false),
+    (v_biz, 'Corte niño',     20, 20000, 4, true,  false),
+    (v_biz, 'Cejas',          10,  8000, 5, false, false),
+    (v_biz, 'Diseño de línea',10, 10000, 6, false, false);
 
   -- Productos
   insert into products (business_id, name, price, sort_order) values

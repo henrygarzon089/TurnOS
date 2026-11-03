@@ -1033,10 +1033,17 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 > REQ-044…REQ-048 y ADR-030 aprobados por Henry (2026-11-02). Diseño en `design.md` §13. No depende del Hito 6: puede avanzar mientras T-069 espera el trámite con Meta.
 
-### [ ] T-071 · Migración y pgTAP: plan y familia
+### [x] T-071 · Migración y pgTAP: plan y familia
 - REQ: REQ-044.1, REQ-044.2, REQ-044.3, REQ-044.4, REQ-046.1, REQ-046.2, REQ-046.3, REQ-046.4
 - Archivos: `supabase/migrations/0041_memberships.sql`, `supabase/tests/0041_memberships.sql`
 - Terminado: pgTAP de §13.6 para `0041` en verde; con el plan apagado nada cambia.
+- Nota (2026-11-02): desvíos aprobados por Henry y anotados en `design.md` §13.1: la tabla de la
+  familia es `family_memberships` (`memberships` ya existía, 0002), y fusionar dos fichas en
+  familias vigentes distintas → `BOTH_IN_FAMILIES`. Además: `merge_customers` redefinida (mueve
+  miembros y titular), trigger `customers_leave_family_on_anonymize` (REQ-018.6),
+  `INVALID_PHONE`, y `supabase/seed.sql` marca "Corte" con `counts_for_membership` (el seed corre
+  después de las migraciones). `membership_periods.sale_id` queda `not null`: la prueba crea una
+  venta mínima en $ 0.
 
 ### [ ] T-072 · Cuota en la caja
 - REQ: REQ-045.1, REQ-045.2, REQ-045.3, REQ-045.4, REQ-045.5, REQ-045.6, REQ-045.7
