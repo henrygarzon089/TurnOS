@@ -8,8 +8,10 @@ import {
 } from "@/lib/domain/membership";
 import { normalizePhoneCO } from "@/lib/domain/phone";
 import { buildRenewalLink } from "@/lib/notifications/reminder";
+import { getTicketByToken, joinQueue } from "@/lib/queue/public-queue";
 import { loginAs, pool, withTx, type Q } from "./db";
 import { seedTwoBusinesses, USERS, type TwoBusinesses } from "./fixtures";
+import { createPgGateway } from "./pg-gateway";
 
 afterAll(() => pool.end());
 
@@ -376,6 +378,106 @@ describe("REQ-048.4 vencen esta semana", () => {
       expect(await sqlError(q, "select * from memberships_expiring($1)", [f.businessA])).toBe(
         "No tienes permiso para esta acción.",
       );
+    });
+  });
+});
+
+describe("REQ-048.1 / REQ-048.2 Mi turno y filas con la membresía", () => {
+  const OWNER_LA33 = "a0000000-0000-4000-8000-000000000001";
+
+  /** La 33 abierta, plan encendido y la familia de Marta con la cuota pagada (4 cortes). */
+  async function la33Family(q: Q) {
+    const c = (
+      await q<{ biz: string; corte: string; juan_u: string }>(
+        `select z.id as biz,
+                (select id from services s where s.business_id = z.id and s.name = 'Corte') as corte,
+                (select user_id from barbers b where b.business_id = z.id and b.display_name = 'Juan') as juan_u
+         from businesses z where z.slug = 'la-33'`,
+      )
+    ).rows[0];
+    await q(
+      `update business_hours set opens_at = '00:00', closes_at = '23:59', is_closed = false where business_id = $1`,
+      [c.biz],
+    );
+    await q(
+      `update barbers set status = 'available', present_day = current_date where business_id = $1`,
+      [c.biz],
+    );
+    await q("update services set counts_for_membership = true where id = $1", [c.corte]);
+    await loginAs(q, OWNER_LA33);
+    await q("select save_membership_plan($1, true, 80000, 4, 20)", [c.biz]);
+    const fam = (
+      await q<{ id: string }>(
+        "select create_membership($1, '+573209993301', 'Marta Madre') as id",
+        [c.biz],
+      )
+    ).rows[0].id;
+    await q("select register_membership_fee($1, $2::jsonb)", [
+      fam,
+      JSON.stringify([{ method: "cash", amount: 80000 }]),
+    ]);
+    await q("select auth.test_logout()");
+    return c;
+  }
+
+  it("REQ-048.1 Mi turno de un miembro trae los cortes que quedan, sin ids de la familia", async () => {
+    await withTx(async (q) => {
+      const c = await la33Family(q);
+      const gw = createPgGateway(q);
+      const join = (name: string, phone: string) =>
+        joinQueue(
+          gw,
+          {
+            slug: "la-33",
+            name,
+            phone,
+            serviceId: c.corte,
+            preferredBarberId: null,
+            privacyAccepted: true,
+            privacyVersion: 1,
+            source: "qr",
+          },
+          null,
+        );
+      const r = await join("Marta Madre", "320 999 3301");
+      if (!r.ok) throw new Error("join falló");
+      const t = await getTicketByToken(gw, r.token);
+      expect(t!.membership).toEqual({
+        cutsTotal: 4,
+        cutsLeft: 4,
+        endsOn: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+        discountPct: 20,
+      });
+      const raw = (
+        await q<{ m: Record<string, unknown> }>(
+          "select get_ticket_by_token($1) -> 'membership' as m",
+          [r.token],
+        )
+      ).rows[0].m;
+      expect(Object.keys(raw).sort()).toEqual(["cutsLeft", "cutsTotal", "discountPct", "endsOn"]);
+
+      const other = await join("Óscar Otro", "320 999 3302");
+      if (!other.ok) throw new Error("join falló");
+      expect((await getTicketByToken(gw, other.token))!.membership).toBeNull();
+    });
+  });
+
+  it("REQ-048.2 la fila del barbero marca a los miembros con periodo vigente", async () => {
+    await withTx(async (q) => {
+      const c = await la33Family(q);
+      const ids = (
+        await q<{ id: string; phone_e164: string }>(
+          "select id, phone_e164 from customers where business_id = $1 and phone_e164 in ('+573209993301', '+573001000001')",
+          [c.biz],
+        )
+      ).rows;
+      const marta = ids.find((r) => r.phone_e164 === "+573209993301")!.id;
+      await loginAs(q, c.juan_u);
+      const res = await q<{ ids: string[] }>(
+        "select membership_member_ids($1, $2::uuid[]) as ids",
+        [c.biz, ids.map((r) => r.id)],
+      );
+      expect(res.rows[0].ids).toEqual([marta]);
     });
   });
 });

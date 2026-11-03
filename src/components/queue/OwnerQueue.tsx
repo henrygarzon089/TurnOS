@@ -4,6 +4,7 @@ import { useCallback, useState, useTransition } from "react";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { CheckoutSheet } from "@/components/cash/CheckoutSheet";
 import { CourtesyLine } from "@/components/queue/CourtesyLine";
+import { MemberBadge } from "@/components/queue/MemberBadge";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
 import { setBarberPresent } from "@/lib/actions/admin";
 import {
@@ -149,6 +150,7 @@ export function OwnerQueue({ initial }: { initial: OwnerQueueView }) {
                       <p className="truncate font-semibold">
                         {t.displayNumber}. {t.customerName}
                       </p>
+                      {t.isMember && <MemberBadge />}
                       <p className="text-muted text-sm">
                         {t.serviceName} ·{" "}
                         {t.assignedBarberId

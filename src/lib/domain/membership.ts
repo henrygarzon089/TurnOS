@@ -1,4 +1,5 @@
 import { parseCOP } from "@/lib/domain/money";
+import { membershipDiscount, type MembershipBenefit } from "@/lib/domain/commission";
 
 /** Plan de membresía familiar (REQ-044.1, design.md §13.1 `membership_plans`). */
 export type MembershipPlanInput = {
@@ -165,4 +166,45 @@ const MONTHS = [
 export function renewalDayLabel(day: string): string {
   const [, m, d] = day.split("-").map(Number);
   return `${d} de ${MONTHS[m - 1]}`;
+}
+
+/** Línea del cobro con "Usar membresía" (lo que el servidor decidirá en `register_sale`). */
+export type MembershipCheckoutLine = {
+  benefit: MembershipBenefit;
+  discount: number;
+  label: string;
+};
+
+/**
+ * REQ-047.1 / REQ-047.2: con cortes, corte de membresía ($ 0) y "quedan" cuenta los que siguen
+ * después de este; sin cortes, el % del plan. Espejo de `register_sale` (design.md §13.3).
+ */
+export function membershipCheckoutLine(
+  status: MembershipStatus,
+  unitPrice: number,
+): MembershipCheckoutLine {
+  if (status.cutsLeft > 0) {
+    return {
+      benefit: "cut",
+      discount: membershipDiscount(unitPrice, "cut", status.discountPct),
+      label: `Corte de membresía (quedan ${status.cutsLeft - 1})`,
+    };
+  }
+  return {
+    benefit: "discount",
+    discount: membershipDiscount(unitPrice, "discount", status.discountPct),
+    label: `Descuento de membresía ${status.discountPct} %`,
+  };
+}
+
+/** REQ-047.1 / REQ-047.5: una sola línea con membresía, la primera que gasta cortes. */
+export function membershipLineKey(
+  lines: { key: number; countsForMembership: boolean }[],
+): number | null {
+  return lines.find((l) => l.countsForMembership)?.key ?? null;
+}
+
+/** REQ-048.1 "Mi turno": sin datos de los demás miembros. */
+export function membershipTicketLine(status: MembershipStatus): string {
+  return `Membresía familiar: quedan ${status.cutsLeft} de ${status.cutsTotal} cortes · vence el ${renewalDayLabel(status.endsOn)}`;
 }

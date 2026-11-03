@@ -3,13 +3,16 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { ErrorText } from "@/components/auth/LoginForm";
 import {
+  findCheckoutCustomer,
   getCheckout,
   markUnpaid,
   registerSale,
+  type CheckoutCustomer,
   type CheckoutView,
   type PaymentMethod,
 } from "@/lib/actions/cash";
 import { computeSale } from "@/lib/domain/commission";
+import { membershipCheckoutLine, membershipLineKey } from "@/lib/domain/membership";
 import { formatCOP, parseCOP } from "@/lib/domain/money";
 
 const METHODS: { id: PaymentMethod; label: string }[] = [
@@ -30,7 +33,7 @@ type ServiceLine = {
 };
 
 /**
- * REQ-023.1–23.3, REQ-019.4, REQ-023.6: panel "Registrar cobro". Con turno: prellenado con su
+ * REQ-023.1–23.3, REQ-019.4, REQ-023.6, REQ-047.1, REQ-047.5: panel "Registrar cobro". Con turno: prellenado con su
  * servicio y precio. Sin turno ("Nueva venta", T-044): se elige barbero (si hay servicios).
  */
 export function CheckoutSheet({
@@ -52,6 +55,11 @@ export function CheckoutSheet({
   const [unpaidReason, setUnpaidReason] = useState("");
   const [pending, startTransition] = useTransition();
   const [nextKey, setNextKey] = useState(1);
+  /** Línea con "Usar membresía" (una sola, REQ-047.5); null = sin membresía. */
+  const [memberKey, setMemberKey] = useState<number | null>(null);
+  /** "Nueva venta": cliente buscado por celular (REQ-047.1). */
+  const [customer, setCustomer] = useState<CheckoutCustomer | null>(null);
+  const [phone, setPhone] = useState("");
   /** Con turno: "Registrar cobro". Sin turno (REQ-023.4, REQ-024.2): "Nueva venta". */
   const title = ticketId ? "Registrar cobro" : "Nueva venta";
 
@@ -73,6 +81,8 @@ export function CheckoutSheet({
           },
         ]);
         setBarberId(v.ticket.barberId);
+        // REQ-047.1 "Usar membresía" marcado por defecto si el servicio del turno gasta cortes
+        if (v.membership && v.membershipServiceIds.includes(v.ticket.serviceId)) setMemberKey(0);
       }
     });
     return () => {
@@ -88,6 +98,10 @@ export function CheckoutSheet({
     l.fromTicket && view?.ticket
       ? view.ticket.serviceName
       : (view?.services.find((s) => s.id === l.serviceId)?.name ?? "");
+  const membership = view?.membership ?? customer?.membership ?? null;
+  const countsFor = (l: ServiceLine) => !!view?.membershipServiceIds.includes(l.serviceId);
+  const memberLine = (l: ServiceLine) =>
+    membership && l.key === memberKey ? membershipCheckoutLine(membership, priceOf(l)) : null;
   const rewardValue = (l: ServiceLine) =>
     view?.loyalty?.rewardType === "discount"
       ? Math.min(view.loyalty.rewardAmount ?? 0, priceOf(l))
@@ -97,12 +111,16 @@ export function CheckoutSheet({
     if (!view) return null;
     try {
       return computeSale({
-        services: services.map((l) => ({
-          unitPrice: priceOf(l),
-          qty: 1,
-          discount: l.isReward ? rewardValue(l) : l.discount,
-          isReward: l.isReward,
-        })),
+        services: services.map((l) => {
+          const m = memberLine(l);
+          return {
+            unitPrice: priceOf(l),
+            qty: 1,
+            discount: m ? m.discount : l.isReward ? rewardValue(l) : l.discount,
+            isReward: !m && l.isReward,
+            membership: m?.benefit ?? null,
+          };
+        }),
         products: Object.entries(products)
           .filter(([, qty]) => qty > 0)
           .map(([id, qty]) => ({
@@ -115,7 +133,7 @@ export function CheckoutSheet({
       return null;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view, services, products]);
+  }, [view, services, products, memberKey, membership]);
 
   if (view === undefined) {
     return (
@@ -135,7 +153,8 @@ export function CheckoutSheet({
     );
   }
 
-  const rewardAvailable = !!view.loyalty?.available;
+  // REQ-047.5: con la membresía en uso, el premio no se ofrece y queda disponible
+  const rewardAvailable = !!view.loyalty?.available && memberKey === null;
   const rewardApplied = services.some((l) => l.isReward);
   const rewardLine = services.find((l) =>
     view.loyalty?.rewardType === "discount" ? true : l.serviceId === view.rewardServiceId,
@@ -149,6 +168,27 @@ export function CheckoutSheet({
     setServices((ls) => ls.map((l) => (l.key === key ? { ...l, ...patch } : l)));
   }
 
+  function lookupCustomer() {
+    setError(null);
+    startTransition(async () => {
+      const r = await findCheckoutCustomer(phone);
+      if (!r.ok) {
+        setCustomer(null);
+        setMemberKey(null);
+        setError(r.error);
+        return;
+      }
+      setCustomer(r.customer);
+      if (r.customer.membership) {
+        const key = membershipLineKey(
+          services.map((l) => ({ key: l.key, countsForMembership: countsFor(l) })),
+        );
+        setMemberKey(key);
+        if (key !== null) update(key, { isReward: false, discount: 0, reason: "" });
+      } else setMemberKey(null);
+    });
+  }
+
   function submit() {
     if (!amounts) return;
     if (total > 0 && !method) {
@@ -160,15 +200,20 @@ export function CheckoutSheet({
       const r = await registerSale({
         ticketId: view?.ticket?.id ?? null,
         barberId: barberId || null,
+        customerId: view?.ticket ? null : (customer?.id ?? null),
         items: [
-          ...services.map((l) => ({
-            kind: "service" as const,
-            refId: l.serviceId,
-            qty: 1,
-            discount: l.isReward ? 0 : l.discount,
-            discountReason: l.reason || undefined,
-            isReward: l.isReward,
-          })),
+          ...services.map((l) => {
+            const m = !!memberLine(l);
+            return {
+              kind: "service" as const,
+              refId: l.serviceId,
+              qty: 1,
+              discount: m || l.isReward ? 0 : l.discount,
+              discountReason: m ? undefined : l.reason || undefined,
+              isReward: !m && l.isReward,
+              membership: m,
+            };
+          }),
           ...Object.entries(products)
             .filter(([, qty]) => qty > 0)
             .map(([id, qty]) => ({ kind: "product" as const, refId: id, qty })),
@@ -200,6 +245,44 @@ export function CheckoutSheet({
         </p>
       )}
 
+      {!view.ticket && (
+        <div className="flex flex-col gap-1">
+          <label className="flex flex-col gap-1 text-sm font-medium">
+            Celular del cliente (opcional)
+            <span className="flex gap-2">
+              <input
+                className="input min-w-0 flex-1"
+                inputMode="tel"
+                autoComplete="off"
+                placeholder="300 123 4567"
+                value={phone}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  if (customer) {
+                    setCustomer(null);
+                    setMemberKey(null);
+                  }
+                }}
+              />
+              <button
+                type="button"
+                className="btn-secondary w-auto shrink-0 px-4"
+                disabled={pending || phone.trim() === ""}
+                onClick={lookupCustomer}
+              >
+                Buscar
+              </button>
+            </span>
+          </label>
+          {customer && (
+            <p className="text-muted text-sm" data-testid="checkout-customer">
+              {customer.name}
+              {customer.membership ? " · Membresía familiar" : ""}
+            </p>
+          )}
+        </div>
+      )}
+
       {!view.ticket && services.length > 0 && view.isOwner && (
         <label className="flex flex-col gap-1 text-sm font-medium">
           Barbero
@@ -224,12 +307,15 @@ export function CheckoutSheet({
                 value={l.fromTicket ? `ticket:${l.serviceId}` : l.serviceId}
                 onChange={(e) => {
                   const v = e.target.value;
+                  const serviceId = v.replace(/^ticket:/, "");
                   update(l.key, {
-                    serviceId: v.replace(/^ticket:/, ""),
+                    serviceId,
                     fromTicket: v.startsWith("ticket:"),
                     isReward: false,
                     discount: 0,
                   });
+                  if (l.key === memberKey && !view.membershipServiceIds.includes(serviceId))
+                    setMemberKey(null);
                 }}
               >
                 {view.ticket && l.key === 0 && (
@@ -249,19 +335,48 @@ export function CheckoutSheet({
                 <button
                   type="button"
                   className="text-danger min-h-12 px-2 text-sm font-semibold"
-                  onClick={() => setServices((ls) => ls.filter((x) => x.key !== l.key))}
+                  onClick={() => {
+                    setServices((ls) => ls.filter((x) => x.key !== l.key));
+                    if (l.key === memberKey) setMemberKey(null);
+                  }}
                   aria-label={`Quitar ${nameOf(l)}`}
                 >
                   Quitar
                 </button>
               )}
             </div>
-            {l.isReward && (
+            {membership && countsFor(l) && (memberKey === null || memberKey === l.key) && (
+              <label className="mt-2 flex min-h-12 items-center gap-2 text-sm font-semibold">
+                <input
+                  type="checkbox"
+                  className="h-5 w-5"
+                  checked={memberKey === l.key}
+                  onChange={(e) => {
+                    setMemberKey(e.target.checked ? l.key : null);
+                    if (e.target.checked)
+                      setServices((ls) =>
+                        ls.map((x) => ({
+                          ...x,
+                          isReward: false,
+                          ...(x.key === l.key ? { discount: 0, reason: "" } : {}),
+                        })),
+                      );
+                  }}
+                />
+                Usar membresía
+              </label>
+            )}
+            {memberLine(l) && (
+              <p className="mt-1 text-sm font-semibold text-blue-800" data-testid="membership-line">
+                {memberLine(l)!.label}: −{formatCOP(memberLine(l)!.discount)}
+              </p>
+            )}
+            {l.isReward && !memberLine(l) && (
               <p className="text-ok mt-1 text-sm font-semibold">
                 🎁 Premio aplicado: −{formatCOP(rewardValue(l))}
               </p>
             )}
-            {view.isOwner && !l.isReward && (
+            {view.isOwner && !l.isReward && !memberLine(l) && (
               <div className="mt-2 grid grid-cols-[110px_1fr] gap-2">
                 <label className="flex flex-col text-xs">
                   Descuento
@@ -298,6 +413,14 @@ export function CheckoutSheet({
           onClick={() => {
             const first = view.services[0];
             if (!first) return;
+            // REQ-047.1 marcado por defecto en la primera línea que gasta cortes
+            if (
+              membership &&
+              memberKey === null &&
+              !services.some(countsFor) &&
+              view.membershipServiceIds.includes(first.id)
+            )
+              setMemberKey(nextKey);
             setServices((ls) => [
               ...ls,
               {

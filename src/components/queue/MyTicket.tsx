@@ -11,6 +11,7 @@ import {
   optOutWhatsapp,
   setTicketCourtesy,
 } from "@/lib/actions/public";
+import { membershipTicketLine } from "@/lib/domain/membership";
 import { formatMinutes } from "@/lib/domain/time";
 import { useQueueSubscription } from "@/lib/realtime/use-queue-subscription";
 import type { CourtesyOption, MyTicket as Ticket } from "@/lib/queue/public-queue";
@@ -107,6 +108,15 @@ export function MyTicket({
       </section>
 
       <WhatsappOptOut ticket={ticket} token={token} onChanged={reload} />
+
+      {ticket.membership && (
+        <p
+          className="mt-4 rounded-xl bg-blue-50 p-3 text-sm font-semibold text-blue-800"
+          data-testid="my-membership"
+        >
+          {membershipTicketLine(ticket.membership)}
+        </p>
+      )}
 
       <div className="mt-4">
         <StampCard status={ticket.loyalty} />

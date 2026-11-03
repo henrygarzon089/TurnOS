@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import { CheckoutSheet } from "@/components/cash/CheckoutSheet";
 import { NewSaleButton } from "@/components/cash/NewSaleSheet";
 import { CourtesyLine } from "@/components/queue/CourtesyLine";
+import { MemberBadge } from "@/components/queue/MemberBadge";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
 import {
   callNext,
@@ -291,6 +292,7 @@ function CurrentCard({
         <span className="text-muted text-sm font-normal">· {ticket.serviceName}</span>
       </p>
       {ticket.rewardAvailable && <RewardBadge />}
+      {ticket.isMember && <MemberBadge />}
       {ticket.courtesyName && (
         <CourtesyLine
           name={ticket.courtesyName}
@@ -397,6 +399,7 @@ function WaitingRow({
             {index + 1}. {ticket.customerName}
           </p>
           {ticket.rewardAvailable && <RewardBadge />}
+          {ticket.isMember && <MemberBadge />}
           <p className="text-muted text-sm">
             {ticket.serviceName} {ticket.serviceDurationMin}&apos; · hace {waitedMin}&apos; ·{" "}
             {ticket.preferredBarberId === me ? "te eligió" : "cualquiera"}

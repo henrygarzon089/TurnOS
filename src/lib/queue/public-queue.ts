@@ -5,6 +5,7 @@
 import { z } from "zod";
 import { parseBirthday } from "@/lib/domain/birthday";
 import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
+import { toMembershipStatus, type MembershipStatus } from "@/lib/domain/membership";
 import { GatewayError, type Gateway } from "@/lib/db/gateway";
 import type { BarberPhoto } from "@/lib/media/barber-photos";
 import { normalizePhoneCO } from "@/lib/domain/phone";
@@ -80,6 +81,8 @@ export type MyTicket = {
   estimate: Estimate | null;
   /** REQ-019.7 progreso de la tarjeta del cliente (null si no hay ficha) */
   loyalty: LoyaltyStatus | null;
+  /** REQ-048.1: periodo vigente de su familia, sin datos de los demás miembros. */
+  membership: MembershipStatus | null;
   /** REQ-038.4 / REQ-038.5: bebida escogida; se conserva aunque el producto se desactive */
   courtesy: { productId: string; name: string; photoPath: string | null; served: boolean } | null;
   /** REQ-036.2: solo con el turno terminado y enlace guardado */
@@ -391,6 +394,7 @@ export async function getTicketByToken(
     cancelReason: (raw.cancelReason as MyTicket["cancelReason"]) ?? null,
     estimate,
     loyalty: toLoyaltyStatus(raw.loyalty),
+    membership: toMembershipStatus(raw.membership),
     courtesy: (raw.courtesy as MyTicket["courtesy"]) ?? null,
     googleReviewUrl: (raw.googleReviewUrl as string | null) ?? null,
     whatsappConsent: Boolean(raw.whatsappConsent),

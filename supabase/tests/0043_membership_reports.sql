@@ -1,7 +1,9 @@
 -- T-074 · "Membresías" del dueño: "Vencen esta semana" y la plantilla de renovación
 -- (REQ-048.4, design.md §13.1, §13.3). 0043_membership_reports.sql y 0044_membership_template.sql.
+-- T-075 · "Mi turno" (get_ticket_by_token → membership, REQ-048.1) y la etiqueta "Membresía" de las
+-- filas (membership_member_ids, REQ-048.2).
 begin;
-select plan(18);
+select plan(31);
 
 create temp table ctx as
 select z.id as biz,
@@ -129,6 +131,88 @@ select auth.test_login('b0000000-0000-4000-8000-0000000000f1');
 select throws_ok($$ select * from memberships_expiring((select biz from ctx)) $$,
   '42501', 'FORBIDDEN', 'REQ-048.4 el dueño de otro negocio no ve las de La 33');
 select auth.test_logout();
+
+-- ================================================= T-075 · "Mi turno" y filas ----
+update business_hours set opens_at = '00:00', closes_at = '23:59', is_closed = false where business_id = (select biz from ctx);
+update barbers set status = 'available', present_day = current_date where business_id = (select biz from ctx);
+
+-- Familia de Mario (titular) y Mía con 4 cortes; Tomás no es miembro
+select auth.test_login((select owner_u from ctx));
+insert into ids select 'mi', create_membership((select biz from ctx), '+573209992201', 'Mario Miembro');
+select add_membership_member((select v from ids where k = 'mi'), '+573209992202', 'Mía Miembro');
+select auth.test_logout();
+select pg_temp.mk_period((select v from ids where k = 'mi'), (select today from ctx) - 5);  -- vence hoy + 24
+
+create function pg_temp.cust(p_phone text) returns uuid language sql as $$
+  select id from customers where business_id = (select biz from ctx) and phone_e164 = p_phone
+$$;
+create function pg_temp.token(p_name text, p_phone text) returns text
+language plpgsql as $$
+begin
+  perform join_queue('la-33', p_name, p_phone,
+                     (select id from services where business_id = (select biz from ctx) and name = 'Corte'), null, 1);
+  return (select public_token from tickets where customer_phone_e164 = p_phone and status = 'waiting');
+end $$;
+insert into ids select 'mia_c', pg_temp.cust('+573209992202');
+create temp table tok (k text primary key, v text);
+grant all on tok to public;
+insert into tok values ('mia', pg_temp.token('Mía Miembro', '+573209992202')),
+                       ('tomas', pg_temp.token('Tomás Turno', '+573209992203')),
+                       ('mario', pg_temp.token('Mario Miembro', '+573209992201'));
+
+-- Mario ya usó un corte (venta 'cut' sin turno)
+select register_sale((select biz from ctx), null,
+  (select id from barbers where business_id = (select biz from ctx) and display_name = 'Juan'),
+  jsonb_build_array(jsonb_build_object('kind', 'service', 'qty', 1, 'membership', true,
+    'ref_id', (select id from services where business_id = (select biz from ctx) and name = 'Corte'))),
+  '[]'::jsonb, pg_temp.cust('+573209992201'));
+
+select is((select get_ticket_by_token((select v from tok where k = 'mia')) -> 'membership'),
+  jsonb_build_object('cutsTotal', 4, 'cutsLeft', 3, 'endsOn', (select today from ctx) + 24, 'discountPct', 20),
+  'REQ-048.1 "Mi turno" de un miembro trae los cortes que quedan de la familia, el total y el vencimiento');
+select ok(not (get_ticket_by_token((select v from tok where k = 'mia')) -> 'membership' ?| array['membershipId', 'periodId', 'members']),
+  'REQ-048.1 "Mi turno" no trae ids de la familia ni datos de otros miembros');
+select is((select get_ticket_by_token((select v from tok where k = 'tomas')) -> 'membership'), 'null'::jsonb,
+  'REQ-048.1 "Mi turno" de quien no es miembro no trae membresía');
+
+-- REQ-048.2 filas: el barbero ve quién es miembro con periodo vigente
+select has_function('membership_member_ids', array['uuid', 'uuid[]'], 'REQ-048.2 existe membership_member_ids');
+select auth.test_login((select juan_u from ctx));
+select is(membership_member_ids((select biz from ctx),
+            array[pg_temp.cust('+573209992202'), pg_temp.cust('+573209992203'), pg_temp.cust('+573209992201')]),
+  (select array_agg(x order by x) from unnest(array[pg_temp.cust('+573209992202'), pg_temp.cust('+573209992201')]) x),
+  'REQ-048.2 la fila del barbero marca a los miembros con periodo vigente y no a los demás');
+select is(membership_member_ids((select biz from ctx), array[pg_temp.cust('+573209991105')]), '{}'::uuid[],
+  'REQ-048.2 un miembro con el periodo vencido no lleva la etiqueta');
+select auth.test_logout();
+
+select auth.test_login('b0000000-0000-4000-8000-0000000000f1');
+select throws_ok($$ select membership_member_ids((select biz from ctx), array[(select v from ids where k = 'mia_c')]) $$,
+  '42501', 'FORBIDDEN', 'REQ-048.2 el dueño de otro negocio no puede preguntar por los miembros de La 33');
+select auth.test_logout();
+select ok(not has_function_privilege('anon', 'membership_member_ids(uuid, uuid[])', 'execute')
+          and has_function_privilege('authenticated', 'membership_member_ids(uuid, uuid[])', 'execute'),
+  'REQ-048.2 membership_member_ids no se abre a anon (ADR-019)');
+
+-- Quitar a Mía de la familia: deja de ser miembro en "Mi turno" y en la fila
+select auth.test_login((select owner_u from ctx));
+select remove_membership_member((select id from membership_members where customer_id = (select v from ids where k = 'mia_c')));
+select is(membership_member_ids((select biz from ctx), array[(select v from ids where k = 'mia_c')]), '{}'::uuid[],
+  'REQ-048.2 quien salió de la familia ya no lleva la etiqueta');
+select auth.test_logout();
+select is((select get_ticket_by_token((select v from tok where k = 'mia')) -> 'membership'), 'null'::jsonb,
+  'REQ-048.1 quien salió de la familia ya no ve la membresía en "Mi turno"');
+
+-- Plan apagado (REQ-044.5): nadie es miembro
+select isnt((select get_ticket_by_token((select v from tok where k = 'mario')) -> 'membership'), 'null'::jsonb,
+  'REQ-048.1 Mario (titular) sigue viendo la membresía mientras el plan está encendido');
+update membership_plans set enabled = false where business_id = (select biz from ctx);
+select auth.test_login((select owner_u from ctx));
+select is(membership_member_ids((select biz from ctx), array[pg_temp.cust('+573209992201')]), '{}'::uuid[],
+  'REQ-048.2 con el plan apagado no hay etiqueta "Membresía"');
+select auth.test_logout();
+select is((select get_ticket_by_token((select v from tok where k = 'mario')) -> 'membership'), 'null'::jsonb,
+  'REQ-048.1 con el plan apagado "Mi turno" no trae membresía');
 
 select * from finish();
 rollback;
