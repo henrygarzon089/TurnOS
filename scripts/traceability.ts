@@ -26,6 +26,7 @@ const HITOS: Record<string, [number, number][]> = {
   "4": [[35, 35]], // REQ-035 servicios por barbero (ADR-023)
   "5": [[36, 39]], // experiencia del cliente (ADR-025)
   "6": [[40, 43]], // aviso automático por WhatsApp (ADR-027)
+  "7": [[44, 48]], // membresía familiar (ADR-030)
 };
 
 const req = readFileSync("specs/requirements.md", "utf8");

@@ -1,4 +1,4 @@
-# Estado del proyecto — traspaso (2026-10-28)
+# Estado del proyecto — traspaso (2026-11-03)
 
 Este documento resume la conversación en la que se construyó todo hasta aquí, para que cualquier
 persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `specs/`.
@@ -178,6 +178,35 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
 - Decisión que cambia la caja: la comisión del corte de membresía y del descuento al agotar los
   cortes se calcula sobre el precio de lista (como el premio de fidelidad); la cuota no paga comisión.
 - `pnpm trace`: 235 criterios, 0 sin prueba.
+- T-077 (2026-11-03, abierta): `HITOS["7"] = [[44, 48]]` en `scripts/traceability.ts` y el hito 7 en
+  `tests/unit/traceability.test.ts`; `pnpm trace --hito=7` da 0 sin prueba. Esperas de 15 s en los
+  E2E de `memberships.spec.ts` (tarjeta de la familia nueva) y `membership-checkout.spec.ts` ("Usar
+  membresía"), que fallaban a veces en iPhone por tiempo. Queda abierta hasta el checklist de abajo.
+
+#### Checklist de Henry para cerrar T-077 (Hito 7)
+
+Ninguno lo puede hacer el agente. En este orden:
+
+- [ ] Fusionar en `main`, uno por uno y en orden, los PR #36 (spec) → #37 (T-071) → #38 (T-072) →
+      #39 (T-073) → #40 (T-074) → #41 (T-075) → #42 (T-076) → el de T-077. Cada uno sale del anterior:
+      al fusionar uno, el siguiente queda contra `main`. **No desplegar** a producción todavía.
+- [ ] Aplicar en producción `0041_memberships`, `0042_membership_sales`, `0043_membership_reports` y
+      `0044_membership_template`, en ese orden y cada una en su propia transacción (0044 usa el valor
+      del enum que agrega 0043). Antes de desplegar el código: las pantallas nuevas leen tablas y
+      funciones de estas migraciones.
+- [ ] Desplegar `main` a producción y entrar a `/admin/membresias` de Filo: debe abrir sin error.
+- [ ] Fijar el plan de Filo en `/admin/membresias`: cuota, cortes por periodo, servicios que gastan
+      cortes y descuento al agotar. Encender "Membresía activa" solo cuando esté listo para ofrecerla.
+- [ ] Revisar en "Mensajes" de Filo la plantilla "Membresía por vencer" (la crea 0044).
+- [ ] Publicar en Filo, desde `/admin/privacidad`, una versión nueva del aviso de privacidad con el
+      párrafo de la membresía (el titular entrega el celular de los miembros) y el de WhatsApp
+      (REQ-002.5). Una sola versión nueva con los dos párrafos: el aviso que ya tiene Filo no los trae.
+- [ ] Prueba en la barbería con una familia real: crear la familia con el titular y un miembro,
+      cobrar la cuota, que un miembro tome turno y vea "Membresía familiar: quedan X de N" en "Mi
+      turno", que el barbero cobre el corte en $ 0 con "Usar membresía", y que la Caja de hoy, el
+      cierre y la Semana muestren "Cuotas de membresía" y "Cortes de membresía".
+- [ ] Aprobación de Henry → ADR de aprobación del Hito 7 (el número libre siguiente; ADR-031 está
+      apartado para el Hito 6) y T-077 marcada `[x]`.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

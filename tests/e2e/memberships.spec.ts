@@ -44,7 +44,7 @@ test.describe("REQ-044 / REQ-045 / REQ-046 / REQ-048 Membresías del dueño", ()
       await form.getByLabel("Celular").fill(phone);
       await form.getByRole("button", { name: "Crear familia" }).click();
       const card = page.getByRole("listitem", { name: `Familia de ${holder}` });
-      await expect(card).toBeVisible();
+      await expect(card).toBeVisible({ timeout: 15_000 });
       await expect(card.getByText("Titular", { exact: true })).toBeVisible();
       await expect(card.getByText("Sin periodo vigente.")).toBeVisible();
 

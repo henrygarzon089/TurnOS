@@ -1129,6 +1129,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   de WhatsApp) y prueba en la barbería con una familia real.
 - Terminado: `pnpm trace --hito=7` sin huecos; CI verde; migraciones en producción; aprobación de
   Henry (ADR nuevo).
+- Nota (2026-11-03): hecho lo del agente. `HITOS["7"]` y su caso en la prueba unitaria; `pnpm trace
+  --hito=7` → 235 criterios, 0 sin prueba. Esperas de 15 s en dos E2E de membresía que fallaban a
+  veces en iPhone. Falta lo de Henry (checklist en `docs/estado-del-proyecto.md`): fusionar #36…#42,
+  0041–0044 en producción, plan de Filo, aviso nuevo en Filo, prueba con una familia real y ADR.
 
 ---
 

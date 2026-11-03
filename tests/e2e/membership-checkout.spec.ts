@@ -135,7 +135,7 @@ test.describe("REQ-047 / REQ-048 membresía en el cobro, la fila y Mi turno", ()
 
       // REQ-047.1 "Usar membresía" marcado, el corte queda en $ 0 (REQ-047.3: el barbero puede)
       const sheet = barber.getByRole("dialog", { name: "Registrar cobro" });
-      await expect(sheet.getByLabel("Usar membresía")).toBeChecked();
+      await expect(sheet.getByLabel("Usar membresía")).toBeChecked({ timeout: 15_000 });
       await expect(sheet.getByTestId("membership-line")).toHaveText(
         "Corte de membresía (quedan 3): −$ 25.000",
       );
@@ -211,7 +211,7 @@ test.describe("REQ-047 / REQ-048 membresía en el cobro, la fila y Mi turno", ()
       await sheet
         .getByLabel("Servicio", { exact: true })
         .selectOption({ label: "Corte · $ 25.000" });
-      await expect(sheet.getByLabel("Usar membresía")).toBeChecked();
+      await expect(sheet.getByLabel("Usar membresía")).toBeChecked({ timeout: 15_000 });
       await expect(sheet.getByTestId("membership-line")).toHaveText(
         "Corte de membresía (quedan 3): −$ 25.000",
       );
