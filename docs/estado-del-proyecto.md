@@ -160,9 +160,17 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
   (Pixel 7 + iPhone 13). El Supabase local de la Mac quedó en 0044 (Henry lo autorizó el
   2026-11-02). Sin aplicar en producción. Sigue T-075 (cobro, "Mi
   turno" y filas).
+- T-075 (2026-11-03): el panel de cobro ofrece "Usar membresía" marcado en la línea que gasta
+  cortes ("Corte de membresía (quedan X)" o "Descuento de membresía X %") y no ofrece el premio en
+  esa venta; "Nueva venta" tiene el campo opcional "Celular del cliente" (decisión de Henry) para
+  usar la membresía sin turno. "Mi turno" dice "Membresía familiar: quedan X de N cortes · vence el
+  <día>" y las filas del barbero y del dueño marcan "Membresía". En `0043`: `get_ticket_by_token`
+  con `membership` y `membership_member_ids`. pgTAP 943, unitarias 284, integración 111, E2E 4/4
+  (Pixel 7 + iPhone 13). El Supabase local tiene las dos funciones nuevas (Henry lo autorizó). Sin
+  aplicar en producción. Sigue T-076 (caja, semana y aviso de privacidad).
 - Decisión que cambia la caja: la comisión del corte de membresía y del descuento al agotar los
   cortes se calcula sobre el precio de lista (como el premio de fidelidad); la cuota no paga comisión.
-- `pnpm trace`: 235 criterios, 4 sin prueba (REQ-048.1, 048.2, 048.3 y 048.5: vienen en T-075 y T-076).
+- `pnpm trace`: 235 criterios, 2 sin prueba (REQ-048.3 y 048.5: vienen en T-076).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

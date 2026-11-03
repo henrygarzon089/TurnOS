@@ -1092,11 +1092,19 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   un error y el segundo intento guardaba el plan vacío. La prueba anula la cuota con la sesión del
   dueño (`sales_guard` exige quién anula).
 
-### [ ] T-075 · Cobro, "Mi turno" y filas
+### [x] T-075 · Cobro, "Mi turno" y filas
 - REQ: REQ-047.1, REQ-047.5, REQ-048.1, REQ-048.2
 - Archivos: panel de cobro, "Mi turno", filas del barbero y del dueño, `0043_membership_reports.sql`
   (`get_ticket_by_token`, lecturas de las filas)
 - Terminado: E2E: el barbero cobra un corte de membresía y "Mi turno" muestra los cortes que quedan.
+- Nota (2026-11-03): `0043` redefine `get_ticket_by_token` (`membership` sin ids de la familia) y
+  agrega `membership_member_ids` para la etiqueta "Membresía" de las filas; pgTAP 13 nuevas en
+  `supabase/tests/0043_membership_reports.sql` (943 en total). Desvío aprobado por Henry
+  (2026-11-02): "Nueva venta" no tenía cliente, así que se agregó el campo opcional "Celular del
+  cliente" (`findCheckoutCustomer`, sin crear fichas). "quedan X" en el cobro cuenta los cortes
+  después de este; con la membresía desmarcada el premio vuelve a ofrecerse. Detalles en `design.md`
+  §13.3 y §13.5. Unitarias 284, integración 111, E2E `tests/e2e/membership-checkout.spec.ts` 4/4
+  (Pixel 7 + iPhone 13) contra el Supabase local, al que Henry autorizó aplicar las dos funciones.
 
 ### [ ] T-076 · Caja, semana y aviso de privacidad
 - REQ: REQ-048.3, REQ-048.5

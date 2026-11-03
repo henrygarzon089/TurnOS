@@ -208,7 +208,9 @@ test.describe("REQ-047 / REQ-048 membresía en el cobro, la fila y Mi turno", ()
         `${name} · Membresía familiar`,
       );
       await sheet.getByRole("button", { name: "+ Agregar servicio" }).click();
-      await sheet.getByLabel("Servicio").selectOption({ label: "Corte · $ 25.000" });
+      await sheet
+        .getByLabel("Servicio", { exact: true })
+        .selectOption({ label: "Corte · $ 25.000" });
       await expect(sheet.getByLabel("Usar membresía")).toBeChecked();
       await expect(sheet.getByTestId("membership-line")).toHaveText(
         "Corte de membresía (quedan 3): −$ 25.000",

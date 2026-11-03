@@ -55,8 +55,11 @@ export function CheckoutSheet({
   const [unpaidReason, setUnpaidReason] = useState("");
   const [pending, startTransition] = useTransition();
   const [nextKey, setNextKey] = useState(1);
-  /** Línea con "Usar membresía" (una sola, REQ-047.5); null = sin membresía. */
-  const [memberKey, setMemberKey] = useState<number | null>(null);
+  /**
+   * "Usar membresía" (una sola línea, REQ-047.5): "auto" = la primera que gasta cortes (marcada por
+   * defecto, REQ-047.1); un número = la línea que eligió quien cobra; null = la desmarcó.
+   */
+  const [memberChoice, setMemberChoice] = useState<number | null | "auto">("auto");
   /** "Nueva venta": cliente buscado por celular (REQ-047.1). */
   const [customer, setCustomer] = useState<CheckoutCustomer | null>(null);
   const [phone, setPhone] = useState("");
@@ -81,8 +84,6 @@ export function CheckoutSheet({
           },
         ]);
         setBarberId(v.ticket.barberId);
-        // REQ-047.1 "Usar membresía" marcado por defecto si el servicio del turno gasta cortes
-        if (v.membership && v.membershipServiceIds.includes(v.ticket.serviceId)) setMemberKey(0);
       }
     });
     return () => {
@@ -100,6 +101,15 @@ export function CheckoutSheet({
       : (view?.services.find((s) => s.id === l.serviceId)?.name ?? "");
   const membership = view?.membership ?? customer?.membership ?? null;
   const countsFor = (l: ServiceLine) => !!view?.membershipServiceIds.includes(l.serviceId);
+  const memberKey = !membership
+    ? null
+    : memberChoice === "auto"
+      ? membershipLineKey(services.map((l) => ({ key: l.key, countsForMembership: countsFor(l) })))
+      : services.some((l) => l.key === memberChoice && countsFor(l))
+        ? memberChoice
+        : null;
+  /** REQ-047.5: con la membresía en uso no hay premio en la venta. */
+  const rewardOn = (l: ServiceLine) => memberKey === null && l.isReward;
   const memberLine = (l: ServiceLine) =>
     membership && l.key === memberKey ? membershipCheckoutLine(membership, priceOf(l)) : null;
   const rewardValue = (l: ServiceLine) =>
@@ -116,8 +126,8 @@ export function CheckoutSheet({
           return {
             unitPrice: priceOf(l),
             qty: 1,
-            discount: m ? m.discount : l.isReward ? rewardValue(l) : l.discount,
-            isReward: !m && l.isReward,
+            discount: m ? m.discount : rewardOn(l) ? rewardValue(l) : l.discount,
+            isReward: !m && rewardOn(l),
             membership: m?.benefit ?? null,
           };
         }),
@@ -155,7 +165,7 @@ export function CheckoutSheet({
 
   // REQ-047.5: con la membresía en uso, el premio no se ofrece y queda disponible
   const rewardAvailable = !!view.loyalty?.available && memberKey === null;
-  const rewardApplied = services.some((l) => l.isReward);
+  const rewardApplied = services.some(rewardOn);
   const rewardLine = services.find((l) =>
     view.loyalty?.rewardType === "discount" ? true : l.serviceId === view.rewardServiceId,
   );
@@ -172,20 +182,13 @@ export function CheckoutSheet({
     setError(null);
     startTransition(async () => {
       const r = await findCheckoutCustomer(phone);
+      setMemberChoice("auto");
       if (!r.ok) {
         setCustomer(null);
-        setMemberKey(null);
         setError(r.error);
         return;
       }
       setCustomer(r.customer);
-      if (r.customer.membership) {
-        const key = membershipLineKey(
-          services.map((l) => ({ key: l.key, countsForMembership: countsFor(l) })),
-        );
-        setMemberKey(key);
-        if (key !== null) update(key, { isReward: false, discount: 0, reason: "" });
-      } else setMemberKey(null);
     });
   }
 
@@ -208,9 +211,9 @@ export function CheckoutSheet({
               kind: "service" as const,
               refId: l.serviceId,
               qty: 1,
-              discount: m || l.isReward ? 0 : l.discount,
+              discount: m || rewardOn(l) ? 0 : l.discount,
               discountReason: m ? undefined : l.reason || undefined,
-              isReward: !m && l.isReward,
+              isReward: !m && rewardOn(l),
               membership: m,
             };
           }),
@@ -258,10 +261,7 @@ export function CheckoutSheet({
                 value={phone}
                 onChange={(e) => {
                   setPhone(e.target.value);
-                  if (customer) {
-                    setCustomer(null);
-                    setMemberKey(null);
-                  }
+                  if (customer) setCustomer(null);
                 }}
               />
               <button
@@ -314,8 +314,6 @@ export function CheckoutSheet({
                     isReward: false,
                     discount: 0,
                   });
-                  if (l.key === memberKey && !view.membershipServiceIds.includes(serviceId))
-                    setMemberKey(null);
                 }}
               >
                 {view.ticket && l.key === 0 && (
@@ -335,10 +333,7 @@ export function CheckoutSheet({
                 <button
                   type="button"
                   className="text-danger min-h-12 px-2 text-sm font-semibold"
-                  onClick={() => {
-                    setServices((ls) => ls.filter((x) => x.key !== l.key));
-                    if (l.key === memberKey) setMemberKey(null);
-                  }}
+                  onClick={() => setServices((ls) => ls.filter((x) => x.key !== l.key))}
                   aria-label={`Quitar ${nameOf(l)}`}
                 >
                   Quitar
@@ -352,15 +347,8 @@ export function CheckoutSheet({
                   className="h-5 w-5"
                   checked={memberKey === l.key}
                   onChange={(e) => {
-                    setMemberKey(e.target.checked ? l.key : null);
-                    if (e.target.checked)
-                      setServices((ls) =>
-                        ls.map((x) => ({
-                          ...x,
-                          isReward: false,
-                          ...(x.key === l.key ? { discount: 0, reason: "" } : {}),
-                        })),
-                      );
+                    setMemberChoice(e.target.checked ? l.key : null);
+                    if (e.target.checked) update(l.key, { discount: 0, reason: "" });
                   }}
                 />
                 Usar membresía
@@ -371,12 +359,12 @@ export function CheckoutSheet({
                 {memberLine(l)!.label}: −{formatCOP(memberLine(l)!.discount)}
               </p>
             )}
-            {l.isReward && !memberLine(l) && (
+            {rewardOn(l) && (
               <p className="text-ok mt-1 text-sm font-semibold">
                 🎁 Premio aplicado: −{formatCOP(rewardValue(l))}
               </p>
             )}
-            {view.isOwner && !l.isReward && !memberLine(l) && (
+            {view.isOwner && !rewardOn(l) && !memberLine(l) && (
               <div className="mt-2 grid grid-cols-[110px_1fr] gap-2">
                 <label className="flex flex-col text-xs">
                   Descuento
@@ -413,14 +401,6 @@ export function CheckoutSheet({
           onClick={() => {
             const first = view.services[0];
             if (!first) return;
-            // REQ-047.1 marcado por defecto en la primera línea que gasta cortes
-            if (
-              membership &&
-              memberKey === null &&
-              !services.some(countsFor) &&
-              view.membershipServiceIds.includes(first.id)
-            )
-              setMemberKey(nextKey);
             setServices((ls) => [
               ...ls,
               {

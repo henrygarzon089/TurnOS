@@ -227,16 +227,16 @@
 | REQ-046.2 | Familia | T-071 (hecha), T-074 (hecha) | memberships.spec.ts, memberships.test.ts, 0041_memberships.sql | cubierto |
 | REQ-046.3 | Familia | T-071 (hecha), T-074 (hecha) | membership.test.ts, 0041_memberships.sql | cubierto |
 | REQ-046.4 | Familia | T-071 (hecha), T-074 (hecha) | memberships.test.ts, membership.test.ts, 0041_memberships.sql | cubierto |
-| REQ-047.1 | Usar la membresía en el cobro | T-073 (hecha), T-075 (pendiente) | membership-checkout.spec.ts, membership.test.ts, 0042_membership_checkout.sql | prueba escrita |
-| REQ-047.2 | Usar la membresía en el cobro | T-073 (hecha), T-075 (pendiente) | commission.test.ts, membership.test.ts, 0042_membership_checkout.sql | prueba escrita |
-| REQ-047.3 | Usar la membresía en el cobro | T-073 (hecha), T-075 (pendiente) | membership-checkout.spec.ts, 0042_membership_checkout.sql | prueba escrita |
-| REQ-047.4 | Usar la membresía en el cobro | T-073 (hecha), T-075 (pendiente) | commission.test.ts, 0042_membership_checkout.sql | prueba escrita |
-| REQ-047.5 | Usar la membresía en el cobro | T-073 (hecha), T-075 (pendiente) | membership-checkout.spec.ts, membership.test.ts, 0042_membership_checkout.sql | prueba escrita |
-| REQ-047.6 | Usar la membresía en el cobro | T-073 (hecha), T-075 (pendiente) | 0042_membership_checkout.sql | prueba escrita |
-| REQ-047.7 | Usar la membresía en el cobro | T-073 (hecha), T-075 (pendiente) | 0042_membership_checkout.sql | prueba escrita |
-| REQ-047.8 | Usar la membresía en el cobro | T-073 (hecha), T-075 (pendiente) | 0042_membership_checkout.sql | prueba escrita |
-| REQ-048.1 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (pendiente), T-076 (pendiente), T-077 (pendiente) | membership-checkout.spec.ts, memberships.test.ts, membership.test.ts, 0043_membership_reports.sql | prueba escrita |
-| REQ-048.2 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (pendiente), T-076 (pendiente), T-077 (pendiente) | membership-checkout.spec.ts, memberships.test.ts, 0043_membership_reports.sql | prueba escrita |
-| REQ-048.3 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (pendiente), T-076 (pendiente), T-077 (pendiente) | — | sin prueba |
-| REQ-048.4 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (pendiente), T-076 (pendiente), T-077 (pendiente) | memberships.spec.ts, memberships.test.ts, membership.test.ts, 0002_core.sql, 0043_membership_reports.sql | prueba escrita |
-| REQ-048.5 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (pendiente), T-076 (pendiente), T-077 (pendiente) | — | sin prueba |
+| REQ-047.1 | Usar la membresía en el cobro | T-073 (hecha), T-075 (hecha) | membership-checkout.spec.ts, membership.test.ts, 0042_membership_checkout.sql | cubierto |
+| REQ-047.2 | Usar la membresía en el cobro | T-073 (hecha), T-075 (hecha) | commission.test.ts, membership.test.ts, 0042_membership_checkout.sql | cubierto |
+| REQ-047.3 | Usar la membresía en el cobro | T-073 (hecha), T-075 (hecha) | membership-checkout.spec.ts, 0042_membership_checkout.sql | cubierto |
+| REQ-047.4 | Usar la membresía en el cobro | T-073 (hecha), T-075 (hecha) | commission.test.ts, 0042_membership_checkout.sql | cubierto |
+| REQ-047.5 | Usar la membresía en el cobro | T-073 (hecha), T-075 (hecha) | membership-checkout.spec.ts, membership.test.ts, 0042_membership_checkout.sql | cubierto |
+| REQ-047.6 | Usar la membresía en el cobro | T-073 (hecha), T-075 (hecha) | 0042_membership_checkout.sql | cubierto |
+| REQ-047.7 | Usar la membresía en el cobro | T-073 (hecha), T-075 (hecha) | 0042_membership_checkout.sql | cubierto |
+| REQ-047.8 | Usar la membresía en el cobro | T-073 (hecha), T-075 (hecha) | 0042_membership_checkout.sql | cubierto |
+| REQ-048.1 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (pendiente), T-077 (pendiente) | membership-checkout.spec.ts, memberships.test.ts, membership.test.ts, 0043_membership_reports.sql | prueba escrita |
+| REQ-048.2 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (pendiente), T-077 (pendiente) | membership-checkout.spec.ts, memberships.test.ts, 0043_membership_reports.sql | prueba escrita |
+| REQ-048.3 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (pendiente), T-077 (pendiente) | — | sin prueba |
+| REQ-048.4 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (pendiente), T-077 (pendiente) | memberships.spec.ts, memberships.test.ts, membership.test.ts, 0002_core.sql, 0043_membership_reports.sql | prueba escrita |
+| REQ-048.5 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (pendiente), T-077 (pendiente) | — | sin prueba |

@@ -1467,7 +1467,8 @@ comisión 0, sin barbero. El cierre: "Cuotas de membresía: $ 80.000".
   del servicio que cuenta, con "Corte de membresía (quedan X)" o "Descuento de membresía X %". Si el
   cliente también tiene premio, el premio no se ofrece en esa venta.
   Implementado en T-075 (2026-11-03): "Usar membresía" va marcado en la primera línea cuyo servicio
-  gasta cortes; se puede pasar a otra línea que gaste cortes o desmarcar. "quedan X" son los cortes
+  gasta cortes (también si el servicio se elige después); se puede pasar a otra línea que gaste
+  cortes o desmarcar. "quedan X" son los cortes
   que siguen después de este (lo mismo que verá "Mi turno" después del cobro). Mientras la membresía
   está en uso, el botón del premio no sale; si se desmarca, vuelve. La línea con membresía no lleva
   el descuento manual del dueño. **Decisión de Henry (2026-11-02):** en "Nueva venta" hay un campo
