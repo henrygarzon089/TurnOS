@@ -127,7 +127,16 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
 - [ ] Número de la barbería guardado y aviso encendido **solo en Filo** (§9).
 - [ ] Prueba real en la barbería: turno con la casilla marcada, llega "faltan 2", llega "te llaman" y
       responder "PARAR" da de baja (§9).
-- [ ] ADR de aprobación del Hito 6 (ADR-030) y T-069 marcada `[x]`.
+- [ ] ADR de aprobación del Hito 6 (ADR-031; ADR-030 es la membresía) y T-069 marcada `[x]`.
+
+### Hito 7 — membresía familiar (en construcción, ADR-030)
+
+- 2026-11-02: grill de 25 preguntas con Henry, todas con la respuesta recomendada. Escritos
+  REQ-044…REQ-048 (29 criterios, §5e), `design.md` §13, ADR-030 (propuesta) y tareas T-071…T-077.
+  Henry aprobó la spec el mismo día (PR #36). Sin código todavía; sigue T-071. No depende del Hito 6.
+- Decisión que cambia la caja: la comisión del corte de membresía y del descuento al agotar los
+  cortes se calcula sobre el precio de lista (como el premio de fidelidad); la cuota no paga comisión.
+- `pnpm trace`: 235 criterios, 29 sin prueba (los del Hito 7, sin código aún).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

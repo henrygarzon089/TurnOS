@@ -26,6 +26,7 @@
 5b. Hito 4 — Servicios por barbero (REQ-035)
 5c. Hito 5 — Experiencia del cliente (REQ-036 a REQ-039)
 5d. Hito 6 — Aviso automático por WhatsApp (REQ-040 a REQ-043)
+5e. Hito 7 — Membresía familiar (REQ-044 a REQ-048)
 6. Requisitos no funcionales (NFR)
 7. Casos borde consolidados
 8. Fuera de alcance del MVP
@@ -775,6 +776,99 @@ bandeja para leer o contestar mensajes, y el asistente con IA.
 
 ---
 
+## 5e. Hito 7 — Membresía familiar
+
+> Estado: **APROBADA** (Henry, 2026-11-02, tras grill de 25 preguntas). Ver ADR-030.
+> Una familia paga una cuota y comparte N cortes durante 30 días; al gastarlos tiene descuento.
+
+### REQ-044 · Plan de membresía — M
+**Como** dueño, **quiero** configurar un plan de membresía familiar, **para** que las familias
+vuelvan seguido y paguen por adelantado.
+
+- REQ-044.1 Cada negocio DEBE tener un único plan con: precio de la cuota (COP entero), número de
+  cortes por periodo (N), porcentaje de descuento al agotarlos (entero 0–100) y qué servicios gastan
+  cortes (por defecto solo "Corte").
+- REQ-044.2 La membresía DEBE venir **apagada por defecto**; SI falta el precio, N o al menos un
+  servicio, ENTONCES EL SISTEMA NO DEBE dejar activarla.
+- REQ-044.3 Solo el dueño DEBE poder ver y cambiar el plan.
+- REQ-044.4 CUANDO el dueño cambia el plan, EL SISTEMA DEBE aplicarlo a los periodos que empiecen
+  después; un periodo ya pagado conserva el precio, N y el descuento con que se pagó.
+- REQ-044.5 MIENTRAS la membresía esté apagada, EL SISTEMA NO DEBE ofrecerla en el cobro ni mostrarla
+  al cliente; las membresías vigentes se conservan para cuando se vuelva a encender.
+
+### REQ-045 · Cuota y vigencia — M
+**Como** dueño, **quiero** cobrar la cuota en la caja, **para** que la plata quede registrada como
+cualquier otra venta.
+
+- REQ-045.1 CUANDO el dueño registra la cuota de una familia, EL SISTEMA DEBE crear una venta de
+  "Membresía" con los medios de pago de la caja (REQ-023.1), sin barbero y sin comisión, que entra
+  completa como ingreso del negocio ese día.
+- REQ-045.2 Solo el dueño DEBE poder registrar una cuota. No hay cobro automático ni pago en línea.
+- REQ-045.3 Un periodo DEBE durar **30 días** desde el día del pago (Bogotá), con N cortes.
+- REQ-045.4 SI el titular paga mientras tiene un periodo vigente, ENTONCES el periodo nuevo DEBE
+  empezar el día siguiente al fin del actual, con sus propios N cortes.
+- REQ-045.5 CUANDO un periodo vence, EL SISTEMA DEBE dar por perdidos los cortes que sobren; no se
+  acumulan.
+- REQ-045.6 SI el titular no renueva, ENTONCES la membresía DEBE expirar sin multa ni periodo de
+  gracia y los miembros vuelven a precio normal; puede renovar cuando quiera.
+- REQ-045.7 El dueño DEBE poder anular la venta de una cuota con las reglas de REQ-026 (solo del día,
+  con motivo) y solo si el periodo no tiene cortes usados; al anularla, el periodo desaparece.
+
+### REQ-046 · Familia — M
+**Como** dueño, **quiero** inscribir a la familia por celular, **para** saber quién puede usar los
+cortes.
+
+- REQ-046.1 Una membresía DEBE tener un titular y hasta **5 personas en total** contando al titular,
+  identificadas por su ficha de cliente (celular).
+- REQ-046.2 Solo el dueño DEBE poder crear la membresía y agregar o quitar miembros, desde
+  "Membresías" en `/admin`; si el celular no tiene ficha, EL SISTEMA DEBE crearla con el nombre.
+- REQ-046.3 SI un celular ya está en otra membresía vigente, ENTONCES EL SISTEMA NO DEBE dejar
+  agregarlo.
+- REQ-046.4 El dueño DEBE poder cambiar miembros en cualquier momento; quitar a alguien no devuelve
+  cortes y lo deja libre para entrar a otra familia.
+
+### REQ-047 · Usar la membresía en el cobro — M
+**Como** barbero, **quiero** que el cobro aplique la membresía solo, **para** no hacer cuentas.
+
+- REQ-047.1 CUANDO se registra el cobro (con turno o en "Nueva venta") de un miembro con periodo
+  vigente y cortes disponibles, y el servicio gasta cortes, EL SISTEMA DEBE ofrecer "Usar membresía"
+  marcado por defecto; al aplicarlo, ese servicio queda en $ 0 y gasta un corte del periodo.
+- REQ-047.2 SI el periodo vigente no tiene cortes disponibles, ENTONCES EL SISTEMA DEBE aplicar el
+  descuento del plan a los servicios que gastan cortes, y no a productos.
+- REQ-047.3 El barbero DEBE poder aplicar la membresía aunque no pueda dar descuentos (PA-13): el
+  valor lo fija el plan.
+- REQ-047.4 En un corte de membresía y en un servicio con el descuento de la membresía, la comisión
+  del barbero DEBE calcularse sobre el **precio de lista**; la diferencia la asume el negocio
+  (ADR-030).
+- REQ-047.5 Una venta DEBE llevar un solo beneficio: si el cliente tiene membresía y premio de
+  fidelidad, se aplica la membresía y el premio queda disponible.
+- REQ-047.6 No hay límite de cortes por persona dentro de la familia.
+- REQ-047.7 Un corte pagado con la membresía NO DEBE sumar sello de fidelidad; un servicio con el
+  descuento de la membresía sí suma.
+- REQ-047.8 CUANDO se anula una venta que gastó un corte, EL SISTEMA DEBE devolver el corte al
+  periodo.
+
+### REQ-048 · Lo que ven el cliente, el barbero y el dueño — M
+**Como** cliente de una familia, **quiero** saber cuántos cortes quedan, **para** saber si el mío va
+por la membresía.
+
+- REQ-048.1 "Mi turno" de un miembro con periodo vigente DEBE mostrar "Membresía familiar: quedan X
+  de N cortes · vence el <día>", sin decir quién usó los demás.
+- REQ-048.2 Las filas del barbero y del dueño DEBEN marcar con "Membresía" el turno de un miembro con
+  periodo vigente.
+- REQ-048.3 El cierre del día (REQ-027) y el resumen semanal (REQ-028) DEBEN mostrar aparte el
+  ingreso por cuotas y los cortes de membresía (cantidad y valor de lista); sus comisiones entran a
+  la liquidación como las demás.
+- REQ-048.4 "Membresías" DEBE listar las que **vencen en los próximos 7 días** con un botón de
+  WhatsApp (`wa.me`, manual) y texto editable (REQ-033) para recordar al titular que renueve.
+- REQ-048.5 El aviso de privacidad por defecto DEBE decir que el titular entrega el celular de los
+  miembros para la membresía; se publica con el mecanismo de REQ-002.5.
+
+Fuera de alcance del Hito 7: varios planes, cobro automático o pago en línea, acumular cortes,
+límite por persona, recordatorio automático de pago y beneficios en productos.
+
+---
+
 ## 6. Requisitos no funcionales
 
 | ID | Requisito | Criterio verificable |
@@ -829,7 +923,7 @@ bandeja para leer o contestar mensajes, y el asistente con IA.
 Explícitamente **no** se construye en el MVP (el modelo de datos sí debe dejarlo posible):
 
 - Reservas con hora fija (citas). El modelo de turno llevará campo de hora programada opcional.
-- Planes familiares por suscripción. Habrá entidad cliente y ventas que puedan referenciar un plan.
+- ~~Planes familiares por suscripción.~~ Sale de esta lista: Hito 7, REQ-044 (ADR-030).
 - Referidos. La ficha de cliente admitirá `referred_by`.
 - ~~WhatsApp Cloud API (envío automático).~~ Sale de esta lista: Hito 6, REQ-040 (ADR-027).
 - Varios negocios por dueño en la interfaz. La tabla de membresías ya lo permite (REQ-031.3).

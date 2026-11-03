@@ -18,6 +18,9 @@
 8. Estrategia de pruebas
 9. Estructura del repositorio
 10. Cobertura REQ → sección
+11. Hito 5 — Experiencia del cliente
+12. Hito 6 — Aviso automático por WhatsApp
+13. Hito 7 — Membresía familiar
 
 ---
 
@@ -1308,3 +1311,137 @@ guarde `meta_message_id` no encuentra la fila y se pierde.
   y de "PARAR".
 - E2E (Pixel 7 + iPhone 13): casilla, línea con permiso vigente, baja en "Mi turno", y "Avisado ✓" con
   canal falso. Ninguna manda mensajes reales.
+
+## 13. Hito 7 — Membresía familiar (REQ-044…REQ-048, ADR-030)
+
+Migraciones `0041_memberships.sql` (datos y familia), `0042_membership_sales.sql` (cuota, cobro y
+anulación), `0043_membership_reports.sql` (caja, semana, "Mi turno", filas y aviso de privacidad) y
+`0044_membership_template.sql` (plantilla de renovación para los negocios que ya existen), cada una
+con su pgTAP y permisos explícitos (ADR-019). Todo nace apagado: sin activar el plan nada
+cambia en la fila ni en la caja.
+
+### 13.1 Datos
+
+| Tabla | Cambio | REQ |
+|---|---|---|
+| `membership_plans` (nueva) | `business_id` PK, `enabled bool not null default false`, `price int null check (> 0)`, `cuts_per_period int null check (1..100)`, `discount_pct int null check (0..100)`, `updated_at`; `check (not enabled or (price, cuts_per_period, discount_pct) no nulos)` | 044.1, 044.2 |
+| `services` | `counts_for_membership bool not null default false`. `0041` lo pone en true para los servicios que se llaman "Corte" (sin importar mayúsculas) | 044.1 |
+| `memberships` (nueva) | `id, business_id, holder_customer_id, created_at, created_by`; FK compuestas con `business_id` | 046.1 |
+| `membership_members` (nueva) | `id, business_id, membership_id, customer_id, added_at, removed_at null`; índice único parcial `(membership_id, customer_id) where removed_at is null`. El titular es un miembro más | 046.1, 046.4 |
+| `membership_periods` (nueva) | `id, business_id, membership_id, sale_id unique, starts_on date, ends_on date, cuts_total int, price int, discount_pct int, status enum('active','voided')`. `ends_on = starts_on + 29`. Copia del plan al pagar | 044.4, 045.3 |
+| `sale_items` | `kind` agrega `'membership'` (la cuota); columnas `membership_period_id uuid null` y `membership_benefit enum('cut','discount') null` en las líneas de servicio | 045.1, 047.1, 047.2 |
+| `sales` | `membership_total int not null default 0` (cuotas). `total = services_total + products_total + membership_total` | 045.1, 048.3 |
+| enum `message_template_key` | agrega `'membership_renewal'`: "Hola {nombre}, la membresía familiar en {negocio} vence el {fecha}. Renuévala en tu próxima visita." (negocios nuevos en `create_business`; los existentes, en `0044`, porque un valor nuevo de enum no se usa en la misma transacción que lo agrega, como en `0034`) | 048.4 |
+
+Periodo **vigente** de una membresía en la fecha `d`: el periodo `active` con
+`starts_on ≤ d ≤ ends_on`. **Cortes usados** = líneas `membership_benefit = 'cut'` de ese periodo en
+ventas `active`. Disponibles = `cuts_total − usados`. No se guarda un contador: anular una venta
+devuelve el corte solo (REQ-047.8).
+
+Un celular en una sola membresía vigente (REQ-046.3): al agregarlo, si es miembro sin `removed_at`
+de otra membresía con periodo vigente o futuro, `MEMBER_IN_OTHER_FAMILY` (P0004); si la otra no
+tiene periodo vigente ni futuro, se le pone `removed_at` allí y entra a la nueva. Máximo 5 sin
+`removed_at` → `FAMILY_FULL`.
+
+Anonimizar una ficha (REQ-018.6) le pone `removed_at`; si era titular, la membresía queda sin
+titular visible pero conserva periodos y ventas. Fusionar fichas (REQ-018.5) pasa las filas de
+`membership_members` a la ficha que se conserva.
+
+### 13.2 RLS
+
+| Tabla | Dueño | Barbero |
+|---|---|---|
+| `membership_plans` | select; cambios solo con `save_membership_plan` | sin acceso |
+| `memberships`, `membership_members`, `membership_periods` | select; cambios solo con funciones | sin acceso directo: lo que necesita sale de `membership_status` |
+
+`services.counts_for_membership` lo cambia el dueño con la política que ya tiene sobre `services`.
+
+### 13.3 Funciones SQL
+
+- `save_membership_plan(p_business_id, p_enabled, p_price, p_cuts, p_discount_pct)`: solo dueño.
+  Encender sin valores o sin ningún servicio con `counts_for_membership` → `PLAN_INCOMPLETE`
+  (REQ-044.2). Cambiar valores no toca periodos pagados (REQ-044.4).
+- `create_membership(p_business_id, p_holder_phone, p_holder_name)`,
+  `add_membership_member(p_membership_id, p_phone, p_name)`, `remove_membership_member(p_member_id)`:
+  solo dueño. Crean la ficha si no existe (REQ-046.2), sin permiso de WhatsApp ni fecha de aviso de
+  privacidad: esos los da el cliente al tomar turno.
+- `register_membership_fee(p_membership_id, p_payments jsonb)`: solo dueño (REQ-045.2), plan
+  encendido. Crea una venta sin barbero ni turno, con una línea `kind = 'membership'` por el precio
+  del plan, `membership_total = price`, comisión 0, y el periodo: `starts_on` = hoy (Bogotá), o el
+  día siguiente al `ends_on` del último periodo `active` si ese termina hoy o después (REQ-045.4).
+  Respeta `sales_block_closed_day`.
+- `membership_status(p_business_id, p_customer_id, p_day date default hoy)` → jsonb `{membershipId,
+  periodId, cutsTotal, cutsLeft, endsOn, discountPct}` o null. Null si el plan está apagado
+  (REQ-044.5). La usan el cobro, "Mi turno" y las filas.
+- `register_sale` (redefinida): una línea de servicio puede traer `"membership": true`. El servidor
+  decide: con cortes disponibles, `membership_benefit = 'cut'` y `discount = unit_price`; sin cortes,
+  `'discount'` y `discount = round(unit_price × discount_pct / 100)`. Rechazos: servicio que no gasta
+  cortes → `NOT_MEMBERSHIP_SERVICE`; sin periodo vigente o plan apagado → `NO_MEMBERSHIP`; dos
+  beneficios en la misma venta (membresía + premio, o dos líneas de membresía) →
+  `ONE_BENEFIT_PER_SALE` (REQ-047.5). La línea con membresía no necesita `discount_reason` y el
+  barbero puede mandarla (REQ-047.3). `kind = 'membership'` no se acepta aquí: la cuota va por su
+  función.
+- Sello (REQ-047.7): el sello se pone cuando el turno pasa a `done`, antes del cobro. Si la venta
+  gasta un corte (`'cut'`) y tiene turno, `register_sale` borra el sello de ese turno y descuenta la
+  tarjeta; si ese sello la había completado y el premio no se canjeó, la tarjeta vuelve a `active`.
+  Con `'discount'` el sello se queda.
+- `void_sale` (redefinida): venta de cuota → solo si el periodo no tiene cortes usados en ventas
+  `active` (si no, `MEMBERSHIP_IN_USE`), y el periodo pasa a `voided` (REQ-045.7). Venta con corte →
+  el corte vuelve solo, por la definición de "usados" (REQ-047.8), y el sello quitado se repone.
+- `cash_day_summary` / `close_cash_day` / `weekly_summary` agregan `membershipFees` (Σ
+  `membership_total`) y `membershipCuts` `{count, listValue}` (líneas `'cut'`), REQ-048.3.
+- `get_ticket_by_token` agrega `membership` (lo de `membership_status`, sin datos de otros miembros,
+  REQ-048.1). Las lecturas de las filas agregan `isMember` (REQ-048.2).
+- `memberships_expiring(p_business_id)`: membresías cuyo último periodo `active` termina en los
+  próximos 7 días y no tiene uno siguiente pagado, con titular y celular (REQ-048.4).
+- `default_privacy_text` agrega el párrafo de la membresía (REQ-048.5).
+
+### 13.4 Comisión (cambia §5.1, ADR-030)
+
+```
+services_discount = Σ discount                                   (incluye premio y membresía)
+commission_base   = services_total + Σ discount de líneas con is_reward o membership_benefit
+membership_total  = Σ line_total de líneas kind = 'membership'   (sin comisión)
+total             = services_total + products_total + membership_total
+```
+
+**Ejemplo E — corte de membresía.** Corte $ 25.000, Juan 60 %, quedan cortes. `discount = 25.000`,
+`services_total = 0`, `total = 0`, `commission_base = 25.000`, `commission_amount = 15.000`. El
+cierre lo muestra en "Cortes de membresía: 1 · $ 25.000".
+
+**Ejemplo F — agotados, 20 % de descuento.** Corte $ 25.000, Juan 60 %. `discount = 5.000`,
+`services_total = 20.000`, `total = 20.000`, `commission_base = 25.000`, `commission_amount = 15.000`
+(no 12.000: ADR-030).
+
+**Ejemplo G — cuota.** Plan $ 80.000, efectivo. `membership_total = 80.000`, `total = 80.000`,
+comisión 0, sin barbero. El cierre: "Cuotas de membresía: $ 80.000".
+
+### 13.5 Server actions y pantallas
+
+- `/admin/membresias` (nueva, dueño): plan (precio, cortes, %, servicios que cuentan, interruptor);
+  lista de familias con titular, miembros, periodo vigente y cortes; crear familia, agregar o quitar
+  miembro, "Cobrar cuota" (medio de pago) y "Vencen esta semana" con botón `wa.me`. Acciones en
+  `src/lib/actions/memberships.ts`.
+- Panel de cobro (REQ-023): si `membership_status` trae periodo, "Usar membresía" marcado en la línea
+  del servicio que cuenta, con "Corte de membresía (quedan X)" o "Descuento de membresía X %". Si el
+  cliente también tiene premio, el premio no se ofrece en esa venta.
+- "Mi turno": "Membresía familiar: quedan X de N cortes · vence el <día>" (REQ-048.1).
+- Filas del barbero y del dueño: etiqueta "Membresía" (REQ-048.2).
+- Caja de hoy, cierre y semana: líneas "Cuotas de membresía" y "Cortes de membresía" (REQ-048.3).
+- `/admin/mensajes`: plantilla "Membresía por vencer" editable (REQ-033).
+
+### 13.6 Pruebas
+
+- pgTAP `0041`: plan apagado, `PLAN_INCOMPLETE`, familia de 5, `FAMILY_FULL`,
+  `MEMBER_IN_OTHER_FAMILY`, liberar de una familia vencida, quitar miembro, RLS (el barbero no ve
+  nada) y permisos.
+- pgTAP `0042`: cuota (solo dueño, comisión 0, día cerrado), periodo de 30 días y encadenado, corte
+  en $ 0 con comisión sobre lista, descuento al agotar con comisión sobre lista, `ONE_BENEFIT_PER_SALE`,
+  premio que queda disponible, sello quitado y repuesto, anular corte devuelve el corte, anular cuota
+  con y sin cortes usados, cortes perdidos al vencer, plan cambiado no toca periodos pagados.
+- pgTAP `0043`: totales de caja y semana con los ejemplos E–G, `membership_status`, "Mi turno",
+  `isMember`, `memberships_expiring` y el aviso por defecto.
+- Unitarias: `src/lib/domain/commission.ts` con los ejemplos E y F; textos de las pantallas.
+- Integración: acciones de membresía contra Postgres local.
+- E2E (Pixel 7 + iPhone 13): el dueño activa el plan, crea una familia y cobra la cuota; el barbero
+  cobra un corte de membresía; "Mi turno" muestra los cortes que quedan.

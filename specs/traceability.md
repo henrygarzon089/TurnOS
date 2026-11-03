@@ -211,3 +211,32 @@
 | REQ-043.4 | Control y activación | T-064 (hecha), T-065 (hecha), T-067 (hecha), T-068 (hecha), T-070 (hecha), T-069 (pendiente) | whatsapp-notices.spec.ts, dispatch.test.ts, whatsapp-webhook.test.ts, cloud-api.test.ts | prueba escrita |
 | REQ-043.5 | Control y activación | T-064 (hecha), T-065 (hecha), T-067 (hecha), T-068 (hecha), T-070 (hecha), T-069 (pendiente) | whatsapp-webhook-route.test.ts, whatsapp-webhook.test.ts | prueba escrita |
 | REQ-043.6 | Control y activación | T-064 (hecha), T-065 (hecha), T-067 (hecha), T-068 (hecha), T-070 (hecha), T-069 (pendiente) | whatsapp-notices.spec.ts, whatsapp-screens.test.ts, 0040_whatsapp_allowed.sql | prueba escrita |
+| REQ-044.1 | Plan de membresía | T-071 (pendiente), T-074 (pendiente), T-077 (pendiente) | — | sin prueba |
+| REQ-044.2 | Plan de membresía | T-071 (pendiente), T-074 (pendiente), T-077 (pendiente) | — | sin prueba |
+| REQ-044.3 | Plan de membresía | T-071 (pendiente), T-074 (pendiente), T-077 (pendiente) | — | sin prueba |
+| REQ-044.4 | Plan de membresía | T-071 (pendiente), T-074 (pendiente), T-077 (pendiente) | — | sin prueba |
+| REQ-044.5 | Plan de membresía | T-071 (pendiente), T-074 (pendiente), T-077 (pendiente) | — | sin prueba |
+| REQ-045.1 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
+| REQ-045.2 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
+| REQ-045.3 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
+| REQ-045.4 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
+| REQ-045.5 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
+| REQ-045.6 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
+| REQ-045.7 | Cuota y vigencia | T-072 (pendiente), T-074 (pendiente) | — | sin prueba |
+| REQ-046.1 | Familia | T-071 (pendiente), T-074 (pendiente) | — | sin prueba |
+| REQ-046.2 | Familia | T-071 (pendiente), T-074 (pendiente) | — | sin prueba |
+| REQ-046.3 | Familia | T-071 (pendiente), T-074 (pendiente) | — | sin prueba |
+| REQ-046.4 | Familia | T-071 (pendiente), T-074 (pendiente) | — | sin prueba |
+| REQ-047.1 | Usar la membresía en el cobro | T-073 (pendiente), T-075 (pendiente) | — | sin prueba |
+| REQ-047.2 | Usar la membresía en el cobro | T-073 (pendiente), T-075 (pendiente) | — | sin prueba |
+| REQ-047.3 | Usar la membresía en el cobro | T-073 (pendiente), T-075 (pendiente) | — | sin prueba |
+| REQ-047.4 | Usar la membresía en el cobro | T-073 (pendiente), T-075 (pendiente) | — | sin prueba |
+| REQ-047.5 | Usar la membresía en el cobro | T-073 (pendiente), T-075 (pendiente) | — | sin prueba |
+| REQ-047.6 | Usar la membresía en el cobro | T-073 (pendiente), T-075 (pendiente) | — | sin prueba |
+| REQ-047.7 | Usar la membresía en el cobro | T-073 (pendiente), T-075 (pendiente) | — | sin prueba |
+| REQ-047.8 | Usar la membresía en el cobro | T-073 (pendiente), T-075 (pendiente) | — | sin prueba |
+| REQ-048.1 | Lo que ven el cliente, el barbero y el dueño | T-074 (pendiente), T-075 (pendiente), T-076 (pendiente), T-077 (pendiente) | — | sin prueba |
+| REQ-048.2 | Lo que ven el cliente, el barbero y el dueño | T-074 (pendiente), T-075 (pendiente), T-076 (pendiente), T-077 (pendiente) | — | sin prueba |
+| REQ-048.3 | Lo que ven el cliente, el barbero y el dueño | T-074 (pendiente), T-075 (pendiente), T-076 (pendiente), T-077 (pendiente) | — | sin prueba |
+| REQ-048.4 | Lo que ven el cliente, el barbero y el dueño | T-074 (pendiente), T-075 (pendiente), T-076 (pendiente), T-077 (pendiente) | — | sin prueba |
+| REQ-048.5 | Lo que ven el cliente, el barbero y el dueño | T-074 (pendiente), T-075 (pendiente), T-076 (pendiente), T-077 (pendiente) | — | sin prueba |

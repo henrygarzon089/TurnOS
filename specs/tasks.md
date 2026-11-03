@@ -23,6 +23,9 @@
 | H2 | Clientes y fidelidad | T-031…T-039 | REQ-018…REQ-022 |
 | H3 | Caja y comisiones | T-040…T-050 | REQ-023…REQ-029 |
 | H4 | Servicios por barbero (Filo) — **aprobado** (ADR-024) | T-051…T-057 | REQ-035 |
+| H5 | Experiencia del cliente — **aprobado** (ADR-026) | T-058…T-063 | REQ-036…REQ-039 |
+| H6 | Aviso automático por WhatsApp (ADR-027) | T-064…T-070 | REQ-040…REQ-043 |
+| H7 | Membresía familiar (ADR-030) | T-071…T-077 | REQ-044…REQ-048 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -1026,6 +1029,59 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ---
 
+## Hito 7 — Membresía familiar (ADR-030)
+
+> REQ-044…REQ-048 y ADR-030 aprobados por Henry (2026-11-02). Diseño en `design.md` §13. No depende del Hito 6: puede avanzar mientras T-069 espera el trámite con Meta.
+
+### [ ] T-071 · Migración y pgTAP: plan y familia
+- REQ: REQ-044.1, REQ-044.2, REQ-044.3, REQ-044.4, REQ-046.1, REQ-046.2, REQ-046.3, REQ-046.4
+- Archivos: `supabase/migrations/0041_memberships.sql`, `supabase/tests/0041_memberships.sql`
+- Terminado: pgTAP de §13.6 para `0041` en verde; con el plan apagado nada cambia.
+
+### [ ] T-072 · Cuota en la caja
+- REQ: REQ-045.1, REQ-045.2, REQ-045.3, REQ-045.4, REQ-045.5, REQ-045.6, REQ-045.7
+- Archivos: `supabase/migrations/0042_membership_sales.sql` (`register_membership_fee`, `void_sale`),
+  `supabase/tests/0042_membership_sales.sql`, `src/lib/domain/commission.ts`
+- Terminado: pgTAP de la cuota (ejemplo G), encadenado, vencimiento y anulación.
+
+### [ ] T-073 · Membresía en el cobro
+- REQ: REQ-047.1, REQ-047.2, REQ-047.3, REQ-047.4, REQ-047.5, REQ-047.6, REQ-047.7, REQ-047.8
+- Archivos: `0042_membership_sales.sql` (`register_sale`, `void_sale`, `membership_status`), su
+  pgTAP, `src/lib/domain/commission.ts` y sus unitarias
+- Terminado: pgTAP con los ejemplos E y F, sello quitado y repuesto, premio que queda disponible y
+  corte devuelto al anular; unitarias de comisión.
+
+### [ ] T-074 · Pantalla "Membresías" del dueño
+- REQ: REQ-044.2, REQ-044.3, REQ-044.5, REQ-045.1, REQ-046.2, REQ-046.4, REQ-048.4
+- Archivos: `src/app/(staff)/admin/membresias/`, `src/lib/actions/memberships.ts`,
+  `0044_membership_template.sql`, `0043_membership_reports.sql` (`memberships_expiring`)
+- Terminado: integración de las acciones; E2E: activar el plan, crear la familia, cobrar la cuota y
+  ver "Vencen esta semana".
+
+### [ ] T-075 · Cobro, "Mi turno" y filas
+- REQ: REQ-047.1, REQ-047.5, REQ-048.1, REQ-048.2
+- Archivos: panel de cobro, "Mi turno", filas del barbero y del dueño, `0043_membership_reports.sql`
+  (`get_ticket_by_token`, lecturas de las filas)
+- Terminado: E2E: el barbero cobra un corte de membresía y "Mi turno" muestra los cortes que quedan.
+
+### [ ] T-076 · Caja, semana y aviso de privacidad
+- REQ: REQ-048.3, REQ-048.5
+- Archivos: `0043_membership_reports.sql` (`cash_day_summary`, `close_cash_day`, `weekly_summary`,
+  `default_privacy_text`), Caja de hoy, cierre y Semana
+- Terminado: pgTAP con los ejemplos E–G en el cierre y la semana; párrafo de membresía en el aviso por
+  defecto.
+
+### [ ] T-077 · Validación Hito 7
+- REQ: REQ-044…REQ-048
+- Archivos: `scripts/traceability.ts` (`HITOS["7"] = [[44, 48]]`), `tests/unit/traceability.test.ts`,
+  `docs/estado-del-proyecto.md`
+- Depende de Henry: valores del plan de Filo, versión nueva del aviso publicada en Filo (junto con la
+  de WhatsApp) y prueba en la barbería con una familia real.
+- Terminado: `pnpm trace --hito=7` sin huecos; CI verde; migraciones en producción; aprobación de
+  Henry (ADR nuevo).
+
+---
+
 ## Dependencias principales
 
 ```mermaid
@@ -1040,4 +1096,5 @@ flowchart LR
   T050 --> T051 --> T052 --> T053 --> T054 --> T055 --> T056 --> T057
   T057 --> T058 --> T059 --> T060 --> T061 --> T062 --> T063
   T063 --> T064 --> T065 --> T066 --> T067 --> T068 --> T070 --> T069
+  T070 --> T071 --> T072 --> T073 --> T074 --> T075 --> T076 --> T077
 ```

@@ -404,4 +404,24 @@
   habilitado en la misma migración.
 - Consecuencias: REQ-043.6, migración `0040_whatsapp_allowed`, `design.md` §12.1 y §12.6, tarea T-070.
   Va a producción antes que las variables `WHATSAPP_*`. Habilitar otro negocio es un `update` del
-  operador. La aprobación del Hito 6 pasa a ser ADR-030.
+  operador. La aprobación del Hito 6 pasa a ser ADR-031 (ADR-030 quedó para la membresía familiar).
+
+## ADR-030 · Membresía familiar (Hito 7)
+- Estado: **aceptada** (Henry, 2026-11-02, tras grill de 25 preguntas; aprobó la spec en el PR #36)
+- Contexto: Henry escogió una cuota mensual con N cortes compartidos por la familia y descuento al
+  agotarlos (`docs/propuesta-mejoras-clientes.md`, ADR-025). Toca caja y comisiones: hoy la comisión
+  se calcula sobre el precio después de descuento (PA-18) y solo el premio de fidelidad se calcula
+  sobre el precio de lista (PA-19).
+- Opciones para la comisión de un corte de membresía: (a) sobre el precio de lista, la asume el
+  negocio; (b) sobre la cuota dividida entre N cortes; (c) sin comisión.
+- Decisión: (a), también para el descuento que se aplica al agotar los cortes. Los barberos son
+  independientes y no deben perder por la membresía, y es la misma regla del premio. La cuota entra
+  completa como ingreso del negocio, sin comisión. Además: un solo plan configurable y apagado por
+  defecto; cobro en la caja por el dueño, sin pasarela; periodos de 30 días que se encadenan si se
+  renueva antes; cortes que no se acumulan; hasta 5 personas por familia y un celular en una sola
+  membresía vigente; solo el dueño inscribe; un beneficio por venta, con la membresía antes que el
+  premio; el corte de membresía no suma sello; recordatorio de renovación manual por `wa.me`.
+- Consecuencias: REQ-044…REQ-048 (§5e), `design.md` §13 (cambia la fórmula de §5.1),
+  migraciones `0041`…`0044` y tareas T-071…T-077. Sale de "Fuera de alcance" el plan familiar. El
+  aviso de privacidad por defecto agrega un párrafo; Filo publica una sola versión nueva con este y el
+  de WhatsApp. La aprobación del Hito 6 pasa a ser ADR-031.
