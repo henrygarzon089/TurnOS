@@ -7,6 +7,7 @@ const ITEMS: { href: string; label: string }[] = [
   { href: "/app/clientes", label: "Clientes" },
   { href: "/admin/fidelidad", label: "Fidelidad" },
   { href: "/admin/recordar", label: "Recordar" },
+  { href: "/admin/membresias", label: "Membresías" },
   { href: "/admin/servicios", label: "Servicios" },
   { href: "/admin/productos", label: "Productos" },
   { href: "/admin/barberos", label: "Barberos" },

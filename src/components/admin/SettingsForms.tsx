@@ -12,7 +12,8 @@ import {
 import { formatPhoneCO } from "@/lib/domain/phone";
 import { renderTemplate } from "@/lib/notifications/render";
 
-export type TemplateKey = "notify_2_turns" | "reminder_inactive" | "share_queue" | "birthday";
+export type TemplateKey =
+  "notify_2_turns" | "reminder_inactive" | "share_queue" | "birthday" | "membership_renewal";
 
 const TEMPLATE_META: Record<TemplateKey, { title: string; help: string; vars?: string }> = {
   notify_2_turns: {
@@ -32,6 +33,11 @@ const TEMPLATE_META: Record<TemplateKey, { title: string; help: string; vars?: s
     help: "Saludo para los clientes de la lista “Cumplen esta semana”.",
     vars: "{nombre} {negocio}",
   },
+  membership_renewal: {
+    title: "Membresía por vencer",
+    help: "Para recordarle al titular que renueve, desde “Vencen esta semana” en Membresías.",
+    vars: "{nombre} {negocio} {fecha}",
+  },
 };
 
 const SAMPLE = {
@@ -39,6 +45,7 @@ const SAMPLE = {
   negocio: "Barbería La 33",
   tiempo: "≈ 25 min",
   enlace: "https://turnos.app/t/abc123",
+  fecha: "8 de noviembre",
 };
 
 export function TemplatesForm({

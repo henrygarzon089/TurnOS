@@ -1419,6 +1419,13 @@ agregar a alguien que ya está en esa familia devuelve su fila sin error.
   REQ-048.1). Las lecturas de las filas agregan `isMember` (REQ-048.2).
 - `memberships_expiring(p_business_id)`: membresías cuyo último periodo `active` termina en los
   próximos 7 días y no tiene uno siguiente pagado, con titular y celular (REQ-048.4).
+  Implementado en T-074 (2026-11-02): `memberships_expiring(p_business_id, p_today default hoy)`,
+  solo dueño (`FORBIDDEN`). "Próximos 7 días" = hoy y los 6 siguientes (Bogotá), como
+  `birthdays_this_week`; vencidas no salen. Tampoco salen las familias cuyo titular ya no es miembro
+  (no hay a quién escribirle), fue eliminado (REQ-018.6) o está marcado "No contactar" (REQ-020.5).
+  Devuelve `membership_id, customer_id, name, phone_e164, ends_on`, la más próxima primero. El valor
+  `membership_renewal` del enum y `create_business` con la plantilla van en `0043`; `0044` la agrega
+  a los negocios existentes. La plantilla usa la variable nueva `{fecha}` ("8 de noviembre").
 - `default_privacy_text` agrega el párrafo de la membresía (REQ-048.5).
 
 ### 13.4 Comisión (cambia §5.1, ADR-030)
@@ -1447,6 +1454,10 @@ comisión 0, sin barbero. El cierre: "Cuotas de membresía: $ 80.000".
   lista de familias con titular, miembros, periodo vigente y cortes; crear familia, agregar o quitar
   miembro, "Cobrar cuota" (medio de pago) y "Vencen esta semana" con botón `wa.me`. Acciones en
   `src/lib/actions/memberships.ts`.
+  Implementado en T-074: los cortes de cada familia salen de `membership_status` con el primer
+  miembro activo (con el plan apagado no se llama y la tarjeta dice "La membresía está apagada");
+  "Pagada hasta" muestra el último periodo pagado por adelantado. La cuota se cobra en un solo medio
+  de pago, por el precio del plan.
 - Panel de cobro (REQ-023): si `membership_status` trae periodo, "Usar membresía" marcado en la línea
   del servicio que cuenta, con "Corte de membresía (quedan X)" o "Descuento de membresía X %". Si el
   cliente también tiene premio, el premio no se ofrece en esa venta.

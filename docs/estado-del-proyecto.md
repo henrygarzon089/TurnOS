@@ -151,9 +151,17 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
   aplica sin motivo) y el sello del corte: se quita al cobrar y `void_sale` lo repone. Espejo en
   `commission.ts` (ejemplos E y F). pgTAP 46 nuevas (912 en total), unitarias 270, integración 102.
   Sin aplicar en producción. Sigue T-074 (pantalla "Membresías" del dueño).
+- T-074 (2026-11-02): pantalla `/admin/membresias` del dueño (plan con interruptor y servicios que
+  gastan cortes, familias con titular, miembros y cortes que quedan, crear familia, agregar y quitar
+  miembro, "Cobrar cuota" con medio de pago, "Vencen esta semana" con botón de WhatsApp) y chip
+  "Membresías" en el menú. `0043_membership_reports.sql` (`memberships_expiring`, plantilla en
+  `create_business`) y `0044_membership_template.sql` (plantilla "Membresía por vencer" para los
+  negocios existentes, editable en Mensajes). pgTAP 930, unitarias 280, integración 109. E2E escrito
+  y sin correr (el Supabase local está en 0034). Sin aplicar en producción. Sigue T-075 (cobro, "Mi
+  turno" y filas).
 - Decisión que cambia la caja: la comisión del corte de membresía y del descuento al agotar los
   cortes se calcula sobre el precio de lista (como el premio de fidelidad); la cuota no paga comisión.
-- `pnpm trace`: 235 criterios, 5 sin prueba (los del Hito 7 que vienen en T-074…T-077).
+- `pnpm trace`: 235 criterios, 4 sin prueba (REQ-048.1, 048.2, 048.3 y 048.5: vienen en T-075 y T-076).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
