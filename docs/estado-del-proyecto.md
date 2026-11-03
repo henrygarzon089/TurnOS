@@ -139,9 +139,15 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
   `save_membership_plan`, `create_membership`, `add_membership_member`, `remove_membership_member`;
   `merge_customers` y anonimizar ya conocen las familias (`BOTH_IN_FAMILIES`, decisión de Henry).
   pgTAP 49 nuevas (822 en total). Sin aplicar en producción (se hace al cerrar el hito). Sigue T-072.
+- T-072 (2026-11-02): `0042_membership_sales.sql` con la cuota en la caja: `sale_item_kind`
+  agrega `'membership'`, `sales.membership_total` (el total la suma), `sale_items.membership_period_id`
+  y `membership_benefit`; `register_membership_fee` (solo el dueño, plan encendido, venta sin barbero
+  ni comisión, periodo de 30 días desde hoy o encadenado al último) y `void_sale` con
+  `MEMBERSHIP_IN_USE`. pgTAP 44 nuevas (866 en total), integración 102. Sin aplicar en producción.
+  Sigue T-073 (cobro con membresía, en la misma 0042).
 - Decisión que cambia la caja: la comisión del corte de membresía y del descuento al agotar los
   cortes se calcula sobre el precio de lista (como el premio de fidelidad); la cuota no paga comisión.
-- `pnpm trace`: 235 criterios, 21 sin prueba (los del Hito 7 que vienen en T-072…T-077).
+- `pnpm trace`: 235 criterios, 13 sin prueba (los del Hito 7 que vienen en T-073…T-077).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

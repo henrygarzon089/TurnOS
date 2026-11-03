@@ -1377,6 +1377,13 @@ agregar a alguien que ya está en esa familia devuelve su fila sin error.
   del plan, `membership_total = price`, comisión 0, y el periodo: `starts_on` = hoy (Bogotá), o el
   día siguiente al `ends_on` del último periodo `active` si ese termina hoy o después (REQ-045.4).
   Respeta `sales_block_closed_day`.
+  Implementado en T-072 (2026-11-02): plan apagado → `PLAN_DISABLED` (P0004); familia que no existe →
+  `MEMBERSHIP_NOT_FOUND`; pagos que no suman el precio → `PAYMENTS_MISMATCH`. La venta queda a
+  nombre del titular (`customer_id`), la línea se llama "Membresía familiar" con
+  `ref_id` = la familia y `membership_period_id` = su periodo. El día cerrado lo rechaza
+  `sales_guard` (`CASH_DAY_CLOSED`, P0009), que es lo que la spec llama `sales_block_closed_day`.
+  `sale_items_discount_reason_ck` ya acepta sin motivo las líneas con `membership_benefit`
+  (REQ-047.3). Un periodo `voided` no cuenta para encadenar.
 - `membership_status(p_business_id, p_customer_id, p_day date default hoy)` → jsonb `{membershipId,
   periodId, cutsTotal, cutsLeft, endsOn, discountPct}` o null. Null si el plan está apagado
   (REQ-044.5). La usan el cobro, "Mi turno" y las filas.
