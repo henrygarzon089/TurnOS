@@ -33,6 +33,8 @@ export type QueueTicket = {
   rewardAvailable: boolean;
   /** REQ-020.5: el cliente pidió no ser contactado (sin botón "Avisar"). */
   doNotContact: boolean;
+  /** REQ-048.2: miembro de una familia con periodo vigente (etiqueta "Membresía"). */
+  isMember: boolean;
   /** REQ-038.5: bebida de cortesía del turno. */
   courtesyName: string | null;
   courtesyServed: boolean;
@@ -105,9 +107,25 @@ function toTicket(
     customerId: r.customer_id ?? null,
     rewardAvailable: false,
     doNotContact: false,
+    isMember: false,
     courtesyName: (r.courtesy_product_id && courtesyNames.get(r.courtesy_product_id)) || null,
     courtesyServed: r.courtesy_served_at !== null,
   };
+}
+
+/** REQ-048.2: clientes de estos turnos que son miembros con periodo vigente (0043). */
+async function fetchMemberIds(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  businessId: string,
+  rows: TicketRow[],
+): Promise<Set<string>> {
+  const ids = [...new Set(rows.map((r) => r.customer_id).filter((id) => id !== null))];
+  if (ids.length === 0) return new Set();
+  const { data } = await supabase.rpc("membership_member_ids", {
+    p_business_id: businessId,
+    p_customer_ids: ids,
+  });
+  return new Set((data as string[] | null) ?? []);
 }
 
 /** REQ-038.5: nombre de las bebidas; incluye productos ya inactivos (REQ-038.7). */
@@ -226,10 +244,15 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
     : [{ data: [] as { customer_id: string }[] }, { data: [] as { id: string }[] }];
   const withReward = new Set((rewardRes.data ?? []).map((c) => c.customer_id as string));
   const noContact = new Set((dncRes.data ?? []).map((c) => c.id as string));
+  const members = await fetchMemberIds(supabase, session.business.id, [
+    ...list,
+    ...(currentRes.data ? [currentRes.data as TicketRow] : []),
+  ]);
   const mark = (t: QueueTicket): QueueTicket => ({
     ...t,
     rewardAvailable: !!t.customerId && withReward.has(t.customerId),
     doNotContact: !!t.customerId && noContact.has(t.customerId),
+    isMember: !!t.customerId && members.has(t.customerId),
   });
   const currentRow = (currentRes.data as TicketRow | null) ?? null;
   const courtesyNames = await fetchCourtesyNames(supabase, [
@@ -414,7 +437,10 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
         capableBarberIds: capable.get(r.service_id) ?? [],
       })),
   );
-  const courtesyNames = await fetchCourtesyNames(supabase, rows);
+  const [courtesyNames, members] = await Promise.all([
+    fetchCourtesyNames(supabase, rows),
+    fetchMemberIds(supabase, biz, rows),
+  ]);
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" });
   const override =
     bizRes.data?.queue_override_day === today
@@ -429,7 +455,10 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
       status: b.status,
       isActive: b.is_active,
     })),
-    active: rows.map((r) => toTicket(r, (pos.get(r.id) ?? 1) - 1, courtesyNames)),
+    active: rows.map((r) => ({
+      ...toTicket(r, (pos.get(r.id) ?? 1) - 1, courtesyNames),
+      isMember: !!r.customer_id && members.has(r.customer_id),
+    })),
     services: (servicesRes.data ?? []).map((s) => ({
       id: s.id,
       name: s.name,

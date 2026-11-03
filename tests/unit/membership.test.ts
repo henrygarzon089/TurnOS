@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  membershipCheckoutLine,
   membershipErrorMessage,
+  membershipLineKey,
+  membershipTicketLine,
   parseMembershipPlanForm,
   renewalDayLabel,
   toFamilyRows,
@@ -164,5 +167,42 @@ describe("REQ-048.4 recordar la renovación por WhatsApp", () => {
 
   it("REQ-048.4 el día se escribe en español", () => {
     expect(renewalDayLabel("2026-01-31")).toBe("31 de enero");
+  });
+});
+
+describe("REQ-047.1 / REQ-047.5 / REQ-048 membresía en el cobro, Mi turno y filas", () => {
+  const status = { cutsTotal: 4, cutsLeft: 3, endsOn: "2026-11-26", discountPct: 20 };
+
+  it("REQ-047.1 con cortes: la línea queda en $ 0 y dice cuántos quedan después de este", () => {
+    expect(membershipCheckoutLine(status, 25000)).toEqual({
+      benefit: "cut",
+      discount: 25000,
+      label: "Corte de membresía (quedan 2)",
+    });
+  });
+
+  it("REQ-047.1 sin cortes: descuento del plan redondeado al peso (REQ-047.2)", () => {
+    expect(membershipCheckoutLine({ ...status, cutsLeft: 0 }, 25001)).toEqual({
+      benefit: "discount",
+      discount: 5000,
+      label: "Descuento de membresía 20 %",
+    });
+  });
+
+  it("REQ-047.1 la membresía va en la primera línea cuyo servicio gasta cortes", () => {
+    expect(
+      membershipLineKey([
+        { key: 4, countsForMembership: false },
+        { key: 7, countsForMembership: true },
+        { key: 9, countsForMembership: true },
+      ]),
+    ).toBe(7);
+    expect(membershipLineKey([{ key: 1, countsForMembership: false }])).toBeNull();
+  });
+
+  it("REQ-048.1 Mi turno: 'Membresía familiar: quedan X de N cortes · vence el <día>'", () => {
+    expect(membershipTicketLine(status)).toBe(
+      "Membresía familiar: quedan 3 de 4 cortes · vence el 26 de noviembre",
+    );
   });
 });

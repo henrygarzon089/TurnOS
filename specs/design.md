@@ -1417,6 +1417,11 @@ agregar a alguien que ya está en esa familia devuelve su fila sin error.
   `membership_total`) y `membershipCuts` `{count, listValue}` (líneas `'cut'`), REQ-048.3.
 - `get_ticket_by_token` agrega `membership` (lo de `membership_status`, sin datos de otros miembros,
   REQ-048.1). Las lecturas de las filas agregan `isMember` (REQ-048.2).
+  Implementado en T-075 (2026-11-03), en `0043`: `membership` es lo de `membership_status` sin
+  `membershipId` ni `periodId` (`{cutsTotal, cutsLeft, endsOn, discountPct}` o null). Las filas leen
+  `membership_member_ids(p_business_id, p_customer_ids uuid[])`: de esos clientes, los miembros sin
+  `removed_at` con periodo vigente hoy; vacío con el plan apagado; personal del negocio (`FORBIDDEN`
+  si no), nunca `anon`.
 - `memberships_expiring(p_business_id)`: membresías cuyo último periodo `active` termina en los
   próximos 7 días y no tiene uno siguiente pagado, con titular y celular (REQ-048.4).
   Implementado en T-074 (2026-11-02): `memberships_expiring(p_business_id, p_today default hoy)`,
@@ -1461,7 +1466,17 @@ comisión 0, sin barbero. El cierre: "Cuotas de membresía: $ 80.000".
 - Panel de cobro (REQ-023): si `membership_status` trae periodo, "Usar membresía" marcado en la línea
   del servicio que cuenta, con "Corte de membresía (quedan X)" o "Descuento de membresía X %". Si el
   cliente también tiene premio, el premio no se ofrece en esa venta.
-- "Mi turno": "Membresía familiar: quedan X de N cortes · vence el <día>" (REQ-048.1).
+  Implementado en T-075 (2026-11-03): "Usar membresía" va marcado en la primera línea cuyo servicio
+  gasta cortes (también si el servicio se elige después); se puede pasar a otra línea que gaste
+  cortes o desmarcar. "quedan X" son los cortes
+  que siguen después de este (lo mismo que verá "Mi turno" después del cobro). Mientras la membresía
+  está en uso, el botón del premio no sale; si se desmarca, vuelve. La línea con membresía no lleva
+  el descuento manual del dueño. **Decisión de Henry (2026-11-02):** en "Nueva venta" hay un campo
+  opcional "Celular del cliente" que busca la ficha (sin anonimizar) y su `membership_status`, y se
+  manda a `register_sale` como `p_customer_id`; no crea fichas nuevas (acción `findCheckoutCustomer`).
+- "Mi turno": "Membresía familiar: quedan X de N cortes · vence el <día>" (REQ-048.1). El <día> se escribe
+  como en la plantilla de renovación ("26 de noviembre"); la línea sale mientras haya periodo vigente,
+  también con el turno ya terminado.
 - Filas del barbero y del dueño: etiqueta "Membresía" (REQ-048.2).
 - Caja de hoy, cierre y semana: líneas "Cuotas de membresía" y "Cortes de membresía" (REQ-048.3).
 - `/admin/mensajes`: plantilla "Membresía por vencer" editable (REQ-033).

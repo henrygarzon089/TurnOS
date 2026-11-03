@@ -3,6 +3,8 @@
 import { z } from "zod";
 import { getStaffSession } from "@/lib/auth/session";
 import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
+import { toMembershipStatus, type MembershipStatus } from "@/lib/domain/membership";
+import { normalizePhoneCO } from "@/lib/domain/phone";
 import {
   MY_NUMBERS_COLUMNS,
   summarizeMyNumbers,
@@ -33,6 +35,10 @@ export type CheckoutView = {
   services: CatalogItem[];
   products: CatalogItem[];
   loyalty: LoyaltyStatus | null;
+  /** REQ-047.1: periodo vigente de la familia del cliente del turno (null si no es miembro). */
+  membership: MembershipStatus | null;
+  /** Servicios que gastan cortes de la membresía (`counts_for_membership`). */
+  membershipServiceIds: string[];
   /** Servicio que se regala si el premio es "servicio gratis" (REQ-019.4). */
   rewardServiceId: string | null;
   barbers: { id: string; name: string }[];
@@ -45,7 +51,12 @@ export type SaleLineInput = {
   discount?: number;
   discountReason?: string;
   isReward?: boolean;
+  /** REQ-047.1: usar la membresía en esta línea; el servidor decide corte o descuento. */
+  membership?: boolean;
 };
+
+/** REQ-047.1 cliente de "Nueva venta" buscado por celular (decisión de Henry, 2026-11-02). */
+export type CheckoutCustomer = { id: string; name: string; membership: MembershipStatus | null };
 
 export type CashResult = { ok: true; saleId?: string } | { ok: false; error: string };
 
@@ -67,6 +78,9 @@ const ERRORS: Record<string, string> = {
   ONLY_TODAY: "Solo se anulan ventas de hoy.",
   ALREADY_VOIDED: "Esta venta ya está anulada.",
   VOID_REQUIRES_REASON: "Escribe el motivo de la anulación.",
+  NO_MEMBERSHIP: "Este cliente no tiene una membresía vigente.",
+  NOT_MEMBERSHIP_SERVICE: "Ese servicio no gasta cortes de la membresía.",
+  ONE_BENEFIT_PER_SALE: "Solo se aplica un beneficio por cobro: la membresía o el premio.",
   FORBIDDEN: "No tienes permiso para esta acción.",
 };
 
@@ -99,7 +113,7 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
       : Promise.resolve({ data: null }),
     supabase
       .from("services")
-      .select("id, name, price")
+      .select("id, name, price, counts_for_membership")
       .eq("business_id", biz)
       .eq("is_active", true)
       .order("sort_order"),
@@ -148,6 +162,19 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
         (await supabase.rpc("customer_loyalty", { p_customer_id: t.customer_id })).data,
       )
     : null;
+  const membership = t?.customer_id
+    ? toMembershipStatus(
+        (
+          await supabase.rpc("membership_status", {
+            p_business_id: biz,
+            p_customer_id: t.customer_id,
+          })
+        ).data,
+      )
+    : null;
+  const services = (servicesRes.data ?? []) as (CatalogItem & {
+    counts_for_membership: boolean;
+  })[];
 
   return {
     isOwner: session.role === "owner",
@@ -162,9 +189,11 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
           barberName: allBarbers.find((b) => b.id === t.assigned_barber_id)?.name ?? "",
         }
       : null,
-    services: (servicesRes.data ?? []) as CatalogItem[],
+    services: services.map(({ id, name, price }) => ({ id, name, price })),
     products: (productsRes.data ?? []) as CatalogItem[],
     loyalty,
+    membership,
+    membershipServiceIds: services.filter((s) => s.counts_for_membership).map((s) => s.id),
     rewardServiceId: progRes.data?.enabled ? (progRes.data.reward_service_id ?? null) : null,
     barbers,
   };
@@ -179,9 +208,12 @@ const lineSchema = z.object({
   discount: z.number().int().min(0).optional(),
   discountReason: z.string().trim().max(120).optional(),
   isReward: z.boolean().optional(),
+  membership: z.boolean().optional(),
 });
 const saleSchema = z.object({
   ticketId: z.uuid().nullable(),
+  /** "Nueva venta" con el celular del cliente (REQ-047.1); con turno, el cliente sale del turno. */
+  customerId: z.uuid().nullable().optional(),
   barberId: z.uuid().nullable(),
   items: z.array(lineSchema).min(1, ERRORS.EMPTY_SALE),
   method: z.enum(["cash", "nequi", "transfer", "card"]),
@@ -209,11 +241,43 @@ export async function registerSale(input: z.input<typeof saleSchema>): Promise<C
       discount: i.discount ?? 0,
       discount_reason: i.discountReason ?? null,
       is_reward: i.isReward ?? false,
+      membership: i.membership ?? false,
     })),
     p_payments: d.total > 0 ? [{ method: d.method, amount: d.total }] : [],
+    p_customer_id: d.customerId ?? null,
   });
   if (error) return { ok: false, error: mapError(error) };
   return { ok: true, saleId: (data as { id: string }).id };
+}
+
+/**
+ * REQ-047.1 "Nueva venta": busca la ficha por celular y su membresía. No crea fichas nuevas
+ * (decisión de Henry, 2026-11-02, design.md §13.5).
+ */
+export async function findCheckoutCustomer(
+  phone: string,
+): Promise<{ ok: true; customer: CheckoutCustomer } | { ok: false; error: string }> {
+  const session = await getStaffSession();
+  if (!session) return { ok: false, error: "Sesión vencida. Vuelve a entrar." };
+  const e164 = normalizePhoneCO(phone);
+  if (!e164) return { ok: false, error: "Escribe un celular de 10 dígitos que empiece por 3." };
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("customers")
+    .select("id, name")
+    .eq("business_id", session.business.id)
+    .eq("phone_e164", e164)
+    .is("anonymized_at", null)
+    .maybeSingle();
+  if (!data) return { ok: false, error: "No hay un cliente con ese celular." };
+  const ms = await supabase.rpc("membership_status", {
+    p_business_id: session.business.id,
+    p_customer_id: data.id,
+  });
+  return {
+    ok: true,
+    customer: { id: data.id, name: data.name, membership: toMembershipStatus(ms.data) },
+  };
 }
 
 /** REQ-023.6 "No se cobró" con motivo. */
