@@ -211,7 +211,7 @@ Ninguno lo puede hacer el agente. En este orden:
 Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `supabase db push` aplicó
 0041–0044 y `vercel deploy --prod` publicó `a50342d`. Lo que sigue sin marcar es operación en Filo.
 
-### Hito 9 — tarjetas de regalo (construido, falta Henry; ADR-034)
+### Hito 9 — tarjetas de regalo (**aprobado**, ADR-036, 2026-11-04)
 
 - 2026-11-03: grill de 12 preguntas con Henry, todas con la respuesta recomendada, y abogado del
   diablo breve (anotado en ADR-034). Escritos REQ-055…REQ-059 (26 criterios, §5g), `design.md` §15,
@@ -231,13 +231,14 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   `SALE_IMMUTABLE`); el arreglo va aparte (PR #48, migración `0055`).
 - **Checklist de Henry** para cerrar el hito:
   1. ~~Fusionar la cadena~~ hecho (2026-11-04).
-  2. Aplicar `0050`…`0053` (y `0055`, de la corrección de fichas) en producción (`supabase db push`)
-     y desplegar `main` (`vercel --prod`).
+  2. ~~`0050`…`0053` y `0055` en producción y `main` desplegado~~ hecho (2026-11-04, `b7de232`).
   3. En Filo: publicar la versión nueva del aviso de privacidad (párrafo de tarjetas de regalo,
      REQ-059.4) y revisar la plantilla "Tarjeta de regalo" en Mensajes.
   4. Prueba en la barbería: vender una tarjeta, enviarla por WhatsApp, cobrar con ella parte de un
      corte y ver la Caja de hoy.
-  5. Aprobación del hito (ADR-036).
+  5. ~~Aprobación del hito~~ hecho (ADR-036, 2026-11-04).
+- Pendiente de código: `merge_customers` no mueve `gift_cards.buyer_customer_id`; fusionar una ficha
+  que compró una tarjeta falla por la llave foránea. Corrección aparte con `0054`.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
@@ -319,10 +320,11 @@ Pendientes (H3): `/admin/caja`,
 - `0055_merge_customers_sales` (2026-11-04, PR #48): `merge_customers` fallaba con
   `SALE_IMMUTABLE` si la ficha fusionada tenía ventas (el `delete` hacía `on delete set null` en
   `sales.customer_id`). Ahora las ventas pasan a la ficha que queda; `sales_guard` deja cambiar solo
-  `customer_id` dentro de `turnos.internal`. design §2.6 paso 2. **Sin aplicar en producción.**
-  Si se aplica antes que 0045–0054, el siguiente `supabase db push` de los Hitos 8/9 necesita
-  `--include-all` (versiones menores que la última aplicada). El Hito 9 debe sumar
-  `gift_cards.buyer_customer_id` a `merge_customers` (design §15.1).
+  `customer_id` dentro de `turnos.internal`. design §2.6 paso 2. **En producción** desde el
+  2026-11-04, junto con `0050`…`0053`.
+  Como ya está aplicada, el `supabase db push` del Hito 8 (`0045`…`0049`) y de la corrección
+  `0054` necesita `--include-all` (versiones menores que la última aplicada). Falta sumar
+  `gift_cards.buyer_customer_id` a `merge_customers` (design §15.1) en `0054`.
 - pgTAP `0018_reminders` fallaba entre las 00:00 y las 02:00 de Bogotá (la prueba, no la función):
   corregido en PR #51.
 
