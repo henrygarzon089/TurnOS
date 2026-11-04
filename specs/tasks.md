@@ -471,6 +471,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `src/components/customers/RemindersList.tsx`, `src/lib/notifications/reminder.ts`
   (`buildReminderLink`), "No contactar" editable en la ficha (dueño) y el botón "Avisar" de la
   fila del barbero se oculta para esos clientes (`QueueTicket.doNotContact`).
+- Corrección (2026-11-04): pgTAP 0018 fallaba entre las 00:00 y las 02:00 de Bogotá: la ficha
+  "Justo Veintiuno" (`now() - 21 días 2 h`) caía en el día 22 del negocio. Ahora se ancla a las
+  00:00 de Bogotá de hace 21 días del negocio (≥ 21×24 h y siempre 21 días). La función estaba
+  bien; sin cambio de spec. Probado con `now()` fijo a 00:00, 00:18, 01:59, 02:00, 15:00 y 23:30.
 
 ### [x] T-038 · Barbero preferido preseleccionado — 2026-10-24
 - REQ: REQ-022.1
@@ -1138,59 +1142,117 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   aprobó el hito (ADR-032) antes de la prueba en Filo; plan, aviso nuevo y prueba con una familia real
   quedan como operación, no como código.
 
+### Corrección — fusionar fichas con ventas (REQ-018.5, 2026-11-04)
+
+- [x] `merge_customers` fallaba con `SALE_IMMUTABLE` si la ficha fusionada tenía ventas: el `delete`
+  disparaba `on delete set null` en `sales.customer_id` y `sales_guard` lo rechazaba. Salió en T-090
+  (Hito 9). Desvío respecto a design §2.6 paso 2 (no nombraba las ventas): ahora las ventas pasan a la
+  ficha que queda, con un permiso de `sales_guard` acotado a `turnos.internal` y solo `customer_id`.
+  Migración `0055_merge_customers_sales.sql` (después de Hito 8: 0045–0049 y Hito 9: 0050–0054),
+  pgTAP `0055_merge_customers_sales` (9 pruebas). **Falta aplicarla en producción (Henry).** Cuando
+  el Hito 9 esté en `main`, `merge_customers` debe mover también `gift_cards.buyer_customer_id`
+  (design §15.1): si 0050–0054 redefinen la función, revisar que no pisen este cambio.
+
+---
+
 ## Hito 9 — Tarjetas de regalo (ADR-034)
 
 > REQ-055…REQ-059 y ADR-034 aprobados por Henry (2026-11-03, PR #45). Diseño en `design.md` §15. El salto de
 > números es intencional: T-078…T-089, REQ-049…054 y `0045`…`0049` son del Hito 8 (citas), que va en
 > paralelo. T-098 y T-099 quedan libres. No depende del Hito 8.
 
-### [ ] T-090 · Migración y pgTAP: tarjetas y venta
+### [x] T-090 · Migración y pgTAP: tarjetas y venta
 - REQ: REQ-055.1, REQ-055.2, REQ-055.3, REQ-055.4, REQ-055.5, REQ-055.6, REQ-056.3, REQ-059.3
 - Archivos: `supabase/migrations/0050_gift_card_enums.sql`, `supabase/migrations/0051_gift_cards.sql`
   (`gift_cards`, `sell_gift_card`, `gift_card_lookup`, `gift_cards_list`, `get_gift_card_by_token`),
   `supabase/tests/0051_gift_cards.sql`
 - Terminado: pgTAP de §15.6 para `0051` en verde (ejemplo H); sin vender nada, la caja no cambia.
+- Nota (2026-11-03): pgTAP 48 nuevas en `supabase/tests/0051_gift_cards.sql` (1002 en total);
+  `0021_cash` y `0042_membership_sales` ahora esperan los valores `'gift_card'` de los enums.
+  Funciones auxiliares que la spec no nombraba: `gift_card_new_code`, `gift_card_normalize_code`,
+  `gift_card_balance` y `gift_card_state` (solo `service_role`). "Para" de más de 40 →
+  `INVALID_NAME`. La ficha del comprador se busca o crea con `membership_customer` (0041), que deja
+  el nombre que ya tenía. **Desvío:** `merge_customers` no se redefine: hoy ya falla con
+  `SALE_IMMUTABLE` para cualquier ficha con ventas (bug anterior a este hito, propuesto aparte), y
+  quien compra una tarjeta siempre tiene la venta; al arreglarlo hay que mover también
+  `gift_cards.buyer_customer_id` (`design.md` §15.1).
 
-### [ ] T-091 · Pagar con la tarjeta y anular
+### [x] T-091 · Pagar con la tarjeta y anular
 - REQ: REQ-057.2, REQ-057.3, REQ-057.5, REQ-057.6, REQ-057.7, REQ-057.8, REQ-058.1, REQ-058.2,
   REQ-058.3, REQ-058.4
 - Archivos: `supabase/migrations/0052_gift_card_checkout.sql` (`register_sale`,
   `register_membership_fee`, `void_sale`), `supabase/tests/0052_gift_card_checkout.sql`,
   `src/lib/domain/commission.ts` (solo la prueba del ejemplo I)
 - Terminado: pgTAP con los ejemplos I, K y L, cada rechazo y dos cobros a la vez.
+- Nota (2026-11-04): pgTAP 34 nuevas en `supabase/tests/0052_gift_card_checkout.sql` (1036 en total);
+  unitaria del ejemplo I en `commission.test.ts`. `0052` copia `register_sale`, `void_sale` y
+  `register_membership_fee` de `0042` y solo agrega lo de la tarjeta. Detalles que la spec no fijaba:
+  pago con tarjeta de $ 0 → `INVALID_PAYMENT`; el orden de los rechazos es no existe → anulada →
+  vencida → saldo. Dos cobros a la vez se prueban en serie (pgTAP no abre dos sesiones): el `for
+  update` sobre la tarjeta hace que el segundo espere y vea el saldo del primero.
 
-### [ ] T-092 · Caja, semana, aviso y plantilla en SQL
+### [x] T-092 · Caja, semana, aviso y plantilla en SQL
 - REQ: REQ-059.1, REQ-059.2, REQ-059.4, REQ-056.1
 - Archivos: `supabase/migrations/0053_gift_card_reports.sql` (`cash_day_summary`, `weekly_summary`,
   `default_privacy_text`, `create_business`, plantilla de los negocios existentes),
   `supabase/tests/0053_gift_card_reports.sql`
 - Terminado: pgTAP con el ejemplo J en el cierre y la semana; párrafo y plantilla nuevos.
+- Nota (2026-11-04): pgTAP 16 nuevas en `supabase/tests/0053_gift_card_reports.sql` (1052 en total);
+  `0002_core` y `0043_membership_reports` ahora cuentan 6 plantillas. `cash_day_summary` agrega
+  `byMethod.giftCard`, `giftCardsSold`, `giftCardsRedeemed` y `moneyIn`; `weekly_summary` los tres
+  últimos. En las ventas del día el medio se llama "Tarjeta de regalo". `close_cash_day` no se
+  redefine (guarda la foto de `cash_day_summary`, lo prueba pgTAP). La plantilla de los negocios que
+  ya existen va en la misma `0053`: el valor del enum se agregó en `0050`. Las pantallas todavía no
+  muestran las líneas nuevas (T-096).
 
-### [ ] T-093 · Pantalla "Tarjetas de regalo" del dueño
+### [x] T-093 · Pantalla "Tarjetas de regalo" del dueño
 - REQ: REQ-055.1, REQ-055.3, REQ-056.1, REQ-056.4, REQ-059.3
 - Archivos: `src/app/(staff)/admin/regalos/`, `src/lib/actions/giftCards.ts`,
   `src/lib/domain/giftCard.ts`, menú, `/admin/mensajes`
 - Terminado: unitarias de `giftCard.ts`, integración de las acciones; E2E: vender una tarjeta, ver el
   botón de WhatsApp y la lista con "Saldo por usar".
+- Nota (2026-11-04): `/admin/regalos` con "Vender tarjeta" (valor, nombre y celular de quien compra,
+  "Para" opcional, medio de pago), recuadro "Tarjeta vendida" con el código y "Enviar por WhatsApp", y
+  lista con estado, saldo, "Saldo por usar" y reenvío en las vigentes. Chip "Tarjetas de regalo" en el
+  menú; plantilla "Tarjeta de regalo" en Mensajes con la variable nueva `{valor}`. La `{fecha}` lleva
+  el año ("3 de noviembre de 2027", `giftCardDayLabel`) porque la tarjeta vence en un año. Unitarias
+  9 en `tests/unit/gift-card.test.ts` (298 en total), integración 4 en
+  `tests/integration/gift-cards.test.ts` (115), E2E `tests/e2e/gift-cards.spec.ts` (corre en CI; la
+  base local es compartida con el Hito 8). La venta de la prueba se anula al final.
 
-### [ ] T-094 · Página pública de la tarjeta
+### [x] T-094 · Página pública de la tarjeta
 - REQ: REQ-056.2, REQ-056.3, REQ-058.4
 - Archivos: `src/app/(public)/regalo/[token]/`, `src/lib/actions/public.ts`, `src/proxy.ts` si hace
   falta
 - Terminado: integración de la lectura por token; E2E: abrir el enlace, ver saldo, vencimiento y
   condiciones, sin datos del comprador; token desconocido → 404.
+- Nota (2026-11-04): `/regalo/[token]` lee con `getGiftCardByToken`
+  (`src/lib/gift-cards/public-gift-card.ts`, como `public-queue.ts`) y muestra el negocio, "Para",
+  "Saldo $ X" (o "Vencida", "Agotada", "Anulada" con el código tachado), el código y las
+  condiciones (`giftCardConditions`). No hizo falta tocar `src/proxy.ts`: solo protege `/app` y
+  `/admin`. `noindex`. Integración 4 en `tests/integration/gift-card-page.test.ts` (119 en total), E2E
+  `tests/e2e/gift-card-page.spec.ts` (en CI).
 
-### [ ] T-095 · Tarjeta de regalo en el panel de cobro
+### [x] T-095 · Tarjeta de regalo en el panel de cobro
 - REQ: REQ-057.1, REQ-057.2, REQ-057.3, REQ-057.4, REQ-057.6
 - Archivos: panel de cobro, `src/lib/actions/cash.ts`
 - Terminado: E2E: el barbero cobra un corte con parte en tarjeta y parte en efectivo; un código
   vencido o sin saldo muestra el error.
+- Nota: "Tarjeta de regalo" es un quinto medio en el selector; al elegirlo salen "Código" y
+  "Buscar" (`lookupGiftCard` → `gift_card_lookup`). La tarjeta paga el menor entre su saldo y el
+  total (`giftCardSplit`), y lo que falta se elige en "Medio para lo que falta". `checkoutPayments`
+  arma `p_payments` (tarjeta primero). El E2E prueba "sin saldo" (no "vencida": el vencimiento a un
+  año no se puede forzar sin tocar la tabla); "vencida" queda en pgTAP 0052 y en la unitaria.
 
-### [ ] T-096 · Caja de hoy, cierre y semana en pantalla
+### [x] T-096 · Caja de hoy, cierre y semana en pantalla
 - REQ: REQ-059.1, REQ-059.2, REQ-058.1
 - Archivos: Caja de hoy, cierre (y su texto por WhatsApp), Semana, mensaje de `GIFT_CARD_IN_USE`
 - Terminado: unitarias de las líneas; E2E: la Caja de hoy muestra "Tarjetas de regalo vendidas",
   "Pagado con tarjeta de regalo" y "Entró en plata".
+- Nota: recuadro `GiftCardTotals` (aria-label "Tarjetas de regalo") en la Caja de hoy y la Semana,
+  y las mismas tres líneas en el texto del cierre (`giftCardReportLines`); sin tarjetas (o en un
+  cierre de antes del Hito 9) no sale nada. La rejilla de medios sigue con los cuatro de siempre: lo
+  pagado con tarjeta va solo en el recuadro. El E2E también prueba el mensaje de `GIFT_CARD_IN_USE`.
 
 ### [ ] T-097 · Validación Hito 9
 - REQ: REQ-055…REQ-059

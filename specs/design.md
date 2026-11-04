@@ -392,7 +392,13 @@ y celular quedan (el dueño la elige; la UI preselecciona la de visita más reci
 
 1. Valida: mismo negocio, distintas, ninguna anonimizada; si las dos tienen tarjeta `completed`
    → error `BOTH_REWARDS_PENDING` (P0004).
-2. `tickets`, `reminders` y `loyalty_cards` `redeemed` de `merge` pasan a `keep`.
+2. `tickets`, `reminders`, `sales` y `loyalty_cards` `redeemed` de `merge` pasan a `keep`. Las
+   ventas cambian solo de `customer_id` (también anuladas o de un día cerrado: el cierre no depende
+   del cliente) con un permiso acotado de `sales_guard`: `turnos.internal = '1'`, `customer_id`
+   nuevo no nulo y el resto de la fila igual; cualquier otro cambio sigue siendo `SALE_IMMUTABLE`
+   (ADR-005). Corrección de 2026-11-04 (`0055_merge_customers_sales.sql`): antes el `delete` de la
+   ficha disparaba `on delete set null` en `sales.customer_id`, `sales_guard` lo rechazaba y no se
+   podía fusionar a nadie con ventas.
 3. Tarjetas abiertas (`active`/`completed`): si solo una existe, pasa a `keep`. Si existen dos, la
    destino es la `completed` (si hay) o la de `keep`; los `loyalty_stamps` de la otra se mueven a
    la destino, `stamps` = suma, se borra la otra; si el programa está activo y
@@ -1735,6 +1741,11 @@ membresía (§13.1). **Estado** que se muestra, en este orden: `voided` → "Anu
 hoy` → "Vencida"; saldo 0 → "Agotada"; si no, "Vigente". Se puede usar hasta el `expires_on`
 incluido (REQ-055.5): vendida el 2026-11-03 vence el 2027-11-03; vendida el 29 de febrero vence el
 28 de febrero (lo que da `interval '1 year'` en Postgres).
+
+**Fusionar fichas** (REQ-018.5): `gift_cards.buyer_customer_id` no deja borrar la ficha de quien
+compró. Hoy `merge_customers` ya falla con `SALE_IMMUTABLE` para cualquier ficha con ventas (la FK
+`sales.customer_id … on delete set null` intenta cambiar la venta y `sales_guard` lo rechaza), así que
+no se redefine en `0051`; el arreglo de ese bug debe mover también las tarjetas (T-090).
 
 **Código** (REQ-055.4): 8 caracteres del alfabeto `ABCDEFGHJKMNPQRSTUVWXYZ23456789` (31 símbolos,
 sin `0 O 1 I L`), al azar con `gen_random_bytes`; si choca con otro del negocio, se genera otro. Se

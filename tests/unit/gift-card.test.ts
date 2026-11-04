@@ -1,0 +1,209 @@
+import { describe, expect, it } from "vitest";
+import {
+  formatGiftCardCode,
+  giftCardErrorMessage,
+  giftCardStatusLabel,
+  giftCardUrl,
+  normalizeGiftCardCode,
+  parseGiftCardForm,
+  balanceToUse,
+  checkoutPayments,
+  giftCardLookupResult,
+  giftCardReportLines,
+  giftCardSplit,
+} from "@/lib/domain/giftCard";
+import { buildGiftCardLink } from "@/lib/notifications/reminder";
+import { renderTemplate } from "@/lib/notifications/render";
+
+function form(fields: Record<string, string>): FormData {
+  const fd = new FormData();
+  for (const [k, v] of Object.entries(fields)) fd.append(k, v);
+  return fd;
+}
+
+const ok = {
+  amount: "50.000",
+  name: "Ana Pérez",
+  phone: "300 123 4567",
+  recipient: "Mateo",
+  method: "nequi",
+};
+
+describe("REQ-055 vender una tarjeta de regalo (design.md §15.5)", () => {
+  it("REQ-055.1 valor libre entre $ 10.000 y $ 500.000, en miles exactos", () => {
+    expect(parseGiftCardForm(form(ok))).toEqual({
+      ok: true,
+      value: {
+        amount: 50000,
+        name: "Ana Pérez",
+        phone: "+573001234567",
+        recipient: "Mateo",
+        method: "nequi",
+      },
+    });
+    expect(parseGiftCardForm(form({ ...ok, amount: "9.000" }))).toMatchObject({ ok: false });
+    expect(parseGiftCardForm(form({ ...ok, amount: "501.000" }))).toMatchObject({ ok: false });
+    expect(parseGiftCardForm(form({ ...ok, amount: "25.500" }))).toEqual({
+      ok: false,
+      error: "El valor va en miles exactos, entre $ 10.000 y $ 500.000.",
+    });
+  });
+
+  it('REQ-055.3 nombre y celular de quien compra; "Para" es opcional y corto', () => {
+    expect(parseGiftCardForm(form({ ...ok, recipient: "  " }))).toMatchObject({
+      ok: true,
+      value: { recipient: null },
+    });
+    expect(parseGiftCardForm(form({ ...ok, phone: "12345" }))).toEqual({
+      ok: false,
+      error: "Escribe un celular de 10 dígitos que empiece por 3.",
+    });
+    expect(parseGiftCardForm(form({ ...ok, name: "A" }))).toMatchObject({ ok: false });
+    expect(parseGiftCardForm(form({ ...ok, recipient: "x".repeat(41) }))).toMatchObject({
+      ok: false,
+    });
+  });
+
+  it("REQ-057.7 la tarjeta se vende con los medios de la caja, nunca con otra tarjeta", () => {
+    expect(parseGiftCardForm(form({ ...ok, method: "gift_card" }))).toMatchObject({ ok: false });
+    expect(giftCardErrorMessage({ message: "INVALID_PAYMENT" })).toBe(
+      "Una tarjeta de regalo no se paga con otra tarjeta.",
+    );
+  });
+
+  it("REQ-055.4 el código se muestra en dos grupos y se escribe como sea", () => {
+    expect(formatGiftCardCode("K7QM4XPA")).toBe("K7QM-4XPA");
+    expect(normalizeGiftCardCode(" k7qm-4xpa ")).toBe("K7QM4XPA");
+    expect(normalizeGiftCardCode("k7 qm 4x pa")).toBe("K7QM4XPA");
+  });
+
+  it("REQ-055.2 errores de la venta en español", () => {
+    expect(giftCardErrorMessage({ message: "CASH_DAY_CLOSED" })).toBe(
+      "La caja de hoy ya está cerrada. Reábrela para vender la tarjeta.",
+    );
+    expect(giftCardErrorMessage({ code: "42501" })).toBe("No tienes permiso para esta acción.");
+  });
+});
+
+describe("REQ-056 entregar la tarjeta", () => {
+  it("REQ-056.1 botón de WhatsApp con valor, enlace y vencimiento (plantilla editable)", () => {
+    const tpl =
+      "Hola {nombre}, aquí está tu tarjeta de regalo de {negocio} por {valor}: {enlace} Vence el {fecha}.";
+    const link = buildGiftCardLink({
+      phoneE164: "+573001234567",
+      template: tpl,
+      buyerName: "Ana Pérez",
+      businessName: "Filo",
+      amount: 50000,
+      url: giftCardUrl("https://filo.app", "tok123"),
+      expiresOn: "2027-11-03",
+    });
+    expect(link.startsWith("https://wa.me/573001234567?text=")).toBe(true);
+    expect(decodeURIComponent(link.split("text=")[1])).toBe(
+      "Hola Ana, aquí está tu tarjeta de regalo de Filo por $ 50.000: https://filo.app/regalo/tok123 Vence el 3 de noviembre de 2027.",
+    );
+  });
+
+  it("REQ-056.1 {valor} es una variable más de las plantillas", () => {
+    expect(renderTemplate("Por {valor}", { valor: "$ 20.000" })).toBe("Por $ 20.000");
+  });
+});
+
+describe("REQ-059.3 lista de tarjetas", () => {
+  it("REQ-059.3 estados en español", () => {
+    expect(giftCardStatusLabel("active")).toBe("Vigente");
+    expect(giftCardStatusLabel("exhausted")).toBe("Agotada");
+    expect(giftCardStatusLabel("expired")).toBe("Vencida");
+    expect(giftCardStatusLabel("voided")).toBe("Anulada");
+  });
+
+  it('REQ-059.3 "Saldo por usar" suma solo las vigentes', () => {
+    expect(
+      balanceToUse([
+        { balance: 30000, status: "active" },
+        { balance: 10000, status: "active" },
+        { balance: 5000, status: "expired" },
+        { balance: 20000, status: "voided" },
+        { balance: 0, status: "exhausted" },
+      ]),
+    ).toBe(40000);
+  });
+});
+
+describe("REQ-057 pagar con la tarjeta en el cobro (design.md §15.5)", () => {
+  const card = {
+    code: "K7QM4XPA",
+    balance: 30_000,
+    expiresOn: "2027-11-03",
+    status: "active" as const,
+  };
+
+  it("REQ-057.1 al escribir el código se ve el saldo y el vencimiento", () => {
+    expect(giftCardLookupResult(card)).toEqual({
+      ok: true,
+      card,
+      label: "Saldo $ 30.000 · vence el 3 de noviembre de 2027",
+    });
+  });
+
+  it("REQ-057.2 código inexistente, vencida, anulada o sin saldo: mensaje claro", () => {
+    expect(giftCardLookupResult(null)).toEqual({
+      ok: false,
+      error: "No encontramos una tarjeta con ese código.",
+    });
+    expect(giftCardLookupResult({ ...card, status: "expired" })).toEqual({
+      ok: false,
+      error: "Esa tarjeta ya venció.",
+    });
+    expect(giftCardLookupResult({ ...card, status: "voided" })).toEqual({
+      ok: false,
+      error: "Esa tarjeta fue anulada.",
+    });
+    expect(giftCardLookupResult({ ...card, status: "exhausted", balance: 0 })).toEqual({
+      ok: false,
+      error: "Esta tarjeta ya no tiene saldo.",
+    });
+  });
+
+  it("REQ-057.3 la tarjeta paga hasta su saldo y el resto va con otro medio", () => {
+    expect(giftCardSplit(25_000, 30_000)).toEqual({ card: 25_000, rest: 0 });
+    expect(giftCardSplit(45_000, 30_000)).toEqual({ card: 30_000, rest: 15_000 });
+    expect(checkoutPayments(45_000, "cash", { code: "K7QM4XPA", amount: 30_000 })).toEqual([
+      { method: "gift_card", amount: 30_000, code: "K7QM4XPA" },
+      { method: "cash", amount: 15_000 },
+    ]);
+    expect(checkoutPayments(25_000, "cash", { code: "K7QM4XPA", amount: 25_000 })).toEqual([
+      { method: "gift_card", amount: 25_000, code: "K7QM4XPA" },
+    ]);
+  });
+
+  it("REQ-057.6 sin tarjeta, un solo pago; un cobro en $ 0 no lleva pagos", () => {
+    expect(checkoutPayments(25_000, "nequi")).toEqual([{ method: "nequi", amount: 25_000 }]);
+    expect(checkoutPayments(0, "cash")).toEqual([]);
+  });
+});
+
+describe("REQ-059 lo que ve el dueño en la caja y la semana", () => {
+  it("REQ-059.1 REQ-059.2 vendidas, pagado con tarjeta y lo que entró en plata", () => {
+    expect(
+      giftCardReportLines({ giftCardsSold: 50_000, giftCardsRedeemed: 20_000, moneyIn: 77_000 }),
+    ).toEqual([
+      { key: "sold", label: "Tarjetas de regalo vendidas", value: "$ 50.000" },
+      { key: "redeemed", label: "Pagado con tarjeta de regalo", value: "$ 20.000" },
+      { key: "moneyIn", label: "Entró en plata", value: "$ 77.000" },
+    ]);
+  });
+
+  it("REQ-059.1 sin tarjetas (o un cierre de antes del Hito 9) no hay líneas", () => {
+    expect(
+      giftCardReportLines({ giftCardsSold: 0, giftCardsRedeemed: 0, moneyIn: 97_000 }),
+    ).toEqual([]);
+    expect(giftCardReportLines({})).toEqual([]);
+  });
+
+  it("REQ-058.1 anular una venta cuya tarjeta ya se usó: mensaje claro", () => {
+    expect(giftCardErrorMessage({ message: "GIFT_CARD_IN_USE" })).toBe(
+      "Esta tarjeta ya se usó: primero anula las ventas que la usaron.",
+    );
+  });
+});
