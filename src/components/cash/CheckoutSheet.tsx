@@ -561,6 +561,7 @@ export function CheckoutSheet({
             <button
               type="button"
               className="btn-secondary min-h-12"
+              aria-label="Buscar tarjeta de regalo"
               disabled={pending || normalizeGiftCardCode(giftCode).length !== 8}
               onClick={lookupGift}
             >
