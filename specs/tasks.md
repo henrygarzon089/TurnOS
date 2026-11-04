@@ -1220,12 +1220,18 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `tests/integration/gift-cards.test.ts` (115), E2E `tests/e2e/gift-cards.spec.ts` (corre en CI; la
   base local es compartida con el Hito 8). La venta de la prueba se anula al final.
 
-### [ ] T-094 · Página pública de la tarjeta
+### [x] T-094 · Página pública de la tarjeta
 - REQ: REQ-056.2, REQ-056.3, REQ-058.4
 - Archivos: `src/app/(public)/regalo/[token]/`, `src/lib/actions/public.ts`, `src/proxy.ts` si hace
   falta
 - Terminado: integración de la lectura por token; E2E: abrir el enlace, ver saldo, vencimiento y
   condiciones, sin datos del comprador; token desconocido → 404.
+- Nota (2026-11-04): `/regalo/[token]` lee con `getGiftCardByToken`
+  (`src/lib/gift-cards/public-gift-card.ts`, como `public-queue.ts`) y muestra el negocio, "Para",
+  "Saldo $ X" (o "Vencida", "Agotada", "Anulada" con el código tachado), el código y las
+  condiciones (`giftCardConditions`). No hizo falta tocar `src/proxy.ts`: solo protege `/app` y
+  `/admin`. `noindex`. Integración 4 en `tests/integration/gift-card-page.test.ts` (119 en total), E2E
+  `tests/e2e/gift-card-page.spec.ts` (en CI).
 
 ### [ ] T-095 · Tarjeta de regalo en el panel de cobro
 - REQ: REQ-057.1, REQ-057.2, REQ-057.3, REQ-057.4, REQ-057.6

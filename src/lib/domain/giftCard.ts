@@ -1,5 +1,5 @@
 import { renewalDayLabel } from "@/lib/domain/membership";
-import { parseCOP } from "@/lib/domain/money";
+import { formatCOP, parseCOP } from "@/lib/domain/money";
 import { normalizePhoneCO } from "@/lib/domain/phone";
 
 /** Tarjetas de regalo (REQ-055…REQ-059, design.md §15). Montos en COP enteros (P9). */
@@ -106,4 +106,20 @@ export function giftCardStatusLabel(status: GiftCardStatus): string {
 /** REQ-059.3 "Saldo por usar": lo que el negocio todavía debe en tarjetas vigentes. */
 export function balanceToUse(rows: { balance: number; status: GiftCardStatus }[]): number {
   return rows.filter((r) => r.status === "active").reduce((sum, r) => sum + r.balance, 0);
+}
+
+/** REQ-056.2 / REQ-058.4 lo grande de la página pública: el saldo, o por qué ya no sirve. */
+export function giftCardHeadline(card: { status: GiftCardStatus; balance: number }): string {
+  if (card.status === "active") return `Saldo ${formatCOP(card.balance)}`;
+  return giftCardStatusLabel(card.status);
+}
+
+/** REQ-056.2 condiciones de uso (Ley 1480, arts. 23 y 24: informar al consumidor). */
+export function giftCardConditions(expiresOn: string): string[] {
+  return [
+    "La puede usar quien tenga el código.",
+    "Se usa como pago en una o varias visitas, hasta gastar el saldo.",
+    "El saldo no se devuelve en efectivo.",
+    `Vence el ${giftCardDayLabel(expiresOn)}.`,
+  ];
 }
