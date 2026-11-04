@@ -5,6 +5,7 @@ import { ErrorText } from "@/components/auth/LoginForm";
 import {
   findCheckoutCustomer,
   getCheckout,
+  lookupGiftCard,
   markUnpaid,
   registerSale,
   type CheckoutCustomer,
@@ -12,6 +13,7 @@ import {
   type PaymentMethod,
 } from "@/lib/actions/cash";
 import { computeSale } from "@/lib/domain/commission";
+import { giftCardSplit, normalizeGiftCardCode } from "@/lib/domain/giftCard";
 import { membershipCheckoutLine, membershipLineKey } from "@/lib/domain/membership";
 import { formatCOP, parseCOP } from "@/lib/domain/money";
 
@@ -49,7 +51,11 @@ export function CheckoutSheet({
   const [services, setServices] = useState<ServiceLine[]>([]);
   const [products, setProducts] = useState<Record<string, number>>({});
   const [barberId, setBarberId] = useState<string>("");
-  const [method, setMethod] = useState<PaymentMethod | null>(null);
+  const [method, setMethod] = useState<PaymentMethod | "gift_card" | null>(null);
+  /** REQ-057: tarjeta de regalo encontrada por código y medio de lo que falta. */
+  const [giftCode, setGiftCode] = useState("");
+  const [gift, setGift] = useState<{ code: string; balance: number; label: string } | null>(null);
+  const [restMethod, setRestMethod] = useState<PaymentMethod | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [unpaidOpen, setUnpaidOpen] = useState(false);
   const [unpaidReason, setUnpaidReason] = useState("");
@@ -173,6 +179,8 @@ export function CheckoutSheet({
   const total = amounts?.total ?? 0;
   const hasLines = services.length > 0 || Object.values(products).some((q) => q > 0);
   const needsBarber = services.length > 0 && !barberId;
+  /** REQ-057.3: la tarjeta paga hasta su saldo; el resto con otro medio. */
+  const giftSplit = giftCardSplit(total, gift?.balance ?? 0);
 
   function update(key: number, patch: Partial<ServiceLine>) {
     setServices((ls) => ls.map((l) => (l.key === key ? { ...l, ...patch } : l)));
@@ -192,11 +200,34 @@ export function CheckoutSheet({
     });
   }
 
+  function lookupGift() {
+    setError(null);
+    startTransition(async () => {
+      const r = await lookupGiftCard(giftCode);
+      if (!r.ok) {
+        setGift(null);
+        setError(r.error);
+        return;
+      }
+      setGift({ code: r.card.code, balance: r.card.balance, label: r.label });
+    });
+  }
+
   function submit() {
     if (!amounts) return;
     if (total > 0 && !method) {
       setError("Elige el medio de pago.");
       return;
+    }
+    if (method === "gift_card" && total > 0) {
+      if (!gift) {
+        setError("Escribe el código de la tarjeta de regalo y búscalo.");
+        return;
+      }
+      if (giftSplit.rest > 0 && !restMethod) {
+        setError("Elige con qué se paga lo que falta.");
+        return;
+      }
     }
     setError(null);
     startTransition(async () => {
@@ -221,7 +252,11 @@ export function CheckoutSheet({
             .filter(([, qty]) => qty > 0)
             .map(([id, qty]) => ({ kind: "product" as const, refId: id, qty })),
         ],
-        method: method ?? "cash",
+        method: (method === "gift_card" ? restMethod : method) ?? "cash",
+        giftCard:
+          method === "gift_card" && gift && giftSplit.card > 0
+            ? { code: gift.code, amount: giftSplit.card }
+            : undefined,
         total,
       });
       if (!r.ok) setError(r.error);
@@ -489,7 +524,7 @@ export function CheckoutSheet({
 
       {total > 0 && (
         <div role="radiogroup" aria-label="Medio de pago" className="grid grid-cols-2 gap-2">
-          {METHODS.map((m) => (
+          {[...METHODS, { id: "gift_card" as const, label: "Tarjeta de regalo" }].map((m) => (
             <button
               key={m.id}
               type="button"
@@ -497,13 +532,81 @@ export function CheckoutSheet({
               aria-checked={method === m.id}
               onClick={() => setMethod(m.id)}
               className={`min-h-12 rounded-xl border font-semibold ${
-                method === m.id ? "bg-accent text-accent-ink border-accent" : "border-line bg-card"
-              }`}
+                m.id === "gift_card" ? "col-span-2" : ""
+              } ${method === m.id ? "bg-accent text-accent-ink border-accent" : "border-line bg-card"}`}
             >
               {m.label}
             </button>
           ))}
         </div>
+      )}
+
+      {total > 0 && method === "gift_card" && (
+        <section aria-label="Tarjeta de regalo" className="flex flex-col gap-2">
+          <div className="flex items-end gap-2">
+            <label className="flex flex-1 flex-col gap-1 text-sm font-medium">
+              Código
+              <input
+                className="input font-mono uppercase"
+                autoCapitalize="characters"
+                autoComplete="off"
+                maxLength={12}
+                value={giftCode}
+                onChange={(e) => {
+                  setGiftCode(e.target.value);
+                  if (gift && normalizeGiftCardCode(e.target.value) !== gift.code) setGift(null);
+                }}
+              />
+            </label>
+            <button
+              type="button"
+              className="btn-secondary min-h-12"
+              disabled={pending || normalizeGiftCardCode(giftCode).length !== 8}
+              onClick={lookupGift}
+            >
+              Buscar
+            </button>
+          </div>
+          {gift && (
+            <>
+              <p className="text-sm font-semibold" data-testid="gift-card-balance">
+                {gift.label}
+              </p>
+              <p className="text-sm">
+                Con la tarjeta: <strong>{formatCOP(giftSplit.card)}</strong>
+              </p>
+              {giftSplit.rest > 0 && (
+                <>
+                  <p className="text-sm">
+                    Faltan <strong>{formatCOP(giftSplit.rest)}</strong>. ¿Con qué se pagan?
+                  </p>
+                  <div
+                    role="radiogroup"
+                    aria-label="Medio para lo que falta"
+                    className="grid grid-cols-2 gap-2"
+                  >
+                    {METHODS.map((m) => (
+                      <button
+                        key={m.id}
+                        type="button"
+                        role="radio"
+                        aria-checked={restMethod === m.id}
+                        onClick={() => setRestMethod(m.id)}
+                        className={`min-h-12 rounded-xl border font-semibold ${
+                          restMethod === m.id
+                            ? "bg-accent text-accent-ink border-accent"
+                            : "border-line bg-card"
+                        }`}
+                      >
+                        {m.label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
+          )}
+        </section>
       )}
 
       {error && <ErrorText>{error}</ErrorText>}

@@ -1216,11 +1216,16 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `/admin`. `noindex`. Integración 4 en `tests/integration/gift-card-page.test.ts` (119 en total), E2E
   `tests/e2e/gift-card-page.spec.ts` (en CI).
 
-### [ ] T-095 · Tarjeta de regalo en el panel de cobro
+### [x] T-095 · Tarjeta de regalo en el panel de cobro
 - REQ: REQ-057.1, REQ-057.2, REQ-057.3, REQ-057.4, REQ-057.6
 - Archivos: panel de cobro, `src/lib/actions/cash.ts`
 - Terminado: E2E: el barbero cobra un corte con parte en tarjeta y parte en efectivo; un código
   vencido o sin saldo muestra el error.
+- Nota: "Tarjeta de regalo" es un quinto medio en el selector; al elegirlo salen "Código" y
+  "Buscar" (`lookupGiftCard` → `gift_card_lookup`). La tarjeta paga el menor entre su saldo y el
+  total (`giftCardSplit`), y lo que falta se elige en "Medio para lo que falta". `checkoutPayments`
+  arma `p_payments` (tarjeta primero). El E2E prueba "sin saldo" (no "vencida": el vencimiento a un
+  año no se puede forzar sin tocar la tabla); "vencida" queda en pgTAP 0052 y en la unitaria.
 
 ### [ ] T-096 · Caja de hoy, cierre y semana en pantalla
 - REQ: REQ-059.1, REQ-059.2, REQ-058.1

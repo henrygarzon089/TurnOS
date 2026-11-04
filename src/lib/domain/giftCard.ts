@@ -123,3 +123,53 @@ export function giftCardConditions(expiresOn: string): string[] {
     `Vence el ${giftCardDayLabel(expiresOn)}.`,
   ];
 }
+
+/** Lo que devuelve `gift_card_lookup` (0051) al cobrar. */
+export type GiftCardLookup = {
+  code: string;
+  balance: number;
+  expiresOn: string;
+  status: GiftCardStatus;
+};
+
+type LookupResult =
+  { ok: true; card: GiftCardLookup; label: string } | { ok: false; error: string };
+
+/** REQ-057.1 / REQ-057.2 lo que ve quien cobra al escribir el código. */
+export function giftCardLookupResult(card: GiftCardLookup | null): LookupResult {
+  if (!card) return { ok: false, error: ERRORS.GIFT_CARD_NOT_FOUND };
+  if (card.status === "voided") return { ok: false, error: ERRORS.GIFT_CARD_VOIDED };
+  if (card.status === "expired") return { ok: false, error: ERRORS.GIFT_CARD_EXPIRED };
+  if (card.status === "exhausted" || card.balance <= 0) {
+    return { ok: false, error: "Esta tarjeta ya no tiene saldo." };
+  }
+  return {
+    ok: true,
+    card,
+    label: `Saldo ${formatCOP(card.balance)} · vence el ${giftCardDayLabel(card.expiresOn)}`,
+  };
+}
+
+/** REQ-057.3 la tarjeta paga el menor entre su saldo y el cobro; el resto va con otro medio. */
+export function giftCardSplit(total: number, balance: number): { card: number; rest: number } {
+  const card = Math.max(0, Math.min(total, balance));
+  return { card, rest: total - card };
+}
+
+export type CheckoutPayment =
+  | { method: GiftCardSaleMethod; amount: number }
+  | { method: "gift_card"; amount: number; code: string };
+
+/** `p_payments` de `register_sale`: la tarjeta primero (si hay) y el resto con el otro medio. */
+export function checkoutPayments(
+  total: number,
+  method: GiftCardSaleMethod,
+  gift?: { code: string; amount: number },
+): CheckoutPayment[] {
+  const out: CheckoutPayment[] = [];
+  if (gift && gift.amount > 0)
+    out.push({ method: "gift_card", amount: gift.amount, code: gift.code });
+  const rest = total - (gift?.amount ?? 0);
+  if (rest > 0) out.push({ method, amount: rest });
+  return out;
+}
