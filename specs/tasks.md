@@ -1244,11 +1244,15 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   arma `p_payments` (tarjeta primero). El E2E prueba "sin saldo" (no "vencida": el vencimiento a un
   año no se puede forzar sin tocar la tabla); "vencida" queda en pgTAP 0052 y en la unitaria.
 
-### [ ] T-096 · Caja de hoy, cierre y semana en pantalla
+### [x] T-096 · Caja de hoy, cierre y semana en pantalla
 - REQ: REQ-059.1, REQ-059.2, REQ-058.1
 - Archivos: Caja de hoy, cierre (y su texto por WhatsApp), Semana, mensaje de `GIFT_CARD_IN_USE`
 - Terminado: unitarias de las líneas; E2E: la Caja de hoy muestra "Tarjetas de regalo vendidas",
   "Pagado con tarjeta de regalo" y "Entró en plata".
+- Nota: recuadro `GiftCardTotals` (aria-label "Tarjetas de regalo") en la Caja de hoy y la Semana,
+  y las mismas tres líneas en el texto del cierre (`giftCardReportLines`); sin tarjetas (o en un
+  cierre de antes del Hito 9) no sale nada. La rejilla de medios sigue con los cuatro de siempre: lo
+  pagado con tarjeta va solo en el recuadro. El E2E también prueba el mensaje de `GIFT_CARD_IN_USE`.
 
 ### [ ] T-097 · Validación Hito 9
 - REQ: REQ-055…REQ-059

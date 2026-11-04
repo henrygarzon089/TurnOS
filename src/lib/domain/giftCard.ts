@@ -173,3 +173,27 @@ export function checkoutPayments(
   if (rest > 0) out.push({ method, amount: rest });
   return out;
 }
+
+/** Campos de `cash_day_summary` / `weekly_summary` (0053); faltan en cierres de antes del Hito 9. */
+export type GiftCardTotals = {
+  giftCardsSold?: number;
+  giftCardsRedeemed?: number;
+  moneyIn?: number;
+};
+
+/**
+ * REQ-059.1 / REQ-059.2 "Tarjetas de regalo vendidas", "Pagado con tarjeta de regalo" y "Entró en
+ * plata" (total − pagado con tarjeta), solo si hubo alguna de las dos.
+ */
+export function giftCardReportLines(
+  t: GiftCardTotals,
+): { key: "sold" | "redeemed" | "moneyIn"; label: string; value: string }[] {
+  const sold = t.giftCardsSold ?? 0;
+  const redeemed = t.giftCardsRedeemed ?? 0;
+  if (sold === 0 && redeemed === 0) return [];
+  return [
+    { key: "sold", label: "Tarjetas de regalo vendidas", value: formatCOP(sold) },
+    { key: "redeemed", label: "Pagado con tarjeta de regalo", value: formatCOP(redeemed) },
+    { key: "moneyIn", label: "Entró en plata", value: formatCOP(t.moneyIn ?? 0) },
+  ];
+}

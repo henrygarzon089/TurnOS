@@ -9,6 +9,7 @@ import {
   balanceToUse,
   checkoutPayments,
   giftCardLookupResult,
+  giftCardReportLines,
   giftCardSplit,
 } from "@/lib/domain/giftCard";
 import { buildGiftCardLink } from "@/lib/notifications/reminder";
@@ -179,5 +180,30 @@ describe("REQ-057 pagar con la tarjeta en el cobro (design.md §15.5)", () => {
   it("REQ-057.6 sin tarjeta, un solo pago; un cobro en $ 0 no lleva pagos", () => {
     expect(checkoutPayments(25_000, "nequi")).toEqual([{ method: "nequi", amount: 25_000 }]);
     expect(checkoutPayments(0, "cash")).toEqual([]);
+  });
+});
+
+describe("REQ-059 lo que ve el dueño en la caja y la semana", () => {
+  it("REQ-059.1 REQ-059.2 vendidas, pagado con tarjeta y lo que entró en plata", () => {
+    expect(
+      giftCardReportLines({ giftCardsSold: 50_000, giftCardsRedeemed: 20_000, moneyIn: 77_000 }),
+    ).toEqual([
+      { key: "sold", label: "Tarjetas de regalo vendidas", value: "$ 50.000" },
+      { key: "redeemed", label: "Pagado con tarjeta de regalo", value: "$ 20.000" },
+      { key: "moneyIn", label: "Entró en plata", value: "$ 77.000" },
+    ]);
+  });
+
+  it("REQ-059.1 sin tarjetas (o un cierre de antes del Hito 9) no hay líneas", () => {
+    expect(
+      giftCardReportLines({ giftCardsSold: 0, giftCardsRedeemed: 0, moneyIn: 97_000 }),
+    ).toEqual([]);
+    expect(giftCardReportLines({})).toEqual([]);
+  });
+
+  it("REQ-058.1 anular una venta cuya tarjeta ya se usó: mensaje claro", () => {
+    expect(giftCardErrorMessage({ message: "GIFT_CARD_IN_USE" })).toBe(
+      "Esta tarjeta ya se usó: primero anula las ventas que la usaron.",
+    );
   });
 });
