@@ -29,6 +29,7 @@ const TEMPLATES: Record<TemplateKey, string> = {
   share_queue: "c {enlace}",
   birthday: "d {nombre}",
   membership_renewal: "e {fecha}",
+  gift_card: "f {valor}",
   appointment_confirm: "Hola {nombre}, tu cita es el {fecha} a las {hora}: {enlace}",
   appointment_reminder: "Recuerda {nombre}: mañana a las {hora}",
   appointment_cancelled: "{nombre}, cancelamos tu cita de las {hora}",

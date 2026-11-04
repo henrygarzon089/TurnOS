@@ -93,7 +93,7 @@
 | REQ-018.2 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customer-history.test.ts | cubierto |
 | REQ-018.3 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, 0013_customers_loyalty.sql | cubierto |
 | REQ-018.4 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, rls-customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | cubierto |
-| REQ-018.5 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql, 0035_merge_customers_birthday.sql, 0041_memberships.sql | cubierto |
+| REQ-018.5 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql, 0035_merge_customers_birthday.sql, 0041_memberships.sql, 0055_merge_customers_sales.sql | cubierto |
 | REQ-018.6 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers-delete.spec.ts, 0013_customers_loyalty.sql, 0014_customers_merge.sql, 0015_anonymize.sql, 0033_customer_experience.sql, 0036_whatsapp_notifications.sql, 0038_whatsapp_inbound.sql, 0041_memberships.sql, 0043_membership_reports.sql | cubierto |
 | REQ-019.1 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (hecha) | loyalty-config.spec.ts, loyalty.test.ts, 0016_loyalty_config.sql | cubierto |
 | REQ-019.2 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (hecha) | 0013_customers_loyalty.sql | cubierto |
@@ -124,8 +124,8 @@
 | REQ-025.3 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | 0021_cash.sql, 0022_register_sale.sql | cubierto |
 | REQ-025.4 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | commission.test.ts, 0021_cash.sql, 0022_register_sale.sql | cubierto |
 | REQ-025.5 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | my-numbers.spec.ts, my-numbers.test.ts, my-numbers.test.ts | cubierto |
-| REQ-026.1 | Anular una venta | T-040 (hecha), T-045 (hecha) | cash-day.spec.ts, 0021_cash.sql, 0022_register_sale.sql, 0025_cash_summary.sql, 0042_membership_checkout.sql, 0043_membership_reports.sql | cubierto |
-| REQ-026.2 | Anular una venta | T-040 (hecha), T-045 (hecha) | 0021_cash.sql, 0026_close_cash.sql, 0042_membership_sales.sql | cubierto |
+| REQ-026.1 | Anular una venta | T-040 (hecha), T-045 (hecha) | cash-day.spec.ts, 0021_cash.sql, 0022_register_sale.sql, 0025_cash_summary.sql, 0042_membership_checkout.sql, 0043_membership_reports.sql, 0055_merge_customers_sales.sql | cubierto |
+| REQ-026.2 | Anular una venta | T-040 (hecha), T-045 (hecha) | 0021_cash.sql, 0026_close_cash.sql, 0042_membership_sales.sql, 0051_gift_cards.sql, 0055_merge_customers_sales.sql | cubierto |
 | REQ-027.1 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | cash-day.spec.ts, 0025_cash_summary.sql | cubierto |
 | REQ-027.2 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | close-cash.spec.ts, 0021_cash.sql, 0025_cash_summary.sql, 0026_close_cash.sql | cubierto |
 | REQ-027.3 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha) | close-cash.spec.ts, 0021_cash.sql, 0026_close_cash.sql | cubierto |
@@ -274,29 +274,29 @@
 | REQ-054.4 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (pendiente) | 0046_appointments_queue.sql | prueba escrita |
 | REQ-054.5 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (pendiente) | appointment-templates.spec.ts, appointment-templates.test.ts, 0046_appointments_queue.sql | prueba escrita |
 | REQ-054.6 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (pendiente) | 0045_appointments.sql, 0046_appointments_queue.sql | prueba escrita |
-| REQ-055.1 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
-| REQ-055.2 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
-| REQ-055.3 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
-| REQ-055.4 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
-| REQ-055.5 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
-| REQ-055.6 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
-| REQ-056.1 | Entregar la tarjeta | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-094 (pendiente) | — | sin prueba |
-| REQ-056.2 | Entregar la tarjeta | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-094 (pendiente) | — | sin prueba |
-| REQ-056.3 | Entregar la tarjeta | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-094 (pendiente) | — | sin prueba |
-| REQ-056.4 | Entregar la tarjeta | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-094 (pendiente) | — | sin prueba |
-| REQ-057.1 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
-| REQ-057.2 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
-| REQ-057.3 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
-| REQ-057.4 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
-| REQ-057.5 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
-| REQ-057.6 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
-| REQ-057.7 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
-| REQ-057.8 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
-| REQ-058.1 | Anular y vencer | T-091 (pendiente), T-094 (pendiente), T-096 (pendiente) | — | sin prueba |
-| REQ-058.2 | Anular y vencer | T-091 (pendiente), T-094 (pendiente), T-096 (pendiente) | — | sin prueba |
-| REQ-058.3 | Anular y vencer | T-091 (pendiente), T-094 (pendiente), T-096 (pendiente) | — | sin prueba |
-| REQ-058.4 | Anular y vencer | T-091 (pendiente), T-094 (pendiente), T-096 (pendiente) | — | sin prueba |
-| REQ-059.1 | Lo que ve el dueño | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-096 (pendiente), T-097 (pendiente) | — | sin prueba |
-| REQ-059.2 | Lo que ve el dueño | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-096 (pendiente), T-097 (pendiente) | — | sin prueba |
-| REQ-059.3 | Lo que ve el dueño | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-096 (pendiente), T-097 (pendiente) | — | sin prueba |
-| REQ-059.4 | Lo que ve el dueño | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-096 (pendiente), T-097 (pendiente) | — | sin prueba |
+| REQ-055.1 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (pendiente) | gift-cards.spec.ts, gift-cards.test.ts, gift-card.test.ts, 0051_gift_cards.sql | prueba escrita |
+| REQ-055.2 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (pendiente) | gift-cards.spec.ts, gift-cards.test.ts, gift-card.test.ts, 0051_gift_cards.sql | prueba escrita |
+| REQ-055.3 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (pendiente) | gift-card.test.ts, 0051_gift_cards.sql | prueba escrita |
+| REQ-055.4 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (pendiente) | gift-cards.spec.ts, gift-card.test.ts, 0051_gift_cards.sql | prueba escrita |
+| REQ-055.5 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (pendiente) | 0051_gift_cards.sql | prueba escrita |
+| REQ-055.6 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (pendiente) | 0051_gift_cards.sql | prueba escrita |
+| REQ-056.1 | Entregar la tarjeta | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-094 (hecha) | gift-cards.spec.ts, gift-card.test.ts, 0002_core.sql, 0053_gift_card_reports.sql | cubierto |
+| REQ-056.2 | Entregar la tarjeta | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-094 (hecha) | gift-card-page.spec.ts, gift-card-page.test.ts | cubierto |
+| REQ-056.3 | Entregar la tarjeta | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-094 (hecha) | gift-card-page.spec.ts, gift-card-page.test.ts, 0051_gift_cards.sql | cubierto |
+| REQ-056.4 | Entregar la tarjeta | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-094 (hecha) | gift-cards.spec.ts, gift-cards.test.ts | cubierto |
+| REQ-057.1 | Pagar con la tarjeta en el cobro | T-091 (hecha), T-095 (hecha) | gift-card-checkout.spec.ts, gift-cards.test.ts, gift-card.test.ts, 0051_gift_cards.sql | cubierto |
+| REQ-057.2 | Pagar con la tarjeta en el cobro | T-091 (hecha), T-095 (hecha) | gift-card-checkout.spec.ts, gift-cards.test.ts, gift-card.test.ts, 0052_gift_card_checkout.sql | cubierto |
+| REQ-057.3 | Pagar con la tarjeta en el cobro | T-091 (hecha), T-095 (hecha) | gift-card-checkout.spec.ts, gift-cards.test.ts, gift-card.test.ts, 0052_gift_card_checkout.sql | cubierto |
+| REQ-057.4 | Pagar con la tarjeta en el cobro | T-091 (hecha), T-095 (hecha) | gift-card-checkout.spec.ts, gift-cards.test.ts, 0052_gift_card_checkout.sql | cubierto |
+| REQ-057.5 | Pagar con la tarjeta en el cobro | T-091 (hecha), T-095 (hecha) | commission.test.ts, 0052_gift_card_checkout.sql | cubierto |
+| REQ-057.6 | Pagar con la tarjeta en el cobro | T-091 (hecha), T-095 (hecha) | gift-card.test.ts, 0052_gift_card_checkout.sql | cubierto |
+| REQ-057.7 | Pagar con la tarjeta en el cobro | T-091 (hecha), T-095 (hecha) | gift-card.test.ts, 0051_gift_cards.sql, 0052_gift_card_checkout.sql | cubierto |
+| REQ-057.8 | Pagar con la tarjeta en el cobro | T-091 (hecha), T-095 (hecha) | 0052_gift_card_checkout.sql | cubierto |
+| REQ-058.1 | Anular y vencer | T-091 (hecha), T-094 (hecha), T-096 (hecha) | gift-card-reports.spec.ts, gift-card.test.ts, 0052_gift_card_checkout.sql | cubierto |
+| REQ-058.2 | Anular y vencer | T-091 (hecha), T-094 (hecha), T-096 (hecha) | 0052_gift_card_checkout.sql | cubierto |
+| REQ-058.3 | Anular y vencer | T-091 (hecha), T-094 (hecha), T-096 (hecha) | 0052_gift_card_checkout.sql | cubierto |
+| REQ-058.4 | Anular y vencer | T-091 (hecha), T-094 (hecha), T-096 (hecha) | gift-card-page.test.ts, 0051_gift_cards.sql, 0052_gift_card_checkout.sql | cubierto |
+| REQ-059.1 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (pendiente) | gift-card-reports.spec.ts, cash-closure.test.ts, gift-card.test.ts, 0053_gift_card_reports.sql | prueba escrita |
+| REQ-059.2 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (pendiente) | gift-card-reports.spec.ts, cash-closure.test.ts, gift-card.test.ts, 0053_gift_card_reports.sql | prueba escrita |
+| REQ-059.3 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (pendiente) | gift-cards.spec.ts, gift-card.test.ts, 0051_gift_cards.sql | prueba escrita |
+| REQ-059.4 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (pendiente) | 0053_gift_card_reports.sql | prueba escrita |

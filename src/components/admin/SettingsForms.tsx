@@ -18,6 +18,7 @@ export type TemplateKey =
   | "share_queue"
   | "birthday"
   | "membership_renewal"
+  | "gift_card"
   | "appointment_confirm"
   | "appointment_reminder"
   | "appointment_cancelled";
@@ -47,6 +48,11 @@ const TEMPLATE_META: Record<TemplateKey, { title: string; help: string; vars?: s
     help: "Para recordarle al titular que renueve, desde “Vencen esta semana” en Membresías.",
     vars: "{nombre} {negocio} {fecha}",
   },
+  gift_card: {
+    title: "Tarjeta de regalo",
+    help: "Para enviarle la tarjeta a quien la compró, desde Tarjetas de regalo.",
+    vars: "{nombre} {negocio} {valor} {enlace} {fecha}",
+  },
   // REQ-054.5: los botones de WhatsApp de "Citas"
   appointment_confirm: {
     title: "Confirmar cita",
@@ -72,6 +78,7 @@ const SAMPLE = {
   enlace: "https://turnos.app/t/abc123",
   fecha: "8 de noviembre",
   hora: "10:30 a. m.",
+  valor: "$ 50.000",
 };
 
 export function TemplatesForm({
