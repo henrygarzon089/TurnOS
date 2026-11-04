@@ -1,3 +1,4 @@
+import { giftCardReportLines, type GiftCardTotals } from "@/lib/domain/giftCard";
 import { formatCOP } from "@/lib/domain/money";
 import { membershipReportLines, type MembershipTotals } from "@/lib/domain/membership";
 import { formatDayCO } from "@/lib/domain/time";
@@ -12,7 +13,8 @@ export type ClosureTotals = {
   rewards: number;
   cashExpected: number;
   barbers: { name: string; pct: number; services: number; sold: number; commission: number }[];
-} & MembershipTotals;
+} & MembershipTotals &
+  GiftCardTotals;
 
 /**
  * REQ-027.4 resumen en texto plano para WhatsApp y REQ-027.6 una línea de liquidación por
@@ -31,6 +33,7 @@ export function closureText(businessName: string, t: ClosureTotals, cashCounted:
   ];
   if (t.rewards > 0) lines.push(`Premios de fidelidad: ${formatCOP(t.rewards)}`);
   for (const m of membershipReportLines(t)) lines.push(`${m.label}: ${m.value}`);
+  for (const g of giftCardReportLines(t)) lines.push(`${g.label}: ${g.value}`);
   lines.push(
     `Efectivo contado: ${formatCOP(cashCounted)} · esperado ${formatCOP(t.cashExpected)} · diferencia ${formatCOP(diff)}`,
   );

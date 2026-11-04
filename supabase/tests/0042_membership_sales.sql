@@ -41,7 +41,7 @@ begin
 end $$;
 
 -- ------------------------------------------------------------------ datos ----
-select enum_has_labels('sale_item_kind', array['service', 'product', 'membership'],
+select enum_has_labels('sale_item_kind', array['service', 'product', 'membership', 'gift_card'],
   'REQ-045.1 una línea de venta puede ser la cuota de la membresía');
 select col_default_is('sales', 'membership_total', '0', 'REQ-045.1 las ventas de siempre no traen cuota');
 select has_column('sale_items', 'membership_period_id', 'REQ-045.1 la línea apunta al periodo');

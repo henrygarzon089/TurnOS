@@ -13,7 +13,12 @@ import { formatPhoneCO } from "@/lib/domain/phone";
 import { renderTemplate } from "@/lib/notifications/render";
 
 export type TemplateKey =
-  "notify_2_turns" | "reminder_inactive" | "share_queue" | "birthday" | "membership_renewal";
+  | "notify_2_turns"
+  | "reminder_inactive"
+  | "share_queue"
+  | "birthday"
+  | "membership_renewal"
+  | "gift_card";
 
 const TEMPLATE_META: Record<TemplateKey, { title: string; help: string; vars?: string }> = {
   notify_2_turns: {
@@ -38,6 +43,11 @@ const TEMPLATE_META: Record<TemplateKey, { title: string; help: string; vars?: s
     help: "Para recordarle al titular que renueve, desde “Vencen esta semana” en Membresías.",
     vars: "{nombre} {negocio} {fecha}",
   },
+  gift_card: {
+    title: "Tarjeta de regalo",
+    help: "Para enviarle la tarjeta a quien la compró, desde Tarjetas de regalo.",
+    vars: "{nombre} {negocio} {valor} {enlace} {fecha}",
+  },
 };
 
 const SAMPLE = {
@@ -46,6 +56,7 @@ const SAMPLE = {
   tiempo: "≈ 25 min",
   enlace: "https://turnos.app/t/abc123",
   fecha: "8 de noviembre",
+  valor: "$ 50.000",
 };
 
 export function TemplatesForm({
