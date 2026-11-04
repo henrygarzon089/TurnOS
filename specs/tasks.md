@@ -1297,11 +1297,20 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   siguiente relectura. Cómo probarlo desde el celular: con una cita de hoy, entra como el barbero,
   toca "Llegó" en "Mis citas de hoy" y luego "Llamar al siguiente".
 
-### [ ] T-085 · Agenda del dueño
+### [x] T-085 · Agenda del dueño
 - REQ: REQ-050.6, REQ-054.1, REQ-054.2, REQ-054.3, REQ-054.4, REQ-054.6
 - Archivos: `src/app/(staff)/admin/citas/`
 - Terminado: E2E: nueva cita del dueño con `wa.me`, pasar a otro barbero, cancelar y "Citas de
   mañana".
+- Nota: `src/components/admin/AppointmentAgenda.tsx`; acciones `getAppointmentAgenda`,
+  `getOwnerSlots` (`appointment_slots` con mínimo = ahora), `ownerBookAppointment`,
+  `cancelAppointment` y `reassignAppointment` en `src/lib/actions/appointments.ts`; agrupar por día
+  y "Citas de mañana" en `src/lib/domain/appointments.ts` (`groupAgendaByDay`, `tomorrowReminders`,
+  `appointmentVars`). Con las citas apagadas la agenda sigue visible si quedan citas (REQ-049.6),
+  sin "Nueva cita". "Pasar" ofrece los barberos que reciben citas y hacen el servicio; si la hora
+  no está libre, el SQL responde "Esa hora se acaba de ocupar". Cómo probarlo desde el celular:
+  en `/admin/citas` toca "Nueva cita", agenda a alguien para mañana, envíale el WhatsApp, y en la
+  agenda prueba "Pasar" y "Cancelar".
 
 ### [ ] T-086 · Plantillas de citas
 - REQ: REQ-054.5

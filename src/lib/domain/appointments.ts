@@ -2,7 +2,7 @@
  * Citas a hora fija (Hito 8, ADR-033, design.md §14): días que se ofrecen, textos, mensajes de
  * WhatsApp y archivo de calendario. Lógica pura; la agenda y las horas libres las decide SQL.
  */
-import { renderTemplate } from "@/lib/notifications/render";
+import { renderTemplate, type TemplateVars } from "@/lib/notifications/render";
 import { businessDayBogota, formatTimeBogota } from "./time";
 
 /** Minutos que se espera al cliente después de la hora (REQ-052.2). */
@@ -79,19 +79,46 @@ export function appointmentStatusText(status: AppointmentStatus, lapsed: boolean
   return "No llegaste a tu cita";
 }
 
-/** REQ-050.6, 054.2, 054.3: texto del `wa.me` con la plantilla del negocio (REQ-033). */
-export function appointmentMessage(
-  template: string,
-  a: { customerName: string; businessName: string; startsAt: Date | string; url: string },
-): string {
+type MessageInput = {
+  customerName: string;
+  businessName: string;
+  startsAt: Date | string;
+  url: string;
+};
+
+/** REQ-050.6, 054.2, 054.3: variables de las plantillas de citas (REQ-033). */
+export function appointmentVars(a: MessageInput): TemplateVars {
   const at = new Date(a.startsAt);
-  return renderTemplate(template, {
+  return {
     nombre: a.customerName.trim().split(/\s+/)[0],
     negocio: a.businessName,
     fecha: formatDateLong(businessDayBogota(at)),
     hora: formatTimeBogota(at),
     enlace: a.url,
-  });
+  };
+}
+
+/** Texto del `wa.me` con la plantilla del negocio. */
+export function appointmentMessage(template: string, a: MessageInput): string {
+  return renderTemplate(template, appointmentVars(a));
+}
+
+// ------------------------------------------------------------------ agenda ----
+
+type AgendaLike = { day: string; status: AppointmentStatus };
+
+/** REQ-054.1: de hoy a +7, por día, en el orden en que llegan (ya vienen por hora). */
+export function groupAgendaByDay<T extends AgendaLike>(
+  items: T[],
+  today: string,
+): { day: string; items: T[] }[] {
+  return bookingDays(today).map((day) => ({ day, items: items.filter((i) => i.day === day) }));
+}
+
+/** REQ-054.3: las pendientes de mañana, para recordarlas por WhatsApp. */
+export function tomorrowReminders<T extends AgendaLike>(items: T[], today: string): T[] {
+  const tomorrow = addDays(today, 1);
+  return items.filter((i) => i.day === tomorrow && i.status === "booked");
 }
 
 // ------------------------------------------------------------------ calendario ----

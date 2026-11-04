@@ -1,5 +1,12 @@
 import { afterAll, describe, expect, it } from "vitest";
-import { appointmentErrorMessage, parseAppointmentSettingsForm } from "@/lib/domain/appointments";
+import {
+  appointmentErrorMessage,
+  appointmentMessage,
+  groupAgendaByDay,
+  parseAppointmentSettingsForm,
+  tomorrowReminders,
+} from "@/lib/domain/appointments";
+import type { AgendaItem } from "@/lib/actions/appointments";
 import {
   bookAppointment,
   cancelAppointmentByToken,
@@ -388,5 +395,111 @@ describe("REQ-053 estimado con citas en la portada y Mi turno", () => {
         t.rows[0].scheduled_at.getTime(),
       );
       expect(ticket?.estimate?.position).toBe(1);
+    }));
+});
+
+// ------------------------------------------------------ T-085: agenda ----
+
+async function agenda(q: Q, biz: string, from: string, to: string): Promise<AgendaItem[]> {
+  const r = await q<{ v: AgendaItem[] }>("select appointments_agenda($1, $2, $3) as v", [
+    biz,
+    from,
+    to,
+  ]);
+  return r.rows[0].v;
+}
+
+async function template(q: Q, biz: string, key: string): Promise<string> {
+  const r = await q<{ body: string }>(
+    "select body from message_templates where business_id = $1 and key = $2",
+    [biz, key],
+  );
+  return r.rows[0].body;
+}
+
+describe("REQ-054 agenda del dueño", () => {
+  it("REQ-054.1 lista de hoy a +7 por día con hora, cliente, servicio, barbero y estado", () =>
+    withTx(async (q) => {
+      const gw = createPgGateway(q);
+      const s = await withAppointments(q);
+      await bookAppointment(gw, input(s, { startsAt: at(s.tomorrow, "11:00") }), null);
+      await bookAppointment(gw, input(s, { phone: "300 222 3344", name: "Beto" }), null);
+      const today = (await q<{ d: string }>("select business_day_bogota(now())::text as d")).rows[0]
+        .d;
+      await loginAs(q, USERS.ownerA);
+      const items = await agenda(q, s.businessA, today, s.tomorrow);
+      const groups = groupAgendaByDay(items, today);
+      expect(groups).toHaveLength(8);
+      const day = groups.find((g) => g.day === s.tomorrow)!;
+      expect(day.items.map((i) => i.customerName)).toEqual(["Beto", "Ana Gómez"]);
+      expect(day.items[0]).toMatchObject({
+        serviceName: "Corte A",
+        barberName: "Barbero A",
+        status: "booked",
+        phone: "+573002223344",
+      });
+    }));
+
+  it("REQ-050.6 el dueño crea la cita y el wa.me lleva el enlace de 'Mi cita'", () =>
+    withTx(async (q) => {
+      const s = await withAppointments(q);
+      await loginAs(q, USERS.ownerA);
+      const slots = await q<{ starts_at: Date }>(
+        "select starts_at from appointment_slots($1, $2, null, $3::date, now())",
+        [s.businessA, s.serviceA, s.tomorrow],
+      );
+      const r = await q<{ v: { token: string; existing: boolean } }>(
+        "select book_appointment($1, $2, null, $3, 'Carla Ruiz', '+573004445566') as v",
+        [s.businessA, s.serviceA, slots.rows[0].starts_at],
+      );
+      expect(r.rows[0].v.existing).toBe(false);
+      const text = appointmentMessage(await template(q, s.businessA, "appointment_confirm"), {
+        customerName: "Carla Ruiz",
+        businessName: "Barbería A",
+        startsAt: slots.rows[0].starts_at,
+        url: `https://x.test/c/${r.rows[0].v.token}`,
+      });
+      expect(text).toContain("Hola Carla");
+      expect(text).toContain(`https://x.test/c/${r.rows[0].v.token}`);
+      expect(text).not.toMatch(/\{(nombre|negocio|fecha|hora|enlace)\}/);
+    }));
+
+  it("REQ-054.2 el dueño cancela y el aviso dice que reserve otra", () =>
+    withTx(async (q) => {
+      const gw = createPgGateway(q);
+      const s = await withAppointments(q);
+      const b = (await bookAppointment(gw, input(s), null)) as { token: string };
+      await loginAs(q, USERS.ownerA);
+      const [a] = await agenda(q, s.businessA, s.tomorrow, s.tomorrow);
+      await q("select cancel_appointment($1)", [a.id]);
+      const [after] = await agenda(q, s.businessA, s.tomorrow, s.tomorrow);
+      expect(after).toMatchObject({ status: "cancelled", cancelReason: "business" });
+      const text = appointmentMessage(await template(q, s.businessA, "appointment_cancelled"), {
+        customerName: after.customerName,
+        businessName: "Barbería A",
+        startsAt: after.startsAt,
+        url: `https://x.test/c/${b.token}`,
+      });
+      expect(text).toContain("tuvimos que cancelar tu cita");
+    }));
+
+  it("REQ-054.3 'Citas de mañana' trae las pendientes con el recordatorio", () =>
+    withTx(async (q) => {
+      const gw = createPgGateway(q);
+      const s = await withAppointments(q);
+      await bookAppointment(gw, input(s), null);
+      const other = (await bookAppointment(
+        gw,
+        input(s, { phone: "300 222 3344", startsAt: at(s.tomorrow, "12:00") }),
+        null,
+      )) as { token: string };
+      await cancelAppointmentByToken(gw, other.token);
+      const today = (await q<{ d: string }>("select business_day_bogota(now())::text as d")).rows[0]
+        .d;
+      await loginAs(q, USERS.ownerA);
+      const items = await agenda(q, s.businessA, today, s.tomorrow);
+      const reminders = tomorrowReminders(items, today);
+      expect(reminders.map((i) => i.customerName)).toEqual(["Ana Gómez"]);
+      expect(await template(q, s.businessA, "appointment_reminder")).toContain("{hora}");
     }));
 });
