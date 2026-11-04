@@ -164,3 +164,42 @@ export function appointmentIcs(a: {
   ];
   return lines.map(fold).join("\r\n") + "\r\n";
 }
+
+// ------------------------------------------------------------------ formularios ----
+
+/** REQ-049.1, 049.2: encendido y barberos que reciben citas. */
+export function parseAppointmentSettingsForm(fd: FormData): {
+  enabled: boolean;
+  barberIds: string[];
+} {
+  return {
+    enabled: fd.get("enabled") === "on",
+    barberIds: fd.getAll("barber_ids").map(String).filter(Boolean),
+  };
+}
+
+/** Mensaje en español para un error de las funciones SQL de citas (design.md §14.3). */
+export function appointmentErrorMessage(e: {
+  message?: string;
+  code?: string;
+  details?: string | null;
+  detail?: string | null;
+}): string {
+  const msg = e.message ?? "";
+  if (msg.includes("APPOINTMENTS_DISABLED")) return "Las citas están apagadas.";
+  if (msg.includes("SLOT_TAKEN")) return "Esa hora se acaba de ocupar. Elige otra.";
+  if (msg.includes("SLOT_UNAVAILABLE")) return "Esa hora ya no está disponible. Elige otra.";
+  if (msg.includes("INVALID_PHONE"))
+    return "Escribe un celular colombiano de 10 dígitos (empieza por 3).";
+  if (msg.includes("INVALID_NAME")) return "Escribe el nombre.";
+  if (msg.includes("NOT_CANCELLABLE")) return "Esa cita ya no se puede cambiar.";
+  if (msg.includes("NOT_ARRIVABLE")) return "Esa cita ya no está pendiente hoy.";
+  if (msg.includes("ALREADY_IN_QUEUE")) return "Ese cliente ya tiene un turno en la fila.";
+  if (msg.includes("BARBER_CANT_DO_SERVICE")) return "Ese barbero no recibe citas de ese servicio.";
+  if (msg.includes("NEXT_APPOINTMENT")) {
+    const hhmi = e.details ?? e.detail;
+    return hhmi ? nextAppointmentText(hhmi) : "Tienes una cita pronto.";
+  }
+  if (msg.includes("FORBIDDEN") || e.code === "42501") return "No tienes permiso para eso.";
+  return "No se pudo completar. Inténtalo de nuevo.";
+}
