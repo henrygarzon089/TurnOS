@@ -1,3 +1,4 @@
+import { GiftCardTotals } from "@/components/cash/GiftCardTotals";
 import { MembershipTotals } from "@/components/cash/MembershipTotals";
 import type { WeekSummary as Week } from "@/lib/actions/cash";
 import { formatCOP } from "@/lib/domain/money";
@@ -68,6 +69,8 @@ export function WeekSummary({ current: w, previous: p }: { current: Week; previo
       </section>
 
       <MembershipTotals totals={w} />
+
+      <GiftCardTotals totals={w} />
 
       <p className="rounded-xl bg-amber-50 p-3 text-sm font-semibold" data-testid="lost">
         {w.lostTickets} {w.lostTickets === 1 ? "turno perdido" : "turnos perdidos"} (no llegó o
