@@ -1,4 +1,4 @@
-# Estado del proyecto — traspaso (2026-11-03)
+# Estado del proyecto — traspaso (2026-11-04)
 
 Este documento resume la conversación en la que se construyó todo hasta aquí, para que cualquier
 persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `specs/`.
@@ -211,13 +211,34 @@ Ninguno lo puede hacer el agente. En este orden:
 Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `supabase db push` aplicó
 0041–0044 y `vercel deploy --prod` publicó `a50342d`. Lo que sigue sin marcar es operación en Filo.
 
-### Hito 9 — tarjetas de regalo (en construcción, ADR-034)
+### Hito 9 — tarjetas de regalo (construido, falta Henry; ADR-034)
 
 - 2026-11-03: grill de 12 preguntas con Henry, todas con la respuesta recomendada, y abogado del
   diablo breve (anotado en ADR-034). Escritos REQ-055…REQ-059 (26 criterios, §5g), `design.md` §15,
   ADR-034 (propuesta) y tareas T-090…T-097. Va en paralelo con el Hito 8 (citas): los números saltan
   a propósito. Henry aprobó la spec el mismo día (PR #45) y autorizó seguir sin él. Migraciones previstas `0050`…`0053`.
-- `pnpm trace`: 261 criterios; los 26 del Hito 9 sin prueba hasta construirlo.
+- 2026-11-04: construidas T-090…T-097 en PRs en cadena, cada uno sobre el anterior:
+  #50 T-090 (venta, `0050`/`0051`) → #49 T-091 (pagar y anular, `0052`) → #52 T-092 (caja, semana,
+  plantilla y aviso, `0053`) → #56 T-093 (pantalla Tarjetas de regalo) → #58 T-094 (página
+  `/regalo/[token]`) → #60 T-095 (cobro con tarjeta) → #62 T-096 (caja, cierre y semana en pantalla)
+  → T-097 (esta validación). La fusión automática la bloqueó el clasificador de permisos, así que
+  quedan abiertos.
+- `pnpm trace --hito=9`: 261 criterios, **0 sin prueba en el hito 9**; el hito 9 entra al loop de
+  `tests/unit/traceability.test.ts`. Pruebas (Docker local): pgTAP 1052 · unitarias 306 ·
+  integración 122; los E2E nuevos (`gift-cards`, `gift-card-page`, `gift-card-checkout`,
+  `gift-card-reports`) corren en el CI.
+- Desvío anotado: `merge_customers` no se redefinió en `0051` (falla antes del Hito 9 con
+  `SALE_IMMUTABLE`); el arreglo va aparte (PR #48, migración `0055`).
+- **Checklist de Henry** para cerrar el hito:
+  1. Fusionar en orden #50 → #49 → #52 → #56 → #58 → #60 → #62 → T-097. Antes de fusionar cada uno,
+     cambiar la base del siguiente a `main` (`gh pr edit <n> --base main`) y no borrar la rama, para
+     que GitHub no cierre el siguiente.
+  2. Aplicar `0050`…`0053` en producción (`supabase db push`) y desplegar `main` (`vercel --prod`).
+  3. En Filo: publicar la versión nueva del aviso de privacidad (párrafo de tarjetas de regalo,
+     REQ-059.4) y revisar la plantilla "Tarjeta de regalo" en Mensajes.
+  4. Prueba en la barbería: vender una tarjeta, enviarla por WhatsApp, cobrar con ella parte de un
+     corte y ver la Caja de hoy.
+  5. Aprobación del hito (ADR-036).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
@@ -259,7 +280,8 @@ plantillas, aviso) · 0003 RLS núcleo · 0004 invitaciones · 0005 turnos/event
 0009 broadcast realtime · 0010 aviso WhatsApp · 0011 pantalla TV · 0012 barbero solo llama al
 primero · 0013 clientes, fidelidad, recordatorios · 0014 fusión de fichas y clientes del barbero
 (ADR-016) · 0015 supresión · 0017 progreso de fidelidad · 0018 inactivos en días del negocio ·
-0019 barbero preferido.
+0019 barbero preferido. Hito 9: 0050 valores nuevos de los enums · 0051 tarjetas de regalo (venta,
+búsqueda, lista, página) · 0052 pagar y anular con la tarjeta · 0053 caja, semana, plantilla y aviso.
 
 ### Pantallas
 
@@ -268,6 +290,7 @@ Personal: `/entrar`, `/invitacion/[token]`, `/crear-negocio` (3 pasos), `/app/fi
 `/admin/{fila,servicios,productos,barberos,horario,qr,mensajes,negocio,privacidad}`.
 Personal (H2): `/app/clientes`, `/app/clientes/[id]`, `/admin/fidelidad`, `/admin/recordar`.
 Hito 3: `/admin/caja` (+ `/admin/caja/[fecha]`), `/admin/semana`, `/app/mis-numeros`, panel de cobro.
+Hito 9: `/admin/regalos` (dueño) y `/regalo/[token]` (pública, sin cuenta).
 Pendientes (H3): `/admin/caja`,
 `/admin/semana`, `/app/mis-numeros`.
 
