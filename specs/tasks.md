@@ -1137,6 +1137,17 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   aprobó el hito (ADR-032) antes de la prueba en Filo; plan, aviso nuevo y prueba con una familia real
   quedan como operación, no como código.
 
+### Corrección — fusionar fichas con ventas (REQ-018.5, 2026-11-04)
+
+- [x] `merge_customers` fallaba con `SALE_IMMUTABLE` si la ficha fusionada tenía ventas: el `delete`
+  disparaba `on delete set null` en `sales.customer_id` y `sales_guard` lo rechazaba. Salió en T-090
+  (Hito 9). Desvío respecto a design §2.6 paso 2 (no nombraba las ventas): ahora las ventas pasan a la
+  ficha que queda, con un permiso de `sales_guard` acotado a `turnos.internal` y solo `customer_id`.
+  Migración `0055_merge_customers_sales.sql` (después de Hito 8: 0045–0049 y Hito 9: 0050–0054),
+  pgTAP `0055_merge_customers_sales` (9 pruebas). **Falta aplicarla en producción (Henry).** Cuando
+  el Hito 9 esté en `main`, `merge_customers` debe mover también `gift_cards.buyer_customer_id`
+  (design §15.1): si 0050–0054 redefinen la función, revisar que no pisen este cambio.
+
 ---
 
 ## Dependencias principales

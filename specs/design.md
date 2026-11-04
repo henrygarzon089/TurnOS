@@ -390,7 +390,13 @@ y celular quedan (el dueño la elige; la UI preselecciona la de visita más reci
 
 1. Valida: mismo negocio, distintas, ninguna anonimizada; si las dos tienen tarjeta `completed`
    → error `BOTH_REWARDS_PENDING` (P0004).
-2. `tickets`, `reminders` y `loyalty_cards` `redeemed` de `merge` pasan a `keep`.
+2. `tickets`, `reminders`, `sales` y `loyalty_cards` `redeemed` de `merge` pasan a `keep`. Las
+   ventas cambian solo de `customer_id` (también anuladas o de un día cerrado: el cierre no depende
+   del cliente) con un permiso acotado de `sales_guard`: `turnos.internal = '1'`, `customer_id`
+   nuevo no nulo y el resto de la fila igual; cualquier otro cambio sigue siendo `SALE_IMMUTABLE`
+   (ADR-005). Corrección de 2026-11-04 (`0055_merge_customers_sales.sql`): antes el `delete` de la
+   ficha disparaba `on delete set null` en `sales.customer_id`, `sales_guard` lo rechazaba y no se
+   podía fusionar a nadie con ventas.
 3. Tarjetas abiertas (`active`/`completed`): si solo una existe, pasa a `keep`. Si existen dos, la
    destino es la `completed` (si hay) o la de `keep`; los `loyalty_stamps` de la otra se mueven a
    la destino, `stamps` = suma, se borra la otra; si el programa está activo y
