@@ -441,3 +441,42 @@
   la versión nueva del aviso de privacidad (membresía + WhatsApp, REQ-002.5) y la prueba con una
   familia real. Si esa prueba encuentra un problema, se corrige como tarea nueva.
 - Consecuencias: T-077 `[x]`. ADR-031 sigue apartado para la aprobación del Hito 6 (T-069).
+
+## ADR-034 · Tarjetas de regalo (Hito 9)
+- Estado: **propuesta** (grill con Henry, 2026-11-03; espera su sí a la spec)
+- Contexto: Hito 9 de `docs/propuesta-mejoras-clientes.md`. Toca caja y comisiones: la venta de la
+  tarjeta entra plata hoy, pero el servicio se presta otro día, y la comisión del barbero es sobre el
+  servicio (PA-18, ADR-030). La Circular Única de la SIC (numeral 2.18.3.2, Circular Externa 006 de
+  2014) exige que los bonos y tarjetas de regalo duren como mínimo un año desde que se expiden, y
+  usarlos en partes no alarga el plazo; la Ley 1480 (arts. 23 y 24) pide informar las condiciones.
+- Opciones para la caja: (a) venderla es una venta aparte (ingreso del día, sin comisión) y usarla es
+  un medio de pago más que no es plata nueva; (b) el ingreso se reconoce solo al usarla; (c) la
+  tarjeta es un descuento en la venta del servicio.
+- Decisión: (a). La plata cuadra con la caja del día en que se recibe, el barbero gana su comisión
+  normal sobre el servicio que presta, y no se mezcla con "un beneficio por venta" (REQ-047.5). Henry
+  escogió las 12 respuestas recomendadas del grill: valor libre ($ 10.000–$ 500.000, en miles); enlace
+  por WhatsApp (`wa.me`) a una página pública de la tarjeta; vence a un año; se usa en partes; solo el
+  dueño vende y cualquiera del personal cobra con ella; anular con las reglas de caja, sin devolver
+  saldo en efectivo; se combina con membresía, premio y descuentos; al portador, con la ficha del
+  comprador y solo el nombre de pila de quien la recibe; código de 8 caracteres sin símbolos
+  confusos; cierre y semana con vendidas, pagado con tarjeta y "Entró en plata", y lista con "Saldo
+  por usar".
+- Abogado del diablo (breve, pedido por Henry), y lo que cambió:
+  1. *Doble conteo:* el día de J (§15.4) el "total vendido" suma la tarjeta y el corte que paga con
+     ella, 75.000, cuando entraron 50.000. → El cierre muestra "Entró en plata" y lo pagado con tarjeta
+     no cuenta en el efectivo esperado (REQ-059.2).
+  2. *Adivinar códigos:* 8 caracteres de 31 símbolos son ~850 mil millones de combinaciones, y el
+     código solo se prueba desde el cobro, con sesión del personal. La página pública usa otro token
+     de 16 bytes. → Sin límite de intentos extra; código y token separados (REQ-055.4).
+  3. *Gastarla dos veces a la vez:* dos sillas cobrando con la misma tarjeta. → Tarjeta bloqueada al
+     cobrar y saldo recalculado (REQ-057.8).
+  4. *Lavar plata entre tarjetas o cuotas:* pagar una tarjeta con otra alarga el plazo de un saldo. →
+     Prohibido pagar tarjetas o cuotas con tarjeta (REQ-057.7) y sin traspasos (REQ-058.3).
+  5. *Saldo que nunca se usa:* es plata del cliente durante un año. → La lista muestra "Saldo por
+     usar" para que el dueño sepa cuánto debe; al vencer se pierde, como permite la norma.
+  6. *Tarjeta perdida:* al portador, quien la tenga la usa. → Aceptado y dicho en las condiciones de
+     la página; bloquear tarjetas queda fuera de alcance.
+- Consecuencias: REQ-055…REQ-059 (§5g), `design.md` §15, migraciones `0050`…`0053` (`0054` libre) y
+  tareas T-090…T-097. El aviso de privacidad por defecto agrega un párrafo (comprador); Filo publica
+  una versión nueva. Los números saltan (REQ-049…054, §14, `0045`…`0049`, T-078…T-089 y ADR-033/035
+  son del Hito 8, en paralelo). La aprobación del Hito 9 será ADR-036.

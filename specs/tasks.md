@@ -26,6 +26,7 @@
 | H5 | Experiencia del cliente — **aprobado** (ADR-026) | T-058…T-063 | REQ-036…REQ-039 |
 | H6 | Aviso automático por WhatsApp (ADR-027) | T-064…T-070 | REQ-040…REQ-043 |
 | H7 | Membresía familiar (ADR-030) | T-071…T-077 | REQ-044…REQ-048 |
+| H9 | Tarjetas de regalo (ADR-034) | T-090…T-097 | REQ-055…REQ-059 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -1137,6 +1138,70 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   aprobó el hito (ADR-032) antes de la prueba en Filo; plan, aviso nuevo y prueba con una familia real
   quedan como operación, no como código.
 
+## Hito 9 — Tarjetas de regalo (ADR-034)
+
+> REQ-055…REQ-059 y ADR-034 en propuesta (2026-11-03). Diseño en `design.md` §15. El salto de
+> números es intencional: T-078…T-089, REQ-049…054 y `0045`…`0049` son del Hito 8 (citas), que va en
+> paralelo. T-098 y T-099 quedan libres. No depende del Hito 8.
+
+### [ ] T-090 · Migración y pgTAP: tarjetas y venta
+- REQ: REQ-055.1, REQ-055.2, REQ-055.3, REQ-055.4, REQ-055.5, REQ-055.6, REQ-056.3, REQ-059.3
+- Archivos: `supabase/migrations/0050_gift_card_enums.sql`, `supabase/migrations/0051_gift_cards.sql`
+  (`gift_cards`, `sell_gift_card`, `gift_card_lookup`, `gift_cards_list`, `get_gift_card_by_token`),
+  `supabase/tests/0051_gift_cards.sql`
+- Terminado: pgTAP de §15.6 para `0051` en verde (ejemplo H); sin vender nada, la caja no cambia.
+
+### [ ] T-091 · Pagar con la tarjeta y anular
+- REQ: REQ-057.2, REQ-057.3, REQ-057.5, REQ-057.6, REQ-057.7, REQ-057.8, REQ-058.1, REQ-058.2,
+  REQ-058.3, REQ-058.4
+- Archivos: `supabase/migrations/0052_gift_card_checkout.sql` (`register_sale`,
+  `register_membership_fee`, `void_sale`), `supabase/tests/0052_gift_card_checkout.sql`,
+  `src/lib/domain/commission.ts` (solo la prueba del ejemplo I)
+- Terminado: pgTAP con los ejemplos I, K y L, cada rechazo y dos cobros a la vez.
+
+### [ ] T-092 · Caja, semana, aviso y plantilla en SQL
+- REQ: REQ-059.1, REQ-059.2, REQ-059.4, REQ-056.1
+- Archivos: `supabase/migrations/0053_gift_card_reports.sql` (`cash_day_summary`, `weekly_summary`,
+  `default_privacy_text`, `create_business`, plantilla de los negocios existentes),
+  `supabase/tests/0053_gift_card_reports.sql`
+- Terminado: pgTAP con el ejemplo J en el cierre y la semana; párrafo y plantilla nuevos.
+
+### [ ] T-093 · Pantalla "Tarjetas de regalo" del dueño
+- REQ: REQ-055.1, REQ-055.3, REQ-056.1, REQ-056.4, REQ-059.3
+- Archivos: `src/app/(staff)/admin/regalos/`, `src/lib/actions/giftCards.ts`,
+  `src/lib/domain/giftCard.ts`, menú, `/admin/mensajes`
+- Terminado: unitarias de `giftCard.ts`, integración de las acciones; E2E: vender una tarjeta, ver el
+  botón de WhatsApp y la lista con "Saldo por usar".
+
+### [ ] T-094 · Página pública de la tarjeta
+- REQ: REQ-056.2, REQ-056.3, REQ-058.4
+- Archivos: `src/app/(public)/regalo/[token]/`, `src/lib/actions/public.ts`, `src/proxy.ts` si hace
+  falta
+- Terminado: integración de la lectura por token; E2E: abrir el enlace, ver saldo, vencimiento y
+  condiciones, sin datos del comprador; token desconocido → 404.
+
+### [ ] T-095 · Tarjeta de regalo en el panel de cobro
+- REQ: REQ-057.1, REQ-057.2, REQ-057.3, REQ-057.4, REQ-057.6
+- Archivos: panel de cobro, `src/lib/actions/cash.ts`
+- Terminado: E2E: el barbero cobra un corte con parte en tarjeta y parte en efectivo; un código
+  vencido o sin saldo muestra el error.
+
+### [ ] T-096 · Caja de hoy, cierre y semana en pantalla
+- REQ: REQ-059.1, REQ-059.2, REQ-058.1
+- Archivos: Caja de hoy, cierre (y su texto por WhatsApp), Semana, mensaje de `GIFT_CARD_IN_USE`
+- Terminado: unitarias de las líneas; E2E: la Caja de hoy muestra "Tarjetas de regalo vendidas",
+  "Pagado con tarjeta de regalo" y "Entró en plata".
+
+### [ ] T-097 · Validación Hito 9
+- REQ: REQ-055…REQ-059
+- Archivos: `scripts/traceability.ts` (`HITOS["9"] = [[55, 59]]`), `tests/unit/traceability.test.ts`,
+  `docs/estado-del-proyecto.md`
+- Depende de Henry: `0050`…`0053` en producción, versión nueva del aviso publicada en Filo, prueba en
+  la barbería y aprobación (ADR-036).
+- Terminado: `pnpm trace --hito=9` sin huecos; CI verde. `HITOS["9"]` ya está desde el PR de la
+  spec; el hito 9 entra al loop de `tests/unit/traceability.test.ts` aquí, cuando todas las pruebas
+  existen (como el hito 7 en T-077), para no dejar el CI en rojo mientras tanto.
+
 ---
 
 ## Dependencias principales
@@ -1154,4 +1219,5 @@ flowchart LR
   T057 --> T058 --> T059 --> T060 --> T061 --> T062 --> T063
   T063 --> T064 --> T065 --> T066 --> T067 --> T068 --> T070 --> T069
   T070 --> T071 --> T072 --> T073 --> T074 --> T075 --> T076 --> T077
+  T077 --> T090 --> T091 --> T092 --> T093 --> T094 --> T095 --> T096 --> T097
 ```
