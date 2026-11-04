@@ -2,6 +2,12 @@
 
 import { z } from "zod";
 import { getStaffSession } from "@/lib/auth/session";
+import {
+  checkoutPayments,
+  giftCardLookupResult,
+  normalizeGiftCardCode,
+  type GiftCardLookup,
+} from "@/lib/domain/giftCard";
 import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
 import { toMembershipStatus, type MembershipStatus } from "@/lib/domain/membership";
 import { normalizePhoneCO } from "@/lib/domain/phone";
@@ -81,6 +87,11 @@ const ERRORS: Record<string, string> = {
   NO_MEMBERSHIP: "Este cliente no tiene una membresía vigente.",
   NOT_MEMBERSHIP_SERVICE: "Ese servicio no gasta cortes de la membresía.",
   ONE_BENEFIT_PER_SALE: "Solo se aplica un beneficio por cobro: la membresía o el premio.",
+  GIFT_CARD_NOT_FOUND: "No encontramos una tarjeta de regalo con ese código.",
+  GIFT_CARD_VOIDED: "Esa tarjeta de regalo fue anulada.",
+  GIFT_CARD_EXPIRED: "Esa tarjeta de regalo ya venció.",
+  GIFT_CARD_INSUFFICIENT: "La tarjeta de regalo ya no tiene ese saldo. Vuelve a buscar el código.",
+  ONE_GIFT_CARD_PER_SALE: "Se puede usar una sola tarjeta de regalo por cobro.",
   FORBIDDEN: "No tienes permiso para esta acción.",
 };
 
@@ -216,7 +227,12 @@ const saleSchema = z.object({
   customerId: z.uuid().nullable().optional(),
   barberId: z.uuid().nullable(),
   items: z.array(lineSchema).min(1, ERRORS.EMPTY_SALE),
+  /** Medio de pago del total o, con tarjeta de regalo, de lo que falta (REQ-057.3). */
   method: z.enum(["cash", "nequi", "transfer", "card"]),
+  /** REQ-057.3 parte pagada con la tarjeta de regalo (a lo sumo una por venta). */
+  giftCard: z
+    .object({ code: z.string().regex(/^[A-HJKMNP-Z2-9]{8}$/), amount: z.number().int().min(1) })
+    .optional(),
   /** Total que vio quien cobra; la base lo vuelve a calcular y rechaza si no coincide. */
   total: z.number().int().min(0),
 });
@@ -229,6 +245,8 @@ export async function registerSale(input: z.input<typeof saleSchema>): Promise<C
   if (!parsed.success)
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Datos no válidos." };
   const d = parsed.data;
+  if (d.giftCard && d.giftCard.amount > d.total)
+    return { ok: false, error: ERRORS.PAYMENTS_MISMATCH };
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.rpc("register_sale", {
     p_business_id: session.business.id,
@@ -243,11 +261,28 @@ export async function registerSale(input: z.input<typeof saleSchema>): Promise<C
       is_reward: i.isReward ?? false,
       membership: i.membership ?? false,
     })),
-    p_payments: d.total > 0 ? [{ method: d.method, amount: d.total }] : [],
+    p_payments: checkoutPayments(d.total, d.method, d.giftCard),
     p_customer_id: d.customerId ?? null,
   });
   if (error) return { ok: false, error: mapError(error) };
   return { ok: true, saleId: (data as { id: string }).id };
+}
+
+/** REQ-057.1 / REQ-057.2 busca la tarjeta de regalo por código (barbero o dueño). */
+export async function lookupGiftCard(
+  code: string,
+): Promise<{ ok: true; card: GiftCardLookup; label: string } | { ok: false; error: string }> {
+  const session = await getStaffSession();
+  if (!session) return { ok: false, error: "Sesión vencida. Vuelve a entrar." };
+  const normalized = normalizeGiftCardCode(code);
+  if (!/^[A-HJKMNP-Z2-9]{8}$/.test(normalized)) return giftCardLookupResult(null);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("gift_card_lookup", {
+    p_business_id: session.business.id,
+    p_code: normalized,
+  });
+  if (error) return { ok: false, error: mapError(error) };
+  return giftCardLookupResult((data as GiftCardLookup | null) ?? null);
 }
 
 /**

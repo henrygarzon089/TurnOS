@@ -7,6 +7,9 @@ import {
   normalizeGiftCardCode,
   parseGiftCardForm,
   balanceToUse,
+  checkoutPayments,
+  giftCardLookupResult,
+  giftCardSplit,
 } from "@/lib/domain/giftCard";
 import { buildGiftCardLink } from "@/lib/notifications/reminder";
 import { renderTemplate } from "@/lib/notifications/render";
@@ -123,5 +126,58 @@ describe("REQ-059.3 lista de tarjetas", () => {
         { balance: 0, status: "exhausted" },
       ]),
     ).toBe(40000);
+  });
+});
+
+describe("REQ-057 pagar con la tarjeta en el cobro (design.md §15.5)", () => {
+  const card = {
+    code: "K7QM4XPA",
+    balance: 30_000,
+    expiresOn: "2027-11-03",
+    status: "active" as const,
+  };
+
+  it("REQ-057.1 al escribir el código se ve el saldo y el vencimiento", () => {
+    expect(giftCardLookupResult(card)).toEqual({
+      ok: true,
+      card,
+      label: "Saldo $ 30.000 · vence el 3 de noviembre de 2027",
+    });
+  });
+
+  it("REQ-057.2 código inexistente, vencida, anulada o sin saldo: mensaje claro", () => {
+    expect(giftCardLookupResult(null)).toEqual({
+      ok: false,
+      error: "No encontramos una tarjeta con ese código.",
+    });
+    expect(giftCardLookupResult({ ...card, status: "expired" })).toEqual({
+      ok: false,
+      error: "Esa tarjeta ya venció.",
+    });
+    expect(giftCardLookupResult({ ...card, status: "voided" })).toEqual({
+      ok: false,
+      error: "Esa tarjeta fue anulada.",
+    });
+    expect(giftCardLookupResult({ ...card, status: "exhausted", balance: 0 })).toEqual({
+      ok: false,
+      error: "Esta tarjeta ya no tiene saldo.",
+    });
+  });
+
+  it("REQ-057.3 la tarjeta paga hasta su saldo y el resto va con otro medio", () => {
+    expect(giftCardSplit(25_000, 30_000)).toEqual({ card: 25_000, rest: 0 });
+    expect(giftCardSplit(45_000, 30_000)).toEqual({ card: 30_000, rest: 15_000 });
+    expect(checkoutPayments(45_000, "cash", { code: "K7QM4XPA", amount: 30_000 })).toEqual([
+      { method: "gift_card", amount: 30_000, code: "K7QM4XPA" },
+      { method: "cash", amount: 15_000 },
+    ]);
+    expect(checkoutPayments(25_000, "cash", { code: "K7QM4XPA", amount: 25_000 })).toEqual([
+      { method: "gift_card", amount: 25_000, code: "K7QM4XPA" },
+    ]);
+  });
+
+  it("REQ-057.6 sin tarjeta, un solo pago; un cobro en $ 0 no lleva pagos", () => {
+    expect(checkoutPayments(25_000, "nequi")).toEqual([{ method: "nequi", amount: 25_000 }]);
+    expect(checkoutPayments(0, "cash")).toEqual([]);
   });
 });
