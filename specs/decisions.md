@@ -528,5 +528,5 @@
   prueba en la barbería. Si esa prueba encuentra un problema, se corrige como tarea nueva.
 - Consecuencias: T-097 cerrada. Queda abierto que `merge_customers` (`0055`) no mueve
   `gift_cards.buyer_customer_id`: fusionar una ficha que compró una tarjeta falla por la llave
-  foránea. Va como corrección aparte (`0054` está libre). ADR-031 sigue apartado para el Hito 6 y
+  foránea. Va como corrección aparte (después: `0056`, porque `0054` quedaría antes que `0055`). ADR-031 sigue apartado para el Hito 6 y
   ADR-033/035 son del Hito 8.

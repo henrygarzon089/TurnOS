@@ -237,8 +237,9 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   4. Prueba en la barbería: vender una tarjeta, enviarla por WhatsApp, cobrar con ella parte de un
      corte y ver la Caja de hoy.
   5. ~~Aprobación del hito~~ hecho (ADR-036, 2026-11-04).
-- Pendiente de código: `merge_customers` no mueve `gift_cards.buyer_customer_id`; fusionar una ficha
-  que compró una tarjeta falla por la llave foránea. Corrección aparte con `0054`.
+- Corrección `0056_merge_customers_gift_cards` (2026-11-04): fusionar la ficha de alguien que compró
+  una tarjeta fallaba por la llave foránea `gift_cards.buyer_customer_id`; ahora las tarjetas pasan a
+  la ficha que queda. **Falta aplicarla en producción** (`supabase db push`, sin `--include-all`).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
@@ -322,9 +323,9 @@ Pendientes (H3): `/admin/caja`,
   `sales.customer_id`). Ahora las ventas pasan a la ficha que queda; `sales_guard` deja cambiar solo
   `customer_id` dentro de `turnos.internal`. design §2.6 paso 2. **En producción** desde el
   2026-11-04, junto con `0050`…`0053`.
-  Como ya está aplicada, el `supabase db push` del Hito 8 (`0045`…`0049`) y de la corrección
-  `0054` necesita `--include-all` (versiones menores que la última aplicada). Falta sumar
-  `gift_cards.buyer_customer_id` a `merge_customers` (design §15.1) en `0054`.
+  Como ya está aplicada, el `supabase db push` del Hito 8 (`0045`…`0049`) necesita `--include-all`
+  (versiones menores que la última aplicada). Las tarjetas de regalo en `merge_customers` van en
+  `0056`.
 - pgTAP `0018_reminders` fallaba entre las 00:00 y las 02:00 de Bogotá (la prueba, no la función):
   corregido en PR #51.
 

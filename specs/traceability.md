@@ -93,7 +93,7 @@
 | REQ-018.2 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customer-history.test.ts | cubierto |
 | REQ-018.3 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, 0013_customers_loyalty.sql | cubierto |
 | REQ-018.4 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, rls-customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql | cubierto |
-| REQ-018.5 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql, 0035_merge_customers_birthday.sql, 0041_memberships.sql, 0055_merge_customers_sales.sql | cubierto |
+| REQ-018.5 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customers.test.ts, customer-history.test.ts, 0014_customers_merge.sql, 0035_merge_customers_birthday.sql, 0041_memberships.sql, 0055_merge_customers_sales.sql, 0056_merge_customers_gift_cards.sql | cubierto |
 | REQ-018.6 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers-delete.spec.ts, 0013_customers_loyalty.sql, 0014_customers_merge.sql, 0015_anonymize.sql, 0033_customer_experience.sql, 0036_whatsapp_notifications.sql, 0038_whatsapp_inbound.sql, 0041_memberships.sql, 0043_membership_reports.sql | cubierto |
 | REQ-019.1 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (hecha) | loyalty-config.spec.ts, loyalty.test.ts, 0016_loyalty_config.sql | cubierto |
 | REQ-019.2 | Tarjeta de fidelidad configurable | T-031 (hecha), T-035 (hecha), T-036 (hecha), T-041 (hecha), T-043 (hecha) | 0013_customers_loyalty.sql | cubierto |
@@ -276,7 +276,7 @@
 | REQ-054.6 | Agenda del dueño y avisos | T-079 (pendiente), T-084 (pendiente), T-085 (pendiente), T-086 (pendiente), T-087 (pendiente) | 0045_appointments.sql | prueba escrita |
 | REQ-055.1 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (hecha) | gift-cards.spec.ts, gift-cards.test.ts, gift-card.test.ts, 0051_gift_cards.sql | cubierto |
 | REQ-055.2 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (hecha) | gift-cards.spec.ts, gift-cards.test.ts, gift-card.test.ts, 0051_gift_cards.sql | cubierto |
-| REQ-055.3 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (hecha) | gift-card.test.ts, 0051_gift_cards.sql | cubierto |
+| REQ-055.3 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (hecha) | gift-card.test.ts, 0051_gift_cards.sql, 0056_merge_customers_gift_cards.sql | cubierto |
 | REQ-055.4 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (hecha) | gift-cards.spec.ts, gift-card.test.ts, 0051_gift_cards.sql | cubierto |
 | REQ-055.5 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (hecha) | 0051_gift_cards.sql | cubierto |
 | REQ-055.6 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (hecha) | 0051_gift_cards.sql | cubierto |
@@ -298,5 +298,5 @@
 | REQ-058.4 | Anular y vencer | T-091 (hecha), T-094 (hecha), T-096 (hecha) | gift-card-page.test.ts, 0051_gift_cards.sql, 0052_gift_card_checkout.sql | cubierto |
 | REQ-059.1 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-card-reports.spec.ts, cash-closure.test.ts, gift-card.test.ts, 0053_gift_card_reports.sql | cubierto |
 | REQ-059.2 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-card-reports.spec.ts, cash-closure.test.ts, gift-card.test.ts, 0053_gift_card_reports.sql | cubierto |
-| REQ-059.3 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-cards.spec.ts, gift-card.test.ts, 0051_gift_cards.sql | cubierto |
+| REQ-059.3 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-cards.spec.ts, gift-card.test.ts, 0051_gift_cards.sql, 0056_merge_customers_gift_cards.sql | cubierto |
 | REQ-059.4 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | 0053_gift_card_reports.sql | cubierto |

@@ -1152,6 +1152,11 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   pgTAP `0055_merge_customers_sales` (9 pruebas). **Falta aplicarla en producción (Henry).** Cuando
   el Hito 9 esté en `main`, `merge_customers` debe mover también `gift_cards.buyer_customer_id`
   (design §15.1): si 0050–0054 redefinen la función, revisar que no pisen este cambio.
+- [x] (2026-11-04) Ninguna de 0050–0053 redefine `merge_customers`, así que fusionar la ficha de
+  alguien que compró una tarjeta fallaba por la llave foránea `gift_cards.buyer_customer_id`.
+  Migración `0056_merge_customers_gift_cards.sql`: la función de 0055 con una línea más que pasa las
+  tarjetas a la ficha que queda. Es 0056 y no 0054 porque 0055 la pisaría al aplicar en orden.
+  pgTAP `0056_merge_customers_gift_cards` (5 pruebas). **Falta aplicarla en producción.**
 
 ---
 
