@@ -429,3 +429,15 @@
   porque `memberships` ya guarda el personal de cada negocio desde `0002`. Al fusionar dos fichas
   que están en familias distintas con periodo vigente o futuro, `merge_customers` rechaza con
   `BOTH_IN_FAMILIES` (`design.md` §13.1).
+
+## ADR-032 · Aprobación del Hito 7 (membresía familiar)
+- Estado: **aceptada** (Henry, 2026-11-03)
+- Contexto: REQ-044…REQ-048 implementados en T-071…T-077 (PRs #36–#43, fusionados en `main` el
+  2026-11-03), con `pnpm trace --hito=7` sin huecos (235 criterios) y CI de `main` en verde. El mismo
+  día Henry aplicó `0041`…`0044` en producción con `supabase db push` y desplegó `main`
+  (`a50342d`); `/salud`, `/filo` y `/admin/membresias` responden.
+- Decisión: Henry aprueba el Hito 7 antes de la prueba con una familia real. Lo que queda es
+  operación en Filo, no código: fijar el plan, revisar la plantilla "Membresía por vencer", publicar
+  la versión nueva del aviso de privacidad (membresía + WhatsApp, REQ-002.5) y la prueba con una
+  familia real. Si esa prueba encuentra un problema, se corrige como tarea nueva.
+- Consecuencias: T-077 `[x]`. ADR-031 sigue apartado para la aprobación del Hito 6 (T-069).

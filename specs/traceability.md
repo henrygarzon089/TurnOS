@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-03.
+> Generada por `scripts/traceability.ts` el 2026-11-04.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -211,11 +211,11 @@
 | REQ-043.4 | Control y activación | T-064 (hecha), T-065 (hecha), T-067 (hecha), T-068 (hecha), T-070 (hecha), T-069 (pendiente) | whatsapp-notices.spec.ts, dispatch.test.ts, whatsapp-webhook.test.ts, cloud-api.test.ts | prueba escrita |
 | REQ-043.5 | Control y activación | T-064 (hecha), T-065 (hecha), T-067 (hecha), T-068 (hecha), T-070 (hecha), T-069 (pendiente) | whatsapp-webhook-route.test.ts, whatsapp-webhook.test.ts | prueba escrita |
 | REQ-043.6 | Control y activación | T-064 (hecha), T-065 (hecha), T-067 (hecha), T-068 (hecha), T-070 (hecha), T-069 (pendiente) | whatsapp-notices.spec.ts, whatsapp-screens.test.ts, 0040_whatsapp_allowed.sql | prueba escrita |
-| REQ-044.1 | Plan de membresía | T-071 (hecha), T-074 (hecha), T-077 (pendiente) | membership.test.ts, 0041_memberships.sql | prueba escrita |
-| REQ-044.2 | Plan de membresía | T-071 (hecha), T-074 (hecha), T-077 (pendiente) | memberships.spec.ts, memberships.test.ts, membership.test.ts, 0041_memberships.sql | prueba escrita |
-| REQ-044.3 | Plan de membresía | T-071 (hecha), T-074 (hecha), T-077 (pendiente) | memberships.test.ts, 0041_memberships.sql | prueba escrita |
-| REQ-044.4 | Plan de membresía | T-071 (hecha), T-074 (hecha), T-077 (pendiente) | 0041_memberships.sql, 0042_membership_sales.sql | prueba escrita |
-| REQ-044.5 | Plan de membresía | T-071 (hecha), T-074 (hecha), T-077 (pendiente) | memberships.test.ts, membership.test.ts, 0042_membership_checkout.sql, 0042_membership_sales.sql, 0043_membership_reports.sql | prueba escrita |
+| REQ-044.1 | Plan de membresía | T-071 (hecha), T-074 (hecha), T-077 (hecha) | membership.test.ts, 0041_memberships.sql | cubierto |
+| REQ-044.2 | Plan de membresía | T-071 (hecha), T-074 (hecha), T-077 (hecha) | memberships.spec.ts, memberships.test.ts, membership.test.ts, 0041_memberships.sql | cubierto |
+| REQ-044.3 | Plan de membresía | T-071 (hecha), T-074 (hecha), T-077 (hecha) | memberships.test.ts, 0041_memberships.sql | cubierto |
+| REQ-044.4 | Plan de membresía | T-071 (hecha), T-074 (hecha), T-077 (hecha) | 0041_memberships.sql, 0042_membership_sales.sql | cubierto |
+| REQ-044.5 | Plan de membresía | T-071 (hecha), T-074 (hecha), T-077 (hecha) | memberships.test.ts, membership.test.ts, 0042_membership_checkout.sql, 0042_membership_sales.sql, 0043_membership_reports.sql | cubierto |
 | REQ-045.1 | Cuota y vigencia | T-072 (hecha), T-074 (hecha) | memberships.spec.ts, memberships.test.ts, 0042_membership_checkout.sql, 0042_membership_sales.sql | cubierto |
 | REQ-045.2 | Cuota y vigencia | T-072 (hecha), T-074 (hecha) | 0042_membership_sales.sql | cubierto |
 | REQ-045.3 | Cuota y vigencia | T-072 (hecha), T-074 (hecha) | 0042_membership_sales.sql | cubierto |
@@ -235,8 +235,8 @@
 | REQ-047.6 | Usar la membresía en el cobro | T-073 (hecha), T-075 (hecha) | 0042_membership_checkout.sql | cubierto |
 | REQ-047.7 | Usar la membresía en el cobro | T-073 (hecha), T-075 (hecha) | 0042_membership_checkout.sql | cubierto |
 | REQ-047.8 | Usar la membresía en el cobro | T-073 (hecha), T-075 (hecha) | 0042_membership_checkout.sql | cubierto |
-| REQ-048.1 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (pendiente) | membership-checkout.spec.ts, memberships.test.ts, membership.test.ts, 0043_membership_reports.sql | prueba escrita |
-| REQ-048.2 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (pendiente) | membership-checkout.spec.ts, memberships.test.ts, 0043_membership_reports.sql | prueba escrita |
-| REQ-048.3 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (pendiente) | membership-reports.spec.ts, cash-closure.test.ts, membership.test.ts, 0043_membership_reports.sql | prueba escrita |
-| REQ-048.4 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (pendiente) | memberships.spec.ts, memberships.test.ts, membership.test.ts, 0002_core.sql, 0043_membership_reports.sql | prueba escrita |
-| REQ-048.5 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (pendiente) | 0043_membership_reports.sql | prueba escrita |
+| REQ-048.1 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | membership-checkout.spec.ts, memberships.test.ts, membership.test.ts, 0043_membership_reports.sql | cubierto |
+| REQ-048.2 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | membership-checkout.spec.ts, memberships.test.ts, 0043_membership_reports.sql | cubierto |
+| REQ-048.3 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | membership-reports.spec.ts, cash-closure.test.ts, membership.test.ts, 0043_membership_reports.sql | cubierto |
+| REQ-048.4 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | memberships.spec.ts, memberships.test.ts, membership.test.ts, 0002_core.sql, 0043_membership_reports.sql | cubierto |
+| REQ-048.5 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | 0043_membership_reports.sql | cubierto |

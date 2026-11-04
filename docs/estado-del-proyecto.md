@@ -129,7 +129,7 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
       responder "PARAR" da de baja (§9).
 - [ ] ADR de aprobación del Hito 6 (ADR-031; ADR-030 es la membresía) y T-069 marcada `[x]`.
 
-### Hito 7 — membresía familiar (en construcción, ADR-030)
+### Hito 7 — membresía familiar (**aprobado**, ADR-032, 2026-11-03)
 
 - 2026-11-02: grill de 25 preguntas con Henry, todas con la respuesta recomendada. Escritos
   REQ-044…REQ-048 (29 criterios, §5e), `design.md` §13, ADR-030 (propuesta) y tareas T-071…T-077.
@@ -187,14 +187,14 @@ Pasos de `docs/guia-whatsapp-meta.md`, en orden. Ninguno lo puede hacer el agent
 
 Ninguno lo puede hacer el agente. En este orden:
 
-- [ ] Fusionar en `main`, uno por uno y en orden, los PR #36 (spec) → #37 (T-071) → #38 (T-072) →
+- [x] Fusionar en `main`, uno por uno y en orden, los PR #36 (spec) → #37 (T-071) → #38 (T-072) →
       #39 (T-073) → #40 (T-074) → #41 (T-075) → #42 (T-076) → el de T-077. Cada uno sale del anterior:
       al fusionar uno, el siguiente queda contra `main`. **No desplegar** a producción todavía.
-- [ ] Aplicar en producción `0041_memberships`, `0042_membership_sales`, `0043_membership_reports` y
+- [x] Aplicar en producción `0041_memberships`, `0042_membership_sales`, `0043_membership_reports` y
       `0044_membership_template`, en ese orden y cada una en su propia transacción (0044 usa el valor
       del enum que agrega 0043). Antes de desplegar el código: las pantallas nuevas leen tablas y
       funciones de estas migraciones.
-- [ ] Desplegar `main` a producción y entrar a `/admin/membresias` de Filo: debe abrir sin error.
+- [x] Desplegar `main` a producción y entrar a `/admin/membresias` de Filo: debe abrir sin error.
 - [ ] Fijar el plan de Filo en `/admin/membresias`: cuota, cortes por periodo, servicios que gastan
       cortes y descuento al agotar. Encender "Membresía activa" solo cuando esté listo para ofrecerla.
 - [ ] Revisar en "Mensajes" de Filo la plantilla "Membresía por vencer" (la crea 0044).
@@ -205,8 +205,11 @@ Ninguno lo puede hacer el agente. En este orden:
       cobrar la cuota, que un miembro tome turno y vea "Membresía familiar: quedan X de N" en "Mi
       turno", que el barbero cobre el corte en $ 0 con "Usar membresía", y que la Caja de hoy, el
       cierre y la Semana muestren "Cuotas de membresía" y "Cortes de membresía".
-- [ ] Aprobación de Henry → ADR de aprobación del Hito 7 (el número libre siguiente; ADR-031 está
-      apartado para el Hito 6) y T-077 marcada `[x]`.
+- [x] Aprobación de Henry → ADR-032 (2026-11-03) y T-077 marcada `[x]`. ADR-031 sigue apartado
+      para el Hito 6.
+
+Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `supabase db push` aplicó
+0041–0044 y `vercel deploy --prod` publicó `a50342d`. Lo que sigue sin marcar es operación en Filo.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

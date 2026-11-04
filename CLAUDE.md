@@ -29,6 +29,11 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 
 ## Estado actual (2026-10-24)
 
+- **Hito 7 (membresía familiar, REQ-044…048, ADR-030)** aprobado (ADR-032, 2026-11-03): plan,
+  familias, cuota en la caja, corte con "Usar membresía"; migraciones 0041–0044 en producción. Falta
+  la operación en Filo (plan, aviso nuevo, prueba con una familia real).
+- **Hito 6 (aviso por WhatsApp, REQ-040…043, ADR-027)** en código y producción; T-069 espera los
+  pasos de Meta de Henry (aprobación: ADR-031).
 - **Hito 5 (experiencia del cliente, REQ-036…039, ADR-025)** aprobado (ADR-026, 2026-11-01): reseña
   en Google, cumpleaños, menú con bebida de cortesía y fotos de cortes; migraciones 0033–0035.
 - **Hito 4 (servicios por barbero, REQ-035, ADR-023)** aprobado (ADR-024, 2026-10-28): migraciones
