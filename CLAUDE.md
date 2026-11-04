@@ -29,6 +29,9 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 
 ## Estado actual (2026-10-24)
 
+- **Hito 8 (citas a hora fija, REQ-049…054, ADR-033)** construido, falta aprobación de Henry
+  (ADR-035): reservar, "Mi cita", citas en la fila y agenda; migraciones 0045–0049 (se suben con
+  `supabase db push --include-all`). Falta encender citas en Filo y la prueba real.
 - **Hito 9 (tarjetas de regalo, REQ-055…059, ADR-034)** aprobado (ADR-036, 2026-11-04): venta,
   página `/regalo/[token]`, pago en el cobro y reportes; migraciones 0050–0053 en producción. Falta
   la operación en Filo (aviso nuevo, plantilla, prueba en la barbería).
