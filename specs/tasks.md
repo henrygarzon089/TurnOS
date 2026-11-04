@@ -1237,10 +1237,14 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `0002_core` y `0043_membership_reports` cuentan sus plantillas sin las de citas. Sin pantallas:
   nada cambia para el cliente ni el barbero hasta encender las citas (T-081).
 
-### [ ] T-080 · Dominio: estimado con citas, calendario y mensajes
+### [x] T-080 · Dominio: estimado con citas, calendario y mensajes
 - REQ: REQ-053.1, REQ-053.2, REQ-053.3, REQ-051.3
 - Archivos: `src/lib/domain/queue-estimate.ts`, `src/lib/domain/appointments.ts`, sus unitarias
 - Terminado: unitarias con el ejemplo H, la cita que perdió la hora y el `.ics`.
+- Nota (2026-11-04): `estimateQueue` recibe `appointments` (huecos) y `scheduledAt` por turno;
+  `src/lib/domain/appointments.ts` con días que se ofrecen, textos, `wa.me` y `.ics` (líneas de 75
+  octetos). `renderTemplate` acepta `{hora}`. `appointments.ts` entra a la cobertura del 100 %.
+  Unitarias 304. Sin pantallas todavía: nada cambia para el cliente.
 
 ### [ ] T-081 · Encender citas y elegir barberos
 - REQ: REQ-049.1, REQ-049.2, REQ-049.6
