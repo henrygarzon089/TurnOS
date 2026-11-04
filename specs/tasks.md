@@ -1341,11 +1341,17 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   con las citas encendidas (T-081), abre `/filo`, toca "Reservar cita", elige servicio, día y hora,
   y reserva.
 
-### [ ] T-083 · Mi cita
+### [x] T-083 · Mi cita
 - REQ: REQ-051.1, REQ-051.2, REQ-051.3, REQ-051.4, REQ-051.5, REQ-051.6
 - Archivos: `src/app/(public)/c/[token]/` (página y `calendario/route.ts`)
 - Terminado: integración de `get_appointment_by_token` y cancelar; E2E: ver, descargar calendario y
   cancelar.
+- Nota: `src/components/queue/MyAppointment.tsx`; si la cita ya llegó, `/c/<token>` redirige a
+  `/t/<token del turno>` (REQ-051.4). La página no se indexa (`robots: noindex`). El enlace del
+  calendario usa `NEXT_PUBLIC_APP_URL` o, si falta, el origen de la petición. El E2E
+  `appointments-public.spec.ts` cubre también la reserva de T-082. Cómo probarlo desde el celular:
+  reserva en `/filo/cita`, en "Mi cita" toca "Agregar al calendario" (abre el calendario del
+  celular) y luego "Cancelar mi cita": dice "Cita cancelada" y ofrece "Reservar otra".
 
 ### [ ] T-084 · Citas en la fila del barbero y del dueño
 - REQ: REQ-052.1, REQ-052.2, REQ-052.3, REQ-052.4, REQ-052.5, REQ-053.1, REQ-054.4
