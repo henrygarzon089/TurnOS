@@ -1191,12 +1191,19 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   vencida → saldo. Dos cobros a la vez se prueban en serie (pgTAP no abre dos sesiones): el `for
   update` sobre la tarjeta hace que el segundo espere y vea el saldo del primero.
 
-### [ ] T-092 · Caja, semana, aviso y plantilla en SQL
+### [x] T-092 · Caja, semana, aviso y plantilla en SQL
 - REQ: REQ-059.1, REQ-059.2, REQ-059.4, REQ-056.1
 - Archivos: `supabase/migrations/0053_gift_card_reports.sql` (`cash_day_summary`, `weekly_summary`,
   `default_privacy_text`, `create_business`, plantilla de los negocios existentes),
   `supabase/tests/0053_gift_card_reports.sql`
 - Terminado: pgTAP con el ejemplo J en el cierre y la semana; párrafo y plantilla nuevos.
+- Nota (2026-11-04): pgTAP 16 nuevas en `supabase/tests/0053_gift_card_reports.sql` (1052 en total);
+  `0002_core` y `0043_membership_reports` ahora cuentan 6 plantillas. `cash_day_summary` agrega
+  `byMethod.giftCard`, `giftCardsSold`, `giftCardsRedeemed` y `moneyIn`; `weekly_summary` los tres
+  últimos. En las ventas del día el medio se llama "Tarjeta de regalo". `close_cash_day` no se
+  redefine (guarda la foto de `cash_day_summary`, lo prueba pgTAP). La plantilla de los negocios que
+  ya existen va en la misma `0053`: el valor del enum se agregó en `0050`. Las pantallas todavía no
+  muestran las líneas nuevas (T-096).
 
 ### [ ] T-093 · Pantalla "Tarjetas de regalo" del dueño
 - REQ: REQ-055.1, REQ-055.3, REQ-056.1, REQ-056.4, REQ-059.3
