@@ -172,6 +172,11 @@ describe("REQ-047.4 comisión con membresía (design.md §13.4)", () => {
         products: [],
         commissionPct: 60,
       }),
-    ).toMatchObject({ total: 25000, commissionBase: 25000, commissionAmount: 15000, businessAmount: 10000 });
+    ).toMatchObject({
+      total: 25000,
+      commissionBase: 25000,
+      commissionAmount: 15000,
+      businessAmount: 10000,
+    });
   });
 });
