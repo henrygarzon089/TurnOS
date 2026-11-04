@@ -63,4 +63,16 @@ describe("REQ-027.6 / REQ-027.4 texto del cierre para liquidar y compartir", () 
     expect(text).toContain("Cortes de membresía: 1 · $ 25.000");
     expect(closureText("Barbería La 33", example, 30000)).not.toContain("membresía");
   });
+
+  it("REQ-059.1 REQ-059.2 el texto del cierre trae vendidas, pagado con tarjeta y lo que entró en plata", () => {
+    const text = closureText(
+      "Barbería La 33",
+      { ...example, giftCardsSold: 50000, giftCardsRedeemed: 20000, moneyIn: 77000 },
+      30000,
+    );
+    expect(text).toContain("Tarjetas de regalo vendidas: $ 50.000");
+    expect(text).toContain("Pagado con tarjeta de regalo: $ 20.000");
+    expect(text).toContain("Entró en plata: $ 77.000");
+    expect(closureText("Barbería La 33", example, 30000)).not.toContain("tarjeta de regalo");
+  });
 });

@@ -91,6 +91,7 @@ const ERRORS: Record<string, string> = {
   GIFT_CARD_VOIDED: "Esa tarjeta de regalo fue anulada.",
   GIFT_CARD_EXPIRED: "Esa tarjeta de regalo ya venció.",
   GIFT_CARD_INSUFFICIENT: "La tarjeta de regalo ya no tiene ese saldo. Vuelve a buscar el código.",
+  GIFT_CARD_IN_USE: "Esta tarjeta ya se usó: primero anula las ventas que la usaron.",
   ONE_GIFT_CARD_PER_SALE: "Se puede usar una sola tarjeta de regalo por cobro.",
   FORBIDDEN: "No tienes permiso para esta acción.",
 };
@@ -341,6 +342,10 @@ export type CashDaySummary = {
   cashExpected: number;
   membershipFees: number;
   membershipCuts: { count: number; listValue: number };
+  /** REQ-059.1 / REQ-059.2 (0053). */
+  giftCardsSold: number;
+  giftCardsRedeemed: number;
+  moneyIn: number;
   barbers: {
     barberId: string;
     name: string;
@@ -533,6 +538,10 @@ export type WeekSummary = {
   sold: number;
   membershipFees: number;
   membershipCuts: { count: number; listValue: number };
+  /** REQ-059.1 / REQ-059.2 (0053). */
+  giftCardsSold: number;
+  giftCardsRedeemed: number;
+  moneyIn: number;
 };
 
 /** REQ-028.1–28.4 resumen de la semana (lunes a domingo) y la anterior para comparar. */
