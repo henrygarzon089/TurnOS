@@ -471,6 +471,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `src/components/customers/RemindersList.tsx`, `src/lib/notifications/reminder.ts`
   (`buildReminderLink`), "No contactar" editable en la ficha (dueño) y el botón "Avisar" de la
   fila del barbero se oculta para esos clientes (`QueueTicket.doNotContact`).
+- Corrección (2026-11-04): pgTAP 0018 fallaba entre las 00:00 y las 02:00 de Bogotá: la ficha
+  "Justo Veintiuno" (`now() - 21 días 2 h`) caía en el día 22 del negocio. Ahora se ancla a las
+  00:00 de Bogotá de hace 21 días del negocio (≥ 21×24 h y siempre 21 días). La función estaba
+  bien; sin cambio de spec. Probado con `now()` fijo a 00:00, 00:18, 01:59, 02:00, 15:00 y 23:30.
 
 ### [x] T-038 · Barbero preferido preseleccionado — 2026-10-24
 - REQ: REQ-022.1
