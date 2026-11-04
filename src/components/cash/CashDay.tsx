@@ -3,6 +3,7 @@
 import { useCallback, useState, useTransition } from "react";
 import { ErrorText } from "@/components/auth/LoginForm";
 import { CloseCash } from "@/components/cash/CloseCashSheet";
+import { GiftCardTotals } from "@/components/cash/GiftCardTotals";
 import { MembershipTotals } from "@/components/cash/MembershipTotals";
 import { NewSaleButton } from "@/components/cash/NewSaleSheet";
 import { ConnectionBanner } from "@/components/ui/ConnectionBanner";
@@ -91,6 +92,8 @@ export function CashDay({
       </section>
 
       <MembershipTotals totals={summary} />
+
+      <GiftCardTotals totals={summary} />
 
       <section aria-label="Por barbero">
         <h2 className="mb-2 font-semibold">Por barbero</h2>

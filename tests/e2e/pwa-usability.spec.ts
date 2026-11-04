@@ -169,8 +169,8 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
     const register = sheet.getByRole("button", { name: /^Registrar/ });
     await register.scrollIntoViewIfNeeded();
     await expectThumbButton(page, register);
-    for (const m of ["Efectivo", "Nequi", "Transferencia", "Tarjeta"]) {
-      const box = (await sheet.getByRole("radio", { name: m }).boundingBox())!;
+    for (const m of ["Efectivo", "Nequi", "Transferencia", "Tarjeta", "Tarjeta de regalo"]) {
+      const box = (await sheet.getByRole("radio", { name: m, exact: true }).boundingBox())!;
       expect(box.height, `${m} ≥ 48 px`).toBeGreaterThanOrEqual(48);
     }
     await expectZoom200(page);
