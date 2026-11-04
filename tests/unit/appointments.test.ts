@@ -11,6 +11,9 @@ import {
   nextAppointmentText,
   parseAppointmentSettingsForm,
   appointmentErrorMessage,
+  appointmentVars,
+  groupAgendaByDay,
+  tomorrowReminders,
 } from "@/lib/domain/appointments";
 import { estimateQueue, positions, type QueueInput } from "@/lib/domain/queue-estimate";
 
@@ -238,5 +241,52 @@ describe("REQ-049 ajustes y errores de citas", () => {
     expect(appointmentErrorMessage({ message: "NEXT_APPOINTMENT" })).toBe(
       "Tienes una cita pronto.",
     );
+  });
+});
+
+describe("REQ-054 agenda del dueño", () => {
+  const item = (id: string, day: string, status: "booked" | "cancelled" = "booked") => ({
+    id,
+    day,
+    status,
+    startsAt: `${day}T15:00:00Z`,
+  });
+
+  it("REQ-054.1 agrupa de hoy a +7 por día, con los días sin citas vacíos", () => {
+    const groups = groupAgendaByDay(
+      [item("b", "2026-11-06"), item("a", "2026-11-05"), item("c", "2026-11-06")],
+      "2026-11-05",
+    );
+    expect(groups).toHaveLength(8);
+    expect(groups[0]).toEqual({ day: "2026-11-05", items: [item("a", "2026-11-05")] });
+    expect(groups[1].items.map((i) => i.id)).toEqual(["b", "c"]);
+    expect(groups[2]).toEqual({ day: "2026-11-07", items: [] });
+  });
+
+  it("REQ-054.3 'Citas de mañana' trae solo las pendientes del día siguiente", () => {
+    const list = [
+      item("hoy", "2026-11-05"),
+      item("m1", "2026-11-06"),
+      item("m2", "2026-11-06", "cancelled"),
+      item("pasado", "2026-11-07"),
+    ];
+    expect(tomorrowReminders(list, "2026-11-05").map((i) => i.id)).toEqual(["m1"]);
+  });
+
+  it("REQ-050.6 las variables del wa.me: primer nombre, fecha, hora y enlace", () => {
+    expect(
+      appointmentVars({
+        customerName: "Ana María",
+        businessName: "Filo",
+        startsAt: t("09:15"),
+        url: "https://x.test/c/a",
+      }),
+    ).toEqual({
+      nombre: "Ana",
+      negocio: "Filo",
+      fecha: "jueves 5 de noviembre",
+      hora: "9:15 a. m.",
+      enlace: "https://x.test/c/a",
+    });
   });
 });
