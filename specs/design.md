@@ -1587,7 +1587,8 @@ Definiciones (todas en Bogotá):
   `p_source` (`SLOT_UNAVAILABLE`); `pg_advisory_xact_lock` por barbero (con "cualquiera", por cada
   candidato en orden) y se vuelve a revisar el cruce dentro del candado (`SLOT_TAKEN`, REQ-050.4);
   "cualquiera" → el de menos citas `booked`/`arrived` ese día, empate por `sort_order` (REQ-050.3);
-  cita pendiente del mismo celular → `APPOINTMENT_EXISTS` con el token de la que tiene (REQ-050.5);
+  cita pendiente del mismo celular → devuelve `{token, existing: true}` con la que tiene, como
+  `join_queue` (REQ-050.5; corrección de T-078: antes decía error `APPOINTMENT_EXISTS`);
   ficha y aviso de privacidad igual que `join_queue` (REQ-050.2). Público: `public_book_appointment(p_slug, …)`
   con `check_rate_limit` como `join_queue` (REQ-050.7). Dueño: `p_source = 'owner'`, solo `is_owner_of`.
 - `get_appointment_by_token(p_token)` → negocio (nombre, slug, dirección), día, hora, duración,
@@ -1632,8 +1633,15 @@ Definiciones (todas en Bogotá):
 - `get_ticket_by_token` agrega `scheduled_at` para "Mi turno" ("Cita 10:30").
 - `queue_snapshot` / fila del dueño y del barbero agregan `scheduled_at` para la etiqueta "Cita HH:MM".
 
-Errores nuevos (P0004 salvo `FORBIDDEN`): `APPOINTMENTS_DISABLED`, `SLOT_UNAVAILABLE`, `SLOT_TAKEN`,
-`APPOINTMENT_EXISTS`, `NOT_CANCELLABLE`, `NOT_ARRIVABLE`, `NEXT_APPOINTMENT` (P0006).
+Errores nuevos (P0004 salvo `FORBIDDEN` y los indicados): `APPOINTMENTS_DISABLED`, `INVALID_NAME`,
+`SLOT_UNAVAILABLE`, `SLOT_TAKEN`, `NOT_CANCELLABLE`, `NOT_ARRIVABLE`, `APPOINTMENT_NOT_FOUND` (P0002),
+`NEXT_APPOINTMENT` (P0006).
+
+Ayudantes de `0045` (T-078): `appointment_lapsed(starts_at)` (tolerancia), `barber_time_free(barber,
+inicio, fin, excluir)` (hueco ocupado de §14.1), `barber_takes_appointments(barber, servicio)` y
+`appointment_time_valid(negocio, inicio, duración, mínimo)` (grilla de 15 min, horario, 7 días, días
+cerrados). `book_appointment` decide el mínimo por quién llama: `service_role` (portada) = ahora + 1 h;
+dueño = ahora. `appointment_slots` también la puede llamar el dueño.
 
 ### 14.4 Estimado con citas (cambia §4)
 

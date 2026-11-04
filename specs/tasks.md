@@ -1275,11 +1275,19 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 > REQ-049…REQ-054 y ADR-033 aprobados por Henry (2026-11-03, autorizó construir sin esperar). Diseño
 > en `design.md` §14. Cada tarea va en su rama y PR. Todo nace apagado.
 
-### [ ] T-078 · Migración y pgTAP: agenda, reservar y cancelar
+### [x] T-078 · Migración y pgTAP: agenda, reservar y cancelar
 - REQ: REQ-049.1, REQ-049.2, REQ-049.3, REQ-049.4, REQ-049.5, REQ-049.6, REQ-050.2, REQ-050.3,
-  REQ-050.4, REQ-050.5, REQ-050.6, REQ-050.7, REQ-051.2, REQ-054.2, REQ-054.6
+  REQ-050.4, REQ-050.5, REQ-050.6, REQ-051.2, REQ-054.2, REQ-054.6
 - Archivos: `supabase/migrations/0045_appointments.sql`, `supabase/tests/0045_appointments.sql`
 - Terminado: pgTAP de §14.6 para `0045` en verde; con las citas apagadas nada cambia.
+- Nota (2026-11-04): pgTAP 52 nuevas (1006 en total). Desvíos anotados en `design.md` §14.3:
+  con una cita pendiente del mismo celular `book_appointment` devuelve `{token, existing: true}`
+  (como `join_queue`) en vez del error `APPOINTMENT_EXISTS`; ayudantes `appointment_lapsed`,
+  `barber_time_free`, `barber_takes_appointments` y `appointment_time_valid`; errores
+  `INVALID_NAME` y `APPOINTMENT_NOT_FOUND`. El límite de intentos (REQ-050.7) vive en la server
+  action, como el de tomar turno, y se prueba en T-082. El trigger `barbers_restrict_self_update`
+  ahora también protege `accepts_appointments` (REQ-049.6). Sin pantallas: nada cambia para el
+  cliente. Cómo probarlo desde el celular: todavía no hay nada que ver; llega con T-081/T-082.
 
 ### [ ] T-079 · Migración y pgTAP: llegada, prioridad y cierre
 - REQ: REQ-052.2, REQ-052.3, REQ-052.4, REQ-052.5, REQ-052.6, REQ-054.4, REQ-054.5
