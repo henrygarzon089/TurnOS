@@ -869,6 +869,120 @@ límite por persona, recordatorio automático de pago y beneficios en productos.
 
 ---
 
+## 5f. Hito 8 — Citas a hora fija
+
+> Estado: **APROBADA** (Henry, 2026-11-03, tras grill de 15 preguntas). Ver ADR-033.
+> El cliente reserva una hora con un barbero; la cita aparta ese hueco y, al llegar, pasa de primera
+> en la fila de ese barbero. Los clientes sin cita siguen en la misma fila.
+
+### REQ-049 · Agenda de citas — M
+**Como** dueño, **quiero** decidir si hay citas y con qué barberos, **para** que no se coman la fila.
+
+- REQ-049.1 Las citas DEBEN venir **apagadas por defecto**; MIENTRAS estén apagadas, EL SISTEMA NO
+  DEBE ofrecer "Reservar cita" ni dejar crear citas; las ya reservadas se conservan.
+- REQ-049.2 El dueño DEBE marcar qué barberos reciben citas (por defecto ninguno); un barbero
+  inactivo (REQ-016.3) no recibe citas.
+- REQ-049.3 EL SISTEMA DEBE ofrecer horas cada **15 minutos** desde la apertura del día (REQ-017.1)
+  en las que el servicio elegido termina a más tardar al cierre, con un barbero que reciba citas,
+  haga el servicio (REQ-035) y no tenga otra cita que se cruce en ese tiempo.
+- REQ-049.4 Una cita DEBE empezar **al menos 1 hora después** de ahora y a más tardar el día que
+  queda **7 días** después de hoy (Bogotá).
+- REQ-049.5 EL SISTEMA NO DEBE ofrecer horas en un día marcado cerrado en el horario ni en un día
+  con la fila cerrada a mano (REQ-012.4).
+- REQ-049.6 Solo el dueño DEBE poder encender o apagar las citas y elegir los barberos.
+
+### REQ-050 · Reservar una cita — M
+**Como** cliente, **quiero** reservar una hora desde el celular, **para** llegar y que me atiendan.
+
+- REQ-050.1 CUANDO las citas están encendidas, la portada del negocio DEBE mostrar "Reservar cita",
+  que lleva a un formulario con servicio, barbero o "El que esté libre", día, hora disponible,
+  nombre, celular y el aviso de privacidad (REQ-002).
+- REQ-050.2 CUANDO el cliente reserva, EL SISTEMA DEBE guardar la cita con la hora, la duración y el
+  precio del servicio de ese momento, crear o actualizar su ficha como al tomar turno (REQ-003) y
+  darle el enlace "Mi cita" con un token no adivinable.
+- REQ-050.3 SI el cliente eligió "El que esté libre", ENTONCES EL SISTEMA DEBE fijar un barbero que
+  cumpla REQ-049.3 a esa hora: el que tenga menos citas ese día y, si empatan, el primero en el
+  orden de barberos.
+- REQ-050.4 SI dos personas reservan la misma hora con el mismo barbero, ENTONCES solo una DEBE
+  quedar con la cita; la otra ve "Esa hora se acaba de ocupar" y las horas actualizadas.
+- REQ-050.5 Un celular DEBE tener a lo sumo **una cita pendiente** por negocio; SI ya tiene una,
+  ENTONCES EL SISTEMA DEBE mostrarle la que tiene con su enlace en vez de crear otra.
+- REQ-050.6 El dueño DEBE poder crear una cita desde "Citas" con nombre y celular, con las mismas
+  reglas salvo la hora mínima: puede agendar cualquier hora libre de hoy que no haya pasado; al
+  crearla ve un botón de WhatsApp (`wa.me`, texto editable REQ-033) para mandarle el enlace al
+  cliente.
+- REQ-050.7 Reservar desde la portada DEBE tener el mismo límite de intentos que tomar turno
+  (NFR-004: máx. 5 por celular y 30 por IP por hora).
+
+### REQ-051 · Mi cita — M
+**Como** cliente, **quiero** ver y cancelar mi cita, **para** no tener que llamar.
+
+- REQ-051.1 "Mi cita" DEBE mostrar negocio, día, hora, barbero, servicio, precio, estado y "Llega
+  a tu hora: te esperamos hasta 10 minutos".
+- REQ-051.2 MIENTRAS la cita esté pendiente, el cliente DEBE poder cancelarla en cualquier momento,
+  con confirmación; la hora queda libre de inmediato. No hay cambio de hora: cancela y reserva otra.
+- REQ-051.3 "Agregar al calendario" DEBE descargar un archivo de calendario con la hora, la
+  duración, la dirección del negocio y el enlace a "Mi cita".
+- REQ-051.4 CUANDO la cita se marca "Llegó", "Mi cita" DEBE llevar a "Mi turno" (REQ-004) del turno
+  creado.
+- REQ-051.5 SI la cita fue cancelada, perdió la hora o quedó "No vino", ENTONCES "Mi cita" DEBE
+  decirlo y ofrecer "Reservar otra".
+- REQ-051.6 "Mi cita" NO DEBE mostrar el celular; la pantalla del local (REQ-013) NO DEBE mostrar
+  citas que no han llegado.
+
+### REQ-052 · Llegada y prioridad en la fila — M
+**Como** barbero, **quiero** que la cita pase de primera cuando llega, **para** cumplirle la hora.
+
+- REQ-052.1 Las filas del barbero (sus citas) y del dueño (todas) DEBEN mostrar las citas pendientes
+  de hoy con hora, nombre, servicio, barbero y el botón "Llegó".
+- REQ-052.2 CUANDO el barbero de la cita o el dueño marca "Llegó" a más tardar 10 minutos después de
+  la hora, EL SISTEMA DEBE crear un turno para ese barbero marcado "Cita HH:MM" que queda delante de
+  los turnos sin cita de su fila y detrás de las citas llegadas con hora anterior.
+- REQ-052.3 SI pasan 10 minutos de la hora sin "Llegó", ENTONCES la cita DEBE perder la hora: esa
+  hora vuelve a estar libre y "Llegó" crea un turno sin cita al final de la fila, con ese barbero
+  como preferido.
+- REQ-052.4 "Llamar al siguiente" (REQ-007) NO DEBE llamar a un turno sin cita cuyo servicio no
+  termine antes de la próxima cita pendiente del barbero; llama al primero de su fila que quepa o a
+  una cita llegada. SI ninguno cabe, ENTONCES DEBE decir "Tu próxima cita es a las HH:MM". El dueño
+  puede llamar a cualquiera (REQ-012.2).
+- REQ-052.5 SI la cita era "El que esté libre" y su barbero está en pausa o no vino cuando se marca
+  "Llegó", ENTONCES EL SISTEMA DEBE pasarla a un barbero presente que haga el servicio, si hay.
+- REQ-052.6 CUANDO se cierra la fila del día (REQ-014), las citas pendientes que perdieron la hora
+  DEBEN quedar "No vino".
+
+### REQ-053 · Estimado con citas — M
+**Como** cliente sin cita, **quiero** un tiempo estimado que cuente las citas, **para** no esperar
+de más.
+
+- REQ-053.1 El tiempo estimado (REQ-004) DEBE tratar cada cita pendiente de hoy como un hueco
+  ocupado de su barbero: un turno sin cita no se simula con ese barbero si su servicio se cruza con
+  el hueco; se corre a después de la cita o a otro barbero.
+- REQ-053.2 Una cita que perdió la hora NO DEBE contar como hueco.
+- REQ-053.3 Un turno de cita llegada DEBE contar en la posición (REQ-004.1) de los turnos que su
+  barbero podría atender.
+
+### REQ-054 · Agenda del dueño y avisos — M
+**Como** dueño, **quiero** ver y arreglar las citas, **para** avisar a tiempo cuando algo cambia.
+
+- REQ-054.1 "Citas" en `/admin` DEBE listar las citas de hoy y de los 7 días siguientes, por día,
+  con hora, cliente, servicio, barbero y estado.
+- REQ-054.2 El dueño DEBE poder cancelar una cita pendiente y pasarla a otro barbero que reciba
+  citas, haga el servicio y tenga esa hora libre; al cancelar ve un botón de WhatsApp (`wa.me`,
+  texto editable REQ-033) para avisarle al cliente.
+- REQ-054.3 "Citas de mañana" DEBE mostrar cada cita pendiente del día siguiente con un botón de
+  WhatsApp (`wa.me`, texto editable REQ-033) para recordarla.
+- REQ-054.4 EL SISTEMA DEBE marcar con un aviso las citas pendientes de hoy cuyo barbero está en
+  pausa o no está presente, y las de días que quedaron sin horas por REQ-049.5.
+- REQ-054.5 `/admin/mensajes` DEBE tener las plantillas "Confirmar cita", "Recordar cita" y "Cita
+  cancelada", con las variables {nombre}, {negocio}, {fecha}, {hora} y {enlace}.
+- REQ-054.6 El barbero NO DEBE ver la agenda de otros días ni las citas de otros barberos.
+
+Fuera de alcance del Hito 8: cambiar la hora desde "Mi cita", varios servicios por cita, cobro o
+depósito para reservar, recordatorio automático por WhatsApp, citas repetidas y horario distinto
+por barbero.
+
+---
+
 ## 5g. Hito 9 — Tarjetas de regalo
 
 > Estado: **APROBADA** (Henry, 2026-11-03, tras grill de 12 preguntas con la respuesta recomendada).
@@ -1009,7 +1123,7 @@ WhatsApp, tarjetas impresas con diseño y recordatorio de vencimiento.
 
 Explícitamente **no** se construye en el MVP (el modelo de datos sí debe dejarlo posible):
 
-- Reservas con hora fija (citas). El modelo de turno llevará campo de hora programada opcional.
+- ~~Reservas con hora fija (citas).~~ Sale de esta lista: Hito 8, REQ-049 (ADR-033).
 - ~~Planes familiares por suscripción.~~ Sale de esta lista: Hito 7, REQ-044 (ADR-030).
 - Referidos. La ficha de cliente admitirá `referred_by`.
 - ~~WhatsApp Cloud API (envío automático).~~ Sale de esta lista: Hito 6, REQ-040 (ADR-027).
