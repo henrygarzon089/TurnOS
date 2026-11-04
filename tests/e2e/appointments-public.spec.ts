@@ -30,7 +30,7 @@ test.describe("REQ-050 y REQ-051 Reservar cita y Mi cita", () => {
       await hours.first().click();
 
       await page.getByLabel("Tu nombre").fill("Cita E2E");
-      await page.getByLabel("Celular").fill(phone());
+      await page.getByLabel("Celular", { exact: true }).fill(phone());
       const box = page.getByRole("checkbox", { name: /Acepto que/ });
       if (await box.isVisible()) await box.check();
       await page.getByRole("button", { name: "Reservar cita" }).click();
