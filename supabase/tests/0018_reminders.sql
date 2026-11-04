@@ -17,7 +17,10 @@ insert into customers (business_id, phone_e164, name, visits_count, last_visit_a
   ((select biz from ctx), '+573005610002', 'Hace Treinta', 2, now() - interval '30 days'),
   ((select biz from ctx), '+573005610003', 'Hace Diez', 6, now() - interval '10 days'),
   ((select biz from ctx), '+573005610004', 'Nunca Terminó', 0, null),
-  ((select biz from ctx), '+573005610005', 'Justo Veintiuno', 3, now() - interval '21 days 2 hours');
+  -- 00:00 de Bogotá de hace 21 días del negocio: ≥ 21×24 h, pero 21 días del negocio a cualquier
+  -- hora (con now() - 21 días 2 horas, entre 00:00 y 02:00 de Bogotá caía en el día 22).
+  ((select biz from ctx), '+573005610005', 'Justo Veintiuno', 3,
+   (business_day_bogota(now()) - 21)::timestamp at time zone 'America/Bogota');
 
 select auth.test_login((select owner_u from ctx));
 select results_eq($$ select name from inactive_customers((select biz from ctx)) $$,
