@@ -224,8 +224,12 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   barbero), `0046_appointments_queue` ("Llegó", `call_next` que salta lo que no cabe antes de la
   próxima cita con `NEXT_APPOINTMENT`, cierre → "No vino", `queue_snapshot` con `scheduledAt` y
   huecos), `0047_appointment_templates` (tres plantillas por trigger + las de negocios existentes) y
-  `0048_appointment_public_info` (portada y horas en jsonb). **No están en producción.**
-- Funciones redefinidas (ojo al fusionar con el Hito 9): `call_next`, `transition_ticket`,
+  `0048_appointment_public_info` (portada y horas en jsonb) y `0049_appointments_customer_fk` (la
+  cita no bloquea fusionar ni borrar la ficha). **No están en producción.** Como 0050–0055 (Hito 9
+  y la corrección de fusión) ya pueden estar aplicadas, `supabase db push` necesitará
+  `--include-all` para subir 0045–0049; no redefinen nada de 0050–0055, así que el orden no cambia
+  el resultado.
+- Funciones redefinidas (ya fusionado con el Hito 9 el 2026-11-04, sin cruces): `call_next`, `transition_ticket`,
   `close_expired_queues`, `queue_snapshot`, `barbers_restrict_self_update`. No se tocaron
   `create_business`, `get_ticket_by_token` ni `get_public_business`.
 - Pantallas: `/[slug]` ("Reservar cita"), `/[slug]/cita`, `/c/[token]` ("Mi cita") y
@@ -237,7 +241,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   `appointment-templates` (corren en CI). `pnpm trace --hito=8` sin huecos (34 criterios).
 - Checklist de Henry:
   - [ ] Fusionar #46 → #53 → #54 → #55 → #57 → #59 → #61 → #64 → #65 → #66 → T-087, con CI verde.
-  - [ ] `supabase db push` de 0045–0048 en producción y `vercel deploy --prod`.
+  - [ ] `supabase db push --include-all` de 0045–0049 en producción y `vercel deploy --prod`.
   - [ ] En `/filo` → Citas: encender y marcar los barberos que reciben citas.
   - [ ] Prueba real: reservar desde el celular, "Agregar al calendario", que el barbero toque
         "Llegó" y la llame; cancelar otra desde "Mi cita" y otra desde la agenda con el WhatsApp.

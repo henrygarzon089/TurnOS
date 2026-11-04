@@ -1393,8 +1393,12 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Terminado: `pnpm trace --hito=8` sin huecos; CI verde.
 - Nota (2026-11-04): parte del agente hecha. `"8"` entró al ciclo de
   `tests/unit/traceability.test.ts`; `pnpm trace --hito=8` da 0 sin prueba. Las migraciones son
-  `0045`–`0048` (T-082 agregó `0048_appointment_public_info`). Falta lo de Henry: fusionar la
+  `0045`–`0049` (T-082 agregó `0048_appointment_public_info`). Falta lo de Henry: fusionar la
   cadena, aplicar las migraciones en producción, encender citas en Filo, la prueba real y ADR-035.
+- Desvío (2026-11-04, al fusionar `main` con el Hito 9): `0049_appointments_customer_fk` corrige la
+  llave de `appointments` a `customers` de 0045, que no tenía acción y hacía fallar
+  `merge_customers` y borrar una ficha con cita. Ahora es `on delete set null (customer_id)`: la
+  cita sigue con su nombre y celular. No redefine funciones (las de 0050–0055 no se tocan).
 
 T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una tarea).
 
