@@ -1327,10 +1327,19 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   desde el celular: entra como dueño, menú "Citas", marca "Recibir citas" y un barbero, "Guardar";
   todavía no aparece nada para el cliente (llega con T-082).
 
-### [ ] T-082 · Reservar desde la portada
+### [x] T-082 · Reservar desde la portada
 - REQ: REQ-050.1, REQ-050.2, REQ-050.3, REQ-050.4, REQ-050.5, REQ-050.7
 - Archivos: `src/app/(public)/[slug]/cita/`, `src/app/(public)/[slug]/page.tsx`, acciones públicas
 - Terminado: integración (reservar, carrera, cita existente, rate limit); E2E de la reserva.
+- Nota (2026-11-04): migración `0048_appointment_public_info.sql` (pgTAP 6):
+  `public_appointment_info(slug)` (encendidas, barberos con sus servicios y días con horario) y
+  `public_appointment_slots_json`, para no redefinir `get_public_business`. Lógica en
+  `src/lib/queue/appointments.ts` (Gateway) y acciones en `src/lib/actions/public-appointments.ts`.
+  Tope de intentos con llaves propias (`cita-phone:`, `cita-ip:`). "Reservar cita" va bajo "Tomar
+  turno" en la portada, también con la fila cerrada (la cita puede ser otro día). Integración 10.
+  El E2E de la reserva va con T-083, porque termina en "Mi cita". Cómo probarlo desde el celular:
+  con las citas encendidas (T-081), abre `/filo`, toca "Reservar cita", elige servicio, día y hora,
+  y reserva.
 
 ### [ ] T-083 · Mi cita
 - REQ: REQ-051.1, REQ-051.2, REQ-051.3, REQ-051.4, REQ-051.5, REQ-051.6

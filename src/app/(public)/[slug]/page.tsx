@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LiveRefresh } from "@/components/queue/LiveRefresh";
 import { getPublicBusiness } from "@/lib/actions/public";
+import { getAppointmentInfo } from "@/lib/actions/public-appointments";
 import { formatCOP } from "@/lib/domain/money";
 import { formatMinutes } from "@/lib/domain/time";
 import { mediaUrl } from "@/lib/media/paths";
@@ -23,6 +24,9 @@ export default async function PublicBusinessPage({ params }: Props) {
   const { slug } = await params;
   const b = await getPublicBusiness(slug);
   if (!b) notFound();
+  // REQ-050.1: "Reservar cita" solo con las citas encendidas y alguien que las reciba
+  const appts = await getAppointmentInfo(slug);
+  const canBook = Boolean(appts?.enabled && appts.barbers.length > 0 && appts.openDays.length > 0);
 
   const statusLabels: Record<string, string> = {
     available: "",
@@ -32,7 +36,9 @@ export default async function PublicBusinessPage({ params }: Props) {
   };
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pb-28">
+    <main
+      className={`mx-auto flex w-full max-w-md flex-1 flex-col px-4 ${canBook ? "pb-44" : "pb-28"}`}
+    >
       <LiveRefresh businessId={b.id} />
       <header className="py-6">
         <h1 className="text-3xl font-bold">{b.name}</h1>
@@ -137,6 +143,11 @@ export default async function PublicBusinessPage({ params }: Props) {
                 ? `Abrimos: ${b.nextOpening.toLowerCase()}.`
                 : "La fila está cerrada por hoy."}
             </p>
+          )}
+          {canBook && (
+            <Link href={`/${b.slug}/cita`} className="btn-secondary mt-2">
+              Reservar cita
+            </Link>
           )}
         </div>
       </div>
