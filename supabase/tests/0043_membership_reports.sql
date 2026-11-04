@@ -48,7 +48,8 @@ select is((select body from message_templates where business_id = (select v from
            and key = 'membership_renewal'),
   'Hola {nombre}, la membresía familiar en {negocio} vence el {fecha}. Renuévala en tu próxima visita.',
   'REQ-048.4 un negocio nuevo nace con la plantilla de renovación (create_business)');
-select is((select count(*)::int from message_templates where business_id = (select v from ids where k = 'nuevo')),
+select is((select count(*)::int from message_templates where business_id = (select v from ids where k = 'nuevo')
+             and key::text not like 'appointment_%'),
   5, 'REQ-048.4 create_business conserva las otras cuatro plantillas');
 
 -- ---------------------------------------------------- vencen esta semana ----

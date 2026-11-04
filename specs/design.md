@@ -1624,8 +1624,13 @@ Definiciones (todas en Bogotá):
 - `appointments_agenda(p_business_id, p_from date, p_to date)`: solo dueño. Citas de esos días con
   estado, celular, `public_token` y `day_closed` (el día quedó sin horas por REQ-049.5) (REQ-054.1,
   054.3, 054.4).
-- `get_ticket_by_token` agrega `scheduled_at` para "Mi turno" ("Cita 10:30").
-- `queue_snapshot` / fila del dueño y del barbero agregan `scheduled_at` para la etiqueta "Cita HH:MM".
+- `queue_snapshot` agrega `scheduledAt` en cada turno en espera y `appointments` (huecos de §14.4).
+  "Mi turno" toma de ahí la hora de su cita ("Cita 10:30"); `get_ticket_by_token` no cambia
+  (corrección de T-079). Las filas del barbero y del dueño leen `tickets.scheduled_at` directo (RLS).
+- Plantillas: `appointment_templates(negocio)` y un trigger `after insert` en `businesses`, en vez de
+  redefinir `create_business` (T-079), para no pisarse con otros hitos que la cambien.
+- El turno creado al llegar toma el precio vigente del servicio (trigger de `tickets`, REQ-015.3);
+  la cita conserva el de la reserva para "Mi cita".
 
 Errores nuevos (P0004 salvo `FORBIDDEN` y los indicados): `APPOINTMENTS_DISABLED`, `INVALID_NAME`,
 `SLOT_UNAVAILABLE`, `SLOT_TAKEN`, `NOT_CANCELLABLE`, `NOT_ARRIVABLE`, `APPOINTMENT_NOT_FOUND` (P0002),
