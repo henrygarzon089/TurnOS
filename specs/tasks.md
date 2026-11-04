@@ -1254,7 +1254,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   cierre de antes del Hito 9) no sale nada. La rejilla de medios sigue con los cuatro de siempre: lo
   pagado con tarjeta va solo en el recuadro. El E2E también prueba el mensaje de `GIFT_CARD_IN_USE`.
 
-### [ ] T-097 · Validación Hito 9
+### [x] T-097 · Validación Hito 9
 - REQ: REQ-055…REQ-059
 - Archivos: `scripts/traceability.ts` (`HITOS["9"] = [[55, 59]]`), `tests/unit/traceability.test.ts`,
   `docs/estado-del-proyecto.md`
@@ -1263,6 +1263,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Terminado: `pnpm trace --hito=9` sin huecos; CI verde. `HITOS["9"]` ya está desde el PR de la
   spec; el hito 9 entra al loop de `tests/unit/traceability.test.ts` aquí, cuando todas las pruebas
   existen (como el hito 7 en T-077), para no dejar el CI en rojo mientras tanto.
+- Nota (2026-11-04): hecho lo del agente. El hito 9 entra al loop de la prueba unitaria; `pnpm trace
+  --hito=9` → 261 criterios, 0 sin prueba. Falta lo de Henry (checklist en
+  `docs/estado-del-proyecto.md`): fusionar la cadena #50…#62 y este PR, `0050`–`0053` en producción,
+  aviso nuevo en Filo, prueba en la barbería y aprobación (ADR-036).
 
 ---
 
