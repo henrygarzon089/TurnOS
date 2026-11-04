@@ -1381,10 +1381,15 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   en `/admin/citas` toca "Nueva cita", agenda a alguien para mañana, envíale el WhatsApp, y en la
   agenda prueba "Pasar" y "Cancelar".
 
-### [ ] T-086 · Plantillas de citas
+### [x] T-086 · Plantillas de citas
 - REQ: REQ-054.5
 - Archivos: `src/app/(staff)/admin/mensajes/`, textos de `src/lib/domain/appointments.ts`
 - Terminado: las tres plantillas se editan y se usan en los `wa.me`.
+- Nota: el formulario vive en `src/components/admin/SettingsForms.tsx` (`TemplatesForm`) y se
+  guarda con `saveTemplates` (`src/lib/actions/admin.ts`); la página no cambió. La vista previa usa
+  "10:30 a. m." para {hora}. Cómo probarlo desde el celular: en `/admin/mensajes` cambia "Recordar
+  cita", guarda, y en `/admin/citas` toca "Recordar" en una cita de mañana: WhatsApp abre con el
+  texto nuevo.
 
 ### [ ] T-087 · Validación Hito 8
 - REQ: REQ-049…REQ-054
