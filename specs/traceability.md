@@ -240,12 +240,12 @@
 | REQ-048.3 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | membership-reports.spec.ts, cash-closure.test.ts, membership.test.ts, 0043_membership_reports.sql | cubierto |
 | REQ-048.4 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | memberships.spec.ts, memberships.test.ts, membership.test.ts, 0002_core.sql, 0043_membership_reports.sql | cubierto |
 | REQ-048.5 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | 0043_membership_reports.sql | cubierto |
-| REQ-049.1 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (pendiente) | appointments-settings.spec.ts, appointments.test.ts, 0045_appointments.sql | prueba escrita |
-| REQ-049.2 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (pendiente) | appointments-settings.spec.ts, appointments.test.ts, 0045_appointments.sql | prueba escrita |
-| REQ-049.3 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (pendiente) | 0045_appointments.sql, 0048_appointment_public_info.sql | prueba escrita |
-| REQ-049.4 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (pendiente) | appointments.test.ts, 0045_appointments.sql, 0048_appointment_public_info.sql | prueba escrita |
-| REQ-049.5 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (pendiente) | 0045_appointments.sql, 0046_appointments_queue.sql, 0048_appointment_public_info.sql | prueba escrita |
-| REQ-049.6 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (pendiente) | appointments-settings.spec.ts, appointments.test.ts, 0045_appointments.sql | prueba escrita |
+| REQ-049.1 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (en curso) | appointments-settings.spec.ts, appointments.test.ts, 0045_appointments.sql | prueba escrita |
+| REQ-049.2 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (en curso) | appointments-settings.spec.ts, appointments.test.ts, 0045_appointments.sql | prueba escrita |
+| REQ-049.3 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (en curso) | 0045_appointments.sql, 0048_appointment_public_info.sql | prueba escrita |
+| REQ-049.4 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (en curso) | appointments.test.ts, 0045_appointments.sql, 0048_appointment_public_info.sql | prueba escrita |
+| REQ-049.5 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (en curso) | 0045_appointments.sql, 0046_appointments_queue.sql, 0048_appointment_public_info.sql | prueba escrita |
+| REQ-049.6 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (en curso) | appointments-settings.spec.ts, appointments.test.ts, 0045_appointments.sql | prueba escrita |
 | REQ-050.1 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (hecha) | appointments-public.spec.ts, appointments.test.ts, appointments.test.ts, 0048_appointment_public_info.sql | cubierto |
 | REQ-050.2 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (hecha) | appointments.test.ts, 0045_appointments.sql | cubierto |
 | REQ-050.3 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (hecha) | appointments.test.ts, 0045_appointments.sql | cubierto |
@@ -268,12 +268,12 @@
 | REQ-053.1 | Estimado con citas | T-080 (hecha), T-084 (hecha) | appointments.test.ts, appointments.test.ts, 0046_appointments_queue.sql | cubierto |
 | REQ-053.2 | Estimado con citas | T-080 (hecha), T-084 (hecha) | appointments.test.ts, appointments.test.ts, 0046_appointments_queue.sql | cubierto |
 | REQ-053.3 | Estimado con citas | T-080 (hecha), T-084 (hecha) | appointments.test.ts, 0046_appointments_queue.sql | cubierto |
-| REQ-054.1 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (pendiente) | appointments.test.ts, appointments.test.ts | prueba escrita |
-| REQ-054.2 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (pendiente) | appointments-agenda.spec.ts, appointments.test.ts, 0045_appointments.sql | prueba escrita |
-| REQ-054.3 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (pendiente) | appointments-agenda.spec.ts, appointments.test.ts, appointments.test.ts | prueba escrita |
-| REQ-054.4 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (pendiente) | 0046_appointments_queue.sql | prueba escrita |
-| REQ-054.5 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (pendiente) | appointment-templates.spec.ts, appointment-templates.test.ts, 0046_appointments_queue.sql | prueba escrita |
-| REQ-054.6 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (pendiente) | 0045_appointments.sql, 0046_appointments_queue.sql | prueba escrita |
+| REQ-054.1 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (en curso) | appointments.test.ts, appointments.test.ts | prueba escrita |
+| REQ-054.2 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (en curso) | appointments-agenda.spec.ts, appointments.test.ts, 0045_appointments.sql | prueba escrita |
+| REQ-054.3 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (en curso) | appointments-agenda.spec.ts, appointments.test.ts, appointments.test.ts | prueba escrita |
+| REQ-054.4 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (en curso) | 0046_appointments_queue.sql | prueba escrita |
+| REQ-054.5 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (en curso) | appointment-templates.spec.ts, appointment-templates.test.ts, 0046_appointments_queue.sql | prueba escrita |
+| REQ-054.6 | Agenda del dueño y avisos | T-079 (hecha), T-084 (hecha), T-085 (hecha), T-086 (hecha), T-087 (en curso) | 0045_appointments.sql, 0046_appointments_queue.sql | prueba escrita |
 | REQ-055.1 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
 | REQ-055.2 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
 | REQ-055.3 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
