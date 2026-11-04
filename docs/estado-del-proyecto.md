@@ -242,7 +242,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - Checklist de Henry:
   - [x] Fusionar #46 → #53 → #54 → #55 → #57 → #59 → #61 → #64 → #65 → #66 → #67, con CI verde.
   - [x] `supabase db push --include-all` de 0045–0049 en producción y `vercel deploy --prod`
-        (2026-11-04, desde `100ab74`, la fusión de #67; 0056 no iba en ese commit).
+        (2026-11-04, desde `100ab74`, la fusión de #67; la 0056 se aplicó después, sola).
   - [ ] En `/filo` → Citas: encender y marcar los barberos que reciben citas.
   - [ ] Prueba real: reservar desde el celular, "Agregar al calendario", que el barbero toque
         "Llegó" y la llame; cancelar otra desde "Mi cita" y otra desde la agenda con el WhatsApp.
@@ -276,7 +276,8 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   5. ~~Aprobación del hito~~ hecho (ADR-036, 2026-11-04).
 - Corrección `0056_merge_customers_gift_cards` (2026-11-04): fusionar la ficha de alguien que compró
   una tarjeta fallaba por la llave foránea `gift_cards.buyer_customer_id`; ahora las tarjetas pasan a
-  la ficha que queda. **Falta aplicarla en producción** (`supabase db push`, sin `--include-all`).
+  la ficha que queda. **En producción** desde el 2026-11-04 (`supabase db push` desde `c113896`,
+  la fusión de #69).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
