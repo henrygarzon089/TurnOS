@@ -1188,12 +1188,20 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   ya existen va en la misma `0053`: el valor del enum se agregó en `0050`. Las pantallas todavía no
   muestran las líneas nuevas (T-096).
 
-### [ ] T-093 · Pantalla "Tarjetas de regalo" del dueño
+### [x] T-093 · Pantalla "Tarjetas de regalo" del dueño
 - REQ: REQ-055.1, REQ-055.3, REQ-056.1, REQ-056.4, REQ-059.3
 - Archivos: `src/app/(staff)/admin/regalos/`, `src/lib/actions/giftCards.ts`,
   `src/lib/domain/giftCard.ts`, menú, `/admin/mensajes`
 - Terminado: unitarias de `giftCard.ts`, integración de las acciones; E2E: vender una tarjeta, ver el
   botón de WhatsApp y la lista con "Saldo por usar".
+- Nota (2026-11-04): `/admin/regalos` con "Vender tarjeta" (valor, nombre y celular de quien compra,
+  "Para" opcional, medio de pago), recuadro "Tarjeta vendida" con el código y "Enviar por WhatsApp", y
+  lista con estado, saldo, "Saldo por usar" y reenvío en las vigentes. Chip "Tarjetas de regalo" en el
+  menú; plantilla "Tarjeta de regalo" en Mensajes con la variable nueva `{valor}`. La `{fecha}` lleva
+  el año ("3 de noviembre de 2027", `giftCardDayLabel`) porque la tarjeta vence en un año. Unitarias
+  9 en `tests/unit/gift-card.test.ts` (298 en total), integración 4 en
+  `tests/integration/gift-cards.test.ts` (115), E2E `tests/e2e/gift-cards.spec.ts` (corre en CI; la
+  base local es compartida con el Hito 8). La venta de la prueba se anula al final.
 
 ### [ ] T-094 · Página pública de la tarjeta
 - REQ: REQ-056.2, REQ-056.3, REQ-058.4
