@@ -29,6 +29,9 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 
 ## Estado actual (2026-10-24)
 
+- **Hito 9 (tarjetas de regalo, REQ-055…059, ADR-034)** aprobado (ADR-036, 2026-11-04): venta,
+  página `/regalo/[token]`, pago en el cobro y reportes; migraciones 0050–0053 en producción. Falta
+  la operación en Filo (aviso nuevo, plantilla, prueba en la barbería).
 - **Hito 7 (membresía familiar, REQ-044…048, ADR-030)** aprobado (ADR-032, 2026-11-03): plan,
   familias, cuota en la caja, corte con "Usar membresía"; migraciones 0041–0044 en producción. Falta
   la operación en Filo (plan, aviso nuevo, prueba con una familia real).

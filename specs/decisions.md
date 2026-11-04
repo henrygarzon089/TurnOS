@@ -514,3 +514,19 @@
   tareas T-090…T-097. El aviso de privacidad por defecto agrega un párrafo (comprador); Filo publica
   una versión nueva. Los números saltan (REQ-049…054, §14, `0045`…`0049`, T-078…T-089 y ADR-033/035
   son del Hito 8, en paralelo). La aprobación del Hito 9 será ADR-036.
+
+## ADR-036 · Aprobación del Hito 9 (tarjetas de regalo)
+- Estado: **aceptada** (Henry, 2026-11-04)
+- Contexto: REQ-055…REQ-059 implementados en T-090…T-097 (PRs #50, #49, #52, #56, #58, #60, #62 y
+  #63, fusionados en `main` el 2026-11-04 con el CI en verde, incluidos E2E y Lighthouse), con
+  `pnpm trace --hito=9` sin huecos (261 criterios). Con la autorización de Henry, el mismo día se
+  aplicaron `0050`…`0053` y `0055` en producción con `supabase db push` y se desplegó `main`
+  (`b7de232`); `/filo` responde y `/admin/regalos` pide entrar.
+- Decisión: Henry aprueba el Hito 9 antes de la prueba en la barbería. Lo que queda es operación en
+  Filo, no código: publicar la versión nueva del aviso de privacidad con el párrafo de tarjetas de
+  regalo (REQ-059.4, por el mecanismo de REQ-002.5), revisar la plantilla "Tarjeta de regalo" y la
+  prueba en la barbería. Si esa prueba encuentra un problema, se corrige como tarea nueva.
+- Consecuencias: T-097 cerrada. Queda abierto que `merge_customers` (`0055`) no mueve
+  `gift_cards.buyer_customer_id`: fusionar una ficha que compró una tarjeta falla por la llave
+  foránea. Va como corrección aparte (`0054` está libre). ADR-031 sigue apartado para el Hito 6 y
+  ADR-033/035 son del Hito 8.
