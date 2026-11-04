@@ -255,4 +255,70 @@ describe("REQ-051 Mi cita", () => {
       });
       expect(await getAppointmentByToken(gw, "x")).toBeNull();
     }));
+
+  it("REQ-051.1 trae negocio, día, hora, barbero, servicio, precio y estado; REQ-051.6 sin celular", () =>
+    withTx(async (q) => {
+      const gw = createPgGateway(q);
+      const s = await withAppointments(q);
+      const r = (await bookAppointment(gw, input(s), null)) as { token: string };
+      const a = await getAppointmentByToken(gw, r.token);
+      expect(a).toMatchObject({
+        status: "booked",
+        lapsed: false,
+        startsAt: expect.any(String),
+        serviceName: "Corte A",
+        price: 25000,
+        barberName: "Barbero A",
+        ticketToken: null,
+        business: { name: expect.any(String), slug: "barberia-a" },
+      });
+      expect(new Date(a!.startsAt).toISOString()).toBe(at(s.tomorrow, "10:00"));
+      expect(new Date(a!.endsAt).getTime() - new Date(a!.startsAt).getTime()).toBe(
+        a!.durationMin * 60_000,
+      );
+      expect(JSON.stringify(a)).not.toMatch(/\+57|300\s?111/);
+    }));
+
+  it("REQ-051.4 al marcar 'Llegó', 'Mi cita' trae el token de 'Mi turno'", () =>
+    withTx(async (q) => {
+      const gw = createPgGateway(q);
+      const s = await withAppointments(q);
+      const r = (await bookAppointment(gw, input(s), null)) as { token: string };
+      // La cita pasa a hoy, a esta hora, para poder marcar la llegada
+      await q(
+        `update appointments set starts_at = now(), ends_at = now() + interval '30 minutes',
+                business_day = business_day_bogota(now()) where public_token = $1`,
+        [r.token],
+      );
+      const id = await q<{ id: string }>("select id from appointments where public_token = $1", [
+        r.token,
+      ]);
+      await loginAs(q, USERS.ownerA);
+      await q("select mark_appointment_arrived($1)", [id.rows[0].id]);
+      await q("select auth.test_logout()");
+      const a = await getAppointmentByToken(gw, r.token);
+      expect(a?.status).toBe("arrived");
+      const t = await q<{ public_token: string }>(
+        "select public_token from tickets where appointment_id = $1",
+        [id.rows[0].id],
+      );
+      expect(a?.ticketToken).toBe(t.rows[0].public_token);
+    }));
+
+  it("REQ-051.6 la pantalla del local no muestra citas que no han llegado", () =>
+    withTx(async (q) => {
+      const gw = createPgGateway(q);
+      const s = await withAppointments(q);
+      await bookAppointment(gw, input(s, { name: "Zoila Cita" }), null);
+      const key = await q<{ screen_key: string }>(
+        "select screen_key from businesses where id = $1",
+        [s.businessA],
+      );
+      const screen = await q<{ v: unknown }>("select get_screen_queue($1, $2) as v", [
+        "barberia-a",
+        key.rows[0].screen_key,
+      ]);
+      expect(screen.rows[0].v).not.toBeNull();
+      expect(JSON.stringify(screen.rows[0].v)).not.toContain("Zoila");
+    }));
 });

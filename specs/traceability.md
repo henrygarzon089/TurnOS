@@ -246,19 +246,19 @@
 | REQ-049.4 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (pendiente) | appointments.test.ts, 0045_appointments.sql, 0048_appointment_public_info.sql | prueba escrita |
 | REQ-049.5 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (pendiente) | 0045_appointments.sql, 0046_appointments_queue.sql, 0048_appointment_public_info.sql | prueba escrita |
 | REQ-049.6 | Agenda de citas | T-078 (hecha), T-081 (hecha), T-087 (pendiente) | appointments-settings.spec.ts, appointments.test.ts, 0045_appointments.sql | prueba escrita |
-| REQ-050.1 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (pendiente) | appointments.test.ts, appointments.test.ts, 0048_appointment_public_info.sql | prueba escrita |
+| REQ-050.1 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (pendiente) | appointments-public.spec.ts, appointments.test.ts, appointments.test.ts, 0048_appointment_public_info.sql | prueba escrita |
 | REQ-050.2 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (pendiente) | appointments.test.ts, 0045_appointments.sql | prueba escrita |
 | REQ-050.3 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (pendiente) | appointments.test.ts, 0045_appointments.sql | prueba escrita |
 | REQ-050.4 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (pendiente) | appointments.test.ts, appointments.test.ts, 0045_appointments.sql | prueba escrita |
 | REQ-050.5 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (pendiente) | appointments.test.ts, 0045_appointments.sql | prueba escrita |
 | REQ-050.6 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (pendiente) | 0045_appointments.sql | prueba escrita |
 | REQ-050.7 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (pendiente) | appointments.test.ts | prueba escrita |
-| REQ-051.1 | Mi cita | T-080 (hecha), T-083 (pendiente) | appointments.test.ts | prueba escrita |
-| REQ-051.2 | Mi cita | T-080 (hecha), T-083 (pendiente) | appointments.test.ts, 0045_appointments.sql | prueba escrita |
-| REQ-051.3 | Mi cita | T-080 (hecha), T-083 (pendiente) | appointments.test.ts | prueba escrita |
-| REQ-051.4 | Mi cita | T-080 (hecha), T-083 (pendiente) | — | sin prueba |
-| REQ-051.5 | Mi cita | T-080 (hecha), T-083 (pendiente) | appointments.test.ts, appointments.test.ts | prueba escrita |
-| REQ-051.6 | Mi cita | T-080 (hecha), T-083 (pendiente) | — | sin prueba |
+| REQ-051.1 | Mi cita | T-080 (hecha), T-083 (hecha) | appointments-public.spec.ts, appointments.test.ts, appointments.test.ts | cubierto |
+| REQ-051.2 | Mi cita | T-080 (hecha), T-083 (hecha) | appointments-public.spec.ts, appointments.test.ts, 0045_appointments.sql | cubierto |
+| REQ-051.3 | Mi cita | T-080 (hecha), T-083 (hecha) | appointments-public.spec.ts, appointments.test.ts | cubierto |
+| REQ-051.4 | Mi cita | T-080 (hecha), T-083 (hecha) | appointments.test.ts | cubierto |
+| REQ-051.5 | Mi cita | T-080 (hecha), T-083 (hecha) | appointments.test.ts, appointments.test.ts | cubierto |
+| REQ-051.6 | Mi cita | T-080 (hecha), T-083 (hecha) | appointments-public.spec.ts, appointments.test.ts | cubierto |
 | REQ-052.1 | Llegada y prioridad en la fila | T-079 (hecha), T-084 (pendiente) | 0046_appointments_queue.sql | prueba escrita |
 | REQ-052.2 | Llegada y prioridad en la fila | T-079 (hecha), T-084 (pendiente) | appointments.test.ts, 0046_appointments_queue.sql | prueba escrita |
 | REQ-052.3 | Llegada y prioridad en la fila | T-079 (hecha), T-084 (pendiente) | 0046_appointments_queue.sql | prueba escrita |
