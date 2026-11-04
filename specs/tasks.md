@@ -1292,12 +1292,19 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   ahora también protege `accepts_appointments` (REQ-049.6). Sin pantallas: nada cambia para el
   cliente. Cómo probarlo desde el celular: todavía no hay nada que ver; llega con T-081/T-082.
 
-### [ ] T-079 · Migración y pgTAP: llegada, prioridad y cierre
+### [x] T-079 · Migración y pgTAP: llegada, prioridad y cierre
 - REQ: REQ-052.2, REQ-052.3, REQ-052.4, REQ-052.5, REQ-052.6, REQ-054.4, REQ-054.5
 - Archivos: `supabase/migrations/0046_appointments_queue.sql`, `0047_appointment_templates.sql`, sus
   pgTAP
 - Terminado: pgTAP de §14.6 para `0046` y `0047`; las pruebas de la fila de hitos anteriores siguen
   en verde.
+- Nota (2026-11-04): pgTAP 39 nuevas (1045 en total); integración 111 en verde. Desvíos anotados en
+  `design.md` §14.3: "Mi turno" toma `scheduledAt` de `queue_snapshot` (no se redefine
+  `get_ticket_by_token`); las plantillas de negocios nuevos salen de un trigger `after insert` en
+  `businesses` (no se redefine `create_business`), para no pisarse con el Hito 9. El turno de la cita
+  toma el precio vigente del servicio (trigger de `tickets`, REQ-015.3), no el de la reserva.
+  `0002_core` y `0043_membership_reports` cuentan sus plantillas sin las de citas. Sin pantallas:
+  nada cambia para el cliente ni el barbero hasta encender las citas (T-081).
 
 ### [ ] T-080 · Dominio: estimado con citas, calendario y mensajes
 - REQ: REQ-053.1, REQ-053.2, REQ-053.3, REQ-051.3
