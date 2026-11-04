@@ -20,6 +20,15 @@ export type WaitingTicket = {
   preferredBarberId: string | null;
   /** REQ-035: barberos que hacen su servicio. Sin dato = todos (negocio sin restricciones). */
   capableBarberIds?: string[] | null;
+  /** REQ-052.2: hora de la cita si el turno viene de una cita llegada a tiempo. */
+  scheduledAt?: Date | string | null;
+};
+
+/** REQ-053.1: hueco ocupado por una cita pendiente de hoy (design.md §14.4). */
+export type AppointmentBlock = {
+  barberId: string;
+  startAt: Date | string;
+  endAt: Date | string;
 };
 
 export type Estimate = {
@@ -39,6 +48,8 @@ export type QueueInput = {
   now: Date;
   barbers: BarberState[];
   waiting: WaitingTicket[];
+  /** REQ-053.1: citas pendientes de hoy que no perdieron la hora. */
+  appointments?: AppointmentBlock[];
 };
 
 const toTime = (d: Date | string | null | undefined, fallback: number) =>
@@ -78,6 +89,18 @@ export function positions(waiting: WaitingTicket[]): Map<string, number> {
   return result;
 }
 
+/**
+ * REQ-053.1 (design.md §14.4): primer inicio ≥ `from` en que `durationMin` no se cruza con ningún
+ * hueco del barbero. Los huecos vienen ordenados por inicio.
+ */
+function fitStart(from: number, durationMin: number, blocks: [number, number][]): number {
+  let start = from;
+  for (const [s, e] of blocks) {
+    if (start < e && start + durationMin * 60_000 > s) start = e;
+  }
+  return start;
+}
+
 /** Simulación de asignación (design.md §4). Devuelve un estimado por turno en espera. */
 export function estimateQueue(input: QueueInput): Estimate[] {
   const now = input.now.getTime();
@@ -86,6 +109,13 @@ export function estimateQueue(input: QueueInput): Estimate[] {
   for (const b of active) {
     freeAt.set(b.id, b.status === "available" ? now : Math.max(now, toTime(b.busyUntil, now)));
   }
+  const blocks = new Map<string, [number, number][]>();
+  for (const a of input.appointments ?? []) {
+    const list = blocks.get(a.barberId) ?? [];
+    list.push([toTime(a.startAt, now), toTime(a.endAt, now)]);
+    blocks.set(a.barberId, list);
+  }
+  for (const list of blocks.values()) list.sort((x, y) => x[0] - y[0]);
   const pos = positions(input.waiting);
   const sorted = [...input.waiting].sort((a, b) => a.queueOrder - b.queueOrder);
   const out: Estimate[] = [];
@@ -109,14 +139,18 @@ export function estimateQueue(input: QueueInput): Estimate[] {
       });
       continue;
     }
-    // argmin freeAt; empate → menor id (determinista)
+    // argmin del inicio posible; empate → menor id (determinista). Una cita llegada no mira huecos.
+    const startFor = (id: string) =>
+      t.scheduledAt
+        ? freeAt.get(id)!
+        : fitStart(freeAt.get(id)!, t.durationMin, blocks.get(id) ?? []);
     let best = candidates[0];
     for (const c of candidates) {
-      const fc = freeAt.get(c.id)!;
-      const fb = freeAt.get(best.id)!;
+      const fc = startFor(c.id);
+      const fb = startFor(best.id);
       if (fc < fb || (fc === fb && c.id < best.id)) best = c;
     }
-    const startAt = freeAt.get(best.id)!;
+    const startAt = startFor(best.id);
     freeAt.set(best.id, startAt + t.durationMin * 60_000);
     out.push({ ...base, waitMin: ceil5((startAt - now) / 60_000), barberId: best.id });
   }

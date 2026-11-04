@@ -135,7 +135,7 @@ export function JoinForm({ business, now }: Props) {
   const warning = useMemo(() => {
     if (!service || !business.closesAt) return null;
     const est = estimateNewTicket(
-      { now: new Date(now), barbers: business.queue.barbers, waiting: business.queue.waiting },
+      { now: new Date(now), ...business.queue },
       service.durationMin,
       shownBarberId,
       service.barberIds ?? null,
@@ -432,7 +432,7 @@ export function JoinForm({ business, now }: Props) {
   );
 }
 
-function Chip({
+export function Chip({
   selected,
   disabled,
   onClick,

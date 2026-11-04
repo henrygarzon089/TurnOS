@@ -5,11 +5,13 @@ import { CheckoutSheet } from "@/components/cash/CheckoutSheet";
 import { NewSaleButton } from "@/components/cash/NewSaleSheet";
 import { CourtesyLine } from "@/components/queue/CourtesyLine";
 import { MemberBadge } from "@/components/queue/MemberBadge";
+import { AppointmentBadge, TodayAppointments } from "@/components/queue/TodayAppointments";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
 import {
   callNext,
   finishService,
   getMyQueue,
+  markAppointmentArrived,
   markCourtesyServed,
   markNoShow,
   markNotified,
@@ -190,6 +192,14 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
         <NewSaleButton onSaved={() => void reload()} />
       </div>
 
+      <TodayAppointments
+        title="Mis citas de hoy"
+        appointments={view.appointments}
+        showBarber={false}
+        disabled={busyAction !== null}
+        onArrived={(id) => run(`arrived-${id}`, () => markAppointmentArrived(id))}
+      />
+
       <section aria-label="Siguen">
         <h2 className="text-muted text-xs font-semibold uppercase">
           Siguen ({view.waiting.length})
@@ -291,6 +301,7 @@ function CurrentCard({
         {ticket.customerName}{" "}
         <span className="text-muted text-sm font-normal">· {ticket.serviceName}</span>
       </p>
+      <AppointmentBadge scheduledAt={ticket.scheduledAt} />
       {ticket.rewardAvailable && <RewardBadge />}
       {ticket.isMember && <MemberBadge />}
       {ticket.courtesyName && (
@@ -398,6 +409,7 @@ function WaitingRow({
           <p className="truncate font-semibold">
             {index + 1}. {ticket.customerName}
           </p>
+          <AppointmentBadge scheduledAt={ticket.scheduledAt} />
           {ticket.rewardAvailable && <RewardBadge />}
           {ticket.isMember && <MemberBadge />}
           <p className="text-muted text-sm">

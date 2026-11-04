@@ -211,6 +211,42 @@ Ninguno lo puede hacer el agente. En este orden:
 Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `supabase db push` aplicó
 0041–0044 y `vercel deploy --prod` publicó `a50342d`. Lo que sigue sin marcar es operación en Filo.
 
+### Hito 8 — citas a hora fija (construido, falta aprobación de Henry; ADR-033)
+
+- 2026-11-03: grill con Henry (todas las respuestas recomendadas). Escritos REQ-049…REQ-054 (§5f),
+  `design.md` §14, ADR-033 y tareas T-078…T-087. Va en paralelo con el Hito 9: los números saltan a
+  propósito. Spec en PR #46.
+- Construido 2026-11-03/04, una tarea por PR, apilados: #46 spec → #53 T-078 → #54 T-079 → #55
+  T-080 → #57 T-081 → #59 T-082 → #61 T-083 → #64 T-084 → #65 T-085 → #66 T-086 → T-087 (este).
+  Cada PR va sobre el anterior: **fusionar en ese orden**. El agente no puede fusionar (el modo
+  automático lo bloquea sin revisión): lo hace Henry.
+- Migraciones nuevas: `0045_appointments` (tabla, agenda, reservar, cancelar, pasar a otro
+  barbero), `0046_appointments_queue` ("Llegó", `call_next` que salta lo que no cabe antes de la
+  próxima cita con `NEXT_APPOINTMENT`, cierre → "No vino", `queue_snapshot` con `scheduledAt` y
+  huecos), `0047_appointment_templates` (tres plantillas por trigger + las de negocios existentes) y
+  `0048_appointment_public_info` (portada y horas en jsonb) y `0049_appointments_customer_fk` (la
+  cita no bloquea fusionar ni borrar la ficha). **No están en producción.** Como 0050–0055 (Hito 9
+  y la corrección de fusión) ya pueden estar aplicadas, `supabase db push` necesitará
+  `--include-all` para subir 0045–0049; no redefinen nada de 0050–0055, así que el orden no cambia
+  el resultado.
+- Funciones redefinidas (ya fusionado con el Hito 9 el 2026-11-04, sin cruces): `call_next`, `transition_ticket`,
+  `close_expired_queues`, `queue_snapshot`, `barbers_restrict_self_update`. No se tocaron
+  `create_business`, `get_ticket_by_token` ni `get_public_business`.
+- Pantallas: `/[slug]` ("Reservar cita"), `/[slug]/cita`, `/c/[token]` ("Mi cita") y
+  `/c/[token]/calendario` (.ics); `/app/fila` ("Mis citas de hoy"), `/admin/fila` ("Citas de
+  hoy"), `/admin/citas` (ajustes, nueva cita, citas de mañana, agenda) y tres plantillas en
+  `/admin/mensajes`.
+- Pruebas (Docker local, 2026-11-04): 1163 pgTAP · 334 unitarias · 142 integración (con el Hito 9 ya en `main`). E2E nuevos:
+  `appointments-settings`, `appointments-public`, `appointments-queue`, `appointments-agenda` y
+  `appointment-templates` (corren en CI). `pnpm trace --hito=8` sin huecos (34 criterios).
+- Checklist de Henry:
+  - [ ] Fusionar #46 → #53 → #54 → #55 → #57 → #59 → #61 → #64 → #65 → #66 → T-087, con CI verde.
+  - [ ] `supabase db push --include-all` de 0045–0049 en producción y `vercel deploy --prod`.
+  - [ ] En `/filo` → Citas: encender y marcar los barberos que reciben citas.
+  - [ ] Prueba real: reservar desde el celular, "Agregar al calendario", que el barbero toque
+        "Llegó" y la llame; cancelar otra desde "Mi cita" y otra desde la agenda con el WhatsApp.
+  - [ ] Aprobación del hito → ADR-035 y T-087 `[x]`.
+
 ### Hito 9 — tarjetas de regalo (**aprobado**, ADR-036, 2026-11-04)
 
 - 2026-11-03: grill de 12 preguntas con Henry, todas con la respuesta recomendada, y abogado del

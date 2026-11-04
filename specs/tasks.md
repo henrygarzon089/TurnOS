@@ -1297,59 +1297,120 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   ahora también protege `accepts_appointments` (REQ-049.6). Sin pantallas: nada cambia para el
   cliente. Cómo probarlo desde el celular: todavía no hay nada que ver; llega con T-081/T-082.
 
-### [ ] T-079 · Migración y pgTAP: llegada, prioridad y cierre
+### [x] T-079 · Migración y pgTAP: llegada, prioridad y cierre
 - REQ: REQ-052.2, REQ-052.3, REQ-052.4, REQ-052.5, REQ-052.6, REQ-054.4, REQ-054.5
 - Archivos: `supabase/migrations/0046_appointments_queue.sql`, `0047_appointment_templates.sql`, sus
   pgTAP
 - Terminado: pgTAP de §14.6 para `0046` y `0047`; las pruebas de la fila de hitos anteriores siguen
   en verde.
+- Nota (2026-11-04): pgTAP 39 nuevas (1045 en total); integración 111 en verde. Desvíos anotados en
+  `design.md` §14.3: "Mi turno" toma `scheduledAt` de `queue_snapshot` (no se redefine
+  `get_ticket_by_token`); las plantillas de negocios nuevos salen de un trigger `after insert` en
+  `businesses` (no se redefine `create_business`), para no pisarse con el Hito 9. El turno de la cita
+  toma el precio vigente del servicio (trigger de `tickets`, REQ-015.3), no el de la reserva.
+  `0002_core` y `0043_membership_reports` cuentan sus plantillas sin las de citas. Sin pantallas:
+  nada cambia para el cliente ni el barbero hasta encender las citas (T-081).
 
-### [ ] T-080 · Dominio: estimado con citas, calendario y mensajes
+### [x] T-080 · Dominio: estimado con citas, calendario y mensajes
 - REQ: REQ-053.1, REQ-053.2, REQ-053.3, REQ-051.3
 - Archivos: `src/lib/domain/queue-estimate.ts`, `src/lib/domain/appointments.ts`, sus unitarias
 - Terminado: unitarias con el ejemplo H, la cita que perdió la hora y el `.ics`.
+- Nota (2026-11-04): `estimateQueue` recibe `appointments` (huecos) y `scheduledAt` por turno;
+  `src/lib/domain/appointments.ts` con días que se ofrecen, textos, `wa.me` y `.ics` (líneas de 75
+  octetos). `renderTemplate` acepta `{hora}`. `appointments.ts` entra a la cobertura del 100 %.
+  Unitarias 304. Sin pantallas todavía: nada cambia para el cliente.
 
-### [ ] T-081 · Encender citas y elegir barberos
+### [x] T-081 · Encender citas y elegir barberos
 - REQ: REQ-049.1, REQ-049.2, REQ-049.6
 - Archivos: `src/app/(staff)/admin/citas/`, `src/lib/actions/appointments.ts`
 - Terminado: integración de `saveAppointmentSettings`; E2E: el dueño enciende las citas y marca un
   barbero.
+- Nota (2026-11-04): chip "Citas" en el menú del dueño y `/admin/citas` con "Recibir citas" y los
+  barberos activos. Regla de pantalla que la spec no fijaba: encender sin ningún barbero marcado
+  pide "Marca al menos un barbero que reciba citas." Integración 3, E2E
+  `tests/e2e/appointments-settings.spec.ts` (deja las citas apagadas al terminar). Cómo probarlo
+  desde el celular: entra como dueño, menú "Citas", marca "Recibir citas" y un barbero, "Guardar";
+  todavía no aparece nada para el cliente (llega con T-082).
 
-### [ ] T-082 · Reservar desde la portada
+### [x] T-082 · Reservar desde la portada
 - REQ: REQ-050.1, REQ-050.2, REQ-050.3, REQ-050.4, REQ-050.5, REQ-050.7
 - Archivos: `src/app/(public)/[slug]/cita/`, `src/app/(public)/[slug]/page.tsx`, acciones públicas
 - Terminado: integración (reservar, carrera, cita existente, rate limit); E2E de la reserva.
+- Nota (2026-11-04): migración `0048_appointment_public_info.sql` (pgTAP 6):
+  `public_appointment_info(slug)` (encendidas, barberos con sus servicios y días con horario) y
+  `public_appointment_slots_json`, para no redefinir `get_public_business`. Lógica en
+  `src/lib/queue/appointments.ts` (Gateway) y acciones en `src/lib/actions/public-appointments.ts`.
+  Tope de intentos con llaves propias (`cita-phone:`, `cita-ip:`). "Reservar cita" va bajo "Tomar
+  turno" en la portada, también con la fila cerrada (la cita puede ser otro día). Integración 10.
+  El E2E de la reserva va con T-083, porque termina en "Mi cita". Cómo probarlo desde el celular:
+  con las citas encendidas (T-081), abre `/filo`, toca "Reservar cita", elige servicio, día y hora,
+  y reserva.
 
-### [ ] T-083 · Mi cita
+### [x] T-083 · Mi cita
 - REQ: REQ-051.1, REQ-051.2, REQ-051.3, REQ-051.4, REQ-051.5, REQ-051.6
 - Archivos: `src/app/(public)/c/[token]/` (página y `calendario/route.ts`)
 - Terminado: integración de `get_appointment_by_token` y cancelar; E2E: ver, descargar calendario y
   cancelar.
+- Nota: `src/components/queue/MyAppointment.tsx`; si la cita ya llegó, `/c/<token>` redirige a
+  `/t/<token del turno>` (REQ-051.4). La página no se indexa (`robots: noindex`). El enlace del
+  calendario usa `NEXT_PUBLIC_APP_URL` o, si falta, el origen de la petición. El E2E
+  `appointments-public.spec.ts` cubre también la reserva de T-082. Cómo probarlo desde el celular:
+  reserva en `/filo/cita`, en "Mi cita" toca "Agregar al calendario" (abre el calendario del
+  celular) y luego "Cancelar mi cita": dice "Cita cancelada" y ofrece "Reservar otra".
 
-### [ ] T-084 · Citas en la fila del barbero y del dueño
+### [x] T-084 · Citas en la fila del barbero y del dueño
 - REQ: REQ-052.1, REQ-052.2, REQ-052.3, REQ-052.4, REQ-052.5, REQ-053.1, REQ-054.4
 - Archivos: `/app/fila`, `/admin/fila`, "Mi turno", portada y formulario (estimado con
   `appointments`)
 - Terminado: E2E: el barbero marca "Llegó" y la llama primero; "Tu próxima cita es a las…".
+- Nota: `src/components/queue/TodayAppointments.tsx` ("Mis citas de hoy" / "Citas de hoy" y la
+  etiqueta "Cita 10:30 a. m."); `markAppointmentArrived` vive en `src/lib/actions/queue.ts` porque
+  cambia la fila (llama `afterQueueChange`, REQ-040.1). `toSnapshot` ahora lee `scheduledAt` y
+  `appointments` de `queue_snapshot`, así que portada, formulario, "Mi turno" y avisos estiman con
+  los huecos. Reservar una cita para hoy no avisa por el canal de la fila: las filas la ven en la
+  siguiente relectura. Cómo probarlo desde el celular: con una cita de hoy, entra como el barbero,
+  toca "Llegó" en "Mis citas de hoy" y luego "Llamar al siguiente".
 
-### [ ] T-085 · Agenda del dueño
+### [x] T-085 · Agenda del dueño
 - REQ: REQ-050.6, REQ-054.1, REQ-054.2, REQ-054.3, REQ-054.4, REQ-054.6
 - Archivos: `src/app/(staff)/admin/citas/`
 - Terminado: E2E: nueva cita del dueño con `wa.me`, pasar a otro barbero, cancelar y "Citas de
   mañana".
+- Nota: `src/components/admin/AppointmentAgenda.tsx`; acciones `getAppointmentAgenda`,
+  `getOwnerSlots` (`appointment_slots` con mínimo = ahora), `ownerBookAppointment`,
+  `cancelAppointment` y `reassignAppointment` en `src/lib/actions/appointments.ts`; agrupar por día
+  y "Citas de mañana" en `src/lib/domain/appointments.ts` (`groupAgendaByDay`, `tomorrowReminders`,
+  `appointmentVars`). Con las citas apagadas la agenda sigue visible si quedan citas (REQ-049.6),
+  sin "Nueva cita". "Pasar" ofrece los barberos que reciben citas y hacen el servicio; si la hora
+  no está libre, el SQL responde "Esa hora se acaba de ocupar". Cómo probarlo desde el celular:
+  en `/admin/citas` toca "Nueva cita", agenda a alguien para mañana, envíale el WhatsApp, y en la
+  agenda prueba "Pasar" y "Cancelar".
 
-### [ ] T-086 · Plantillas de citas
+### [x] T-086 · Plantillas de citas
 - REQ: REQ-054.5
 - Archivos: `src/app/(staff)/admin/mensajes/`, textos de `src/lib/domain/appointments.ts`
 - Terminado: las tres plantillas se editan y se usan en los `wa.me`.
+- Nota: el formulario vive en `src/components/admin/SettingsForms.tsx` (`TemplatesForm`) y se
+  guarda con `saveTemplates` (`src/lib/actions/admin.ts`); la página no cambió. La vista previa usa
+  "10:30 a. m." para {hora}. Cómo probarlo desde el celular: en `/admin/mensajes` cambia "Recordar
+  cita", guarda, y en `/admin/citas` toca "Recordar" en una cita de mañana: WhatsApp abre con el
+  texto nuevo.
 
-### [ ] T-087 · Validación Hito 8
+### [~] T-087 · Validación Hito 8
 - REQ: REQ-049…REQ-054
 - Archivos: `scripts/traceability.ts` (`HITOS["8"] = [[49, 54]]`, ya puesto con la spec),
   `tests/unit/traceability.test.ts`, `docs/estado-del-proyecto.md`
 - Depende de Henry: migraciones `0045`–`0047` en producción, encender citas en Filo y prueba con una
   cita real. Aprobación del hito: ADR-035.
 - Terminado: `pnpm trace --hito=8` sin huecos; CI verde.
+- Nota (2026-11-04): parte del agente hecha. `"8"` entró al ciclo de
+  `tests/unit/traceability.test.ts`; `pnpm trace --hito=8` da 0 sin prueba. Las migraciones son
+  `0045`–`0049` (T-082 agregó `0048_appointment_public_info`). Falta lo de Henry: fusionar la
+  cadena, aplicar las migraciones en producción, encender citas en Filo, la prueba real y ADR-035.
+- Desvío (2026-11-04, al fusionar `main` con el Hito 9): `0049_appointments_customer_fk` corrige la
+  llave de `appointments` a `customers` de 0045, que no tenía acción y hacía fallar
+  `merge_customers` y borrar una ficha con cita. Ahora es `on delete set null (customer_id)`: la
+  cita sigue con su nombre y celular. No redefine funciones (las de 0050–0055 no se tocan).
 
 T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una tarea).
 

@@ -36,7 +36,7 @@ select is(
 );
 select is(
   (select count(*)::int from message_templates t join businesses b on b.id = t.business_id
-    where b.slug = 'barberia-prueba'),
+    where b.slug = 'barberia-prueba' and t.key::text not like 'appointment_%'),
   6, 'REQ-033.1 create_business crea las 6 plantillas por defecto (con cumpleaños, REQ-037.4, membresía por vencer, REQ-048.4, y tarjeta de regalo, REQ-056.1)'
 );
 select is(

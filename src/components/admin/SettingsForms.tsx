@@ -18,7 +18,12 @@ export type TemplateKey =
   | "share_queue"
   | "birthday"
   | "membership_renewal"
-  | "gift_card";
+  | "gift_card"
+  | "appointment_confirm"
+  | "appointment_reminder"
+  | "appointment_cancelled";
+
+const APPOINTMENT_VARS = "{nombre} {negocio} {fecha} {hora} {enlace}";
 
 const TEMPLATE_META: Record<TemplateKey, { title: string; help: string; vars?: string }> = {
   notify_2_turns: {
@@ -48,6 +53,22 @@ const TEMPLATE_META: Record<TemplateKey, { title: string; help: string; vars?: s
     help: "Para enviarle la tarjeta a quien la compró, desde Tarjetas de regalo.",
     vars: "{nombre} {negocio} {valor} {enlace} {fecha}",
   },
+  // REQ-054.5: los botones de WhatsApp de "Citas"
+  appointment_confirm: {
+    title: "Confirmar cita",
+    help: "Al crear una cita desde “Citas”, para mandarle al cliente su enlace.",
+    vars: APPOINTMENT_VARS,
+  },
+  appointment_reminder: {
+    title: "Recordar cita",
+    help: "Desde “Citas de mañana”, el día antes de la cita.",
+    vars: APPOINTMENT_VARS,
+  },
+  appointment_cancelled: {
+    title: "Cita cancelada",
+    help: "Cuando el negocio cancela una cita, para avisarle al cliente.",
+    vars: APPOINTMENT_VARS,
+  },
 };
 
 const SAMPLE = {
@@ -56,6 +77,7 @@ const SAMPLE = {
   tiempo: "≈ 25 min",
   enlace: "https://turnos.app/t/abc123",
   fecha: "8 de noviembre",
+  hora: "10:30 a. m.",
   valor: "$ 50.000",
 };
 
@@ -84,7 +106,7 @@ export function TemplatesForm({
             rows={3}
             maxLength={1000}
             required
-            value={values[key]}
+            value={values[key] ?? ""}
             onChange={(e) => setValues({ ...values, [key]: e.target.value })}
             className="input min-h-24 py-2"
           />
