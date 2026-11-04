@@ -62,6 +62,7 @@ const QUEUE_CHANGES: Record<string, () => Promise<{ ok: boolean }>> = {
   reassignTicket: () => queueActions.reassignTicket(TICKET, null),
   moveTicket: () => queueActions.moveTicket(TICKET, null),
   addManualTicket: () => queueActions.addManualTicket({ name: "Ana", serviceId: "s" }),
+  markAppointmentArrived: () => queueActions.markAppointmentArrived("appointment-1"),
 };
 
 /** No mueven a nadie en la fila. `setQueueOverride` solo cancela, como `close_expired_queues`. */
@@ -105,6 +106,27 @@ describe("REQ-040.1 / REQ-040.5 toda acción de la fila llama afterQueueChange",
       expect(m.afterQueueChange).not.toHaveBeenCalled();
     },
   );
+
+  it("REQ-052.4 si nadie cabe antes de la cita, 'Llamar al siguiente' dice a qué hora es", async () => {
+    m.rpc.mockResolvedValue({
+      data: null,
+      error: { code: "P0006", message: "NEXT_APPOINTMENT", details: "15:30" },
+    });
+    expect(await queueActions.callNext()).toEqual({
+      ok: false,
+      error: "Tu próxima cita es a las 3:30 p. m.",
+      code: "P0006",
+    });
+  });
+
+  it("REQ-052.2 'Llegó' tarde o repetido sale en español", async () => {
+    m.rpc.mockResolvedValue({ data: null, error: { code: "P0004", message: "NOT_ARRIVABLE" } });
+    expect(await queueActions.markAppointmentArrived("appointment-1")).toEqual({
+      ok: false,
+      error: "Esa cita ya no está pendiente hoy.",
+      code: "P0004",
+    });
+  });
 
   it("REQ-040.2 el turno manual se registra antes de revisar la fila", async () => {
     await queueActions.addManualTicket({ name: "Ana", serviceId: "s" });

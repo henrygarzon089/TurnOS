@@ -1284,11 +1284,18 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   reserva en `/filo/cita`, en "Mi cita" toca "Agregar al calendario" (abre el calendario del
   celular) y luego "Cancelar mi cita": dice "Cita cancelada" y ofrece "Reservar otra".
 
-### [ ] T-084 · Citas en la fila del barbero y del dueño
+### [x] T-084 · Citas en la fila del barbero y del dueño
 - REQ: REQ-052.1, REQ-052.2, REQ-052.3, REQ-052.4, REQ-052.5, REQ-053.1, REQ-054.4
 - Archivos: `/app/fila`, `/admin/fila`, "Mi turno", portada y formulario (estimado con
   `appointments`)
 - Terminado: E2E: el barbero marca "Llegó" y la llama primero; "Tu próxima cita es a las…".
+- Nota: `src/components/queue/TodayAppointments.tsx` ("Mis citas de hoy" / "Citas de hoy" y la
+  etiqueta "Cita 10:30 a. m."); `markAppointmentArrived` vive en `src/lib/actions/queue.ts` porque
+  cambia la fila (llama `afterQueueChange`, REQ-040.1). `toSnapshot` ahora lee `scheduledAt` y
+  `appointments` de `queue_snapshot`, así que portada, formulario, "Mi turno" y avisos estiman con
+  los huecos. Reservar una cita para hoy no avisa por el canal de la fila: las filas la ven en la
+  siguiente relectura. Cómo probarlo desde el celular: con una cita de hoy, entra como el barbero,
+  toca "Llegó" en "Mis citas de hoy" y luego "Llamar al siguiente".
 
 ### [ ] T-085 · Agenda del dueño
 - REQ: REQ-050.6, REQ-054.1, REQ-054.2, REQ-054.3, REQ-054.4, REQ-054.6
