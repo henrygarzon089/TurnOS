@@ -1758,7 +1758,9 @@ incluido (REQ-055.5): vendida el 2026-11-03 vence el 2027-11-03; vendida el 29 d
 **Fusionar fichas** (REQ-018.5): `gift_cards.buyer_customer_id` no deja borrar la ficha de quien
 compró. Hoy `merge_customers` ya falla con `SALE_IMMUTABLE` para cualquier ficha con ventas (la FK
 `sales.customer_id … on delete set null` intenta cambiar la venta y `sales_guard` lo rechaza), así que
-no se redefine en `0051`; el arreglo de ese bug debe mover también las tarjetas (T-090).
+no se redefine en `0051`; el arreglo de ese bug debe mover también las tarjetas (T-090). Hecho en
+`0056_merge_customers_gift_cards.sql` (2026-11-04): `merge_customers` pasa las tarjetas que compró la
+ficha fusionada a la que queda (saldo, código y token no cambian).
 
 **Código** (REQ-055.4): 8 caracteres del alfabeto `ABCDEFGHJKMNPQRSTUVWXYZ23456789` (31 símbolos,
 sin `0 O 1 I L`), al azar con `gen_random_bytes`; si choca con otro del negocio, se genera otro. Se
