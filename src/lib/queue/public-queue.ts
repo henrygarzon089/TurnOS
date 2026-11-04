@@ -12,6 +12,7 @@ import { normalizePhoneCO } from "@/lib/domain/phone";
 import {
   estimateNewTicket,
   estimateQueue,
+  type AppointmentBlock,
   type BarberState,
   type Estimate,
   type WaitingTicket,
@@ -22,6 +23,8 @@ import {
 export type QueueSnapshot = {
   barbers: (BarberState & { name: string })[];
   waiting: (WaitingTicket & { displayNumber: number })[];
+  /** REQ-053.1: huecos de las citas pendientes de hoy (sin datos personales). */
+  appointments: AppointmentBlock[];
 };
 
 export type PublicBusiness = {
@@ -74,6 +77,8 @@ export type MyTicket = {
   assignedBarberId: string | null;
   assignedBarberName: string | null;
   status: TicketStatus;
+  /** REQ-052.2: hora de la cita si el turno viene de una cita llegada a tiempo (en espera). */
+  scheduledAt: string | null;
   createdAt: string;
   calledAt: string | null;
   cancelReason: "customer" | "business" | "closing" | "barber_removed" | null;
@@ -136,7 +141,7 @@ export const RATE_LIMITS = {
 // ----------------------------------------------------------------- lógica ----
 
 export function toSnapshot(raw: unknown): QueueSnapshot {
-  const r = (raw ?? {}) as { barbers?: unknown[]; waiting?: unknown[] };
+  const r = (raw ?? {}) as { barbers?: unknown[]; waiting?: unknown[]; appointments?: unknown[] };
   return {
     barbers: ((r.barbers ?? []) as QueueSnapshot["barbers"]).map((b) => ({
       id: b.id,
@@ -150,7 +155,13 @@ export function toSnapshot(raw: unknown): QueueSnapshot {
       durationMin: Number(t.durationMin),
       preferredBarberId: t.preferredBarberId ?? null,
       capableBarberIds: t.capableBarberIds ?? null,
+      scheduledAt: t.scheduledAt ?? null,
       displayNumber: Number(t.displayNumber),
+    })),
+    appointments: ((r.appointments ?? []) as AppointmentBlock[]).map((a) => ({
+      barberId: a.barberId,
+      startAt: a.startAt,
+      endAt: a.endAt,
     })),
   };
 }
@@ -168,12 +179,7 @@ export async function getPublicBusiness(
   const services = (raw.services ?? []) as PublicBusiness["services"];
   const first = services[0];
   const est = first
-    ? estimateNewTicket(
-        { now, barbers: queue.barbers, waiting: queue.waiting },
-        first.durationMin,
-        null,
-        first.barberIds ?? null,
-      )
+    ? estimateNewTicket({ now, ...queue }, first.durationMin, null, first.barberIds ?? null)
     : null;
   return {
     id: String(raw.id),
@@ -371,10 +377,7 @@ export async function getTicketByToken(
   const status = raw.status as TicketStatus;
   let estimate: Estimate | null = null;
   if (status === "waiting") {
-    estimate =
-      estimateQueue({ now, barbers: queue.barbers, waiting: queue.waiting }).find(
-        (e) => e.id === raw.id,
-      ) ?? null;
+    estimate = estimateQueue({ now, ...queue }).find((e) => e.id === raw.id) ?? null;
   }
   const biz = raw.business as MyTicket["business"];
   return {
@@ -389,6 +392,7 @@ export async function getTicketByToken(
     assignedBarberId: (raw.assignedBarberId as string | null) ?? null,
     assignedBarberName: (raw.assignedBarberName as string | null) ?? null,
     status,
+    scheduledAt: String(queue.waiting.find((t) => t.id === raw.id)?.scheduledAt ?? "") || null,
     createdAt: String(raw.createdAt),
     calledAt: (raw.calledAt as string | null) ?? null,
     cancelReason: (raw.cancelReason as MyTicket["cancelReason"]) ?? null,

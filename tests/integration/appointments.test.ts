@@ -8,6 +8,7 @@ import {
   getAppointmentSlots,
   type BookInput,
 } from "@/lib/queue/appointments";
+import { getPublicBusiness, getTicketByToken } from "@/lib/queue/public-queue";
 import { loginAs, pool, withTx, type Q } from "./db";
 import { seedTwoBusinesses, USERS, type TwoBusinesses } from "./fixtures";
 import { createPgGateway } from "./pg-gateway";
@@ -320,5 +321,72 @@ describe("REQ-051 Mi cita", () => {
       ]);
       expect(screen.rows[0].v).not.toBeNull();
       expect(JSON.stringify(screen.rows[0].v)).not.toContain("Zoila");
+    }));
+});
+
+// ------------------------------------------------------- T-084: la fila ----
+
+/** Reserva para mañana y la pasa a hoy, `fromMin` minutos después de ahora (sin redondear). */
+async function bookToday(
+  q: Q,
+  s: TwoBusinesses & { tomorrow: string },
+  fromMin: number,
+): Promise<{ id: string; token: string }> {
+  const r = (await bookAppointment(createPgGateway(q), input(s), null)) as { token: string };
+  const row = await q<{ id: string }>(
+    `update appointments
+        set starts_at = now() + make_interval(mins => $2::int),
+            ends_at = now() + make_interval(mins => $2::int + service_duration_min),
+            business_day = business_day_bogota(now())
+      where public_token = $1 returning id`,
+    [r.token, fromMin],
+  );
+  return { id: row.rows[0].id, token: r.token };
+}
+
+describe("REQ-053 estimado con citas en la portada y Mi turno", () => {
+  it("REQ-053.1 la portada cuenta la cita de hoy como hueco del barbero", () =>
+    withTx(async (q) => {
+      const gw = createPgGateway(q);
+      const s = await withAppointments(q);
+      await q("update barbers set status = 'available' where business_id = $1", [s.businessA]);
+      const before = await getPublicBusiness(gw, "barberia-a");
+      expect(before?.estimatedWaitMin).toBe(0);
+      await bookToday(q, s, 10);
+      const after = await getPublicBusiness(gw, "barberia-a");
+      expect(after?.queue.appointments).toHaveLength(1);
+      // no cabe antes de la cita (a 10 min): espera a que termine
+      expect(after?.estimatedWaitMin).toBeGreaterThan(10);
+    }));
+
+  it("REQ-053.2 una cita que perdió la hora no cuenta como hueco", () =>
+    withTx(async (q) => {
+      const gw = createPgGateway(q);
+      const s = await withAppointments(q);
+      await q("update barbers set status = 'available' where business_id = $1", [s.businessA]);
+      await bookToday(q, s, -15);
+      const b = await getPublicBusiness(gw, "barberia-a");
+      expect(b?.queue.appointments).toHaveLength(0);
+      expect(b?.estimatedWaitMin).toBe(0);
+    }));
+
+  it("REQ-052.2 'Mi turno' de una cita llegada a tiempo trae su hora", () =>
+    withTx(async (q) => {
+      const gw = createPgGateway(q);
+      const s = await withAppointments(q);
+      await q("update barbers set status = 'available' where business_id = $1", [s.businessA]);
+      const a = await bookToday(q, s, 5);
+      await loginAs(q, USERS.ownerA);
+      await q("select mark_appointment_arrived($1)", [a.id]);
+      await q("select auth.test_logout()");
+      const t = await q<{ public_token: string; scheduled_at: Date }>(
+        "select public_token, scheduled_at from tickets where appointment_id = $1",
+        [a.id],
+      );
+      const ticket = await getTicketByToken(gw, t.rows[0].public_token);
+      expect(ticket?.scheduledAt && new Date(ticket.scheduledAt).getTime()).toBe(
+        t.rows[0].scheduled_at.getTime(),
+      );
+      expect(ticket?.estimate?.position).toBe(1);
     }));
 });

@@ -5,6 +5,7 @@ import { AdminNav } from "@/components/admin/AdminNav";
 import { CheckoutSheet } from "@/components/cash/CheckoutSheet";
 import { CourtesyLine } from "@/components/queue/CourtesyLine";
 import { MemberBadge } from "@/components/queue/MemberBadge";
+import { AppointmentBadge, TodayAppointments } from "@/components/queue/TodayAppointments";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
 import { setBarberPresent } from "@/lib/actions/admin";
 import {
@@ -13,6 +14,7 @@ import {
   cancelTicket,
   finishService,
   getBusinessQueue,
+  markAppointmentArrived,
   markCourtesyServed,
   markNoShow,
   moveTicket,
@@ -128,6 +130,16 @@ export function OwnerQueue({ initial }: { initial: OwnerQueueView }) {
         </div>
       </section>
 
+      <div className="mt-4">
+        <TodayAppointments
+          title="Citas de hoy"
+          appointments={view.appointments}
+          showBarber
+          disabled={busy}
+          onArrived={(id) => run(() => markAppointmentArrived(id))}
+        />
+      </div>
+
       <section className="mt-4" aria-label="Turnos activos">
         {view.active.length === 0 ? (
           <p className="text-muted">No hay turnos activos.</p>
@@ -150,6 +162,7 @@ export function OwnerQueue({ initial }: { initial: OwnerQueueView }) {
                       <p className="truncate font-semibold">
                         {t.displayNumber}. {t.customerName}
                       </p>
+                      <AppointmentBadge scheduledAt={t.scheduledAt} />
                       {t.isMember && <MemberBadge />}
                       <p className="text-muted text-sm">
                         {t.serviceName} ·{" "}

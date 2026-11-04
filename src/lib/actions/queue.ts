@@ -2,6 +2,7 @@
 
 import { getStaffSession } from "@/lib/auth/session";
 import { createAdminGateway } from "@/lib/db/supabase-gateway";
+import { appointmentErrorMessage } from "@/lib/domain/appointments";
 import { capableByService, positions } from "@/lib/domain/queue-estimate";
 import { afterQueueChange } from "@/lib/notifications/after-queue-change";
 import { registerNewTicket } from "@/lib/queue/public-queue";
@@ -38,6 +39,22 @@ export type QueueTicket = {
   /** REQ-038.5: bebida de cortesía del turno. */
   courtesyName: string | null;
   courtesyServed: boolean;
+  /** REQ-052.2: hora de la cita si el turno viene de una cita llegada a tiempo. */
+  scheduledAt: string | null;
+};
+
+/** REQ-052.1, REQ-054.4: cita pendiente de hoy (appointments_today). */
+export type TodayAppointment = {
+  id: string;
+  startsAt: string;
+  customerName: string;
+  serviceName: string;
+  barberId: string;
+  barberName: string;
+  /** Pasaron los 10 minutos: "Llegó" la manda al final de la fila (REQ-052.3). */
+  late: boolean;
+  /** Su barbero está en pausa o no vino (REQ-054.4). */
+  barberUnavailable: boolean;
 };
 
 export type BarberQueueView = {
@@ -50,6 +67,8 @@ export type BarberQueueView = {
   /** REQ-023.6 turnos que atendió y siguen con cobro pendiente. */
   pendingPayments: QueueTicket[];
   template: string;
+  /** REQ-052.1: sus citas pendientes de hoy. */
+  appointments: TodayAppointment[];
   now: string;
 };
 
@@ -76,10 +95,11 @@ type TicketRow = {
   customer_id: string | null;
   courtesy_product_id: string | null;
   courtesy_served_at: string | null;
+  scheduled_at: string | null;
 };
 
 const TICKET_COLS =
-  "id, display_number, customer_name, customer_phone_e164, service_name, service_duration_min, preferred_barber_id, assigned_barber_id, service_id, status, created_at, called_at, started_at, notified_at, payment_status, public_token, queue_order, customer_id, courtesy_product_id, courtesy_served_at";
+  "id, display_number, customer_name, customer_phone_e164, service_name, service_duration_min, preferred_barber_id, assigned_barber_id, service_id, status, created_at, called_at, started_at, notified_at, payment_status, public_token, queue_order, customer_id, courtesy_product_id, courtesy_served_at, scheduled_at";
 
 function toTicket(
   r: TicketRow,
@@ -110,7 +130,17 @@ function toTicket(
     isMember: false,
     courtesyName: (r.courtesy_product_id && courtesyNames.get(r.courtesy_product_id)) || null,
     courtesyServed: r.courtesy_served_at !== null,
+    scheduledAt: r.scheduled_at ?? null,
   };
+}
+
+/** REQ-052.1: appointments_today ya filtra las del barbero cuando no es el dueño. */
+async function fetchTodayAppointments(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  businessId: string,
+): Promise<TodayAppointment[]> {
+  const { data } = await supabase.rpc("appointments_today", { p_business_id: businessId });
+  return (data as TodayAppointment[] | null) ?? [];
 }
 
 /** REQ-048.2: clientes de estos turnos que son miembros con periodo vigente (0043). */
@@ -166,48 +196,54 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
   if (!session?.barberId) return null;
   const supabase = await createSupabaseServerClient();
 
-  const [barberRes, bizRes, listRes, currentRes, allWaitingRes, tplRes, pendingRes, capRes] =
-    await Promise.all([
-      supabase
-        .from("barbers")
-        .select("id, display_name, status")
-        .eq("id", session.barberId)
-        .single(),
-      supabase.from("businesses").select("grace_minutes").eq("id", session.business.id).single(),
-      supabase.rpc("barber_queue_tickets", { p_barber_id: session.barberId }),
-      supabase
-        .from("tickets")
-        .select(TICKET_COLS)
-        .eq("assigned_barber_id", session.barberId)
-        .in("status", ["called", "in_service"])
-        .order("called_at", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      supabase
-        .from("tickets")
-        .select("id, queue_order, service_duration_min, preferred_barber_id, service_id")
-        .eq("business_id", session.business.id)
-        .eq("status", "waiting")
-        .order("queue_order"),
-      supabase
-        .from("message_templates")
-        .select("body")
-        .eq("business_id", session.business.id)
-        .eq("key", "notify_2_turns")
-        .maybeSingle(),
-      supabase
-        .from("tickets")
-        .select(TICKET_COLS)
-        .eq("assigned_barber_id", session.barberId)
-        .eq("status", "done")
-        .eq("payment_status", "pending")
-        .order("finished_at", { ascending: false })
-        .limit(10),
-      supabase
-        .from("barber_services")
-        .select("barber_id, service_id")
-        .eq("business_id", session.business.id),
-    ]);
+  const [
+    barberRes,
+    bizRes,
+    listRes,
+    currentRes,
+    allWaitingRes,
+    tplRes,
+    pendingRes,
+    capRes,
+    appointments,
+  ] = await Promise.all([
+    supabase.from("barbers").select("id, display_name, status").eq("id", session.barberId).single(),
+    supabase.from("businesses").select("grace_minutes").eq("id", session.business.id).single(),
+    supabase.rpc("barber_queue_tickets", { p_barber_id: session.barberId }),
+    supabase
+      .from("tickets")
+      .select(TICKET_COLS)
+      .eq("assigned_barber_id", session.barberId)
+      .in("status", ["called", "in_service"])
+      .order("called_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from("tickets")
+      .select("id, queue_order, service_duration_min, preferred_barber_id, service_id")
+      .eq("business_id", session.business.id)
+      .eq("status", "waiting")
+      .order("queue_order"),
+    supabase
+      .from("message_templates")
+      .select("body")
+      .eq("business_id", session.business.id)
+      .eq("key", "notify_2_turns")
+      .maybeSingle(),
+    supabase
+      .from("tickets")
+      .select(TICKET_COLS)
+      .eq("assigned_barber_id", session.barberId)
+      .eq("status", "done")
+      .eq("payment_status", "pending")
+      .order("finished_at", { ascending: false })
+      .limit(10),
+    supabase
+      .from("barber_services")
+      .select("barber_id, service_id")
+      .eq("business_id", session.business.id),
+    fetchTodayAppointments(supabase, session.business.id),
+  ]);
 
   if (barberRes.error || !barberRes.data) return null;
 
@@ -277,6 +313,7 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
     mineWaiting: list.filter((r) => r.preferred_barber_id === session.barberId).length,
     pendingPayments: ((pendingRes.data ?? []) as TicketRow[]).map((r) => toTicket(r, 0)),
     template: tplRes.data?.body ?? "",
+    appointments,
     now: new Date().toISOString(),
   };
 }
@@ -287,6 +324,9 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
 export async function callNext(): Promise<ActionResult> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.rpc("call_next");
+  // REQ-052.4: nadie cabe antes de su próxima cita
+  if (error?.message?.includes("NEXT_APPOINTMENT"))
+    return { ok: false, error: appointmentErrorMessage(error), code: error.code };
   if (error) return mapError(error);
   afterQueueChange(data.business_id);
   return { ok: true };
@@ -378,6 +418,8 @@ export type OwnerQueueView = {
   /** barberIds: quienes hacen el servicio (REQ-035.11). */
   services: { id: string; name: string; durationMin: number; barberIds: string[] }[];
   pendingPayments: QueueTicket[];
+  /** REQ-052.1, REQ-054.4: todas las citas pendientes de hoy. */
+  appointments: TodayAppointment[];
   now: string;
 };
 
@@ -388,7 +430,7 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
   const supabase = await createSupabaseServerClient();
   const biz = session.business.id;
 
-  const [bizRes, barbersRes, ticketsRes, servicesRes, openRes, pendingRes, capRes] =
+  const [bizRes, barbersRes, ticketsRes, servicesRes, openRes, pendingRes, capRes, appointments] =
     await Promise.all([
       supabase
         .from("businesses")
@@ -422,6 +464,7 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
         .order("finished_at", { ascending: false })
         .limit(20),
       supabase.from("barber_services").select("barber_id, service_id").eq("business_id", biz),
+      fetchTodayAppointments(supabase, biz),
     ]);
 
   const rows = (ticketsRes.data ?? []) as TicketRow[];
@@ -466,8 +509,22 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
       barberIds: capable.get(s.id) ?? [],
     })),
     pendingPayments: ((pendingRes.data ?? []) as TicketRow[]).map((r) => toTicket(r, 0)),
+    appointments,
     now: new Date().toISOString(),
   };
+}
+
+/** REQ-052.2, 052.3, 052.5: el barbero de la cita o el dueño marca "Llegó". */
+export async function markAppointmentArrived(appointmentId: string): Promise<ActionResult> {
+  const session = await getStaffSession();
+  if (!session) return { ok: false, error: "Sesión vencida. Vuelve a entrar." };
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("mark_appointment_arrived", {
+    p_id: appointmentId,
+  });
+  if (error) return { ok: false, error: appointmentErrorMessage(error), code: error.code };
+  afterQueueChange(session.business.id);
+  return { ok: true };
 }
 
 async function ownerRpc(fn: string, args: Record<string, unknown>): Promise<ActionResult> {

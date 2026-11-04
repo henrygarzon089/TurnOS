@@ -11,6 +11,7 @@ import {
   optOutWhatsapp,
   setTicketCourtesy,
 } from "@/lib/actions/public";
+import { appointmentTag } from "@/lib/domain/appointments";
 import { membershipTicketLine } from "@/lib/domain/membership";
 import { formatMinutes } from "@/lib/domain/time";
 import { useQueueSubscription } from "@/lib/realtime/use-queue-subscription";
@@ -83,6 +84,11 @@ export function MyTicket({
           {ticket.business.name} · Turno {ticket.displayNumber}
         </p>
         <h1 className="text-2xl font-bold">Hola, {ticket.customerName.split(" ")[0]}</h1>
+        {ticket.scheduledAt && ticket.status === "waiting" && (
+          <p className="bg-accent text-accent-ink mt-2 inline-block rounded-full px-3 py-1 text-sm font-semibold">
+            {appointmentTag(ticket.scheduledAt)}
+          </p>
+        )}
         {alreadyHad && ticket.status === "waiting" && (
           <p
             role="status"
