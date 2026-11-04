@@ -284,18 +284,35 @@ function NewAppointment({ view, appUrl }: { view: AgendaView; appUrl: string }) 
   const chosen = loaded?.some((s) => s.startsAt === startsAt) ? startsAt : null;
 
   if (services.length === 0) return null;
+  // REQ-050.6: el aviso y el wa.me de confirmación quedan a la vista con el formulario cerrado
+  const notice = done && (
+    <div role="status" className="mt-4 rounded-xl bg-green-50 p-3">
+      <p className="text-ok text-sm font-medium">
+        {done.existing ? "Ese celular ya tenía una cita: es esa." : "Cita creada."}
+      </p>
+      {done.link && !done.existing && (
+        <a href={done.link} target="_blank" rel="noopener" className="btn-primary mt-2">
+          Enviar por WhatsApp
+        </a>
+      )}
+    </div>
+  );
+
   if (!open) {
     return (
-      <button
-        type="button"
-        className="btn-primary mt-4"
-        onClick={() => {
-          setDone(null);
-          setOpen(true);
-        }}
-      >
-        Nueva cita
-      </button>
+      <>
+        {notice}
+        <button
+          type="button"
+          className="btn-primary mt-4"
+          onClick={() => {
+            setDone(null);
+            setOpen(true);
+          }}
+        >
+          Nueva cita
+        </button>
+      </>
     );
   }
 
@@ -334,18 +351,6 @@ function NewAppointment({ view, appUrl }: { view: AgendaView; appUrl: string }) 
 
   return (
     <section className="mt-4" aria-labelledby="new-title">
-      {done && (
-        <div role="status" className="mb-3 rounded-xl bg-green-50 p-3">
-          <p className="text-ok text-sm font-medium">
-            {done.existing ? "Ese celular ya tenía una cita: es esa." : "Cita creada."}
-          </p>
-          {done.link && !done.existing && (
-            <a href={done.link} target="_blank" rel="noopener" className="btn-primary mt-2">
-              Enviar por WhatsApp
-            </a>
-          )}
-        </div>
-      )}
       <h2 id="new-title" className="text-lg font-semibold">
         Nueva cita
       </h2>
