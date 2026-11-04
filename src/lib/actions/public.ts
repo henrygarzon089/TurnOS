@@ -7,6 +7,7 @@ import { createAdminGateway } from "@/lib/db/supabase-gateway";
 import { afterQueueChange } from "@/lib/notifications/after-queue-change";
 import { whatsappChannelReady } from "@/lib/notifications/cloud-api";
 import * as queue from "@/lib/queue/public-queue";
+import * as giftCards from "@/lib/gift-cards/public-gift-card";
 import { barberEmailFromPhone } from "@/lib/auth/session";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -156,6 +157,11 @@ export async function joinQueue(input: queue.JoinInput): Promise<queue.JoinResul
 }
 
 /** REQ-004 */
+/** REQ-056.2 página pública de la tarjeta de regalo */
+export async function getGiftCardByToken(token: string) {
+  return giftCards.getGiftCardByToken(createAdminGateway(), token);
+}
+
 export async function getTicketByToken(token: string) {
   const ticket = await queue.getTicketByToken(createAdminGateway(), token);
   if (!ticket) return null;

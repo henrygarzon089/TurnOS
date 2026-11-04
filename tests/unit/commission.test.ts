@@ -162,4 +162,21 @@ describe("REQ-047.4 comisión con membresía (design.md §13.4)", () => {
     expect(membershipDiscount(25000, "discount", 0)).toBe(0);
     expect(() => membershipDiscount(25000, "discount", 101)).toThrow();
   });
+
+  it("REQ-057.5 ejemplo I: pagar con tarjeta de regalo no cambia la comisión (no depende de los pagos)", () => {
+    // Corte $ 25.000 con Juan 60 %, pagado $ 20.000 con la tarjeta y $ 5.000 en efectivo (design.md §15.4).
+    // computeSale no recibe los pagos: el medio de pago no entra en la fórmula.
+    expect(
+      computeSale({
+        services: [{ unitPrice: 25000, qty: 1, discount: 0, isReward: false }],
+        products: [],
+        commissionPct: 60,
+      }),
+    ).toMatchObject({
+      total: 25000,
+      commissionBase: 25000,
+      commissionAmount: 15000,
+      businessAmount: 10000,
+    });
+  });
 });
