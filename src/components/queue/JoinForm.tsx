@@ -432,7 +432,7 @@ export function JoinForm({ business, now }: Props) {
   );
 }
 
-function Chip({
+export function Chip({
   selected,
   disabled,
   onClick,
