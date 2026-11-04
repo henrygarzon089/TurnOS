@@ -240,3 +240,29 @@
 | REQ-048.3 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | membership-reports.spec.ts, cash-closure.test.ts, membership.test.ts, 0043_membership_reports.sql | cubierto |
 | REQ-048.4 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | memberships.spec.ts, memberships.test.ts, membership.test.ts, 0002_core.sql, 0043_membership_reports.sql | cubierto |
 | REQ-048.5 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | 0043_membership_reports.sql | cubierto |
+| REQ-055.1 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
+| REQ-055.2 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
+| REQ-055.3 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
+| REQ-055.4 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
+| REQ-055.5 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
+| REQ-055.6 | Vender una tarjeta de regalo | T-090 (pendiente), T-093 (pendiente), T-097 (pendiente) | — | sin prueba |
+| REQ-056.1 | Entregar la tarjeta | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-094 (pendiente) | — | sin prueba |
+| REQ-056.2 | Entregar la tarjeta | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-094 (pendiente) | — | sin prueba |
+| REQ-056.3 | Entregar la tarjeta | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-094 (pendiente) | — | sin prueba |
+| REQ-056.4 | Entregar la tarjeta | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-094 (pendiente) | — | sin prueba |
+| REQ-057.1 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
+| REQ-057.2 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
+| REQ-057.3 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
+| REQ-057.4 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
+| REQ-057.5 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
+| REQ-057.6 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
+| REQ-057.7 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
+| REQ-057.8 | Pagar con la tarjeta en el cobro | T-091 (pendiente), T-095 (pendiente) | — | sin prueba |
+| REQ-058.1 | Anular y vencer | T-091 (pendiente), T-094 (pendiente), T-096 (pendiente) | — | sin prueba |
+| REQ-058.2 | Anular y vencer | T-091 (pendiente), T-094 (pendiente), T-096 (pendiente) | — | sin prueba |
+| REQ-058.3 | Anular y vencer | T-091 (pendiente), T-094 (pendiente), T-096 (pendiente) | — | sin prueba |
+| REQ-058.4 | Anular y vencer | T-091 (pendiente), T-094 (pendiente), T-096 (pendiente) | — | sin prueba |
+| REQ-059.1 | Lo que ve el dueño | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-096 (pendiente), T-097 (pendiente) | — | sin prueba |
+| REQ-059.2 | Lo que ve el dueño | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-096 (pendiente), T-097 (pendiente) | — | sin prueba |
+| REQ-059.3 | Lo que ve el dueño | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-096 (pendiente), T-097 (pendiente) | — | sin prueba |
+| REQ-059.4 | Lo que ve el dueño | T-090 (pendiente), T-092 (pendiente), T-093 (pendiente), T-096 (pendiente), T-097 (pendiente) | — | sin prueba |

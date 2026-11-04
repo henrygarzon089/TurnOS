@@ -21,6 +21,7 @@
 11. Hito 5 — Experiencia del cliente
 12. Hito 6 — Aviso automático por WhatsApp
 13. Hito 7 — Membresía familiar
+15. Hito 9 — Tarjetas de regalo (§14 es del Hito 8)
 
 ---
 
@@ -1511,3 +1512,158 @@ comisión 0, sin barbero. El cierre: "Cuotas de membresía: $ 80.000".
 - Integración: acciones de membresía contra Postgres local.
 - E2E (Pixel 7 + iPhone 13): el dueño activa el plan, crea una familia y cobra la cuota; el barbero
   cobra un corte de membresía; "Mi turno" muestra los cortes que quedan.
+
+---
+
+## 15. Hito 9 — Tarjetas de regalo (REQ-055…REQ-059, ADR-034)
+
+> §14 es del Hito 8 (citas), que se diseña en paralelo. Migraciones `0050_gift_card_enums.sql`
+> (valores nuevos de enum, que no se pueden usar en la misma transacción que los agrega, como
+> `0043`/`0044`), `0051_gift_cards.sql` (datos, venta, consulta y lista), `0052_gift_card_checkout.sql`
+> (pago en `register_sale`, cuota y anulación) y `0053_gift_card_reports.sql` (caja, semana, aviso de
+> privacidad y plantilla), cada una con su pgTAP y permisos explícitos (ADR-019). `0054` queda libre.
+> Sin vender ninguna tarjeta nada cambia en la caja.
+
+### 15.1 Datos
+
+| Tabla | Cambio | REQ |
+|---|---|---|
+| enum `payment_method` | agrega `'gift_card'` ("Tarjeta de regalo") | 057.1 |
+| enum `sale_item_kind` | agrega `'gift_card'` (la venta de la tarjeta) | 055.2 |
+| enum `message_template_key` | agrega `'gift_card'`: "Hola {nombre}, aquí está tu tarjeta de regalo de {negocio} por {valor}: {enlace} Vence el {fecha}." | 056.1 |
+| `gift_cards` (nueva) | `id, business_id, code text, token text unique default gen_public_token(16), sale_id uuid unique not null, buyer_customer_id uuid not null, recipient_name text null check (1..40), amount int check (amount between 10000 and 500000 and amount % 1000 = 0), sold_on date, expires_on date, status enum gift_card_status ('active','voided'), created_at, created_by`; `unique (business_id, code)`; `check (code ~ '^[A-HJKMNP-Z2-9]{8}$')`; `check (expires_on = (sold_on + interval '1 year')::date)`; FK compuestas con `business_id` | 055.3–055.6 |
+| `sales` | `gift_card_total int not null default 0 check (>= 0)`. `sales_total_ck`: `total = services_total + products_total + membership_total + gift_card_total` | 055.2 |
+| `sale_payments` | `gift_card_id uuid null` FK a `gift_cards`; `check ((method = 'gift_card') = (gift_card_id is not null))`; índice por `gift_card_id` | 057.1 |
+
+**Saldo** de una tarjeta = `amount − Σ sale_payments.amount` de sus pagos en ventas `active`. No se
+guarda un contador: anular una venta devuelve el saldo solo (REQ-058.2), como los cortes de la
+membresía (§13.1). **Estado** que se muestra, en este orden: `voided` → "Anulada"; `expires_on <
+hoy` → "Vencida"; saldo 0 → "Agotada"; si no, "Vigente". Se puede usar hasta el `expires_on`
+incluido (REQ-055.5): vendida el 2026-11-03 vence el 2027-11-03; vendida el 29 de febrero vence el
+28 de febrero (lo que da `interval '1 year'` en Postgres).
+
+**Código** (REQ-055.4): 8 caracteres del alfabeto `ABCDEFGHJKMNPQRSTUVWXYZ23456789` (31 símbolos,
+sin `0 O 1 I L`), al azar con `gen_random_bytes`; si choca con otro del negocio, se genera otro. Se
+muestra como `K7QM-4XPA`; al escribirlo se pasa a mayúsculas y se quitan espacios y guiones
+(`normalizeGiftCardCode` en `src/lib/domain/giftCard.ts`, y lo mismo en SQL). El **token** del
+enlace es otro, de 16 bytes, como el de "Mi turno" (P1): saber el código no da el enlace.
+
+### 15.2 RLS
+
+| Tabla | Dueño | Barbero |
+|---|---|---|
+| `gift_cards` | select; cambios solo con funciones | sin acceso directo: lo que necesita sale de `gift_card_lookup` |
+| `sale_payments.gift_card_id` | como hoy (`sale_payments`) | como hoy |
+
+`anon` no tiene acceso; la página pública lee con `service_role` y `get_gift_card_by_token` (ADR-009).
+
+### 15.3 Funciones SQL
+
+- `sell_gift_card(p_business_id, p_amount, p_buyer_phone, p_buyer_name, p_recipient_name,
+  p_payments jsonb)` → jsonb `{saleId, giftCardId, code, token, expiresOn}`. Solo dueño (`FORBIDDEN`).
+  Valor fuera de rango o no en miles → `INVALID_AMOUNT`; celular inválido → `INVALID_PHONE`; pagos
+  que no suman el valor → `PAYMENTS_MISMATCH`; un pago con `'gift_card'` → `INVALID_PAYMENT`
+  (REQ-057.7). Busca o crea la ficha del comprador como `create_membership` (sin permiso de WhatsApp
+  ni fecha de aviso). Crea la venta sin barbero ni turno, a nombre del comprador, con una línea
+  `kind = 'gift_card'` "Tarjeta de regalo" por el valor (`ref_id` = la tarjeta),
+  `gift_card_total = amount`, comisión 0, y la tarjeta con `sold_on = business_day` de la venta. El
+  día cerrado lo rechaza `sales_guard` (`CASH_DAY_CLOSED`).
+- `gift_card_lookup(p_business_id, p_code)` → jsonb `{giftCardId, code, recipientName, balance,
+  expiresOn, status}` o null si no existe. Personal del negocio (dueño o barbero; `FORBIDDEN` si no).
+  No devuelve datos del comprador. La usa el panel de cobro al escribir el código (REQ-057.1).
+- `register_sale` (redefinida): un pago puede ser `{"method": "gift_card", "amount": n, "code":
+  "K7QM4XPA"}`. Con la tarjeta bloqueada (`for update`, REQ-057.8) y el saldo recalculado: no existe
+  en el negocio → `GIFT_CARD_NOT_FOUND`; anulada → `GIFT_CARD_VOIDED`; vencida (`expires_on <
+  business_day`) → `GIFT_CARD_EXPIRED`; `amount` mayor que el saldo (o saldo 0) →
+  `GIFT_CARD_INSUFFICIENT`; dos pagos con tarjeta → `ONE_GIFT_CARD_PER_SALE` (todos P0004). El pago
+  se guarda con `gift_card_id`. La suma de pagos sigue siendo igual al total (`PAYMENTS_MISMATCH`). La
+  comisión no cambia (REQ-057.5): se calcula con las líneas, no con los pagos.
+- `register_membership_fee` (redefinida): un pago `'gift_card'` → `INVALID_PAYMENT` (REQ-057.7).
+- `void_sale` (redefinida): venta con línea `'gift_card'` → solo si la tarjeta no tiene pagos en
+  ventas `active` (si no, `GIFT_CARD_IN_USE`), y la tarjeta pasa a `voided` (REQ-058.1). Venta pagada
+  con tarjeta → el saldo vuelve solo por la definición de saldo (REQ-058.2). Las demás reglas de
+  REQ-026 (solo del día, motivo, quién) no cambian.
+- `gift_cards_list(p_business_id)` → filas `id, code, recipient_name, buyer_name, buyer_phone,
+  amount, balance, sold_on, expires_on, status, token` (el estado que se muestra, §15.1), las más
+  nuevas primero. Solo dueño. El total "Saldo por usar" = Σ saldo de las vigentes (lo suma la
+  pantalla) (REQ-059.3).
+- `get_gift_card_by_token(p_token)` → jsonb `{businessName, slug, recipientName, code, amount,
+  balance, expiresOn, status}` o null. Solo `service_role`. Sin comprador ni ventas (REQ-056.3).
+- `cash_day_summary` / `close_cash_day` / `weekly_summary`: `byMethod.giftCard`, `giftCardsSold`
+  (Σ `gift_card_total`), `giftCardsRedeemed` (Σ pagos `'gift_card'`) y `moneyIn` = `total −
+  giftCardsRedeemed` (REQ-059.1, REQ-059.2). `cashExpected` sigue siendo solo efectivo. En el detalle
+  del día el medio se llama "Tarjeta de regalo". `close_cash_day` guarda la foto de
+  `cash_day_summary`, como en T-076.
+- `default_privacy_text` agrega el párrafo de la tarjeta (REQ-059.4); `create_business` crea la
+  plantilla `'gift_card'`, y `0053` se la agrega a los negocios que ya existen.
+
+### 15.4 Caja y comisión (ejemplos)
+
+La tarjeta no cambia la fórmula de §5.1/§13.4: es un medio de pago más. Venderla es una venta aparte,
+como la cuota de la membresía:
+
+```
+gift_card_total = Σ line_total de líneas kind = 'gift_card'      (sin comisión, sin barbero)
+total           = services_total + products_total + membership_total + gift_card_total
+moneyIn (día)   = Σ total − Σ pagos 'gift_card'                  (plata que entró de verdad)
+```
+
+**Ejemplo H — vender.** Tarjeta de $ 50.000, pagada por Nequi. `gift_card_total = 50.000`,
+`total = 50.000`, comisión 0. Saldo de la tarjeta: 50.000.
+
+**Ejemplo I — usar en parte.** Otro día: corte $ 25.000 con Juan (60 %), pagado $ 20.000 con la
+tarjeta y $ 5.000 en efectivo. `services_total = 25.000`, `total = 25.000`, `commission_base =
+25.000`, `commission_amount = 15.000`. Saldo: 50.000 − 20.000 = 30.000. Ese día: "Pagado con
+tarjeta de regalo $ 20.000", "Entró en plata $ 5.000", efectivo esperado $ 5.000.
+
+**Ejemplo J — mismo día.** Se vende la tarjeta de H (Nequi 50.000) y se usa enseguida para un corte
+de $ 25.000 con Juan, todo con la tarjeta. Cierre: total vendido 75.000; tarjetas vendidas 50.000;
+pagado con tarjeta 25.000; entró en plata 50.000 (Nequi); efectivo esperado 0; comisión de Juan
+15.000. Comprobación a mano: los 50.000 que entraron pagan los 15.000 de Juan y quedan 25.000 de
+saldo por usar.
+
+**Ejemplo K — con membresía.** Miembro sin cortes, plan con 20 %: corte $ 25.000 con descuento
+5.000 → `services_total = 20.000`, pagado todo con la tarjeta. Comisión sobre la lista (§13.4):
+15.000. La tarjeta paga lo que queda después del beneficio (REQ-057.6).
+
+**Ejemplo L — anular.** Se anula la venta de I: la tarjeta vuelve a 50.000 (REQ-058.2). La venta de
+H solo se anula si la tarjeta no tiene pagos activos; si I sigue activa → `GIFT_CARD_IN_USE`.
+
+### 15.5 Server actions y pantallas
+
+- `/admin/regalos` (nueva, dueño), chip "Tarjetas de regalo" en el menú: formulario "Vender tarjeta"
+  (valor, nombre y celular de quien compra, "Para" opcional, medio de pago); al vender, tarjeta con el
+  código y el botón "Enviar por WhatsApp" (plantilla `'gift_card'` al celular del comprador, con el
+  enlace `/regalo/<token>`); lista de §15.3 con "Saldo por usar" arriba y el mismo botón en las
+  vigentes (REQ-056.4). Acciones en `src/lib/actions/giftCards.ts`; mapeos puros en
+  `src/lib/domain/giftCard.ts`.
+- `/regalo/[token]` (nueva, pública, sin cuenta): negocio, "Para", código grande, saldo, "Vence el
+  <día>" o "Vencida"/"Agotada"/"Anulada", y las condiciones (REQ-056.2). Token desconocido → 404.
+  Se agrega a las rutas públicas de `src/proxy.ts` si hace falta.
+- Panel de cobro (REQ-023): el selector de medio de pago agrega "Tarjeta de regalo"; al elegirlo
+  sale el campo "Código", que llama `gift_card_lookup` y muestra "Saldo $ X · vence el <día>" o el
+  error; el monto se llena con el menor entre el saldo y lo que falta por pagar, y el resto va con
+  otro medio (pago mixto, REQ-023.5).
+- Caja de hoy, cierre (también el texto por WhatsApp) y Semana: recuadro "Tarjetas de regalo" con
+  "Vendidas" y "Pagado con tarjeta", y la línea "Entró en plata", solo si hubo alguna de las dos.
+- Anular: el mensaje de `GIFT_CARD_IN_USE` es "Esta tarjeta ya se usó: primero anula las ventas que
+  la usaron."
+- `/admin/mensajes`: plantilla "Tarjeta de regalo" editable (REQ-033), variables `{nombre}`,
+  `{negocio}`, `{valor}`, `{enlace}`, `{fecha}`.
+
+### 15.6 Pruebas
+
+- pgTAP `0051`: venta (solo dueño, comisión 0, ficha creada, día cerrado), rango y miles del valor,
+  `INVALID_PAYMENT`, código con el alfabeto y único, token distinto del código, vencimiento a un año
+  (también 29 de febrero), `gift_card_lookup` sin datos del comprador, lista con estados, RLS (el
+  barbero no ve `gift_cards`) y permisos (`anon` nada, `get_gift_card_by_token` solo `service_role`).
+- pgTAP `0052`: pago parcial y total (ejemplo I), mixto, cada rechazo, una tarjeta por venta, con
+  membresía y con premio (ejemplo K), cuota con tarjeta rechazada, dos cobros a la vez (el segundo
+  ve el saldo del primero), anular devuelve el saldo y `GIFT_CARD_IN_USE` (ejemplo L), vencida.
+- pgTAP `0053`: cierre y semana con el ejemplo J (`moneyIn`, efectivo esperado), aviso por defecto y
+  plantilla en negocios nuevos y existentes.
+- Unitarias: `giftCard.ts` (normalizar y formatear el código, estado, texto de WhatsApp, saldo por
+  usar); `commission.ts` sin cambios (ejemplo I lo confirma).
+- Integración: acciones de tarjetas contra Postgres local.
+- E2E (Pixel 7 + iPhone 13): el dueño vende una tarjeta y abre su página; el barbero cobra un corte
+  con parte en tarjeta y parte en efectivo; la Caja de hoy muestra las líneas nuevas.

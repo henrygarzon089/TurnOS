@@ -211,6 +211,14 @@ Ninguno lo puede hacer el agente. En este orden:
 Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `supabase db push` aplicó
 0041–0044 y `vercel deploy --prod` publicó `a50342d`. Lo que sigue sin marcar es operación en Filo.
 
+### Hito 9 — tarjetas de regalo (en construcción, ADR-034)
+
+- 2026-11-03: grill de 12 preguntas con Henry, todas con la respuesta recomendada, y abogado del
+  diablo breve (anotado en ADR-034). Escritos REQ-055…REQ-059 (26 criterios, §5g), `design.md` §15,
+  ADR-034 (propuesta) y tareas T-090…T-097. Va en paralelo con el Hito 8 (citas): los números saltan
+  a propósito. Henry aprobó la spec el mismo día (PR #45) y autorizó seguir sin él. Migraciones previstas `0050`…`0053`.
+- `pnpm trace`: 261 criterios; los 26 del Hito 9 sin prueba hasta construirlo.
+
 ### Hito 4 — servicios por barbero (2026-10-28)
 
 - Origen: Filo (`/filo`, creado en producción el 2026-10-28 con `supabase/data/filo.sql`) tiene
