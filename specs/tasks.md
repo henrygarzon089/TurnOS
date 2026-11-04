@@ -1140,7 +1140,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ## Hito 9 — Tarjetas de regalo (ADR-034)
 
-> REQ-055…REQ-059 y ADR-034 en propuesta (2026-11-03). Diseño en `design.md` §15. El salto de
+> REQ-055…REQ-059 y ADR-034 aprobados por Henry (2026-11-03, PR #45). Diseño en `design.md` §15. El salto de
 > números es intencional: T-078…T-089, REQ-049…054 y `0045`…`0049` son del Hito 8 (citas), que va en
 > paralelo. T-098 y T-099 quedan libres. No depende del Hito 8.
 

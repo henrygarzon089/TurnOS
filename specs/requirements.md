@@ -871,7 +871,7 @@ límite por persona, recordatorio automático de pago y beneficios en productos.
 
 ## 5g. Hito 9 — Tarjetas de regalo
 
-> Estado: **PROPUESTA** (grill con Henry, 2026-11-03, 12 preguntas con la respuesta recomendada).
+> Estado: **APROBADA** (Henry, 2026-11-03, tras grill de 12 preguntas con la respuesta recomendada).
 > Ver ADR-034. El salto de REQ-049…REQ-054 es intencional: son del Hito 8 (citas), en paralelo.
 > Alguien compra en la barbería una tarjeta por un valor en pesos para regalarla; quien la recibe la
 > usa como medio de pago, en una o varias visitas, durante un año.

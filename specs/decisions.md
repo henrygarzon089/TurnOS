@@ -443,7 +443,7 @@
 - Consecuencias: T-077 `[x]`. ADR-031 sigue apartado para la aprobación del Hito 6 (T-069).
 
 ## ADR-034 · Tarjetas de regalo (Hito 9)
-- Estado: **propuesta** (grill con Henry, 2026-11-03; espera su sí a la spec)
+- Estado: **aceptada** (Henry, 2026-11-03: tras el grill dio autorización para seguir sin él; PR #45)
 - Contexto: Hito 9 de `docs/propuesta-mejoras-clientes.md`. Toca caja y comisiones: la venta de la
   tarjeta entra plata hoy, pero el servicio se presta otro día, y la comisión del barbero es sobre el
   servicio (PA-18, ADR-030). La Circular Única de la SIC (numeral 2.18.3.2, Circular Externa 006 de
