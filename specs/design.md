@@ -21,6 +21,7 @@
 11. Hito 5 — Experiencia del cliente
 12. Hito 6 — Aviso automático por WhatsApp
 13. Hito 7 — Membresía familiar
+14. Hito 8 — Citas a hora fija
 15. Hito 9 — Tarjetas de regalo (§14 es del Hito 8)
 
 ---
@@ -257,7 +258,7 @@ Unique (business_id, version). REQ-002.5.
 | cancel_reason | enum('customer','business','closing','barber_removed') null | |
 | notified_at, notified_by | timestamptz null, uuid null | REQ-009.3 |
 | payment_status | enum('n/a','pending','paid','unpaid') default 'n/a' | REQ-023.6; `pending` al pasar a done |
-| scheduled_at | timestamptz null | reservado (reservas con hora) |
+| scheduled_at | timestamptz null | hora de la cita si el turno viene de una cita llegada a tiempo (§14, ADR-033) |
 | source | enum('qr','link','manual') | |
 
 Índices: `(business_id, business_day, status)`, `(business_id, status, queue_order)`,
@@ -1017,6 +1018,12 @@ turnos/
 | REQ-041 | 12.1 `customers.whatsapp_*`, 12.2 `join_queue`, 12.6 |
 | REQ-042 | 12.2, 12.5, 12.6 |
 | REQ-043 | 12.1, 12.2, 12.3, 12.5, 12.6 |
+| REQ-049 | 14.1 `businesses.appointments_enabled`, `barbers.accepts_appointments`, 14.3 `appointment_slots` |
+| REQ-050 | 14.1 `appointments`, 14.3 `book_appointment`, 14.5 |
+| REQ-051 | 14.3 `get_appointment_by_token`, `cancel_appointment`, 14.5 `/c/[token]` |
+| REQ-052 | 14.3 `mark_appointment_arrived`, `call_next`, `close_expired_queues`, 14.5 |
+| REQ-053 | 14.4 |
+| REQ-054 | 14.1 plantillas, 14.3 `appointments_agenda`, `reassign_appointment`, 14.5 `/admin/citas` |
 | NFR-001…013 | 1, 2.4, 6.4, 6.6, 8 |
 
 ---
@@ -1512,6 +1519,199 @@ comisión 0, sin barbero. El cierre: "Cuotas de membresía: $ 80.000".
 - Integración: acciones de membresía contra Postgres local.
 - E2E (Pixel 7 + iPhone 13): el dueño activa el plan, crea una familia y cobra la cuota; el barbero
   cobra un corte de membresía; "Mi turno" muestra los cortes que quedan.
+
+---
+
+## 14. Hito 8 — Citas a hora fija (REQ-049…REQ-054, ADR-033)
+
+Migraciones `0045_appointments.sql` (datos, agenda, reservar y cancelar), `0046_appointments_queue.sql`
+(llegada, prioridad, "Llamar al siguiente", cierre y vistas de la fila) y `0047_appointment_templates.sql`
+(plantillas para los negocios que ya existen: un valor nuevo de enum no se usa en la misma
+transacción que lo agrega, como en `0034` y `0044`), cada una con su pgTAP y permisos explícitos
+(ADR-019). Todo nace apagado: sin encender las citas nada cambia en la fila.
+
+Idea central: la **cita** vive en su propia tabla mientras no llega. Al marcar "Llegó" se vuelve un
+**turno normal** (§3) con `preferred_barber_id` = su barbero y un `queue_order` que lo pone delante
+de los sin cita de ese barbero. Desde ahí, caja, fidelidad, membresía, avisos de WhatsApp y
+"Mi turno" funcionan sin cambios.
+
+### 14.1 Datos
+
+| Tabla | Cambio | REQ |
+|---|---|---|
+| `businesses` | `appointments_enabled bool not null default false` | 049.1 |
+| `barbers` | `accepts_appointments bool not null default false` | 049.2 |
+| `appointments` (nueva) | `id, business_id, customer_id → customers, customer_name, customer_phone_e164, service_id, service_name, service_duration_min, service_price, barber_id → barbers (not null), any_barber bool` (eligió "El que esté libre"), `starts_at timestamptz, ends_at timestamptz` (= starts_at + duración), `business_day date` (día Bogotá de `starts_at`), `status appointment_status`, `public_token text unique` (22 chars base64url, como `tickets`), `ticket_id uuid null unique → tickets`, `source enum('public','owner')`, `cancel_reason enum('customer','business') null`, `created_by uuid null, created_at, arrived_at, cancelled_at`. FK compuestas con `business_id`. Índices `(business_id, business_day, status)`, `(barber_id, starts_at)` y único parcial `(business_id, customer_phone_e164) where status = 'booked'` | 050.2, 050.5 |
+| enum `appointment_status` (nuevo) | `'booked'` (pendiente), `'arrived'`, `'cancelled'`, `'no_show'` | 051, 052 |
+| `tickets` | `appointment_id uuid null unique → appointments`; `scheduled_at` = `starts_at` solo si llegó a tiempo (REQ-052.2); null si perdió la hora (REQ-052.3) | 052.2, 052.3 |
+| enum `message_template_key` | agrega `'appointment_confirm'` ("Hola {nombre}, tu cita en {negocio} es el {fecha} a las {hora}. Aquí la ves o la cancelas: {enlace}"), `'appointment_reminder'` ("Hola {nombre}, te recordamos tu cita mañana {fecha} a las {hora} en {negocio}. Si no puedes venir, cancélala aquí: {enlace}") y `'appointment_cancelled'` ("Hola {nombre}, tuvimos que cancelar tu cita del {fecha} a las {hora} en {negocio}. Reserva otra aquí: {enlace}"). Negocios nuevos en `create_business`; los existentes en `0047` | 054.5 |
+
+Definiciones (todas en Bogotá):
+
+- **Tolerancia** = 10 minutos (constante; ADR-033).
+- Cita **pendiente** = `status = 'booked'`. **Perdió la hora** = pendiente y `now() > starts_at + 10 min`.
+- **Hueco ocupado** del barbero b = `[starts_at, ends_at)` de sus citas `booked` que no perdieron la
+  hora, y de sus citas `arrived` a tiempo cuyo turno aún no termina (`ticket.status in ('waiting',
+  'called','in_service')`).
+- Una cita pendiente por celular (REQ-050.5): el índice único parcial. Antes de insertar,
+  `book_appointment` pasa a `no_show` las citas del mismo celular que perdieron la hora, para que no
+  estorben.
+- **Hora libre** de b para el servicio s a la hora h: b activo, `accepts_appointments`, hace s
+  (`barber_does_service`), y `[h, h + duración)` no se cruza con ningún hueco ocupado de b.
+
+### 14.2 RLS
+
+| Tabla | Dueño | Barbero |
+|---|---|---|
+| `appointments` | select de su negocio; cambios solo con funciones | select de las suyas de hoy (`barber_id = my_barber_id(business_id) and business_day = business_day_bogota(now())`), REQ-054.6 |
+
+`anon` sin acceso (ADR-009): la reserva y "Mi cita" usan server actions con `service_role`.
+`businesses.appointments_enabled` y `barbers.accepts_appointments` los cambia el dueño con
+`save_appointment_settings` (las políticas de update existentes no las exponen al barbero).
+
+### 14.3 Funciones SQL
+
+- `save_appointment_settings(p_business_id, p_enabled, p_barber_ids uuid[])`: solo dueño (REQ-049.6).
+  Reemplaza el conjunto de barberos que reciben citas (solo activos). Apagar no toca citas
+  existentes (REQ-049.1).
+- `appointment_slots(p_business_id, p_service_id, p_barber_id uuid null, p_day date, p_min_start
+  timestamptz)` → `table(starts_at timestamptz, barber_ids uuid[])`: horas cada 15 min desde
+  `opens_at` del día hasta `closes_at − duración`; filtra `p_day` entre hoy y hoy + 7 (REQ-049.4),
+  días `is_closed` o con `queue_override = 'closed'` para ese día (REQ-049.5), `starts_at ≥
+  p_min_start` y barberos con hora libre (REQ-049.3). Con `p_barber_id` null devuelve las horas en
+  que hay al menos uno. La llaman `public_appointment_slots(p_slug, …)` (service_role, `p_min_start
+  = now() + 1 h`) y el dueño (`p_min_start = now()`, REQ-050.6). Citas apagadas → sin filas.
+- `book_appointment(p_business_id, p_service_id, p_barber_id null, p_starts_at, p_name, p_phone,
+  p_privacy_version, p_source)` → la cita. Pasos: citas encendidas (`APPOINTMENTS_DISABLED`);
+  celular válido (`INVALID_PHONE`); la hora está en `appointment_slots` con el mínimo que toca según
+  `p_source` (`SLOT_UNAVAILABLE`); `pg_advisory_xact_lock` por barbero (con "cualquiera", por cada
+  candidato en orden) y se vuelve a revisar el cruce dentro del candado (`SLOT_TAKEN`, REQ-050.4);
+  "cualquiera" → el de menos citas `booked`/`arrived` ese día, empate por `sort_order` (REQ-050.3);
+  cita pendiente del mismo celular → `APPOINTMENT_EXISTS` con el token de la que tiene (REQ-050.5);
+  ficha y aviso de privacidad igual que `join_queue` (REQ-050.2). Público: `public_book_appointment(p_slug, …)`
+  con `check_rate_limit` como `join_queue` (REQ-050.7). Dueño: `p_source = 'owner'`, solo `is_owner_of`.
+- `get_appointment_by_token(p_token)` → negocio (nombre, slug, dirección), día, hora, duración,
+  barbero, servicio, precio, estado, si perdió la hora y el `public_token` del turno si llegó
+  (REQ-051.1, 051.4, 051.5). Nunca el celular (REQ-051.6). Solo service_role.
+- `cancel_appointment_by_token(p_token)`: pendiente → `cancelled`, `cancel_reason = 'customer'`
+  (REQ-051.2); otra cosa → `NOT_CANCELLABLE`. Idempotente si ya está cancelada por el cliente.
+- `cancel_appointment(p_id)`: solo dueño; pendiente → `cancelled`, `cancel_reason = 'business'`
+  (REQ-054.2).
+- `reassign_appointment(p_id, p_barber_id)`: solo dueño; el barbero nuevo debe tener la hora libre
+  (`SLOT_TAKEN` / `BARBER_CANT_DO_SERVICE`); pone `any_barber = false` (REQ-054.2).
+- `mark_appointment_arrived(p_id)` → el turno. Barbero de la cita o dueño (`FORBIDDEN`); solo
+  `booked` del día (`NOT_ARRIVABLE`). Si `any_barber` y su barbero está `paused`/`off`, se cambia por
+  un barbero presente que haga el servicio, el que quede libre antes (REQ-052.5); si no hay, se
+  queda. Crea el turno con `source = 'manual'`, los datos de la cita, `preferred_barber_id` =
+  barbero y `appointment_id`:
+  - A tiempo (`now() ≤ starts_at + 10 min`): `scheduled_at = starts_at` y `queue_order` delante de
+    todos los `waiting` de hoy sin `scheduled_at` que su barbero podría atender, y detrás de los
+    `waiting` con `scheduled_at` < el suyo de ese barbero (REQ-052.2). Se calcula como el punto
+    medio entre los dos vecinos, igual que `reorder_ticket`; si no hay hueco entero, se renumera la
+    fila de hoy × 1000 conservando el orden.
+  - Tarde: turno normal al final (`queue_order` = sequence × 1000, `scheduled_at` null, REQ-052.3).
+  La cita pasa a `arrived` con `ticket_id`. Emite `queue_changed` (ADR-008) desde la acción.
+  El índice único de celular con turno activo (REQ-003.5) aplica: si ese celular ya tiene turno
+  activo, `ALREADY_IN_QUEUE`.
+- `barber_next_ticket(p_barber_id)` (nueva, la usan `call_next` y la regla "solo el primero" de
+  `transition_ticket`, REQ-007.8): el primer `waiting` de hoy de la lista del barbero (§4, REQ-035.9)
+  en orden de `queue_order` tal que `scheduled_at is not null` **o** `now() + duración ≤ próxima`,
+  donde `próxima` = el menor `starts_at ≥ now() − 10 min` de sus citas `booked` que no perdieron la
+  hora (null → no hay límite) (REQ-052.4). `call_next` lo toma `for update skip locked`; si hay turnos
+  pero ninguno cabe → `NEXT_APPOINTMENT` con la hora en el `detail` ("Tu próxima cita es a las
+  HH:MM"); si no hay turnos → `NO_TICKETS` como hoy. `call_ticket` del dueño no cambia (REQ-012.2).
+- `close_expired_queues()`: además de lo de hoy, pasa a `no_show` las citas `booked` que perdieron
+  la hora y son de días anteriores o de un negocio cuyo cierre de hoy ya se procesó (REQ-052.6). No
+  toca citas futuras de un día cerrado a mano (ADR-033).
+- `appointments_today(p_business_id)` (dueño: todas; barbero: las suyas) → citas `booked` de hoy con
+  hora, nombre, servicio, barbero, `late` (perdió la hora) y `barber_unavailable` (barbero `paused`/`off`
+  o no presente hoy, REQ-054.4). Base de REQ-052.1.
+- `appointments_agenda(p_business_id, p_from date, p_to date)`: solo dueño. Citas de esos días con
+  estado, celular, `public_token` y `day_closed` (el día quedó sin horas por REQ-049.5) (REQ-054.1,
+  054.3, 054.4).
+- `get_ticket_by_token` agrega `scheduled_at` para "Mi turno" ("Cita 10:30").
+- `queue_snapshot` / fila del dueño y del barbero agregan `scheduled_at` para la etiqueta "Cita HH:MM".
+
+Errores nuevos (P0004 salvo `FORBIDDEN`): `APPOINTMENTS_DISABLED`, `SLOT_UNAVAILABLE`, `SLOT_TAKEN`,
+`APPOINTMENT_EXISTS`, `NOT_CANCELLABLE`, `NOT_ARRIVABLE`, `NEXT_APPOINTMENT` (P0006).
+
+### 14.4 Estimado con citas (cambia §4)
+
+`QueueInput` agrega `appointments: { barberId: string; startAt: Date; endAt: Date }[]` = huecos
+ocupados de hoy de citas `booked` que no perdieron la hora (REQ-053.1, 053.2). Las citas llegadas ya
+son turnos `waiting` y entran por la regla normal (REQ-053.3).
+
+En la simulación, para un turno **sin** `scheduledAt` y un candidato b:
+
+```
+inicio(b, W) = freeAt[b]
+mientras exista hueco [s, e) de b con inicio < e y inicio + W.durationMin > s:
+  inicio = e
+```
+
+`b*` = argmin `inicio(b, W)` (empate: menor id); `W.startAt = inicio(b*, W)`; `freeAt[b*] =
+W.startAt + duración`. Un turno con `scheduledAt` (cita llegada) usa `freeAt[b]` sin huecos. Las
+posiciones no cambian (§4).
+
+**Ejemplo H** (REQ-053.1). `now = 10:00`. Juan `available`; Pedro `busy` hasta 10:30. Cita
+pendiente de Juan a las 10:20 (corte 30 min, hueco 10:20–10:50). Fila: T1 corte 30 min "cualquiera";
+T2 barba 15 min pref=Juan.
+
+| Turno | Juan | Pedro | Elegido | Espera |
+|---|---|---|---|---|
+| T1 | 10:00 + 30 se cruza con 10:20 → 10:50 | 10:30 | Pedro 10:30 | 30 min |
+| T2 | 10:00–10:15 cabe antes de 10:20 → 10:00 | — | Juan 10:00 | 0 → "Eres el siguiente" en tiempo, posición 2 |
+
+"Llamar al siguiente" de Juan a las 10:00 salta a T1 (no cabe) y llama a T2: coincide con el
+estimado (REQ-052.4).
+
+### 14.5 Server actions y pantallas
+
+- `src/lib/actions/appointments.ts`: públicas (`getSlots`, `bookAppointment`,
+  `cancelAppointmentByToken`) con `service_role` + rate limit; del personal (`markArrived`,
+  `cancelAppointment`, `reassignAppointment`, `ownerBookAppointment`, `saveAppointmentSettings`).
+  Lógica pura en `src/lib/domain/appointments.ts`: horas a mostrar ("10:15 a. m."), texto de los
+  `wa.me` con las plantillas y el archivo `.ics` (RFC 5545, `DTSTART`/`DTEND` en UTC, `UID` = token).
+- `/[slug]`: botón "Reservar cita" bajo "Tomar turno" si las citas están encendidas (REQ-050.1).
+- `/[slug]/cita`: un paso por pantalla en el mismo formulario: servicio → barbero o "El que esté
+  libre" → día (chips hoy…+7, sin los cerrados) → hora (chips) → nombre, celular, aviso de
+  privacidad → "Reservar". Errores: "Esa hora se acaba de ocupar" (recarga horas), "Ya tienes una cita"
+  (enlace a la suya).
+- `/c/[token]` "Mi cita" (REQ-051): datos, "Agregar al calendario" (`/c/[token]/calendario`, route
+  handler que devuelve `text/calendar`), "Cancelar cita" con confirmación; si llegó, redirige a
+  `/t/<token del turno>`; si se canceló, perdió la hora o no vino, el estado y "Reservar otra".
+  `noindex`, sin celular.
+- `/app/fila` (barbero): sección "Mis citas de hoy" arriba de la fila con hora, nombre, servicio y
+  "Llegó" (REQ-052.1); el turno de cita lleva la etiqueta "Cita 10:30". "Llamar al siguiente" muestra
+  "Tu próxima cita es a las 10:30" con `NEXT_APPOINTMENT`.
+- `/admin/fila` (dueño): "Citas de hoy" con todas, "Llegó" y el aviso de barbero ausente o en pausa
+  (REQ-054.4).
+- `/admin/citas` (chip "Citas" en el menú): encender/apagar y barberos que reciben citas (REQ-049),
+  "Nueva cita" (REQ-050.6, con `wa.me` de confirmación), lista de hoy a +7 por día (REQ-054.1) con
+  "Pasar a otro barbero" y "Cancelar" (+ `wa.me`), "Citas de mañana" con `wa.me` (REQ-054.3) y avisos
+  (REQ-054.4).
+- `/admin/mensajes`: las tres plantillas nuevas (REQ-054.5).
+- "Mi turno": "Cita 10:30" cuando el turno viene de una cita a tiempo. La pantalla del local no
+  cambia: solo muestra turnos (REQ-051.6).
+- Estimados (`/[slug]`, formulario, "Mi turno", filas): el servidor arma `appointments` con
+  `appointments_today` y lo pasa a `estimateQueue` (§14.4).
+
+### 14.6 Pruebas
+
+- pgTAP `0045`: apagadas (sin horas, `APPOINTMENTS_DISABLED`), barberos que reciben citas, horas cada
+  15 min dentro del horario y antes del cierre, mínimo 1 h y máximo 7 días, día cerrado y fila
+  cerrada a mano, cruce con otra cita, "cualquiera" con el de menos citas, `SLOT_TAKEN`,
+  `APPOINTMENT_EXISTS`, ficha y privacidad, rate limit, dueño sin mínimo de 1 h, cancelar por token y
+  por el dueño, pasar a otro barbero, RLS (barbero solo las suyas de hoy; `anon` nada) y permisos.
+- pgTAP `0046`: "Llegó" a tiempo (orden delante de sin cita, detrás de cita anterior), tarde (al
+  final, hora libre), "cualquiera" con barbero en pausa, `call_next` salta al que no cabe,
+  `NEXT_APPOINTMENT`, la cita llegada se llama aunque no quepa nadie, el dueño fuerza, cierre → no
+  vino, `appointments_today` con avisos, `appointments_agenda` y `day_closed`.
+- pgTAP `0047`: plantillas en negocios nuevos y existentes.
+- Unitarias: `estimateQueue` con el ejemplo H y la cita que perdió la hora; `.ics`; textos `wa.me`.
+- Integración: acciones de citas contra Postgres local (reservar, carrera, cancelar, llegó).
+- E2E (Pixel 7 + iPhone 13): el dueño enciende citas; el cliente reserva desde la portada, ve "Mi
+  cita" y la cancela; el barbero marca "Llegó" y la llama primero.
 
 ---
 

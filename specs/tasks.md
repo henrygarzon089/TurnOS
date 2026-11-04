@@ -1270,6 +1270,75 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ---
 
+## Hito 8 — Citas a hora fija (ADR-033)
+
+> REQ-049…REQ-054 y ADR-033 aprobados por Henry (2026-11-03, autorizó construir sin esperar). Diseño
+> en `design.md` §14. Cada tarea va en su rama y PR. Todo nace apagado.
+
+### [ ] T-078 · Migración y pgTAP: agenda, reservar y cancelar
+- REQ: REQ-049.1, REQ-049.2, REQ-049.3, REQ-049.4, REQ-049.5, REQ-049.6, REQ-050.2, REQ-050.3,
+  REQ-050.4, REQ-050.5, REQ-050.6, REQ-050.7, REQ-051.2, REQ-054.2, REQ-054.6
+- Archivos: `supabase/migrations/0045_appointments.sql`, `supabase/tests/0045_appointments.sql`
+- Terminado: pgTAP de §14.6 para `0045` en verde; con las citas apagadas nada cambia.
+
+### [ ] T-079 · Migración y pgTAP: llegada, prioridad y cierre
+- REQ: REQ-052.2, REQ-052.3, REQ-052.4, REQ-052.5, REQ-052.6, REQ-054.4, REQ-054.5
+- Archivos: `supabase/migrations/0046_appointments_queue.sql`, `0047_appointment_templates.sql`, sus
+  pgTAP
+- Terminado: pgTAP de §14.6 para `0046` y `0047`; las pruebas de la fila de hitos anteriores siguen
+  en verde.
+
+### [ ] T-080 · Dominio: estimado con citas, calendario y mensajes
+- REQ: REQ-053.1, REQ-053.2, REQ-053.3, REQ-051.3
+- Archivos: `src/lib/domain/queue-estimate.ts`, `src/lib/domain/appointments.ts`, sus unitarias
+- Terminado: unitarias con el ejemplo H, la cita que perdió la hora y el `.ics`.
+
+### [ ] T-081 · Encender citas y elegir barberos
+- REQ: REQ-049.1, REQ-049.2, REQ-049.6
+- Archivos: `src/app/(staff)/admin/citas/`, `src/lib/actions/appointments.ts`
+- Terminado: integración de `saveAppointmentSettings`; E2E: el dueño enciende las citas y marca un
+  barbero.
+
+### [ ] T-082 · Reservar desde la portada
+- REQ: REQ-050.1, REQ-050.2, REQ-050.3, REQ-050.4, REQ-050.5, REQ-050.7
+- Archivos: `src/app/(public)/[slug]/cita/`, `src/app/(public)/[slug]/page.tsx`, acciones públicas
+- Terminado: integración (reservar, carrera, cita existente, rate limit); E2E de la reserva.
+
+### [ ] T-083 · Mi cita
+- REQ: REQ-051.1, REQ-051.2, REQ-051.3, REQ-051.4, REQ-051.5, REQ-051.6
+- Archivos: `src/app/(public)/c/[token]/` (página y `calendario/route.ts`)
+- Terminado: integración de `get_appointment_by_token` y cancelar; E2E: ver, descargar calendario y
+  cancelar.
+
+### [ ] T-084 · Citas en la fila del barbero y del dueño
+- REQ: REQ-052.1, REQ-052.2, REQ-052.3, REQ-052.4, REQ-052.5, REQ-053.1, REQ-054.4
+- Archivos: `/app/fila`, `/admin/fila`, "Mi turno", portada y formulario (estimado con
+  `appointments`)
+- Terminado: E2E: el barbero marca "Llegó" y la llama primero; "Tu próxima cita es a las…".
+
+### [ ] T-085 · Agenda del dueño
+- REQ: REQ-050.6, REQ-054.1, REQ-054.2, REQ-054.3, REQ-054.4, REQ-054.6
+- Archivos: `src/app/(staff)/admin/citas/`
+- Terminado: E2E: nueva cita del dueño con `wa.me`, pasar a otro barbero, cancelar y "Citas de
+  mañana".
+
+### [ ] T-086 · Plantillas de citas
+- REQ: REQ-054.5
+- Archivos: `src/app/(staff)/admin/mensajes/`, textos de `src/lib/domain/appointments.ts`
+- Terminado: las tres plantillas se editan y se usan en los `wa.me`.
+
+### [ ] T-087 · Validación Hito 8
+- REQ: REQ-049…REQ-054
+- Archivos: `scripts/traceability.ts` (`HITOS["8"] = [[49, 54]]`, ya puesto con la spec),
+  `tests/unit/traceability.test.ts`, `docs/estado-del-proyecto.md`
+- Depende de Henry: migraciones `0045`–`0047` en producción, encender citas en Filo y prueba con una
+  cita real. Aprobación del hito: ADR-035.
+- Terminado: `pnpm trace --hito=8` sin huecos; CI verde.
+
+T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una tarea).
+
+---
+
 ## Dependencias principales
 
 ```mermaid
@@ -1285,5 +1354,6 @@ flowchart LR
   T057 --> T058 --> T059 --> T060 --> T061 --> T062 --> T063
   T063 --> T064 --> T065 --> T066 --> T067 --> T068 --> T070 --> T069
   T070 --> T071 --> T072 --> T073 --> T074 --> T075 --> T076 --> T077
+  T077 --> T078 --> T079 --> T080 --> T081 --> T082 --> T083 --> T084 --> T085 --> T086 --> T087
   T077 --> T090 --> T091 --> T092 --> T093 --> T094 --> T095 --> T096 --> T097
 ```

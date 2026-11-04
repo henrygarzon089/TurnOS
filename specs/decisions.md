@@ -442,6 +442,40 @@
   familia real. Si esa prueba encuentra un problema, se corrige como tarea nueva.
 - Consecuencias: T-077 `[x]`. ADR-031 sigue apartado para la aprobación del Hito 6 (T-069).
 
+## ADR-033 · Citas a hora fija mezcladas con la fila (Hito 8)
+- Estado: **aceptada** (Henry, 2026-11-03, tras grill de 15 preguntas en tres tandas; tomó todas
+  las opciones recomendadas y autorizó construir sin esperar su sí a la spec: "doy autorización a
+  todo para que puedas seguir sin mí").
+- Contexto: hoy todo es fila sin cita (constitución §6 dejaba las reservas para después y
+  `tickets.scheduled_at` reservado). Algunas familias quieren llegar a una hora y no esperar. El
+  riesgo es romper la fila: que los clientes sin cita esperen más de lo que el estimado dice, o que
+  un barbero quede ocupado con un sin cita a la hora de una cita.
+- Opciones para mezclar: (a) la cita reserva un hueco del barbero, el estimado lo cuenta y a su hora
+  la cita queda de primera en la fila de ese barbero; (b) la fila no reserva hueco y la cita solo pasa
+  de primera al llegar; (c) barberos o franjas solo para citas.
+- Decisión: (a). Además, valores que eligió Henry:
+  - Reservan el cliente desde `/[slug]` (nombre y celular, sin cuenta, P1) y el dueño desde `/admin`.
+  - Barbero elegido o "El que esté libre"; con "cualquiera" el sistema fija uno al reservar.
+  - Horas cada 15 min; la cita ocupa la duración del servicio (REQ-035) y debe terminar antes del
+    cierre. Desde 1 hora después de ahora hasta 7 días adelante. Sin horas en días cerrados.
+  - "Llamar al siguiente" salta a un sin cita cuyo servicio no termina antes de la próxima cita del
+    barbero; el dueño puede forzarlo.
+  - Llegada: la marca el barbero o el dueño ("Llegó"), no el cliente. Tolerancia de 10 min; después
+    la cita pierde la hora y, si llega, entra como sin cita. Si nunca llega, "No vino" al cierre.
+  - El cliente cancela cuando quiera desde "Mi cita"; no hay mover (cancela y reserva otra).
+  - Una cita pendiente por celular y negocio.
+  - Recordatorio manual por `wa.me` ("Citas de mañana" del dueño) y archivo de calendario para el
+    cliente; no depende de Meta (ADR-027).
+  - Apagadas por defecto; el dueño las enciende y marca qué barberos reciben citas.
+  - Barbero ausente o en pausa a la hora de la cita: el dueño la pasa a otro o la cancela con aviso
+    por `wa.me`; si era "cualquiera", al marcar "Llegó" el sistema busca otro barbero presente.
+  - Días que el dueño cierra con citas ya dadas: no se cancelan solas; el dueño las ve marcadas y
+    avisa.
+- Consecuencias: REQ-049…REQ-054 (§5f), `design.md` §14, migraciones `0045`…`0047`, tareas
+  T-078…T-087 (T-088 y T-089 quedan libres). Sale de "Fuera de alcance" la reserva con hora fija.
+  La cita es una tabla aparte (`appointments`); al llegar se vuelve un turno normal, así que caja,
+  fidelidad, membresía y avisos de WhatsApp no cambian. La aprobación del Hito 8 será ADR-035.
+
 ## ADR-034 · Tarjetas de regalo (Hito 9)
 - Estado: **aceptada** (Henry, 2026-11-03: tras el grill dio autorización para seguir sin él; PR #45)
 - Contexto: Hito 9 de `docs/propuesta-mejoras-clientes.md`. Toca caja y comisiones: la venta de la

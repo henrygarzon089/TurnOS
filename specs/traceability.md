@@ -240,6 +240,40 @@
 | REQ-048.3 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | membership-reports.spec.ts, cash-closure.test.ts, membership.test.ts, 0043_membership_reports.sql | cubierto |
 | REQ-048.4 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | memberships.spec.ts, memberships.test.ts, membership.test.ts, 0002_core.sql, 0043_membership_reports.sql | cubierto |
 | REQ-048.5 | Lo que ven el cliente, el barbero y el dueño | T-074 (hecha), T-075 (hecha), T-076 (hecha), T-077 (hecha) | 0043_membership_reports.sql | cubierto |
+| REQ-049.1 | Agenda de citas | T-078 (pendiente), T-081 (pendiente), T-087 (pendiente) | — | sin prueba |
+| REQ-049.2 | Agenda de citas | T-078 (pendiente), T-081 (pendiente), T-087 (pendiente) | — | sin prueba |
+| REQ-049.3 | Agenda de citas | T-078 (pendiente), T-081 (pendiente), T-087 (pendiente) | — | sin prueba |
+| REQ-049.4 | Agenda de citas | T-078 (pendiente), T-081 (pendiente), T-087 (pendiente) | — | sin prueba |
+| REQ-049.5 | Agenda de citas | T-078 (pendiente), T-081 (pendiente), T-087 (pendiente) | — | sin prueba |
+| REQ-049.6 | Agenda de citas | T-078 (pendiente), T-081 (pendiente), T-087 (pendiente) | — | sin prueba |
+| REQ-050.1 | Reservar una cita | T-078 (pendiente), T-082 (pendiente), T-085 (pendiente) | — | sin prueba |
+| REQ-050.2 | Reservar una cita | T-078 (pendiente), T-082 (pendiente), T-085 (pendiente) | — | sin prueba |
+| REQ-050.3 | Reservar una cita | T-078 (pendiente), T-082 (pendiente), T-085 (pendiente) | — | sin prueba |
+| REQ-050.4 | Reservar una cita | T-078 (pendiente), T-082 (pendiente), T-085 (pendiente) | — | sin prueba |
+| REQ-050.5 | Reservar una cita | T-078 (pendiente), T-082 (pendiente), T-085 (pendiente) | — | sin prueba |
+| REQ-050.6 | Reservar una cita | T-078 (pendiente), T-082 (pendiente), T-085 (pendiente) | — | sin prueba |
+| REQ-050.7 | Reservar una cita | T-078 (pendiente), T-082 (pendiente), T-085 (pendiente) | — | sin prueba |
+| REQ-051.1 | Mi cita | T-080 (pendiente), T-083 (pendiente) | — | sin prueba |
+| REQ-051.2 | Mi cita | T-080 (pendiente), T-083 (pendiente) | — | sin prueba |
+| REQ-051.3 | Mi cita | T-080 (pendiente), T-083 (pendiente) | — | sin prueba |
+| REQ-051.4 | Mi cita | T-080 (pendiente), T-083 (pendiente) | — | sin prueba |
+| REQ-051.5 | Mi cita | T-080 (pendiente), T-083 (pendiente) | — | sin prueba |
+| REQ-051.6 | Mi cita | T-080 (pendiente), T-083 (pendiente) | — | sin prueba |
+| REQ-052.1 | Llegada y prioridad en la fila | T-079 (pendiente), T-084 (pendiente) | — | sin prueba |
+| REQ-052.2 | Llegada y prioridad en la fila | T-079 (pendiente), T-084 (pendiente) | — | sin prueba |
+| REQ-052.3 | Llegada y prioridad en la fila | T-079 (pendiente), T-084 (pendiente) | — | sin prueba |
+| REQ-052.4 | Llegada y prioridad en la fila | T-079 (pendiente), T-084 (pendiente) | — | sin prueba |
+| REQ-052.5 | Llegada y prioridad en la fila | T-079 (pendiente), T-084 (pendiente) | — | sin prueba |
+| REQ-052.6 | Llegada y prioridad en la fila | T-079 (pendiente), T-084 (pendiente) | — | sin prueba |
+| REQ-053.1 | Estimado con citas | T-080 (pendiente), T-084 (pendiente) | — | sin prueba |
+| REQ-053.2 | Estimado con citas | T-080 (pendiente), T-084 (pendiente) | — | sin prueba |
+| REQ-053.3 | Estimado con citas | T-080 (pendiente), T-084 (pendiente) | — | sin prueba |
+| REQ-054.1 | Agenda del dueño y avisos | T-079 (pendiente), T-084 (pendiente), T-085 (pendiente), T-086 (pendiente), T-087 (pendiente) | — | sin prueba |
+| REQ-054.2 | Agenda del dueño y avisos | T-079 (pendiente), T-084 (pendiente), T-085 (pendiente), T-086 (pendiente), T-087 (pendiente) | — | sin prueba |
+| REQ-054.3 | Agenda del dueño y avisos | T-079 (pendiente), T-084 (pendiente), T-085 (pendiente), T-086 (pendiente), T-087 (pendiente) | — | sin prueba |
+| REQ-054.4 | Agenda del dueño y avisos | T-079 (pendiente), T-084 (pendiente), T-085 (pendiente), T-086 (pendiente), T-087 (pendiente) | — | sin prueba |
+| REQ-054.5 | Agenda del dueño y avisos | T-079 (pendiente), T-084 (pendiente), T-085 (pendiente), T-086 (pendiente), T-087 (pendiente) | — | sin prueba |
+| REQ-054.6 | Agenda del dueño y avisos | T-079 (pendiente), T-084 (pendiente), T-085 (pendiente), T-086 (pendiente), T-087 (pendiente) | — | sin prueba |
 | REQ-055.1 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (hecha) | gift-cards.spec.ts, gift-cards.test.ts, gift-card.test.ts, 0051_gift_cards.sql | cubierto |
 | REQ-055.2 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (hecha) | gift-cards.spec.ts, gift-cards.test.ts, gift-card.test.ts, 0051_gift_cards.sql | cubierto |
 | REQ-055.3 | Vender una tarjeta de regalo | T-090 (hecha), T-093 (hecha), T-097 (hecha) | gift-card.test.ts, 0051_gift_cards.sql | cubierto |
