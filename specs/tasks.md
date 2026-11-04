@@ -1121,7 +1121,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   §13.4), unitarias 288, integración 111, E2E `tests/e2e/membership-reports.spec.ts` 2/2 (Pixel 7 +
   iPhone 13) contra el Supabase local, al que Henry autorizó aplicar la sección T-076.
 
-### [ ] T-077 · Validación Hito 7
+### [x] T-077 · Validación Hito 7
 - REQ: REQ-044…REQ-048
 - Archivos: `scripts/traceability.ts` (`HITOS["7"] = [[44, 48]]`), `tests/unit/traceability.test.ts`,
   `docs/estado-del-proyecto.md`
@@ -1133,6 +1133,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   --hito=7` → 235 criterios, 0 sin prueba. Esperas de 15 s en dos E2E de membresía que fallaban a
   veces en iPhone. Falta lo de Henry (checklist en `docs/estado-del-proyecto.md`): fusionar #36…#42,
   0041–0044 en producción, plan de Filo, aviso nuevo en Filo, prueba con una familia real y ADR.
+- Cierre (2026-11-03): #36…#43 fusionados, 0041–0044 en producción y `main` desplegado. Henry
+  aprobó el hito (ADR-032) antes de la prueba en Filo; plan, aviso nuevo y prueba con una familia real
+  quedan como operación, no como código.
 
 ---
 
