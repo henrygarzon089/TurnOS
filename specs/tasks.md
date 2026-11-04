@@ -1267,6 +1267,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   --hito=9` → 261 criterios, 0 sin prueba. Falta lo de Henry (checklist en
   `docs/estado-del-proyecto.md`): fusionar la cadena #50…#62 y este PR, `0050`–`0053` en producción,
   aviso nuevo en Filo, prueba en la barbería y aprobación (ADR-036).
+- Cierre (2026-11-04): #50…#63 fusionados, `0050`–`0053` y `0055` en producción y `main` desplegado
+  (`b7de232`). Henry aprobó el hito (ADR-036) antes de la prueba en Filo; aviso nuevo, plantilla y
+  prueba en la barbería quedan como operación, no como código.
 
 ---
 
