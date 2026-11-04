@@ -326,6 +326,16 @@ Pendientes (H3): `/admin/caja`,
   capa: `min-h-24`, `min-h-64`, `py-2` y `text-sm` no le aplican; al moverla, `text-sm` en
   `PrivacyForm` bajaría de 16 px el campo (NFR-008).
 
+- `0055_merge_customers_sales` (2026-11-04, PR #48): `merge_customers` fallaba con
+  `SALE_IMMUTABLE` si la ficha fusionada tenía ventas (el `delete` hacía `on delete set null` en
+  `sales.customer_id`). Ahora las ventas pasan a la ficha que queda; `sales_guard` deja cambiar solo
+  `customer_id` dentro de `turnos.internal`. design §2.6 paso 2. **Sin aplicar en producción.**
+  Si se aplica antes que 0045–0054, el siguiente `supabase db push` de los Hitos 8/9 necesita
+  `--include-all` (versiones menores que la última aplicada). El Hito 9 debe sumar
+  `gift_cards.buyer_customer_id` a `merge_customers` (design §15.1).
+- pgTAP `0018_reminders` fallaba entre las 00:00 y las 02:00 de Bogotá (la prueba, no la función):
+  corregido en PR #51.
+
 ## Pendientes externos (los tenía que resolver Henry; verificar estado)
 
 1. **Supabase** — hecho 2026-10-24: proyecto `uucjmxdssnmvznibrafc` enlazado con el CLI;

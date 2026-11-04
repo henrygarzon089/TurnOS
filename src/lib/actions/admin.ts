@@ -408,7 +408,7 @@ export async function setBarberPresent(barberId: string, present: boolean): Prom
 
 /**
  * REQ-033.1: plantillas de WhatsApp. Campos: notify_2_turns, reminder_inactive, share_queue,
- * birthday, membership_renewal (REQ-048.4) y las tres de citas (REQ-054.5).
+ * birthday, membership_renewal (REQ-048.4), gift_card (REQ-056.1) y las tres de citas (REQ-054.5).
  */
 export async function saveTemplates(_prev: FormState, formData: FormData): Promise<FormState> {
   const session = await getStaffSession();
@@ -419,6 +419,7 @@ export async function saveTemplates(_prev: FormState, formData: FormData): Promi
     "share_queue",
     "birthday",
     "membership_renewal",
+    "gift_card",
     "appointment_confirm",
     "appointment_reminder",
     "appointment_cancelled",
