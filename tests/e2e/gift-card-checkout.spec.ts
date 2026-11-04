@@ -41,7 +41,7 @@ test.describe("REQ-057 pagar con la tarjeta de regalo en el cobro", () => {
       await sheet
         .getByLabel("Código")
         .fill(`${card.code.slice(0, 4)}-${card.code.slice(4)}`.toLowerCase());
-      await sheet.getByRole("button", { name: "Buscar" }).click();
+      await sheet.getByRole("button", { name: "Buscar tarjeta de regalo" }).click();
       await expect(sheet.getByTestId("gift-card-balance")).toHaveText(
         /^Saldo \$\s20\.000 · vence el \d+ de [a-z]+ de \d{4}$/,
       );
@@ -73,7 +73,7 @@ test.describe("REQ-057 pagar con la tarjeta de regalo en el cobro", () => {
       await again.getByRole("button", { name: "Agregar un Gaseosa" }).click();
       await again.getByRole("radio", { name: "Tarjeta de regalo" }).click();
       await again.getByLabel("Código").fill(card.code);
-      await again.getByRole("button", { name: "Buscar" }).click();
+      await again.getByRole("button", { name: "Buscar tarjeta de regalo" }).click();
       await expect(again.getByText("Esta tarjeta ya no tiene saldo.")).toBeVisible();
       await again.getByRole("button", { name: /Registrar/ }).click();
       await expect(
