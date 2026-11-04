@@ -1246,11 +1246,17 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   octetos). `renderTemplate` acepta `{hora}`. `appointments.ts` entra a la cobertura del 100 %.
   Unitarias 304. Sin pantallas todavía: nada cambia para el cliente.
 
-### [ ] T-081 · Encender citas y elegir barberos
+### [x] T-081 · Encender citas y elegir barberos
 - REQ: REQ-049.1, REQ-049.2, REQ-049.6
 - Archivos: `src/app/(staff)/admin/citas/`, `src/lib/actions/appointments.ts`
 - Terminado: integración de `saveAppointmentSettings`; E2E: el dueño enciende las citas y marca un
   barbero.
+- Nota (2026-11-04): chip "Citas" en el menú del dueño y `/admin/citas` con "Recibir citas" y los
+  barberos activos. Regla de pantalla que la spec no fijaba: encender sin ningún barbero marcado
+  pide "Marca al menos un barbero que reciba citas." Integración 3, E2E
+  `tests/e2e/appointments-settings.spec.ts` (deja las citas apagadas al terminar). Cómo probarlo
+  desde el celular: entra como dueño, menú "Citas", marca "Recibir citas" y un barbero, "Guardar";
+  todavía no aparece nada para el cliente (llega con T-082).
 
 ### [ ] T-082 · Reservar desde la portada
 - REQ: REQ-050.1, REQ-050.2, REQ-050.3, REQ-050.4, REQ-050.5, REQ-050.7

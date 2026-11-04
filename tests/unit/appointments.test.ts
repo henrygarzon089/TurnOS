@@ -9,6 +9,8 @@ import {
   formatAppointmentWhen,
   formatDateLong,
   nextAppointmentText,
+  parseAppointmentSettingsForm,
+  appointmentErrorMessage,
 } from "@/lib/domain/appointments";
 import { estimateQueue, positions, type QueueInput } from "@/lib/domain/queue-estimate";
 
@@ -197,5 +199,44 @@ describe("REQ-051.3 archivo de calendario", () => {
       url: "u",
     });
     expect(noAddress).not.toContain("LOCATION");
+  });
+});
+
+describe("REQ-049 ajustes y errores de citas", () => {
+  it("REQ-049.2 el formulario trae el encendido y los barberos marcados", () => {
+    const fd = new FormData();
+    fd.set("enabled", "on");
+    fd.append("barber_ids", "b1");
+    fd.append("barber_ids", "b2");
+    fd.append("barber_ids", "");
+    expect(parseAppointmentSettingsForm(fd)).toEqual({ enabled: true, barberIds: ["b1", "b2"] });
+    expect(parseAppointmentSettingsForm(new FormData())).toEqual({ enabled: false, barberIds: [] });
+  });
+
+  it("REQ-050.4 los errores de SQL salen en español", () => {
+    const cases: [string, string][] = [
+      ["APPOINTMENTS_DISABLED", "Las citas están apagadas."],
+      ["SLOT_TAKEN", "Esa hora se acaba de ocupar. Elige otra."],
+      ["SLOT_UNAVAILABLE", "Esa hora ya no está disponible. Elige otra."],
+      ["INVALID_PHONE", "Escribe un celular colombiano de 10 dígitos (empieza por 3)."],
+      ["INVALID_NAME", "Escribe el nombre."],
+      ["NOT_CANCELLABLE", "Esa cita ya no se puede cambiar."],
+      ["NOT_ARRIVABLE", "Esa cita ya no está pendiente hoy."],
+      ["ALREADY_IN_QUEUE", "Ese cliente ya tiene un turno en la fila."],
+      ["BARBER_CANT_DO_SERVICE", "Ese barbero no recibe citas de ese servicio."],
+      ["FORBIDDEN", "No tienes permiso para eso."],
+      ["otra cosa", "No se pudo completar. Inténtalo de nuevo."],
+    ];
+    for (const [message, text] of cases) expect(appointmentErrorMessage({ message })).toBe(text);
+    expect(appointmentErrorMessage({ code: "42501" })).toBe("No tienes permiso para eso.");
+    expect(appointmentErrorMessage({ message: "NEXT_APPOINTMENT", details: "15:30" })).toBe(
+      "Tu próxima cita es a las 3:30 p. m.",
+    );
+    expect(appointmentErrorMessage({ message: "NEXT_APPOINTMENT", detail: "09:00" })).toBe(
+      "Tu próxima cita es a las 9:00 a. m.",
+    );
+    expect(appointmentErrorMessage({ message: "NEXT_APPOINTMENT" })).toBe(
+      "Tienes una cita pronto.",
+    );
   });
 });
