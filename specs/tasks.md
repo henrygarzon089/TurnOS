@@ -471,6 +471,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `src/components/customers/RemindersList.tsx`, `src/lib/notifications/reminder.ts`
   (`buildReminderLink`), "No contactar" editable en la ficha (dueño) y el botón "Avisar" de la
   fila del barbero se oculta para esos clientes (`QueueTicket.doNotContact`).
+- Corrección (2026-11-04): pgTAP 0018 fallaba entre las 00:00 y las 02:00 de Bogotá: la ficha
+  "Justo Veintiuno" (`now() - 21 días 2 h`) caía en el día 22 del negocio. Ahora se ancla a las
+  00:00 de Bogotá de hace 21 días del negocio (≥ 21×24 h y siempre 21 días). La función estaba
+  bien; sin cambio de spec. Probado con `now()` fijo a 00:00, 00:18, 01:59, 02:00, 15:00 y 23:30.
 
 ### [x] T-038 · Barbero preferido preseleccionado — 2026-10-24
 - REQ: REQ-022.1
@@ -1137,6 +1141,19 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - Cierre (2026-11-03): #36…#43 fusionados, 0041–0044 en producción y `main` desplegado. Henry
   aprobó el hito (ADR-032) antes de la prueba en Filo; plan, aviso nuevo y prueba con una familia real
   quedan como operación, no como código.
+
+### Corrección — fusionar fichas con ventas (REQ-018.5, 2026-11-04)
+
+- [x] `merge_customers` fallaba con `SALE_IMMUTABLE` si la ficha fusionada tenía ventas: el `delete`
+  disparaba `on delete set null` en `sales.customer_id` y `sales_guard` lo rechazaba. Salió en T-090
+  (Hito 9). Desvío respecto a design §2.6 paso 2 (no nombraba las ventas): ahora las ventas pasan a la
+  ficha que queda, con un permiso de `sales_guard` acotado a `turnos.internal` y solo `customer_id`.
+  Migración `0055_merge_customers_sales.sql` (después de Hito 8: 0045–0049 y Hito 9: 0050–0054),
+  pgTAP `0055_merge_customers_sales` (9 pruebas). **Falta aplicarla en producción (Henry).** Cuando
+  el Hito 9 esté en `main`, `merge_customers` debe mover también `gift_cards.buyer_customer_id`
+  (design §15.1): si 0050–0054 redefinen la función, revisar que no pisen este cambio.
+
+---
 
 ## Hito 9 — Tarjetas de regalo (ADR-034)
 

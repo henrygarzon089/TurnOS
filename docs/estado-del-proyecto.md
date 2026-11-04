@@ -221,8 +221,8 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   #50 T-090 (venta, `0050`/`0051`) → #49 T-091 (pagar y anular, `0052`) → #52 T-092 (caja, semana,
   plantilla y aviso, `0053`) → #56 T-093 (pantalla Tarjetas de regalo) → #58 T-094 (página
   `/regalo/[token]`) → #60 T-095 (cobro con tarjeta) → #62 T-096 (caja, cierre y semana en pantalla)
-  → T-097 (esta validación). La fusión automática la bloqueó el clasificador de permisos, así que
-  quedan abiertos.
+  → #63 T-097 (esta validación). Henry autorizó fusionar en orden: #50…#62 en `main` el
+  2026-11-04 con el CI en verde, y #63 al quedar verde.
 - `pnpm trace --hito=9`: 261 criterios, **0 sin prueba en el hito 9**; el hito 9 entra al loop de
   `tests/unit/traceability.test.ts`. Pruebas (Docker local): pgTAP 1052 · unitarias 306 ·
   integración 122; los E2E nuevos (`gift-cards`, `gift-card-page`, `gift-card-checkout`,
@@ -230,10 +230,9 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - Desvío anotado: `merge_customers` no se redefinió en `0051` (falla antes del Hito 9 con
   `SALE_IMMUTABLE`); el arreglo va aparte (PR #48, migración `0055`).
 - **Checklist de Henry** para cerrar el hito:
-  1. Fusionar en orden #50 → #49 → #52 → #56 → #58 → #60 → #62 → T-097. Antes de fusionar cada uno,
-     cambiar la base del siguiente a `main` (`gh pr edit <n> --base main`) y no borrar la rama, para
-     que GitHub no cierre el siguiente.
-  2. Aplicar `0050`…`0053` en producción (`supabase db push`) y desplegar `main` (`vercel --prod`).
+  1. ~~Fusionar la cadena~~ hecho (2026-11-04).
+  2. Aplicar `0050`…`0053` (y `0055`, de la corrección de fichas) en producción (`supabase db push`)
+     y desplegar `main` (`vercel --prod`).
   3. En Filo: publicar la versión nueva del aviso de privacidad (párrafo de tarjetas de regalo,
      REQ-059.4) y revisar la plantilla "Tarjeta de regalo" en Mensajes.
   4. Prueba en la barbería: vender una tarjeta, enviarla por WhatsApp, cobrar con ella parte de un
@@ -316,6 +315,16 @@ Pendientes (H3): `/admin/caja`,
   `w-auto`, `w-12`, `px-0` y `bg-warn` ("No llegó" tras la gracia sale en ámbar). `.input` sigue sin
   capa: `min-h-24`, `min-h-64`, `py-2` y `text-sm` no le aplican; al moverla, `text-sm` en
   `PrivacyForm` bajaría de 16 px el campo (NFR-008).
+
+- `0055_merge_customers_sales` (2026-11-04, PR #48): `merge_customers` fallaba con
+  `SALE_IMMUTABLE` si la ficha fusionada tenía ventas (el `delete` hacía `on delete set null` en
+  `sales.customer_id`). Ahora las ventas pasan a la ficha que queda; `sales_guard` deja cambiar solo
+  `customer_id` dentro de `turnos.internal`. design §2.6 paso 2. **Sin aplicar en producción.**
+  Si se aplica antes que 0045–0054, el siguiente `supabase db push` de los Hitos 8/9 necesita
+  `--include-all` (versiones menores que la última aplicada). El Hito 9 debe sumar
+  `gift_cards.buyer_customer_id` a `merge_customers` (design §15.1).
+- pgTAP `0018_reminders` fallaba entre las 00:00 y las 02:00 de Bogotá (la prueba, no la función):
+  corregido en PR #51.
 
 ## Pendientes externos (los tenía que resolver Henry; verificar estado)
 
