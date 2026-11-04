@@ -869,6 +869,93 @@ límite por persona, recordatorio automático de pago y beneficios en productos.
 
 ---
 
+## 5g. Hito 9 — Tarjetas de regalo
+
+> Estado: **APROBADA** (Henry, 2026-11-03, tras grill de 12 preguntas con la respuesta recomendada).
+> Ver ADR-034. El salto de REQ-049…REQ-054 es intencional: son del Hito 8 (citas), en paralelo.
+> Alguien compra en la barbería una tarjeta por un valor en pesos para regalarla; quien la recibe la
+> usa como medio de pago, en una o varias visitas, durante un año.
+
+### REQ-055 · Vender una tarjeta de regalo — M
+**Como** dueño, **quiero** vender tarjetas de regalo en la caja, **para** que los clientes regalen
+un corte y la plata quede registrada.
+
+- REQ-055.1 Solo el dueño DEBE poder vender una tarjeta, desde "Tarjetas de regalo" en `/admin`, con
+  un valor libre en pesos entre $ 10.000 y $ 500.000, en miles exactos.
+- REQ-055.2 CUANDO el dueño vende una tarjeta, EL SISTEMA DEBE crear una venta de "Tarjeta de
+  regalo" con los medios de pago de la caja (REQ-023.1), sin barbero y sin comisión, que entra
+  completa como ingreso del negocio ese día.
+- REQ-055.3 El dueño DEBE escribir el nombre y el celular de quien compra (si el celular no tiene
+  ficha, EL SISTEMA DEBE crearla) y PUEDE escribir el nombre de pila de quien la recibe ("Para").
+- REQ-055.4 Cada tarjeta DEBE tener un código de 8 caracteres, único en el negocio, con letras y
+  números que no se confunden (sin `0`, `O`, `1`, `I`, `L`), y un enlace con un token no adivinable,
+  distinto del código.
+- REQ-055.5 La tarjeta DEBE vencer **un año** después del día de la venta (Bogotá), el mismo día y
+  mes del año siguiente, incluido ese día. Usarla en partes no alarga el plazo.
+- REQ-055.6 La tarjeta DEBE ser al portador: la puede usar cualquiera que tenga el código.
+
+### REQ-056 · Entregar la tarjeta — M
+**Como** comprador, **quiero** recibir la tarjeta en el celular, **para** reenviarla o mostrarla.
+
+- REQ-056.1 CUANDO se vende una tarjeta, la pantalla DEBE ofrecer un botón de WhatsApp (`wa.me`, al
+  celular del comprador) con un texto editable (REQ-033) que lleva el valor, el enlace y la fecha de
+  vencimiento.
+- REQ-056.2 El enlace DEBE abrir una página pública de la tarjeta, sin cuenta, con el nombre del
+  negocio, "Para" (si lo hay), el código, el saldo, la fecha de vencimiento y las condiciones de uso
+  (al portador, se usa en partes, no se devuelve en efectivo, vence el <día>).
+- REQ-056.3 La página pública NO DEBE mostrar el nombre ni el celular del comprador, ni en qué se
+  gastó el saldo.
+- REQ-056.4 El dueño DEBE poder volver a abrir el botón de WhatsApp de cualquier tarjeta vigente.
+
+### REQ-057 · Pagar con la tarjeta en el cobro — M
+**Como** barbero, **quiero** cobrar con la tarjeta de regalo, **para** que el cliente no tenga que
+pagar en plata lo que ya le regalaron.
+
+- REQ-057.1 El panel de cobro (con turno o en "Nueva venta") DEBE ofrecer el medio de pago "Tarjeta
+  de regalo"; al escribir el código, EL SISTEMA DEBE mostrar el saldo y el vencimiento.
+- REQ-057.2 SI el código no existe en el negocio, la tarjeta está vencida, anulada o sin saldo,
+  ENTONCES EL SISTEMA DEBE rechazar el pago con un mensaje claro y no registrar la venta.
+- REQ-057.3 El pago con la tarjeta DEBE ser como máximo su saldo; SI el cobro vale más, ENTONCES el
+  resto se paga con otro medio (REQ-023.5). Una venta lleva a lo sumo una tarjeta.
+- REQ-057.4 El barbero y el dueño DEBEN poder cobrar con la tarjeta.
+- REQ-057.5 La comisión del barbero DEBE calcularse como en cualquier venta (§5.1 y §13.4): el medio
+  de pago no la cambia.
+- REQ-057.6 La tarjeta DEBE poder pagar lo que queda después de la membresía, el premio de
+  fidelidad o un descuento: es un medio de pago, no un beneficio (REQ-047.5 no aplica).
+- REQ-057.7 Con la tarjeta NO DEBE pagarse otra tarjeta de regalo ni la cuota de la membresía.
+- REQ-057.8 CUANDO dos cobros usan la misma tarjeta a la vez, EL SISTEMA NO DEBE gastar más que el
+  saldo.
+
+### REQ-058 · Anular y vencer — M
+**Como** dueño, **quiero** reglas claras para anular, **para** que el saldo siempre cuadre.
+
+- REQ-058.1 El dueño DEBE poder anular la venta de una tarjeta con las reglas de REQ-026 (solo del
+  día, con motivo) y solo si la tarjeta no se ha usado; al anularla, la tarjeta queda anulada.
+- REQ-058.2 CUANDO se anula una venta pagada con una tarjeta, EL SISTEMA DEBE devolver ese pago al
+  saldo de la tarjeta.
+- REQ-058.3 El saldo NO DEBE devolverse en efectivo ni pasarse a otra tarjeta.
+- REQ-058.4 CUANDO la tarjeta vence, el saldo que quede DEBE perderse y la página pública DEBE decir
+  "Vencida".
+
+### REQ-059 · Lo que ve el dueño — M
+**Como** dueño, **quiero** ver cuánto vendí y cuánto debo en tarjetas, **para** que la caja cuadre.
+
+- REQ-059.1 El cierre del día (REQ-027) y el resumen semanal (REQ-028) DEBEN mostrar aparte
+  "Tarjetas de regalo vendidas" (valor) y "Pagado con tarjeta de regalo" (valor).
+- REQ-059.2 Lo pagado con tarjeta NO DEBE contar en el efectivo esperado ni como plata que entró ese
+  día; el cierre DEBE mostrar "Entró en plata" = total vendido − pagado con tarjeta.
+- REQ-059.3 "Tarjetas de regalo" DEBE listar las tarjetas con código, "Para", valor, saldo,
+  vencimiento y estado (vigente, agotada, vencida, anulada), y el total "Saldo por usar" de las
+  vigentes.
+- REQ-059.4 El aviso de privacidad por defecto DEBE decir que se guarda el nombre y el celular de
+  quien compra una tarjeta para enviársela; se publica con el mecanismo de REQ-002.5.
+
+Fuera de alcance del Hito 9: venta o pago en línea, tarjetas por servicio ("un corte"), montos fijos,
+recargar una tarjeta, bloquear una tarjeta perdida, devolver saldo en efectivo, envío automático por
+WhatsApp, tarjetas impresas con diseño y recordatorio de vencimiento.
+
+---
+
 ## 6. Requisitos no funcionales
 
 | ID | Requisito | Criterio verificable |
