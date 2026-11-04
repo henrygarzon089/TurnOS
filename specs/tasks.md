@@ -1177,13 +1177,19 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   quien compra una tarjeta siempre tiene la venta; al arreglarlo hay que mover también
   `gift_cards.buyer_customer_id` (`design.md` §15.1).
 
-### [ ] T-091 · Pagar con la tarjeta y anular
+### [x] T-091 · Pagar con la tarjeta y anular
 - REQ: REQ-057.2, REQ-057.3, REQ-057.5, REQ-057.6, REQ-057.7, REQ-057.8, REQ-058.1, REQ-058.2,
   REQ-058.3, REQ-058.4
 - Archivos: `supabase/migrations/0052_gift_card_checkout.sql` (`register_sale`,
   `register_membership_fee`, `void_sale`), `supabase/tests/0052_gift_card_checkout.sql`,
   `src/lib/domain/commission.ts` (solo la prueba del ejemplo I)
 - Terminado: pgTAP con los ejemplos I, K y L, cada rechazo y dos cobros a la vez.
+- Nota (2026-11-04): pgTAP 34 nuevas en `supabase/tests/0052_gift_card_checkout.sql` (1036 en total);
+  unitaria del ejemplo I en `commission.test.ts`. `0052` copia `register_sale`, `void_sale` y
+  `register_membership_fee` de `0042` y solo agrega lo de la tarjeta. Detalles que la spec no fijaba:
+  pago con tarjeta de $ 0 → `INVALID_PAYMENT`; el orden de los rechazos es no existe → anulada →
+  vencida → saldo. Dos cobros a la vez se prueban en serie (pgTAP no abre dos sesiones): el `for
+  update` sobre la tarjeta hace que el segundo espere y vea el saldo del primero.
 
 ### [ ] T-092 · Caja, semana, aviso y plantilla en SQL
 - REQ: REQ-059.1, REQ-059.2, REQ-059.4, REQ-056.1
