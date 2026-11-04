@@ -1144,12 +1144,21 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 > números es intencional: T-078…T-089, REQ-049…054 y `0045`…`0049` son del Hito 8 (citas), que va en
 > paralelo. T-098 y T-099 quedan libres. No depende del Hito 8.
 
-### [ ] T-090 · Migración y pgTAP: tarjetas y venta
+### [x] T-090 · Migración y pgTAP: tarjetas y venta
 - REQ: REQ-055.1, REQ-055.2, REQ-055.3, REQ-055.4, REQ-055.5, REQ-055.6, REQ-056.3, REQ-059.3
 - Archivos: `supabase/migrations/0050_gift_card_enums.sql`, `supabase/migrations/0051_gift_cards.sql`
   (`gift_cards`, `sell_gift_card`, `gift_card_lookup`, `gift_cards_list`, `get_gift_card_by_token`),
   `supabase/tests/0051_gift_cards.sql`
 - Terminado: pgTAP de §15.6 para `0051` en verde (ejemplo H); sin vender nada, la caja no cambia.
+- Nota (2026-11-03): pgTAP 48 nuevas en `supabase/tests/0051_gift_cards.sql` (1002 en total);
+  `0021_cash` y `0042_membership_sales` ahora esperan los valores `'gift_card'` de los enums.
+  Funciones auxiliares que la spec no nombraba: `gift_card_new_code`, `gift_card_normalize_code`,
+  `gift_card_balance` y `gift_card_state` (solo `service_role`). "Para" de más de 40 →
+  `INVALID_NAME`. La ficha del comprador se busca o crea con `membership_customer` (0041), que deja
+  el nombre que ya tenía. **Desvío:** `merge_customers` no se redefine: hoy ya falla con
+  `SALE_IMMUTABLE` para cualquier ficha con ventas (bug anterior a este hito, propuesto aparte), y
+  quien compra una tarjeta siempre tiene la venta; al arreglarlo hay que mover también
+  `gift_cards.buyer_customer_id` (`design.md` §15.1).
 
 ### [ ] T-091 · Pagar con la tarjeta y anular
 - REQ: REQ-057.2, REQ-057.3, REQ-057.5, REQ-057.6, REQ-057.7, REQ-057.8, REQ-058.1, REQ-058.2,
