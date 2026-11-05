@@ -2064,7 +2064,8 @@ cuentan 1 caja de guantes (calculado 1) y 0 ceras (calculado 1).
   ≥ 1` → **alerta** "Revisar con Juan". El faltante queda como `use`.
 
 **Ejemplo N — rendimiento sugerido.** Gel en "Midiendo" para Corte. Cuatro conteos semanales (de
-cualquier estación) con consumo: 120 cortes y 3 geles en total → sugerido `floor(120 ÷ 3) = 40`.
+cualquier estación) con consumo: 160 cortes y 4 geles en total → sugerido `floor(160 ÷ 4) = 40`. Con
+solo 3 conteos con consumo todavía no sugiere.
 
 **Ejemplo O — costo por servicio.** Barba gasta guantes ($ 30.000 la caja, rinde 50 → 600), papel
 cuello ($ 8.000 el rollo, rinde 100 → 80) y aceite ($ 25.000, rinde 50 → 500): "Barba: $ 1.180 en

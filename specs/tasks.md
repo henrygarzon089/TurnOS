@@ -1463,13 +1463,21 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   suite pgTAP. Solo descuenta ítems activos. Anular dos veces ya lo rechaza `sales_guard`; además
   el único parcial `(sale_item_id, kind)` evita una segunda devolución.
 
-### [ ] T-123 · Conteos, alerta y rendimiento sugerido
+### [x] T-123 · Conteos, alerta y rendimiento sugerido
 - REQ: REQ-073.2, REQ-073.3, REQ-073.4, REQ-073.5, REQ-073.6, REQ-073.7
 - Archivos: `supabase/migrations/0066_inventory_counts.sql` (`record_stock_count`,
   `inventory_yield_suggestions`, `accept_yield`), `supabase/tests/0066_inventory_counts.sql`,
   `src/lib/domain/inventory.ts` (regla de alerta y consumo esperado), `tests/unit/inventory.test.ts`
 - Terminado: pgTAP de los ejemplos M y N, conteo inicial, mensual con motivo y cierre de estación;
   unitarias de la regla de alerta.
+- Nota (2026-11-04): pgTAP 46 nuevas en `supabase/tests/0066_inventory_counts.sql` y 3 unitarias en
+  `tests/unit/inventory.test.ts`. Detalles que la spec no fijaba: la regla de alerta vive en SQL como
+  `inventory_is_alert` (y en `inventory.ts` para la pantalla); un insumo sin ningún servicio con
+  rendimiento cuenta como "Midiendo" (no alerta); `record_stock_count` recibe `p_at` solo para
+  pruebas (se ignora con sesión); lo contado es entero ≥ 0 (`INVALID_QTY`) y una línea repetida o de
+  un ítem que no va en ese sitio → `INVALID_ITEM`; el conteo de cierre de una estación nunca contada
+  no compara consumo. El ejemplo N pasa a 160 cortes y 4 geles (con 3 geles no hay 4 conteos con
+  consumo).
 
 ### [ ] T-124 · Orden de compra, costo por servicio y "Mi estación" en SQL
 - REQ: REQ-074.1, REQ-074.3, REQ-074.4
