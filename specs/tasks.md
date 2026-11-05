@@ -1484,12 +1484,17 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `parseProductForm`). Sin pruebas de integración nuevas: las dos acciones escriben con RLS como
   antes; las cubren las unitarias de `product-form` y el E2E `tests/e2e/pos-settings.spec.ts` (en CI).
 
-### [ ] T-116 · Vitrina en "Nueva venta"
+### [~] T-116 · Vitrina en "Nueva venta"
 - REQ: REQ-066.1, REQ-066.2, REQ-066.3, REQ-066.4
 - Archivos: `src/components/cash/ProductShowcase.tsx` (nueva), `src/components/cash/NewSaleSheet.tsx`,
   `src/components/cash/CheckoutSheet.tsx`, `src/lib/actions/cash.ts`
 - Terminado: E2E: el dueño vende una cera escogiendo barbero (y no puede confirmar sin escoger); el
   barbero vende a su nombre sin pregunta; pestañas por categoría.
+- Nota (2026-11-04, en curso): `ProductShowcase` (cuadros, pestañas), `src/lib/domain/showcase.ts`
+  (`showcaseCategories`, `saleParties`, unitarias 4 y cobertura 100 %), "¿Quién vendió?" sin opción
+  por defecto, "Venta a tu nombre" del barbero, y en el mismo cambio la vitrina del cobro del turno y
+  el interruptor "Compra de un barbero" (código de T-117). E2E de `new-sale` y `membership-checkout`
+  ajustados al nuevo selector. Falta: E2E nuevos de la vitrina (T-116/T-117) y correr el E2E en CI.
 
 ### [ ] T-117 · Vitrina en el cobro del turno y compra de un barbero
 - REQ: REQ-066.5, REQ-068.2, REQ-068.3
