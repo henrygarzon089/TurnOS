@@ -1992,8 +1992,8 @@ del negocio (errcode `42501`, como en la caja). Los rechazos de negocio son P000
 - `inventory_overview(p_business_id)` → jsonb para el panel: por ítem, stock en bodega, vitrina y
   cada estación; `negative` (algún sitio < 0, REQ-072.3); `shelfToFill` = `shelf_min − vitrina` si
   la vitrina está en el mínimo o por debajo (REQ-072.5); las alertas del último conteo de cada
-  estación abierta (REQ-073.4); las estaciones `'closing'` (REQ-073.7) y las sugerencias de
-  rendimiento (REQ-073.5). Solo dueño.
+  estación abierta (REQ-073.4) y las estaciones `'closing'` (REQ-073.7). Las sugerencias de
+  rendimiento (REQ-073.5) las trae aparte `inventory_yield_suggestions` (0066). Solo dueño.
 - `record_stock_count(p_location_id, p_lines jsonb)` → jsonb con el conteo y sus líneas.
   `[{itemId, counted, reason?}]`. Debe traer una línea por cada ítem activo del sitio (estación: los
   de la dotación; bodega: todos; vitrina: los de venta) → si falta alguno, `MISSING_LINES`. El tipo
