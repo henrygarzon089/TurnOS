@@ -1419,7 +1419,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ## Hito 13 — Inventario de insumos y vitrina (ADR-039)
 
-> REQ-070…REQ-074 y ADR-039 en propuesta (grill con Henry 2026-11-04). Diseño en `design.md` §18.
+> REQ-070…REQ-074 y ADR-039 aprobados por Henry (2026-11-04, PR #72). Diseño en `design.md` §18.
 > Los números saltan: T-100…T-119 son de los Hitos 11 y 12, en paralelo. Las migraciones `0063`…`0067`
 > se fusionan después de las del Hito 12 (`0060`…`0062`). La venta de productos es del Hito 12;
 > aquí solo el stock (§18.4).

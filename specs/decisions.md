@@ -532,7 +532,8 @@
   ADR-033/035 son del Hito 8.
 
 ## ADR-039 · Inventario de insumos, estaciones y vitrina (Hito 13)
-- Estado: **propuesta** (grill con Henry 2026-11-04; falta su aprobación de la spec)
+- Estado: **aceptada** (Henry, 2026-11-04: aprobó la spec en el PR #72, incluidos los dos detalles
+  de diseño de abajo)
 - Contexto: el plan operativo de Filo ("Gamma") pide que cada barbero tenga una dotación de la casa
   y que se lleve el control: bodega cerrada que maneja el dueño, una estación por barbero con
   dotación fija, vitrina con productos para la venta, reposición con envase vacío, consumo esperado

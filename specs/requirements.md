@@ -1072,8 +1072,8 @@ WhatsApp, tarjetas impresas con diseño y recordatorio de vencimiento.
 
 ## 5j. Hito 13 — Inventario de insumos y vitrina
 
-> Estado: **PROPUESTA** (grill con Henry 2026-11-04: 20 preguntas, todas con la respuesta
-> recomendada). Ver ADR-039. Los números saltan: REQ-060…064 son del Hito 11 (limpieza) y
+> Estado: **APROBADA** (Henry, 2026-11-04, tras grill de 20 preguntas con la respuesta
+> recomendada; PR #72). Ver ADR-039. Los números saltan: REQ-060…064 son del Hito 11 (limpieza) y
 > REQ-065…069 del Hito 12 (punto de venta), en paralelo. La venta de productos (vitrina, comisión,
 > descuento de empleado) es del Hito 12; este hito solo lleva el stock.
 > Plan operativo de Filo: cada barbero tiene una **estación** con una dotación fija de la casa; la
