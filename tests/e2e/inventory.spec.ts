@@ -63,7 +63,7 @@ test.describe("REQ-070 / REQ-071 / REQ-073 / REQ-074 Inventario", () => {
 
     // REQ-071.2 entrada a bodega
     let form = await movement(page, "Entrada a bodega");
-    await form.getByLabel("Ítem").selectOption({ label: option });
+    await form.getByRole("combobox", { name: /^Ítem/ }).selectOption({ label: option });
     await form.getByLabel("Cantidad").fill("3");
     await form.getByLabel("Precio pagado por unidad").fill("18.000");
     await form.getByRole("button", { name: "Registrar entrada" }).click();
@@ -71,7 +71,7 @@ test.describe("REQ-070 / REQ-071 / REQ-073 / REQ-074 Inventario", () => {
 
     // REQ-071.3 bodega → estación de Juan, hasta la dotación
     form = await movement(page, "Transferir");
-    await form.getByLabel("Ítem").selectOption({ label: option });
+    await form.getByRole("combobox", { name: /^Ítem/ }).selectOption({ label: option });
     await form.getByLabel("Desde").selectOption({ label: "Bodega" });
     await form.getByLabel("Hacia").selectOption({ label: "Estación de Juan" });
     await form.getByRole("button", { name: "Transferir" }).click();
@@ -86,7 +86,7 @@ test.describe("REQ-070 / REQ-071 / REQ-073 / REQ-074 Inventario", () => {
     // REQ-071.4 reponer exige el envase vacío
     form = await movement(page, "Reponer");
     await form.getByLabel("Barbero").selectOption({ label: "Juan" });
-    await form.getByLabel("Ítem").selectOption({ label: option });
+    await form.getByRole("combobox", { name: /^Ítem/ }).selectOption({ label: option });
     await form.getByLabel("Recibí el envase vacío").check();
     await form.getByRole("button", { name: "Reponer" }).click();
     await expect(form.getByRole("status")).toBeVisible({ timeout: 15_000 });
