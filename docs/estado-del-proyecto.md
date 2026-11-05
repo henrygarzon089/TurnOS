@@ -302,6 +302,60 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   3. Probar un día en la barbería: apertura, cierre con foto, una revisión y una tarea.
   4. Aprobar el hito: queda como ADR-041 (reservado por la sesión coordinadora).
 
+### Hito 12 — punto de venta con comisión (aprobado, ADR-040, 2026-11-05; ADR-038)
+
+- 2026-11-04: grill de 7 preguntas con Henry, todas con la respuesta recomendada, y abogado del
+  diablo (Henry siguió sin cambios; anotado en ADR-038). Escritos REQ-065…REQ-069 (26 criterios,
+  §5i), `design.md` §17, ADR-038 (aceptada; cambia PA-17) y tareas T-110…T-119. Va en paralelo con
+  el Hito 11 (limpieza) y el Hito 13 (inventario): los números saltan a propósito. Henry aprobó la spec
+  el mismo día (PR #75); sigue T-110. Migraciones previstas `0060`…`0062`.
+- 2026-11-04: construido T-110…T-118 en PRs encadenados, cada uno sobre el anterior: #75 spec →
+  #80 T-110 (`0060`, datos) → #82 T-111/T-112 (`0061`, `register_sale` con comisión de productos y
+  compra de barbero) → #86 T-113 (`0062`, caja y semana) → #87 T-114 (dominio) → #90 T-115
+  ("Negocio" y "Productos") → #93 T-116/T-117 (vitrina y compra de barbero) → #99 T-118 (Caja de hoy,
+  cierre, semana y "Mis números") → T-119 (este cierre). El Hito 13 descuenta la vitrina con sus
+  triggers sobre `sale_items` (`ref_id`, `qty`), sin tocar este código.
+- `pnpm trace --check --hito=12`: 0 sin prueba (26 CA); el hito 12 ya está en el loop de
+  `tests/unit/traceability.test.ts`.
+- 2026-11-05: Henry aplicó `0060`…`0062` en producción (`supabase db push --include-all` desde
+  `claude/h12-t118`; subieron también `0063` y `0064` del Hito 13). Preview de la cadena:
+  https://turnos-mw7ifckv4-henry-garzons-projects.vercel.app (con sesión de Vercel).
+- 2026-11-05: Henry probó en el preview y aprobó el hito (ADR-040). Corrección de la prueba:
+  "Usar otro medio de pago" para quitar la tarjeta de regalo del cobro (PR #105). Los % de productos
+  y de descuento se quedan uno por negocio.
+- Falta (Henry): marcar en Filo los productos que dan comisión y sus categorías, revisar los dos % en "Negocio", probar una
+  venta de vitrina y una compra de barbero en la barbería, y aprobar el hito (ADR nuevo).
+
+### Hito 13 — inventario de insumos y vitrina (construido, falta aprobación de Henry)
+
+- 2026-11-04: grill en dos rondas con Henry (Q1–Q20, todas con la respuesta recomendada). Escritos
+  REQ-070…REQ-074 (29 criterios, §5j), `design.md` §18, ADR-039 y tareas T-120…T-129. Henry aprobó
+  la spec (PR #72, ya en `main`). Todo vive en TurnOS: cada barbero tiene una dotación de la barbería,
+  se repone solo con el envase vacío, los conteos semanales de estación alertan el consumo de más y la
+  vitrina se descuenta sola desde la caja y la cortesía.
+- Frontera con el Hito 12 (POS), acordada con la sesión coordinadora: el 12 es dueño de `products` y
+  de la venta (`register_sale`/`void_sale`). El 13 solo agrega triggers sobre `sale_items` (insert
+  de producto) y `sales` (activa → anulada, idempotente). Las migraciones del 12 (`0060`–`0062`)
+  entran antes que las del 13.
+- PRs en cadena, cada uno sobre el anterior: #76 T-120 (`0063` catálogo y sitios) → #77 T-121
+  (`0064` movimientos) → #79 T-122 (`0065` gancho de caja y cortesía) → #83 T-123 (`0066`
+  conteos, alerta y rendimiento) → #85 T-124 (`0067` orden de compra, costo y Mi estación) → #89
+  T-125 (acciones) → #92 T-126 (resumen y catálogo) → #94 T-127 (conteo, compra, costos, alerta
+  en Negocio) → #95 T-128 (Mi estación y E2E) → T-129 (esta validación).
+- #76 y #77 ya están en `main`; el Hito 12 (`0060`–`0062`) también (2026-11-05). El pgTAP de `0065`
+  pasa con el `register_sale` nuevo de `0061` (la cadena se probó sobre el 12: 1422 pgTAP en verde).
+- `pnpm trace --hito=13`: **0 sin prueba en el hito 13**; el hito 13 entra al loop de
+  `tests/unit/traceability.test.ts`. Pruebas: pgTAP de `0063`–`0067` (186) · unitarias 345 ·
+  integración 149 (Docker local); la E2E `inventory.spec.ts` corre en el CI.
+- **Checklist de Henry** para cerrar el hito:
+  1. Fusionar la cadena en orden: #79 → #83 → #85 → #89 → #92 → #94 → #95 → T-129.
+  2. `0063`…`0067` en producción (`supabase db push --include-all`) y `main` desplegado.
+  3. En Filo → Inventario → Catálogo: "Agregar plantilla básica", crear los insumos reales (cera,
+     gel, alcohol…) con su dotación, y enlazar los productos de la vitrina.
+  4. Primer conteo de bodega, vitrina y cada estación (queda como inicial).
+  5. Una semana después: conteo semanal de las estaciones y revisar alertas y la orden de compra.
+  6. Aprobación del hito → ADR-042 (reservado) y T-129 `[x]`.
+
 ### Hito 4 — servicios por barbero (2026-10-28)
 
 - Origen: Filo (`/filo`, creado en producción el 2026-10-28 con `supabase/data/filo.sql`) tiene
@@ -344,6 +398,9 @@ primero · 0013 clientes, fidelidad, recordatorios · 0014 fusión de fichas y c
 (ADR-016) · 0015 supresión · 0017 progreso de fidelidad · 0018 inactivos en días del negocio ·
 0019 barbero preferido. Hito 9: 0050 valores nuevos de los enums · 0051 tarjetas de regalo (venta,
 búsqueda, lista, página) · 0052 pagar y anular con la tarjeta · 0053 caja, semana, plantilla y aviso.
+Hito 13: 0063 catálogo, sitios y dotación · 0064 entradas, transferencias y reposición · 0065 vitrina
+desde la caja y la cortesía · 0066 conteos, alerta y rendimiento · 0067 orden de compra, costo por
+servicio y Mi estación.
 
 ### Pantallas
 
@@ -353,6 +410,8 @@ Personal: `/entrar`, `/invitacion/[token]`, `/crear-negocio` (3 pasos), `/app/fi
 Personal (H2): `/app/clientes`, `/app/clientes/[id]`, `/admin/fidelidad`, `/admin/recordar`.
 Hito 3: `/admin/caja` (+ `/admin/caja/[fecha]`), `/admin/semana`, `/app/mis-numeros`, panel de cobro.
 Hito 9: `/admin/regalos` (dueño) y `/regalo/[token]` (pública, sin cuenta).
+Hito 13: `/admin/inventario` (+ `catalogo`, `conteo`, `compra`, `costos`), "Alerta de consumo (%)"
+en `/admin/negocio` y `/app/estacion` (barbero).
 Pendientes (H3): `/admin/caja`,
 `/admin/semana`, `/app/mis-numeros`.
 

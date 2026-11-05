@@ -1,6 +1,7 @@
 import { GiftCardTotals } from "@/components/cash/GiftCardTotals";
 import { MembershipTotals } from "@/components/cash/MembershipTotals";
 import type { WeekSummary as Week } from "@/lib/actions/cash";
+import { staffPurchasesLine } from "@/lib/domain/cash-closure";
 import { formatCOP } from "@/lib/domain/money";
 import { formatDayCO } from "@/lib/domain/time";
 import { formatMinutesHours, variation } from "@/lib/domain/week";
@@ -77,6 +78,10 @@ export function WeekSummary({ current: w, previous: p }: { current: Week; previo
         cancelado)
       </p>
 
+      {staffPurchasesLine(w) && (
+        <p className="border-line bg-card rounded-xl border p-3 text-sm">{staffPurchasesLine(w)}</p>
+      )}
+
       <section aria-label="Por barbero">
         <h2 className="mb-2 font-semibold">Por barbero</h2>
         <ul className="border-line bg-card divide-line divide-y rounded-xl border">
@@ -89,6 +94,12 @@ export function WeekSummary({ current: w, previous: p }: { current: Week; previo
                 {b.services} servicios · vendido {formatCOP(b.sold)} · comisión{" "}
                 {formatCOP(b.commission)}
               </p>
+              {b.productCommission > 0 && (
+                <p className="text-muted" data-testid={`week-products-${b.barberId}`}>
+                  comisión de productos {formatCOP(b.productCommission)} · total a pagar{" "}
+                  {formatCOP(b.toPay)}
+                </p>
+              )}
             </li>
           ))}
         </ul>

@@ -1250,6 +1250,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   total (`giftCardSplit`), y lo que falta se elige en "Medio para lo que falta". `checkoutPayments`
   arma `p_payments` (tarjeta primero). El E2E prueba "sin saldo" (no "vencida": el vencimiento a un
   año no se puede forzar sin tocar la tabla); "vencida" queda en pgTAP 0052 y en la unitaria.
+- Corrección (2026-11-05, prueba de Henry en el preview del Hito 12): si se toca "Tarjeta de regalo"
+  por error no quedaba claro cómo volver. La sección trae "Usar otro medio de pago", que borra la
+  tarjeta, el código y el medio de lo que falta. E2E en `tests/e2e/gift-card-checkout.spec.ts`.
 
 ### [x] T-096 · Caja de hoy, cierre y semana en pantalla
 - REQ: REQ-059.1, REQ-059.2, REQ-058.1
@@ -1440,6 +1443,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   mismo día (la fecha de hoy no cambia y el rollback lo deshace), y la cita c7 pasa de las 10:00 a
   las 12:00 para quedar en su día con ese corrimiento. Las funciones de citas no cambian; sin cambio
   de spec. Reproducido a las 22:59 (3 fallas) y en verde con la hora fijada a 12:00, 16:00 y 20:00.
+- Corrección (2026-11-05): el E2E `tests/e2e/appointments-queue.spec.ts` tenía el mismo problema
+  (cita a ahora + 30 min, que después de las 23:30 caía en mañana). `appointmentToday` toma como
+  máximo las 23:59 de Bogotá: la cita sigue siendo de hoy y queda dentro de los 10 min de gracia.
 
 ### [x] T-080 · Dominio: estimado con citas, calendario y mensajes
 - REQ: REQ-053.1, REQ-053.2, REQ-053.3, REQ-051.3
@@ -1546,6 +1552,125 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ---
 
+## Hito 12 — Punto de venta de productos con comisión (ADR-038)
+
+> REQ-065…REQ-069 y ADR-038 aprobados por Henry (2026-11-04, PR #75). Diseño en `design.md` §17. Los números saltan: T-100…T-109 son del Hito 11
+> (limpieza) y T-120… del Hito 13 (inventario), en paralelo. El Hito 13 depende de que las líneas de
+> producto sigan con `ref_id` y `qty` (REQ-066.6), no de estas tareas.
+
+### [x] T-110 · Migración y pgTAP: datos del POS
+- REQ: REQ-065.1, REQ-065.2, REQ-065.3, REQ-065.4, REQ-068.1
+- Archivos: `supabase/migrations/0060_pos_products.sql` (columnas de `businesses`, `products`,
+  `sale_items` y `sales`, `business_pct_changes` y su trigger, checks, permisos),
+  `supabase/tests/0060_pos_products.sql`
+- Terminado: pgTAP de §17.6 para `0060` en verde; sin marcar productos la caja no cambia.
+- Nota (2026-11-04): pgTAP 24 nuevas en `supabase/tests/0060_pos_products.sql` (1192 en total, base
+  Docker propia `turnos-ci-db-h12`). El historial lo escribe el trigger `businesses_pct_change`; el
+  personal no puede insertar en `business_pct_changes` (solo `select`).
+
+### [x] T-111 · `register_sale` con la comisión de productos
+- REQ: REQ-065.5, REQ-066.1, REQ-066.4, REQ-066.5, REQ-066.6, REQ-067.1, REQ-067.2, REQ-067.3,
+  REQ-067.4, REQ-067.5, REQ-069.1
+- Archivos: `supabase/migrations/0061_pos_register_sale.sql` (`register_sale` con la firma nueva),
+  `supabase/tests/0061_pos_register_sale.sql`
+- Terminado: pgTAP con los ejemplos M, N, O y Q, `for_sale`, `FORBIDDEN`, membresía, premio y
+  tarjeta de regalo sin efecto en la comisión de productos, y anular.
+- Nota (2026-11-04): T-111 y T-112 van juntas en `0061` (una sola redefinición de `register_sale`) y en
+  `supabase/tests/0061_pos_register_sale.sql` (30 pgTAP; 1222 en total; integración 142 en verde).
+  `0029_function_grants` pide la firma nueva. Detalle que la spec no fijaba: `sale_items.commissionable`
+  queda en `true` solo si la línea dio comisión (producto marcado, con barbero y sin ser compra de
+  barbero); con "Nadie" queda en `false`. REQ-066.5 (productos en el cobro del turno) se prueba en el
+  E2E de T-117: el cálculo es el mismo con o sin turno.
+
+### [x] T-112 · Compra de un barbero en `register_sale`
+- REQ: REQ-068.2, REQ-068.3, REQ-068.4
+- Archivos: `supabase/migrations/0061_pos_register_sale.sql`, `supabase/tests/0061_pos_register_sale.sql`
+- Terminado: pgTAP con el ejemplo P y cada rechazo (`FORBIDDEN`, `STAFF_DISCOUNT_OFF`,
+  `BARBER_NOT_FOUND`, `INVALID_STAFF_PURCHASE`).
+- Nota (2026-11-04): hecha con T-111 (misma migración y archivo de pgTAP).
+
+### [x] T-113 · Caja y semana en SQL
+- REQ: REQ-068.5, REQ-069.2, REQ-069.3, REQ-069.4
+- Archivos: `supabase/migrations/0062_pos_reports.sql` (`cash_day_summary`, `weekly_summary`),
+  `supabase/tests/0062_pos_reports.sql`
+- Terminado: pgTAP con el ejemplo R en el cierre (también la foto de `close_cash_day`) y la semana.
+- Nota (2026-11-04): 14 pgTAP en `supabase/tests/0062_pos_reports.sql` (1236 en total; integración
+  142). `cash_day_summary`: `barbers[]` con `productsSold`, `productCommission`, `productPct` y
+  `toPay`; totales `productCommission` y `staffPurchases`; ventas con `productCommission` y
+  `staffBuyerName`. `weekly_summary`: `barbers[]` con `productCommission` y `toPay`; totales
+  `productCommission` y `staffPurchases`. `close_cash_day` no se redefine.
+
+### [x] T-114 · Dominio: comisión de productos y descuento de empleado
+- REQ: REQ-067.1, REQ-067.3, REQ-068.3
+- Archivos: `src/lib/domain/commission.ts` (`productCommission`, `staffDiscount`),
+  `tests/unit/commission.test.ts`
+- Terminado: unitarias con los ejemplos M…Q que dan los mismos números que pgTAP.
+- Nota (2026-11-04): `productCommission` y `staffDiscount` aparte de `computeSale` (que no cambia).
+  5 unitarias nuevas (339 en total), cobertura del dominio en 100 %.
+
+### [x] T-115 · "Negocio" y "Productos" del dueño
+- REQ: REQ-065.1, REQ-065.2, REQ-065.3, REQ-068.1
+- Archivos: `src/app/(staff)/admin/negocio/`, `src/app/(staff)/admin/productos/`,
+  `src/lib/actions/admin.ts`
+- Terminado: integración de las acciones; E2E: marcar una cera con "Da comisión al que vende" y
+  categoría "Vitrina", y cambiar el % de productos.
+- Nota (2026-11-04): "Comisión por productos (%)" y "Descuento de empleado (%)" en `/admin/negocio`
+  (la acción es `updateBusiness`); casilla "Da comisión al que vende" y "Categoría (opcional)" con
+  sugerencias de las categorías del negocio en `/admin/productos` (`saveProduct`, validado en
+  `parseProductForm`). Sin pruebas de integración nuevas: las dos acciones escriben con RLS como
+  antes; las cubren las unitarias de `product-form` y el E2E `tests/e2e/pos-settings.spec.ts` (en CI).
+
+### [x] T-116 · Vitrina en "Nueva venta"
+- REQ: REQ-066.1, REQ-066.2, REQ-066.3, REQ-066.4
+- Archivos: `src/components/cash/ProductShowcase.tsx` (nueva), `src/components/cash/NewSaleSheet.tsx`,
+  `src/components/cash/CheckoutSheet.tsx`, `src/lib/actions/cash.ts`
+- Terminado: E2E: el dueño vende una cera escogiendo barbero (y no puede confirmar sin escoger); el
+  barbero vende a su nombre sin pregunta; pestañas por categoría.
+- Nota (2026-11-04, en curso): `ProductShowcase` (cuadros, pestañas), `src/lib/domain/showcase.ts`
+  (`showcaseCategories`, `saleParties`, unitarias 4 y cobertura 100 %), "¿Quién vendió?" sin opción
+  por defecto, "Venta a tu nombre" del barbero, y en el mismo cambio la vitrina del cobro del turno y
+  el interruptor "Compra de un barbero" (código de T-117). E2E de `new-sale` y `membership-checkout`
+  ajustados al nuevo selector. E2E nuevos en `tests/e2e/pos-showcase.spec.ts` (pestañas, cortesía
+  fuera, "¿Quién vendió?" obligatorio, venta a nombre del barbero). Desvío: con la Gaseosa del seed
+  en vez de una cera.
+
+### [x] T-117 · Vitrina en el cobro del turno y compra de un barbero
+- REQ: REQ-066.5, REQ-068.2, REQ-068.3
+- Archivos: `src/components/cash/CheckoutSheet.tsx`, `src/components/cash/NewSaleSheet.tsx`,
+  `src/lib/actions/cash.ts` (`staffBuyerId`)
+- Terminado: integración de `registerSale` con `staffBuyerId`; E2E: el barbero agrega una cera al
+  cobro de su corte; el dueño registra una compra de barbero con el descuento; con 0 % el
+  interruptor no sale.
+- Nota (2026-11-04): el código salió con T-116. Integración en `tests/integration/pos.test.ts`
+  (compra del dueño, `FORBIDDEN` del barbero, servicios rechazados, venta del barbero con el 10 %);
+  E2E en `tests/e2e/pos-showcase.spec.ts` con la Gaseosa del seed.
+
+### [x] T-118 · Caja de hoy, cierre, semana y "Mis números" en pantalla
+- REQ: REQ-069.2, REQ-069.3, REQ-069.4, REQ-069.5
+- Archivos: Caja de hoy, cierre (y su texto por WhatsApp), Semana, `src/app/(staff)/app/mis-numeros/`
+- Terminado: unitarias del texto del cierre (renglón de productos y "total a pagar", "Compras de
+  barberos"); E2E: la Caja de hoy y "Mis números" muestran la comisión de productos.
+- Nota (2026-11-04): `settlementLine`, `productSettlement` y `staffPurchasesLine` en
+  `src/lib/domain/cash-closure.ts` (el texto vive ahí, no en `cashReport.ts`); "Mis números" suma
+  `product_commission_amount` en `src/lib/domain/my-numbers.ts` (`Totals` con `productCommission` y
+  `total`). El cierre en pantalla sigue mostrando el resumen y el texto por WhatsApp. Cierres viejos
+  sin los campos nuevos se leen como antes. E2E en `tests/e2e/pos-reports.spec.ts`.
+
+### [x] T-119 · Validación Hito 12
+- REQ: REQ-065…REQ-069
+- Archivos: `scripts/traceability.ts` (`HITOS["12"] = [[65, 69]]`), `tests/unit/traceability.test.ts`,
+  `docs/estado-del-proyecto.md`
+- Depende de Henry: `0060`…`0062` en producción, marcar los productos de Filo, prueba en la barbería y
+  aprobación del hito.
+- Terminado: `pnpm trace --hito=12` sin huecos; CI verde. `HITOS["12"]` ya está desde el PR de la
+  spec; el hito 12 entra al loop de `tests/unit/traceability.test.ts` aquí, cuando todas las pruebas
+  existen (como el hito 9 en T-097), para no dejar el CI en rojo mientras tanto.
+- Nota (2026-11-04): hito 12 en el loop; `pnpm trace --check --hito=12` sin huecos;
+  `docs/estado-del-proyecto.md` al día. 2026-11-05: `0060`…`0062` en producción (Henry), prueba en
+  el preview y Hito 12 aprobado (ADR-040). Falta solo la operación en Filo.
+
+---
+
 ## Hito 13 — Inventario de insumos y vitrina (ADR-039)
 
 > REQ-070…REQ-074 y ADR-039 aprobados por Henry (2026-11-04, PR #72). Diseño en `design.md` §18.
@@ -1578,52 +1703,94 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   Una transferencia desde una estación "por cerrar" se permite (hacia ella no). Las sugerencias de
   rendimiento no van en `inventory_overview` (son de 0066): la pantalla las pide aparte.
 
-### [ ] T-122 · Vitrina desde la caja y la cortesía
+### [x] T-122 · Vitrina desde la caja y la cortesía
 - REQ: REQ-072.1, REQ-072.2, REQ-072.3, REQ-072.4
 - Archivos: `supabase/migrations/0065_inventory_sales_hook.sql`,
   `supabase/tests/0065_inventory_sales_hook.sql`
 - Depende de: las migraciones del Hito 12 (`0060`…`0062`) fusionadas, para probar contra su
   `register_sale`.
 - Terminado: pgTAP del ejemplo Q (anular dos veces, otro `update` no mueve stock) y cortesía una vez.
+- Nota (2026-11-04): pgTAP 18 nuevas en `supabase/tests/0065_inventory_sales_hook.sql`. **Desvío de
+  orden:** se construyó antes de que se fusionaran `0060`…`0062` del Hito 12, probado contra el
+  `register_sale`/`void_sale` de `0052`. Los triggers solo leen `sale_items.kind/ref_id/qty` y el paso
+  de `sales.status`, así que no dependen del cambio del 12; al fusionarlo hay que volver a correr la
+  suite pgTAP. Solo descuenta ítems activos. Anular dos veces ya lo rechaza `sales_guard`; además
+  el único parcial `(sale_item_id, kind)` evita una segunda devolución.
 
-### [ ] T-123 · Conteos, alerta y rendimiento sugerido
+### [x] T-123 · Conteos, alerta y rendimiento sugerido
 - REQ: REQ-073.2, REQ-073.3, REQ-073.4, REQ-073.5, REQ-073.6, REQ-073.7
 - Archivos: `supabase/migrations/0066_inventory_counts.sql` (`record_stock_count`,
   `inventory_yield_suggestions`, `accept_yield`), `supabase/tests/0066_inventory_counts.sql`,
   `src/lib/domain/inventory.ts` (regla de alerta y consumo esperado), `tests/unit/inventory.test.ts`
 - Terminado: pgTAP de los ejemplos M y N, conteo inicial, mensual con motivo y cierre de estación;
   unitarias de la regla de alerta.
+- Nota (2026-11-04): pgTAP 46 nuevas en `supabase/tests/0066_inventory_counts.sql` y 3 unitarias en
+  `tests/unit/inventory.test.ts`. Detalles que la spec no fijaba: la regla de alerta vive en SQL como
+  `inventory_is_alert` (y en `inventory.ts` para la pantalla); un insumo sin ningún servicio con
+  rendimiento cuenta como "Midiendo" (no alerta); `record_stock_count` recibe `p_at` solo para
+  pruebas (se ignora con sesión); lo contado es entero ≥ 0 (`INVALID_QTY`) y una línea repetida o de
+  un ítem que no va en ese sitio → `INVALID_ITEM`; el conteo de cierre de una estación nunca contada
+  no compara consumo. El ejemplo N pasa a 160 cortes y 4 geles (con 3 geles no hay 4 conteos con
+  consumo).
 
-### [ ] T-124 · Orden de compra, costo por servicio y "Mi estación" en SQL
+### [x] T-124 · Orden de compra, costo por servicio y "Mi estación" en SQL
 - REQ: REQ-074.1, REQ-074.3, REQ-074.4
 - Archivos: `supabase/migrations/0067_inventory_reports.sql` (`purchase_order`,
   `service_supply_cost`, `my_station`), `supabase/tests/0067_inventory_reports.sql`
 - Terminado: pgTAP de los ejemplos O y P y del alcance de `my_station`.
+- Nota (2026-11-04): pgTAP 24 nuevas en `supabase/tests/0067_inventory_reports.sql`. Detalles que la
+  spec no fijaba: la orden cuenta bodega + vitrina (lo de las estaciones ya está en uso); un insumo
+  desactivado no suma al costo; "Mi estación" muestra también un insumo que ya no es de la dotación
+  mientras la estación tenga stock de él, y si el barbero no tiene estación devuelve listas vacías.
 
-### [ ] T-125 · Acciones de inventario
+### [x] T-125 · Acciones de inventario
 - REQ: REQ-071.6, REQ-074.2, REQ-074.5
 - Archivos: `src/lib/actions/inventory.ts`, `src/lib/domain/inventory.ts` (texto de la orden para
   WhatsApp, plantilla básica, etiquetas), `tests/unit/inventory.test.ts`,
   `tests/integration/inventory.test.ts`
 - Terminado: unitarias y de integración en verde; los errores SQL salen en español.
+- Nota (2026-11-04): 8 unitarias nuevas en `tests/unit/inventory.test.ts` (11 en total) y 7 de
+  integración en `tests/integration/inventory.test.ts`. `inventory.ts` (dominio) agrega etiquetas de
+  grupos, usos y motivos, `parseInventoryItemForm`, `inventoryErrorMessage`, `purchaseOrderText` /
+  `purchaseOrderLink` (wa.me sin número), `BASIC_TEMPLATE` y `basicTemplateItem`. Acciones extra que
+  la spec no nombraba: `getItemUsage` (servicios de cada insumo para el catálogo) y `saveAlertPct`
+  ("Alerta de consumo (%)" en `/admin/negocio`, REQ-073.4).
 
-### [ ] T-126 · Pantallas del dueño: resumen, catálogo y movimientos
+### [x] T-126 · Pantallas del dueño: resumen, catálogo y movimientos
 - REQ: REQ-070.1, REQ-070.2, REQ-071.2, REQ-071.3, REQ-071.4, REQ-072.3, REQ-072.5, REQ-073.1
 - Archivos: `src/app/(staff)/admin/inventario/**` (resumen, `catalogo`), chip "Inventario" del menú
 - Terminado: desde el celular se crea un ítem, se registra una entrada, se repone con envase vacío y
   se surte la vitrina; `pnpm lint:texts` en verde.
+- Nota (2026-11-04): pantallas `/admin/inventario` (pendientes, movimientos en pestañas
+  Reponer / Entrada a bodega / Transferir, rendimiento sugerido y stock por sitio con negativos en
+  rojo) y `/admin/inventario/catalogo` (por grupo, formulario del ítem, servicios que lo gastan y
+  plantilla básica). Formularios en `src/components/admin/InventoryForms.tsx`, pestañas en
+  `InventoryNav.tsx`. Se agregó la lectura `getInventoryCatalog` (ítems también desactivados,
+  productos y servicios) a `src/lib/actions/inventory.ts`. Sin pruebas nuevas: la lógica ya está
+  cubierta por T-120…T-125. Falta revisarlas en el celular contra un proyecto de Supabase.
 
-### [ ] T-127 · Pantallas del dueño: conteos, orden de compra y costos
+### [x] T-127 · Pantallas del dueño: conteos, orden de compra y costos
 - REQ: REQ-073.3, REQ-073.4, REQ-073.5, REQ-073.6, REQ-073.7, REQ-074.1, REQ-074.2, REQ-074.3
 - Archivos: `src/app/(staff)/admin/inventario/{conteo,compra,costos}/**`,
   `src/app/(staff)/admin/negocio` (campo "Alerta de consumo (%)")
 - Terminado: conteo de una estación con alerta, conteo de bodega con motivo, orden compartida por
   WhatsApp y costo por servicio, en el celular.
+- Nota (2026-11-04): `/admin/inventario/conteo?sitio=<id>` (escoger sitio, formulario con lo
+  calculado al lado, motivo solo si hay diferencia en bodega o vitrina y el sitio ya tiene conteo,
+  resultado por ítem con alerta), `/compra` (por proveedor, total y "Compartir por WhatsApp") y
+  `/costos`. "Alerta de consumo (%)" en `/admin/negocio`. Lecturas nuevas: `hasStockCount`. Los
+  formularios de edición ya no se limpian al guardar (`resetOnDone`). Sin pruebas nuevas: la lógica
+  la cubren T-123…T-125. Falta revisarlas en el celular contra un proyecto de Supabase.
 
-### [ ] T-128 · "Mi estación" del barbero y E2E
+### [x] T-128 · "Mi estación" del barbero y E2E
 - REQ: REQ-074.4
 - Archivos: `src/app/(staff)/app/estacion/**`, chip "Mi estación", `tests/e2e/inventory.spec.ts`
 - Terminado: E2E de §18.7 en Pixel 7 y iPhone 13.
+- Nota (2026-11-04): `/app/estacion` (dotación con stock en rojo si falta, reposiciones de 30 días y
+  último conteo con alerta; sin precios) y enlace "Mi estación" en la cabecera del barbero. La E2E
+  `tests/e2e/inventory.spec.ts` le da rendimiento al ítem (Corte, 40) para que deje "Midiendo" y
+  pueda alertar, y cuenta la estación dos veces: el primer conteo abre la ventana. Corre en el CI
+  (Supabase local, ADR-022).
 
 ### [ ] T-129 · Validación Hito 13
 - REQ: REQ-070…REQ-074
@@ -1632,6 +1799,9 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   existen, como el 9 en T-097), `docs/estado-del-proyecto.md`
 - Depende de Henry: `0063`…`0067` en producción, catálogo y primer conteo en Filo, y aprobación.
 - Terminado: `pnpm trace --hito=13` sin huecos; CI verde.
+- Nota (2026-11-04): `pnpm trace --hito=13` con 0 sin prueba y el hito 13 en el loop de
+  `tests/unit/traceability.test.ts`; estado y checklist de Henry en `docs/estado-del-proyecto.md`.
+  Queda `[ ]` hasta que Henry haga lo que le toca y apruebe; la aprobación será ADR-042 (reservado).
 
 ---
 
@@ -1653,4 +1823,5 @@ flowchart LR
   T077 --> T078 --> T079 --> T080 --> T081 --> T082 --> T083 --> T084 --> T085 --> T086 --> T087
   T077 --> T090 --> T091 --> T092 --> T093 --> T094 --> T095 --> T096 --> T097
   T097 --> T100 --> T101 --> T102 --> T103 --> T104 --> T105 --> T106 --> T107 --> T108 --> T109
+  T097 --> T110 --> T111 --> T112 --> T113 --> T114 --> T115 --> T116 --> T117 --> T118 --> T119
 ```
