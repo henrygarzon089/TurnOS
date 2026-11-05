@@ -300,22 +300,22 @@
 | REQ-059.2 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-card-reports.spec.ts, cash-closure.test.ts, gift-card.test.ts, 0053_gift_card_reports.sql | cubierto |
 | REQ-059.3 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-cards.spec.ts, gift-card.test.ts, 0051_gift_cards.sql, 0056_merge_customers_gift_cards.sql | cubierto |
 | REQ-059.4 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | 0053_gift_card_reports.sql | cubierto |
-| REQ-060.1 | Encender el módulo y editar las listas | T-100 (hecha), T-101 (hecha), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | 0057_cleaning.sql, 0058_cleaning_records.sql | prueba escrita |
-| REQ-060.2 | Encender el módulo y editar las listas | T-100 (hecha), T-101 (hecha), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | 0057_cleaning.sql | prueba escrita |
-| REQ-060.3 | Encender el módulo y editar las listas | T-100 (hecha), T-101 (hecha), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | 0057_cleaning.sql | prueba escrita |
-| REQ-060.4 | Encender el módulo y editar las listas | T-100 (hecha), T-101 (hecha), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | 0057_cleaning.sql, 0058_cleaning_records.sql | prueba escrita |
-| REQ-060.5 | Encender el módulo y editar las listas | T-100 (hecha), T-101 (hecha), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.1 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (pendiente), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.2 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (pendiente), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.3 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (pendiente), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.4 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (pendiente), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.5 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
-| REQ-061.6 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
-| REQ-061.7 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (pendiente), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.8 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (pendiente), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.9 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (pendiente), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.10 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (pendiente), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.11 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (pendiente), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
+| REQ-060.1 | Encender el módulo y editar las listas | T-100 (hecha), T-101 (hecha), T-103 (hecha), T-105 (pendiente), T-109 (pendiente) | 0057_cleaning.sql, 0058_cleaning_records.sql | prueba escrita |
+| REQ-060.2 | Encender el módulo y editar las listas | T-100 (hecha), T-101 (hecha), T-103 (hecha), T-105 (pendiente), T-109 (pendiente) | 0057_cleaning.sql | prueba escrita |
+| REQ-060.3 | Encender el módulo y editar las listas | T-100 (hecha), T-101 (hecha), T-103 (hecha), T-105 (pendiente), T-109 (pendiente) | 0057_cleaning.sql | prueba escrita |
+| REQ-060.4 | Encender el módulo y editar las listas | T-100 (hecha), T-101 (hecha), T-103 (hecha), T-105 (pendiente), T-109 (pendiente) | 0057_cleaning.sql, 0058_cleaning_records.sql | prueba escrita |
+| REQ-060.5 | Encender el módulo y editar las listas | T-100 (hecha), T-101 (hecha), T-103 (hecha), T-105 (pendiente), T-109 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | prueba escrita |
+| REQ-061.1 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts, 0058_cleaning_records.sql | prueba escrita |
+| REQ-061.2 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | prueba escrita |
+| REQ-061.3 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | prueba escrita |
+| REQ-061.4 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | prueba escrita |
+| REQ-061.5 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts | prueba escrita |
+| REQ-061.6 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts | prueba escrita |
+| REQ-061.7 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | prueba escrita |
+| REQ-061.8 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
+| REQ-061.9 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
+| REQ-061.10 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
+| REQ-061.11 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
 | REQ-062.1 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
 | REQ-062.2 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
 | REQ-062.3 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
@@ -331,12 +331,12 @@
 | REQ-063.5 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (pendiente), T-108 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
 | REQ-063.6 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (pendiente), T-108 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
 | REQ-063.7 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (pendiente), T-108 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
-| REQ-064.1 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | 0057_cleaning.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
-| REQ-064.2 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
-| REQ-064.3 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | 0057_cleaning.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
-| REQ-064.4 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
-| REQ-064.5 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | 0057_cleaning.sql, 0058_cleaning_records.sql | prueba escrita |
-| REQ-064.6 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
+| REQ-064.1 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (hecha), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0057_cleaning.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
+| REQ-064.2 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (hecha), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
+| REQ-064.3 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (hecha), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | cleaning.test.ts, 0057_cleaning.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
+| REQ-064.4 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (hecha), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0059_cleaning_review_tasks.sql | prueba escrita |
+| REQ-064.5 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (hecha), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | cleaning.test.ts, 0057_cleaning.sql, 0058_cleaning_records.sql | prueba escrita |
+| REQ-064.6 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (hecha), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0059_cleaning_review_tasks.sql | prueba escrita |
 | REQ-065.1 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (hecha) | pos-settings.spec.ts, 0060_pos_products.sql | cubierto |
 | REQ-065.2 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (hecha) | pos-settings.spec.ts, product-form.test.ts, 0060_pos_products.sql | cubierto |
 | REQ-065.3 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (hecha) | pos-settings.spec.ts, product-form.test.ts, 0060_pos_products.sql | cubierto |

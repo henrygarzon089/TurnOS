@@ -1334,12 +1334,17 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
     `NOT_FOUND`.
   - Al purgar, la revisión conserva `photoPurged: true` en cada punto que tenía foto.
 
-### [ ] T-103 · Dominio y acciones de limpieza
+### [x] T-103 · Dominio y acciones de limpieza
 - REQ: REQ-060.5, REQ-061.2, REQ-061.3, REQ-061.6, REQ-061.7, REQ-064.1, REQ-064.3, REQ-064.4,
   REQ-064.6
 - Archivos: `src/lib/domain/cleaning.ts`, `src/lib/actions/cleaning.ts`, `src/lib/cleaning/purge.ts`,
   `tests/unit/cleaning.test.ts`, `tests/integration/cleaning.test.ts`
 - Terminado: unitarias e integración contra Postgres local en verde; la purga con un Storage falso.
+- Nota (2026-11-04): 19 unitarias y 9 de integración. El celular revisa notas y fotos antes de
+  subir, con las mismas reglas que la base. `getCleaningLists` lee las 4 listas con la RLS del dueño.
+  Las fotos se abren con URL firmadas de 1 hora. La purga corre con `after()` desde
+  `getCleaningToday` y `getOwnerCleaningSummary`, y solo si el servidor tiene la llave
+  `service_role`. Un PDF de más de 5 MB da "El PDF pesa más de 5 MB".
 
 ### [ ] T-104 · Pantalla de registro y aviso en la fila del barbero
 - REQ: REQ-061.1, REQ-061.4, REQ-061.5, REQ-061.6, REQ-061.11, REQ-062.1, REQ-062.2, REQ-062.6
