@@ -1393,7 +1393,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 - REQ: REQ-060…REQ-064
 - Archivos: `tests/unit/traceability.test.ts` (el hito 11 entra al loop), `docs/estado-del-proyecto.md`
 - Depende de Henry: `0057`…`0059` en producción, encender Limpieza en Filo, prueba en la barbería y
-  aprobación (nuevo ADR).
+  aprobación (ADR-041, reservado).
 - Terminado: `pnpm trace --hito=11` sin huecos; CI verde. `HITOS["11"]` ya está desde el PR de la
   spec; el hito entra al loop de la prueba unitaria aquí, cuando todas las pruebas existen (como el
   9 en T-097), para no dejar el CI en rojo mientras tanto.

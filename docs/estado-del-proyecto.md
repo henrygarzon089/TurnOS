@@ -279,7 +279,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   la ficha que queda. **En producción** desde el 2026-11-04 (`supabase db push` desde `c113896`,
   la fusión de #69).
 
-### Hito 11 — limpieza y bioseguridad (construido, ADR-037, falta aprobación de Henry)
+### Hito 11 — limpieza y bioseguridad (construido, ADR-037, falta aprobación de Henry: ADR-041)
 
 - 2026-11-04: grill de 21 preguntas con Henry, todas con la respuesta recomendada. Escritos
   REQ-060…REQ-064 (37 criterios, §5h), `design.md` §16, ADR-037 y tareas T-100…T-109. Henry aprobó
@@ -300,7 +300,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
      menor que `0063`/`0064` del Hito 13, que ya están en `main`).
   2. Encender Limpieza en Filo (`/admin/limpieza` → Listas) y revisar las listas sugeridas.
   3. Probar un día en la barbería: apertura, cierre con foto, una revisión y una tarea.
-  4. Aprobar el hito (nuevo ADR, que se pide a la sesión coordinadora).
+  4. Aprobar el hito: queda como ADR-041 (reservado por la sesión coordinadora).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
