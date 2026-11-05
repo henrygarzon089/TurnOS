@@ -3,8 +3,9 @@ import Link from "next/link";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { CleaningInspection } from "@/components/cleaning/CleaningInspection";
 import { CleaningListsEditor, CleaningSwitch } from "@/components/cleaning/CleaningListsEditor";
+import { CleaningTasks } from "@/components/cleaning/CleaningTasks";
 import { CleaningToday } from "@/components/cleaning/CleaningToday";
-import { getCleaningLists, getCleaningToday } from "@/lib/actions/cleaning";
+import { getCleaningLists, getCleaningTasks, getCleaningToday } from "@/lib/actions/cleaning";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -14,6 +15,7 @@ export const metadata: Metadata = { title: "Limpieza" };
 const TABS = [
   { key: "hoy", label: "Hoy" },
   { key: "revision", label: "Revisión" },
+  { key: "tareas", label: "Tareas" },
   { key: "listas", label: "Listas" },
 ] as const;
 type Tab = (typeof TABS)[number]["key"];
@@ -53,6 +55,9 @@ export default async function OwnerCleaningPage({
       )}
       {tab === "hoy" && today?.enabled && <CleaningToday today={today} businessId={session.business.id} />}
       {tab === "revision" && (await inspectionTab(session.business.id))}
+      {tab === "tareas" && (
+        <CleaningTasks tasks={(await getCleaningTasks()) ?? []} businessId={session.business.id} />
+      )}
       {tab === "listas" && (
         <>
           <CleaningSwitch enabled={enabled} />

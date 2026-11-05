@@ -1371,10 +1371,13 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   punto calificado, barbero solo en fallas y el botón "Lo demás, bien" para no tocar 15 puntos uno
   por uno. E2E: `tests/e2e/cleaning-inspection.spec.ts`.
 
-### [ ] T-107 · Tareas periódicas con adjuntos
+### [x] T-107 · Tareas periódicas con adjuntos
 - REQ: REQ-064.1, REQ-064.2, REQ-064.3, REQ-064.4, REQ-064.5
 - Archivos: pestaña Tareas en `/admin/limpieza`
 - Terminado: crear desde una sugerencia, registrar con PDF, ver la vencida en el panel.
+- Nota: `CleaningTasks` (sugeridas, nueva, editar con "Activa", registrar con fecha, nota y
+  adjunto, historial con "Ver adjunto" por URL firmada). La foto se reduce y el PDF sube tal cual.
+  E2E: `tests/e2e/cleaning-tasks.spec.ts`.
 
 ### [ ] T-108 · Historial y fotos borradas
 - REQ: REQ-063.5, REQ-063.6, REQ-063.7, REQ-064.6
