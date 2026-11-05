@@ -108,7 +108,8 @@ test.describe("REQ-063.5 Historial de limpieza", () => {
     await page.getByRole("link", { name: "26 semanas" }).click();
     await expect(page.getByRole("region", { name: /^Semana del/ })).toHaveCount(26);
     await page.getByRole("button", { name: /^Apertura · .* · Dueño/ }).click();
-    const oldDetail = page.getByRole("region", { name: "Detalle" });
+    // El detalle de ayer sigue abierto: tomar el de la apertura vieja
+    const oldDetail = page.getByRole("region", { name: "Detalle" }).filter({ hasText: "Ventilar" });
     await expect(oldDetail).toContainText("Foto borrada (más de 90 días)");
     await expect(oldDetail.getByRole("img")).toHaveCount(0);
   });
