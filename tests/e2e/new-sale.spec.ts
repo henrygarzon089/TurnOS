@@ -56,6 +56,9 @@ test.describe("REQ-023.4 / REQ-024 nueva venta sin turno", () => {
     await sheet.getByRole("button", { name: "Agregar un Helado" }).click();
     await sheet.getByRole("button", { name: "Agregar un Helado" }).click();
     await expect(sheet.getByTestId("checkout-total")).toHaveText("$ 6.000");
+    // REQ-066.3 el dueño escoge quién vendió: "Nadie (el negocio)"
+    await expect(sheet.getByRole("button", { name: "Registrar $ 6.000" })).toBeDisabled();
+    await sheet.getByRole("radio", { name: "Nadie (el negocio)" }).click();
     await sheet.getByRole("radio", { name: "Efectivo" }).click();
     await sheet.getByRole("button", { name: "Registrar $ 6.000" }).click();
     await expect(
@@ -79,7 +82,10 @@ test.describe("REQ-023.4 / REQ-024 nueva venta sin turno", () => {
     await sheet.getByLabel("Servicio", { exact: true }).selectOption({ label: "Corte · $ 25.000" });
     // Sin barbero no se puede registrar un servicio
     await expect(sheet.getByRole("button", { name: "Registrar $ 25.000" })).toBeDisabled();
-    await sheet.getByLabel("Barbero").selectOption({ label: "Juan" });
+    await sheet
+      .getByRole("radiogroup", { name: "¿Quién vendió?" })
+      .getByRole("radio", { name: "Juan" })
+      .click();
     await sheet.getByRole("radio", { name: "Nequi" }).click();
     await sheet.getByRole("button", { name: "Registrar $ 25.000" }).click();
     await expect(
@@ -98,7 +104,8 @@ test.describe("REQ-023.4 / REQ-024 nueva venta sin turno", () => {
   }) => {
     await loginAsBarber(page, 0);
     const sheet = await openNewSale(page);
-    await expect(sheet.getByLabel("Barbero")).toHaveCount(0);
+    await expect(sheet.getByRole("radiogroup", { name: "¿Quién vendió?" })).toHaveCount(0);
+    await expect(sheet.getByText("Venta a tu nombre")).toBeVisible();
     await sheet.getByRole("button", { name: "Agregar un Gaseosa" }).click();
     await sheet.getByRole("radio", { name: "Efectivo" }).click();
     await sheet.getByRole("button", { name: "Registrar $ 4.000" }).click();
