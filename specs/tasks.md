@@ -1391,6 +1391,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   mismo día (la fecha de hoy no cambia y el rollback lo deshace), y la cita c7 pasa de las 10:00 a
   las 12:00 para quedar en su día con ese corrimiento. Las funciones de citas no cambian; sin cambio
   de spec. Reproducido a las 22:59 (3 fallas) y en verde con la hora fijada a 12:00, 16:00 y 20:00.
+- Corrección (2026-11-05): el E2E `tests/e2e/appointments-queue.spec.ts` tenía el mismo problema
+  (cita a ahora + 30 min, que después de las 23:30 caía en mañana). `appointmentToday` toma como
+  máximo las 23:59 de Bogotá: la cita sigue siendo de hoy y queda dentro de los 10 min de gracia.
 
 ### [x] T-080 · Dominio: estimado con citas, calendario y mensajes
 - REQ: REQ-053.1, REQ-053.2, REQ-053.3, REQ-051.3
