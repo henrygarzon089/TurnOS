@@ -6,7 +6,7 @@
 
 /** Columnas de `sales` que lee getMyNumbers (las mismas en la prueba de integración). */
 export const MY_NUMBERS_COLUMNS =
-  "id, business_day, created_at, barber_id, status, services_total, products_total, total, commission_pct, commission_amount";
+  "id, business_day, created_at, barber_id, status, services_total, products_total, total, commission_pct, commission_amount, product_commission_amount";
 
 export type MyNumbersRow = {
   id: string;
@@ -19,18 +19,31 @@ export type MyNumbersRow = {
   total: number;
   commission_pct: number;
   commission_amount: number;
+  /** REQ-069.5 comisión de productos de la venta (Hito 12). */
+  product_commission_amount: number;
   /** La venta tiene al menos una línea de servicio (cuenta como servicio atendido). */
   has_service: boolean;
 };
 
-export type Totals = { services: number; sold: number; commission: number };
+/** REQ-069.5 `commission` es la de servicios; `total` = servicios + productos. */
+export type Totals = {
+  services: number;
+  sold: number;
+  commission: number;
+  productCommission: number;
+  total: number;
+};
 
 function sum(rows: MyNumbersRow[]): Totals {
   const active = rows.filter((r) => r.status === "active");
+  const commission = active.reduce((s, r) => s + r.commission_amount, 0);
+  const productCommission = active.reduce((s, r) => s + r.product_commission_amount, 0);
   return {
     services: active.filter((r) => r.has_service).length,
     sold: active.reduce((s, r) => s + r.services_total, 0),
-    commission: active.reduce((s, r) => s + r.commission_amount, 0),
+    commission,
+    productCommission,
+    total: commission + productCommission,
   };
 }
 
