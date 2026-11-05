@@ -1479,11 +1479,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   no compara consumo. El ejemplo N pasa a 160 cortes y 4 geles (con 3 geles no hay 4 conteos con
   consumo).
 
-### [ ] T-124 · Orden de compra, costo por servicio y "Mi estación" en SQL
+### [x] T-124 · Orden de compra, costo por servicio y "Mi estación" en SQL
 - REQ: REQ-074.1, REQ-074.3, REQ-074.4
 - Archivos: `supabase/migrations/0067_inventory_reports.sql` (`purchase_order`,
   `service_supply_cost`, `my_station`), `supabase/tests/0067_inventory_reports.sql`
 - Terminado: pgTAP de los ejemplos O y P y del alcance de `my_station`.
+- Nota (2026-11-04): pgTAP 24 nuevas en `supabase/tests/0067_inventory_reports.sql`. Detalles que la
+  spec no fijaba: la orden cuenta bodega + vitrina (lo de las estaciones ya está en uso); un insumo
+  desactivado no suma al costo; "Mi estación" muestra también un insumo que ya no es de la dotación
+  mientras la estación tenga stock de él, y si el barbero no tiene estación devuelve listas vacías.
 
 ### [ ] T-125 · Acciones de inventario
 - REQ: REQ-071.6, REQ-074.2, REQ-074.5

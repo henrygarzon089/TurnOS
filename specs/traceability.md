@@ -305,7 +305,7 @@
 | REQ-070.3 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
 | REQ-070.4 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
 | REQ-070.5 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql, 0066_inventory_counts.sql | prueba escrita |
-| REQ-070.6 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
+| REQ-070.6 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql, 0067_inventory_reports.sql | prueba escrita |
 | REQ-071.1 | Entradas, transferencias y reposición | T-120 (hecha), T-121 (hecha), T-125 (pendiente), T-126 (pendiente) | 0064_inventory_movements.sql | prueba escrita |
 | REQ-071.2 | Entradas, transferencias y reposición | T-120 (hecha), T-121 (hecha), T-125 (pendiente), T-126 (pendiente) | 0064_inventory_movements.sql | prueba escrita |
 | REQ-071.3 | Entradas, transferencias y reposición | T-120 (hecha), T-121 (hecha), T-125 (pendiente), T-126 (pendiente) | 0064_inventory_movements.sql | prueba escrita |
@@ -324,8 +324,8 @@
 | REQ-073.5 | Consumo esperado y conteos | T-120 (hecha), T-123 (hecha), T-126 (pendiente), T-127 (pendiente) | 0066_inventory_counts.sql | prueba escrita |
 | REQ-073.6 | Consumo esperado y conteos | T-120 (hecha), T-123 (hecha), T-126 (pendiente), T-127 (pendiente) | 0066_inventory_counts.sql | prueba escrita |
 | REQ-073.7 | Consumo esperado y conteos | T-120 (hecha), T-123 (hecha), T-126 (pendiente), T-127 (pendiente) | 0063_inventory.sql, 0064_inventory_movements.sql, 0066_inventory_counts.sql | prueba escrita |
-| REQ-074.1 | Compras, costo por servicio y quién ve qué | T-124 (pendiente), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | — | sin prueba |
-| REQ-074.2 | Compras, costo por servicio y quién ve qué | T-124 (pendiente), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | — | sin prueba |
-| REQ-074.3 | Compras, costo por servicio y quién ve qué | T-124 (pendiente), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | — | sin prueba |
-| REQ-074.4 | Compras, costo por servicio y quién ve qué | T-124 (pendiente), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | 0063_inventory.sql, 0064_inventory_movements.sql | prueba escrita |
-| REQ-074.5 | Compras, costo por servicio y quién ve qué | T-124 (pendiente), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
+| REQ-074.1 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | 0067_inventory_reports.sql | prueba escrita |
+| REQ-074.2 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | — | sin prueba |
+| REQ-074.3 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | 0067_inventory_reports.sql | prueba escrita |
+| REQ-074.4 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | 0063_inventory.sql, 0064_inventory_movements.sql, 0067_inventory_reports.sql | prueba escrita |
+| REQ-074.5 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | 0063_inventory.sql, 0067_inventory_reports.sql | prueba escrita |
