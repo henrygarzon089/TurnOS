@@ -1521,7 +1521,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `total`). El cierre en pantalla sigue mostrando el resumen y el texto por WhatsApp. Cierres viejos
   sin los campos nuevos se leen como antes. E2E en `tests/e2e/pos-reports.spec.ts`.
 
-### [ ] T-119 · Validación Hito 12
+### [~] T-119 · Validación Hito 12
 - REQ: REQ-065…REQ-069
 - Archivos: `scripts/traceability.ts` (`HITOS["12"] = [[65, 69]]`), `tests/unit/traceability.test.ts`,
   `docs/estado-del-proyecto.md`
@@ -1530,6 +1530,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: `pnpm trace --hito=12` sin huecos; CI verde. `HITOS["12"]` ya está desde el PR de la
   spec; el hito 12 entra al loop de `tests/unit/traceability.test.ts` aquí, cuando todas las pruebas
   existen (como el hito 9 en T-097), para no dejar el CI en rojo mientras tanto.
+- Nota (2026-11-04): hito 12 en el loop; `pnpm trace --check --hito=12` sin huecos;
+  `docs/estado-del-proyecto.md` al día. Falta lo de Henry (producción, Filo, prueba y aprobación).
 
 ---
 

@@ -279,14 +279,26 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   la ficha que queda. **En producción** desde el 2026-11-04 (`supabase db push` desde `c113896`,
   la fusión de #69).
 
-### Hito 12 — punto de venta con comisión (spec aprobada, ADR-038, 2026-11-04)
+### Hito 12 — punto de venta con comisión (construido, falta aprobación de Henry; ADR-038)
 
 - 2026-11-04: grill de 7 preguntas con Henry, todas con la respuesta recomendada, y abogado del
   diablo (Henry siguió sin cambios; anotado en ADR-038). Escritos REQ-065…REQ-069 (26 criterios,
   §5i), `design.md` §17, ADR-038 (aceptada; cambia PA-17) y tareas T-110…T-119. Va en paralelo con
   el Hito 11 (limpieza) y el Hito 13 (inventario): los números saltan a propósito. Henry aprobó la spec
   el mismo día (PR #75); sigue T-110. Migraciones previstas `0060`…`0062`.
-- `pnpm trace`: 321 criterios; los 26 del Hito 12 sin prueba hasta construirlo.
+- 2026-11-04: construido T-110…T-118 en PRs encadenados, cada uno sobre el anterior: #75 spec →
+  #80 T-110 (`0060`, datos) → #82 T-111/T-112 (`0061`, `register_sale` con comisión de productos y
+  compra de barbero) → #86 T-113 (`0062`, caja y semana) → #87 T-114 (dominio) → #90 T-115
+  ("Negocio" y "Productos") → #93 T-116/T-117 (vitrina y compra de barbero) → #99 T-118 (Caja de hoy,
+  cierre, semana y "Mis números") → T-119 (este cierre). El Hito 13 descuenta la vitrina con sus
+  triggers sobre `sale_items` (`ref_id`, `qty`), sin tocar este código.
+- `pnpm trace --check --hito=12`: 0 sin prueba (26 CA); el hito 12 ya está en el loop de
+  `tests/unit/traceability.test.ts`.
+- Falta (Henry): aplicar `0060`…`0062` en producción (`supabase db push --include-all`), marcar en
+  Filo los productos que dan comisión y sus categorías, revisar los dos % en "Negocio", probar una
+  venta de vitrina y una compra de barbero en la barbería, y aprobar el hito (ADR nuevo).
+- CI: de noche (después de las 11 p. m. de Bogotá) falla `supabase/tests/0046_appointments_queue.sql`
+  del Hito 8 (`NOT_ARRIVABLE`, depende de la hora); no es del Hito 12. Se vuelve a correr de día.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
