@@ -1516,19 +1516,26 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   Docker propia `turnos-ci-db-h12`). El historial lo escribe el trigger `businesses_pct_change`; el
   personal no puede insertar en `business_pct_changes` (solo `select`).
 
-### [ ] T-111 · `register_sale` con la comisión de productos
+### [x] T-111 · `register_sale` con la comisión de productos
 - REQ: REQ-065.5, REQ-066.1, REQ-066.4, REQ-066.5, REQ-066.6, REQ-067.1, REQ-067.2, REQ-067.3,
   REQ-067.4, REQ-067.5, REQ-069.1
 - Archivos: `supabase/migrations/0061_pos_register_sale.sql` (`register_sale` con la firma nueva),
   `supabase/tests/0061_pos_register_sale.sql`
 - Terminado: pgTAP con los ejemplos M, N, O y Q, `for_sale`, `FORBIDDEN`, membresía, premio y
   tarjeta de regalo sin efecto en la comisión de productos, y anular.
+- Nota (2026-11-04): T-111 y T-112 van juntas en `0061` (una sola redefinición de `register_sale`) y en
+  `supabase/tests/0061_pos_register_sale.sql` (30 pgTAP; 1222 en total; integración 142 en verde).
+  `0029_function_grants` pide la firma nueva. Detalle que la spec no fijaba: `sale_items.commissionable`
+  queda en `true` solo si la línea dio comisión (producto marcado, con barbero y sin ser compra de
+  barbero); con "Nadie" queda en `false`. REQ-066.5 (productos en el cobro del turno) se prueba en el
+  E2E de T-117: el cálculo es el mismo con o sin turno.
 
-### [ ] T-112 · Compra de un barbero en `register_sale`
+### [x] T-112 · Compra de un barbero en `register_sale`
 - REQ: REQ-068.2, REQ-068.3, REQ-068.4
 - Archivos: `supabase/migrations/0061_pos_register_sale.sql`, `supabase/tests/0061_pos_register_sale.sql`
 - Terminado: pgTAP con el ejemplo P y cada rechazo (`FORBIDDEN`, `STAFF_DISCOUNT_OFF`,
   `BARBER_NOT_FOUND`, `INVALID_STAFF_PURCHASE`).
+- Nota (2026-11-04): hecha con T-111 (misma migración y archivo de pgTAP).
 
 ### [ ] T-113 · Caja y semana en SQL
 - REQ: REQ-068.5, REQ-069.2, REQ-069.3, REQ-069.4
