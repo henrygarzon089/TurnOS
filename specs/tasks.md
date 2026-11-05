@@ -1390,6 +1390,12 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   toma el precio vigente del servicio (trigger de `tickets`, REQ-015.3), no el de la reserva.
   `0002_core` y `0043_membership_reports` cuentan sus plantillas sin las de citas. Sin pantallas:
   nada cambia para el cliente ni el barbero hasta encender las citas (T-081).
+- Corrección (2026-11-04): pgTAP 0046 fallaba después de las ~22:30 de Bogotá: las citas a
+  now() + 50/90 min caían en el día siguiente (pruebas 24, 26 y 31 del CI de la noche). Ahora, dentro
+  de la transacción de la prueba, `business_day_bogota` se corre para que now() sea las 12:00 de su
+  mismo día (la fecha de hoy no cambia y el rollback lo deshace), y la cita c7 pasa de las 10:00 a
+  las 12:00 para quedar en su día con ese corrimiento. Las funciones de citas no cambian; sin cambio
+  de spec. Reproducido a las 22:59 (3 fallas) y en verde con la hora fijada a 12:00, 16:00 y 20:00.
 
 ### [x] T-080 · Dominio: estimado con citas, calendario y mensajes
 - REQ: REQ-053.1, REQ-053.2, REQ-053.3, REQ-051.3
