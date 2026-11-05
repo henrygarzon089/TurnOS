@@ -1528,10 +1528,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   formularios de edición ya no se limpian al guardar (`resetOnDone`). Sin pruebas nuevas: la lógica
   la cubren T-123…T-125. Falta revisarlas en el celular contra un proyecto de Supabase.
 
-### [ ] T-128 · "Mi estación" del barbero y E2E
+### [x] T-128 · "Mi estación" del barbero y E2E
 - REQ: REQ-074.4
 - Archivos: `src/app/(staff)/app/estacion/**`, chip "Mi estación", `tests/e2e/inventory.spec.ts`
 - Terminado: E2E de §18.7 en Pixel 7 y iPhone 13.
+- Nota (2026-11-04): `/app/estacion` (dotación con stock en rojo si falta, reposiciones de 30 días y
+  último conteo con alerta; sin precios) y enlace "Mi estación" en la cabecera del barbero. La E2E
+  `tests/e2e/inventory.spec.ts` le da rendimiento al ítem (Corte, 40) para que deje "Midiendo" y
+  pueda alertar, y cuenta la estación dos veces: el primer conteo abre la ventana. Corre en el CI
+  (Supabase local, ADR-022).
 
 ### [ ] T-129 · Validación Hito 13
 - REQ: REQ-070…REQ-074
