@@ -1197,7 +1197,7 @@ conexión, inventario de insumos de limpieza (va en el Hito 13) e informes para 
 > son del Hito 11 (limpieza) y REQ-070…074 del Hito 13 (inventario), en paralelo. El dueño o el
 > barbero venden los productos de la vitrina (cera, aceite de barba, after shave, helados, bebidas)
 > desde una pantalla con fotos; los productos marcados dejan un porcentaje al barbero de la venta.
-> Cambia PA-17 y REQ-024.3.
+> Cambia PA-17 y REQ-024.3. Hito construido y aprobado por Henry el 2026-11-05 (ADR-040).
 
 ### REQ-065 · Configurar la comisión y la vitrina — M
 **Como** dueño, **quiero** decidir qué productos dejan comisión y cuánto, **para** premiar al barbero

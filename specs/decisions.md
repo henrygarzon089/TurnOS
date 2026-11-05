@@ -670,3 +670,22 @@
   - Sale de "Fuera de alcance" el control de inventario de productos, y PA-16 queda resuelta.
   - Los números saltan: REQ-060…069, ADR-037/038, `0057`…`0062` y T-100…T-119 son de los Hitos 11
     y 12. La aprobación del Hito 13 tendrá el siguiente ADR libre.
+
+## ADR-040 · Aprobación del Hito 12 (punto de venta con comisión)
+- Estado: **aceptada** (Henry, 2026-11-05)
+- Contexto: REQ-065…REQ-069 implementados en T-110…T-119 (PRs encadenados #75 spec, #80, #82, #86,
+  #87, #90, #93, #99 y #100), con `pnpm trace --check --hito=12` sin huecos (26 criterios). Henry
+  aplicó `0060`…`0062` en producción el 2026-11-05 (`supabase db push --include-all`; subieron
+  también `0063` y `0064` del Hito 13) y probó en el preview de la cadena, en `/la-33`, la vitrina
+  con categorías, la venta con "¿Quién vendió?", la compra de un barbero con descuento, la Caja de
+  hoy y "Mis números": todo funcionó.
+- Decisión: Henry aprueba el Hito 12. De la prueba salieron dos cosas:
+  - En el cobro, si se tocaba "Tarjeta de regalo" por error no quedaba claro cómo volver. Se
+    corrige con "Usar otro medio de pago" (nota en T-095, PR #105).
+  - Preguntó por los porcentajes de productos: se queda un solo % de comisión por productos y un
+    solo % de descuento de empleado para todo el negocio, en "Negocio" (como dice ADR-038). Un % por
+    barbero sigue fuera de alcance.
+- Consecuencias: T-119 cerrada. Queda la operación en Filo (marcar los productos que dan comisión,
+  sus categorías y revisar los dos %), no código. El despliegue de `main` con la cadena fusionada lo
+  hace Henry. Número: ADR-040 es el primero libre después de ADR-039; las aprobaciones de los Hitos
+  11 y 13 toman los siguientes.

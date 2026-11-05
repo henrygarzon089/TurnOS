@@ -91,4 +91,22 @@ test.describe("REQ-057 pagar con la tarjeta de regalo en el cobro", () => {
       await owner.rpc("void_sale", { p_sale_id: card.saleId, p_reason: "Prueba E2E" });
     }
   });
+
+  test("REQ-057.1 si se escoge la tarjeta por error se quita y se cobra con otro medio", async ({
+    page,
+  }) => {
+    await loginAsBarber(page, 0);
+    const sheet = await openNewSale(page);
+    await sheet.getByRole("button", { name: "Agregar un Gaseosa" }).click();
+    await sheet.getByRole("radio", { name: "Tarjeta de regalo" }).click();
+    await expect(sheet.getByRole("region", { name: "Tarjeta de regalo" })).toBeVisible();
+    await sheet.getByRole("button", { name: "Usar otro medio de pago" }).click();
+    await expect(sheet.getByRole("region", { name: "Tarjeta de regalo" })).toHaveCount(0);
+    await expect(sheet.getByRole("radio", { name: "Tarjeta de regalo" })).not.toBeChecked();
+    await sheet.getByRole("radio", { name: "Efectivo" }).click();
+    await sheet.getByRole("button", { name: "Registrar $ 4.000" }).click();
+    await expect(
+      page.getByRole("status").filter({ hasText: "Venta registrada: $ 4.000" }),
+    ).toBeVisible();
+  });
 });
