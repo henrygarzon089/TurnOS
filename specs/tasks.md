@@ -1250,6 +1250,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   total (`giftCardSplit`), y lo que falta se elige en "Medio para lo que falta". `checkoutPayments`
   arma `p_payments` (tarjeta primero). El E2E prueba "sin saldo" (no "vencida": el vencimiento a un
   año no se puede forzar sin tocar la tabla); "vencida" queda en pgTAP 0052 y en la unitaria.
+- Corrección (2026-11-05, prueba de Henry en el preview del Hito 12): si se toca "Tarjeta de regalo"
+  por error no quedaba claro cómo volver. La sección trae "Usar otro medio de pago", que borra la
+  tarjeta, el código y el medio de lo que falta. E2E en `tests/e2e/gift-card-checkout.spec.ts`.
 
 ### [x] T-096 · Caja de hoy, cierre y semana en pantalla
 - REQ: REQ-059.1, REQ-059.2, REQ-058.1
