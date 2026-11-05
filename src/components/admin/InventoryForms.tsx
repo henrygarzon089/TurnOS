@@ -513,9 +513,8 @@ export function CountForm({
     e.preventDefault();
     const form = e.currentTarget;
     startTransition(async () => {
-      const r = await recordCount(state, new FormData(form));
-      setState(r);
-      if (r?.ok) router.refresh();
+      // Sin refresh aquí: el resultado es estado local. Se refresca al pedir otro conteo.
+      setState(await recordCount(state, new FormData(form)));
     });
   }
 
@@ -545,7 +544,11 @@ export function CountForm({
             </li>
           ))}
         </ul>
-        <button type="button" className="btn-secondary mt-3 w-full" onClick={() => setState(undefined)}>
+        <button type="button" className="btn-secondary mt-3 w-full" onClick={() => {
+            setState(undefined);
+            router.refresh();
+          }}
+        >
           Hacer otro conteo
         </button>
       </section>
