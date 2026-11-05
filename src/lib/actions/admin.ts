@@ -322,6 +322,8 @@ export async function saveProduct(_prev: FormState, formData: FormData): Promise
       forSale: formData.get("for_sale") === "on",
       isCourtesy: formData.get("is_courtesy") === "on",
       photoPath: String(formData.get("photo_path") ?? ""),
+      commissionable: formData.get("commissionable") === "on",
+      category: String(formData.get("category") ?? ""),
     },
     session.business.id,
   );
@@ -446,6 +448,9 @@ const businessSettingsSchema = z.object({
   inactive_days: z.coerce.number().int().min(1).max(365),
   reminder_cooldown_days: z.coerce.number().int().min(1).max(90),
   pwa_name: z.string().trim().max(40).optional(),
+  // REQ-065.1 / REQ-068.1 (el historial lo guarda la base, REQ-065.4)
+  product_commission_pct: z.coerce.number().int().min(0).max(100),
+  staff_discount_pct: z.coerce.number().int().min(0).max(100),
 });
 
 /** REQ-016.2 y parámetros del negocio (/admin/negocio). */

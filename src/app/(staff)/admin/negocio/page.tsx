@@ -18,7 +18,7 @@ export default async function BusinessPage() {
   const { data } = await supabase
     .from("businesses")
     .select(
-      "name, slug, address, chairs_count, default_commission_pct, grace_minutes, inactive_days, reminder_cooldown_days, pwa_name, google_review_url, whatsapp_auto_enabled, whatsapp_contact_phone, whatsapp_allowed",
+      "name, slug, address, chairs_count, default_commission_pct, grace_minutes, inactive_days, reminder_cooldown_days, product_commission_pct, staff_discount_pct, pwa_name, google_review_url, whatsapp_auto_enabled, whatsapp_contact_phone, whatsapp_allowed",
     )
     .eq("id", session.business.id)
     .single();
