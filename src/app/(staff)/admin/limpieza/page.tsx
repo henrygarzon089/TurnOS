@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { CleaningInspection } from "@/components/cleaning/CleaningInspection";
 import { CleaningListsEditor, CleaningSwitch } from "@/components/cleaning/CleaningListsEditor";
 import { CleaningToday } from "@/components/cleaning/CleaningToday";
 import { getCleaningLists, getCleaningToday } from "@/lib/actions/cleaning";
 import { getStaffSession } from "@/lib/auth/session";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Limpieza" };
 
 const TABS = [
   { key: "hoy", label: "Hoy" },
+  { key: "revision", label: "Revisión" },
   { key: "listas", label: "Listas" },
 ] as const;
 type Tab = (typeof TABS)[number]["key"];
@@ -49,6 +52,7 @@ export default async function OwnerCleaningPage({
         </nav>
       )}
       {tab === "hoy" && today?.enabled && <CleaningToday today={today} businessId={session.business.id} />}
+      {tab === "revision" && (await inspectionTab(session.business.id))}
       {tab === "listas" && (
         <>
           <CleaningSwitch enabled={enabled} />
@@ -56,5 +60,28 @@ export default async function OwnerCleaningPage({
         </>
       )}
     </main>
+  );
+}
+
+/** REQ-063.1: la lista de Cierre, la de Entre clientes y los barberos activos para asignar fallas. */
+async function inspectionTab(businessId: string) {
+  const supabase = await createSupabaseServerClient();
+  const [lists, { data: barbers }] = await Promise.all([
+    getCleaningLists(),
+    supabase
+      .from("barbers")
+      .select("id, display_name")
+      .eq("business_id", businessId)
+      .eq("is_active", true)
+      .order("sort_order")
+      .order("display_name"),
+  ]);
+  return (
+    <CleaningInspection
+      closing={lists?.closing ?? []}
+      betweenClients={lists?.between_clients ?? []}
+      barbers={(barbers ?? []).map((b) => ({ id: b.id as string, name: b.display_name as string }))}
+      businessId={businessId}
+    />
   );
 }
