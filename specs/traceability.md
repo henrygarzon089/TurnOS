@@ -300,6 +300,43 @@
 | REQ-059.2 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-card-reports.spec.ts, cash-closure.test.ts, gift-card.test.ts, 0053_gift_card_reports.sql | cubierto |
 | REQ-059.3 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-cards.spec.ts, gift-card.test.ts, 0051_gift_cards.sql, 0056_merge_customers_gift_cards.sql | cubierto |
 | REQ-059.4 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | 0053_gift_card_reports.sql | cubierto |
+| REQ-060.1 | Encender el módulo y editar las listas | T-100 (pendiente), T-101 (pendiente), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-060.2 | Encender el módulo y editar las listas | T-100 (pendiente), T-101 (pendiente), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-060.3 | Encender el módulo y editar las listas | T-100 (pendiente), T-101 (pendiente), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-060.4 | Encender el módulo y editar las listas | T-100 (pendiente), T-101 (pendiente), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-060.5 | Encender el módulo y editar las listas | T-100 (pendiente), T-101 (pendiente), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-061.1 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.2 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.3 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.4 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.5 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.6 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.7 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.8 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.9 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.10 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.11 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-062.1 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.2 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.3 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.4 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.5 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.6 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.7 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.8 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-063.1 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-063.2 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-063.3 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-063.4 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-063.5 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-063.6 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-063.7 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-064.1 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-064.2 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-064.3 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-064.4 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-064.5 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-064.6 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
 | REQ-065.1 | Configurar la comisión y la vitrina | T-110 (pendiente), T-111 (pendiente), T-115 (pendiente), T-119 (pendiente) | — | sin prueba |
 | REQ-065.2 | Configurar la comisión y la vitrina | T-110 (pendiente), T-111 (pendiente), T-115 (pendiente), T-119 (pendiente) | — | sin prueba |
 | REQ-065.3 | Configurar la comisión y la vitrina | T-110 (pendiente), T-111 (pendiente), T-115 (pendiente), T-119 (pendiente) | — | sin prueba |
