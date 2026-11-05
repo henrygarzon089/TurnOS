@@ -1743,7 +1743,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   pueda alertar, y cuenta la estación dos veces: el primer conteo abre la ventana. Corre en el CI
   (Supabase local, ADR-022).
 
-### [ ] T-129 · Validación Hito 13
+### [x] T-129 · Validación Hito 13
 - REQ: REQ-070…REQ-074
 - Archivos: `scripts/traceability.ts` (`HITOS["13"] = [[70, 74]]`, ya desde el PR de la spec),
   `tests/unit/traceability.test.ts` (el hito 13 entra al loop aquí, cuando todas las pruebas
@@ -1753,6 +1753,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Nota (2026-11-04): `pnpm trace --hito=13` con 0 sin prueba y el hito 13 en el loop de
   `tests/unit/traceability.test.ts`; estado y checklist de Henry en `docs/estado-del-proyecto.md`.
   Queda `[ ]` hasta que Henry haga lo que le toca y apruebe; la aprobación será ADR-042 (reservado).
+  2026-11-05: cadena #79…#96 en `main`, `0065`…`0067` en producción y `main` desplegado (Henry);
+  Hito 13 aprobado (ADR-042). Falta solo la operación en Filo (catálogo y conteos).
 
 ---
 

@@ -312,7 +312,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - Falta (Henry): marcar en Filo los productos que dan comisión y sus categorías, revisar los dos % en "Negocio", probar una
   venta de vitrina y una compra de barbero en la barbería, y aprobar el hito (ADR nuevo).
 
-### Hito 13 — inventario de insumos y vitrina (en producción, falta la operación en Filo y la aprobación)
+### Hito 13 — inventario de insumos y vitrina (**aprobado**, ADR-042, 2026-11-05)
 
 - 2026-11-04: grill en dos rondas con Henry (Q1–Q20, todas con la respuesta recomendada). Escritos
   REQ-070…REQ-074 (29 criterios, §5j), `design.md` §18, ADR-039 y tareas T-120…T-129. Henry aprobó
@@ -342,7 +342,8 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
      gel, alcohol…) con su dotación, y enlazar los productos de la vitrina.
   4. Primer conteo de bodega, vitrina y cada estación (queda como inicial).
   5. Una semana después: conteo semanal de las estaciones y revisar alertas y la orden de compra.
-  6. Aprobación del hito → ADR-042 (reservado) y T-129 `[x]`.
+  6. ~~Aprobación del hito~~ hecho (ADR-042, 2026-11-05; Henry aprobó antes de la prueba en Filo,
+     que queda como operación: pasos 3 a 5).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
