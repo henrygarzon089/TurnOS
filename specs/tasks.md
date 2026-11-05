@@ -1489,12 +1489,18 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   desactivado no suma al costo; "Mi estación" muestra también un insumo que ya no es de la dotación
   mientras la estación tenga stock de él, y si el barbero no tiene estación devuelve listas vacías.
 
-### [ ] T-125 · Acciones de inventario
+### [x] T-125 · Acciones de inventario
 - REQ: REQ-071.6, REQ-074.2, REQ-074.5
 - Archivos: `src/lib/actions/inventory.ts`, `src/lib/domain/inventory.ts` (texto de la orden para
   WhatsApp, plantilla básica, etiquetas), `tests/unit/inventory.test.ts`,
   `tests/integration/inventory.test.ts`
 - Terminado: unitarias y de integración en verde; los errores SQL salen en español.
+- Nota (2026-11-04): 8 unitarias nuevas en `tests/unit/inventory.test.ts` (11 en total) y 7 de
+  integración en `tests/integration/inventory.test.ts`. `inventory.ts` (dominio) agrega etiquetas de
+  grupos, usos y motivos, `parseInventoryItemForm`, `inventoryErrorMessage`, `purchaseOrderText` /
+  `purchaseOrderLink` (wa.me sin número), `BASIC_TEMPLATE` y `basicTemplateItem`. Acciones extra que
+  la spec no nombraba: `getItemUsage` (servicios de cada insumo para el catálogo) y `saveAlertPct`
+  ("Alerta de consumo (%)" en `/admin/negocio`, REQ-073.4).
 
 ### [ ] T-126 · Pantallas del dueño: resumen, catálogo y movimientos
 - REQ: REQ-070.1, REQ-070.2, REQ-071.2, REQ-071.3, REQ-071.4, REQ-072.3, REQ-072.5, REQ-073.1
