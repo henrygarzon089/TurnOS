@@ -24,7 +24,6 @@ import {
   INVENTORY_USE_LABELS,
   type InventoryUse,
 } from "@/lib/domain/inventory";
-import { formatCOP } from "@/lib/domain/money";
 
 /** Un formulario que llama una acción de inventario, muestra el error y refresca al terminar. */
 function ActionForm({
@@ -470,9 +469,4 @@ export function BasicTemplateButton() {
       {error && <ErrorText>{error}</ErrorText>}
     </div>
   );
-}
-
-/** Precio por unidad para la lista del catálogo. */
-export function unitCostLabel(item: CatalogItem) {
-  return `${formatCOP(item.unit_cost)} / ${item.unit_label}`;
 }
