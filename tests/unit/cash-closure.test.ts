@@ -137,7 +137,7 @@ describe("REQ-069 comisión de productos en el cierre", () => {
   });
 
   it("REQ-069.2 sin toPay ni productsSold el total a pagar se calcula con las dos comisiones", () => {
-    const { toPay: _t, productsSold: _p, ...juan } = exampleR.barbers[0];
+    const juan = { ...exampleR.barbers[0], toPay: undefined, productsSold: undefined };
     expect(settlementLine(juan)).toContain(
       "productos $ 0, comisión 10 % = $ 3.500 · total a pagar $ 18.500",
     );
