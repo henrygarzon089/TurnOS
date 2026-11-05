@@ -531,6 +531,49 @@
   foránea. Va como corrección aparte (después: `0056`, porque `0054` quedaría antes que `0055`). ADR-031 sigue apartado para el Hito 6 y
   ADR-033/035 son del Hito 8.
 
+## ADR-037 · Control de limpieza y bioseguridad (Hito 11)
+- Estado: **aceptada** (Henry, 2026-11-04: grill de 21 preguntas, todas con la respuesta
+  recomendada; aprobó la spec en el PR #73)
+- Contexto: el plan operativo de Henry ("Gamma") pide controlar la limpieza y la bioseguridad de la
+  barbería, con listas de apertura, cierre, limpieza profunda y entre clientes. Henry decidió el
+  2026-11-04 que todo va en TurnOS (nada en Odoo), que no hay horario por barbero ni niveles de
+  barbero, y que Limpieza (11), Punto de venta (12) e Inventario (13) se construyen en paralelo. La
+  Resolución 2827 de 2006 del Ministerio de Salud pide protocolos de bioseguridad en peluquerías, y
+  la Secretaría de Salud los revisa en visita. Las fotos del local pueden mostrar personas (Ley 1581).
+- Opciones:
+  - Qué se registra: (a) apertura, cierre y profunda; (b) también cada limpieza entre clientes.
+  - A quién le toca: (c) a cualquiera del personal; (d) asignado o en rotación.
+  - Cómo avisar: (e) solo dentro de TurnOS; (f) también por WhatsApp.
+  - Dónde guardar las fotos: (g) el bucket público `media` del Hito 5; (h) un bucket privado nuevo.
+  - Cómo borrarlas: (i) con un cron nuevo de Vercel; (j) con `after()` al usar el módulo,
+    escondiéndolas desde el día 90.
+- Decisión: (a), (c), (e), (h) y (j).
+  - Entre clientes no se registra: un toque más por corte no se haría. Va impreso y se controla en
+    la revisión sorpresa del dueño (Bien o Falla por punto, con falla asignable a un barbero).
+  - Hay una apertura y un cierre por día y una profunda por semana, y las registra el primero que
+    llega. El cierre exige foto y solo se registra desde 1 hora antes de cerrar. La apertura con más
+    de 30 minutos de retraso queda "Tarde".
+  - Se puede enviar incompleto con nota por punto, y lo enviado no se edita. El cierre que no se
+    registró antes de la medianoche queda "Sin registrar".
+  - Las listas son editables y cada registro guarda la copia de sus puntos.
+  - Las tareas periódicas son del dueño y guardan el historial de sus certificados.
+  - El historial no tiene niveles ni consecuencias automáticas.
+  - Las fotos se borran a los 90 días; los registros y los certificados se conservan.
+- Por qué (j) y no (i): TurnOS no tiene crons de Vercel ni pg_net (§12.4), y desde SQL no se borran
+  objetos de Storage. Con (j), "Foto borrada" se cumple el día 90 aunque nadie abra la app. El borrado
+  físico pasa la próxima vez que alguien abre Limpieza, y en la barbería eso es a diario.
+- Abogado del diablo: no se pasó, porque no hay plata, precios ni datos de clientes. Riesgos vistos
+  en el grill:
+  1. *Marcar sin limpiar*: la lista no prueba nada. → Foto obligatoria en el cierre, hora mínima y
+     revisión sorpresa del dueño.
+  2. *Rellenar después*: → no se edita lo enviado y el cierre no se registra al día siguiente.
+  3. *Fotos con personas*: → texto "local vacío, sin personas", bucket privado y borrado a 90 días.
+  4. *Wifi caído al cierre*: → no se pierde lo marcado; no hay modo sin conexión.
+- Consecuencias: REQ-060…REQ-064 (§5h), `design.md` §16, migraciones `0057`…`0059` y tareas
+  T-100…T-109. Bucket nuevo `cleaning` en Supabase (lo crea la migración). Todo nace apagado. Los
+  números saltan: el Hito 10 está reservado y el 12 y el 13 van en paralelo. La aprobación del Hito
+  11 será otro ADR, que se pide a la sesión coordinadora.
+
 ## ADR-038 · Punto de venta de productos con comisión (Hito 12)
 - Estado: **aceptada** (Henry, 2026-11-04: aprobó la spec en el chat; PR #75)
 - Contexto: Henry pidió "una sección donde se pueden ver los productos que tenemos, como un punto
