@@ -1593,11 +1593,16 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   (compra del dueño, `FORBIDDEN` del barbero, servicios rechazados, venta del barbero con el 10 %);
   E2E en `tests/e2e/pos-showcase.spec.ts` con la Gaseosa del seed.
 
-### [ ] T-118 · Caja de hoy, cierre, semana y "Mis números" en pantalla
+### [x] T-118 · Caja de hoy, cierre, semana y "Mis números" en pantalla
 - REQ: REQ-069.2, REQ-069.3, REQ-069.4, REQ-069.5
 - Archivos: Caja de hoy, cierre (y su texto por WhatsApp), Semana, `src/app/(staff)/app/mis-numeros/`
 - Terminado: unitarias del texto del cierre (renglón de productos y "total a pagar", "Compras de
   barberos"); E2E: la Caja de hoy y "Mis números" muestran la comisión de productos.
+- Nota (2026-11-04): `settlementLine`, `productSettlement` y `staffPurchasesLine` en
+  `src/lib/domain/cash-closure.ts` (el texto vive ahí, no en `cashReport.ts`); "Mis números" suma
+  `product_commission_amount` en `src/lib/domain/my-numbers.ts` (`Totals` con `productCommission` y
+  `total`). El cierre en pantalla sigue mostrando el resumen y el texto por WhatsApp. Cierres viejos
+  sin los campos nuevos se leen como antes. E2E en `tests/e2e/pos-reports.spec.ts`.
 
 ### [ ] T-119 · Validación Hito 12
 - REQ: REQ-065…REQ-069
