@@ -28,6 +28,7 @@
 5d. Hito 6 — Aviso automático por WhatsApp (REQ-040 a REQ-043)
 5e. Hito 7 — Membresía familiar (REQ-044 a REQ-048)
 5h. Hito 11 — Limpieza y bioseguridad (REQ-060 a REQ-064)
+5i. Hito 12 — Punto de venta de productos con comisión (REQ-065 a REQ-069)
 6. Requisitos no funcionales (NFR)
 7. Casos borde consolidados
 8. Fuera de alcance del MVP
@@ -443,6 +444,8 @@ cuadre.
 - REQ-024.2 CUANDO se abre "Nueva venta" y se escogen productos y cantidades, EL SISTEMA DEBE
   calcular el total, pedir el medio de pago y crear la venta (REQ-023.3) sin barbero.
 - REQ-024.3 Las ventas de productos NO generan comisión salvo configuración explícita `[PA-17]`.
+  Desde el Hito 12 (ADR-038): los productos marcados dejan el % de productos del negocio al barbero
+  de la venta (REQ-067).
 
 ### REQ-025 · Comisión configurable por barbero — M
 **Como** dueño, **quiero** definir qué porcentaje se lleva cada barbero, **para** liquidar sin
@@ -1187,6 +1190,107 @@ conexión, inventario de insumos de limpieza (va en el Hito 13) e informes para 
 
 ---
 
+## 5i. Hito 12 — Punto de venta de productos con comisión
+
+> Estado: **APROBADA** (Henry, 2026-11-04, tras grill de 7 preguntas con la respuesta recomendada y
+> abogado del diablo sin cambios; PR #75). Ver ADR-038. Los números saltan: REQ-060…064
+> son del Hito 11 (limpieza) y REQ-070…074 del Hito 13 (inventario), en paralelo. El dueño o el
+> barbero venden los productos de la vitrina (cera, aceite de barba, after shave, helados, bebidas)
+> desde una pantalla con fotos; los productos marcados dejan un porcentaje al barbero de la venta.
+> Cambia PA-17 y REQ-024.3. Hito construido y aprobado por Henry el 2026-11-05 (ADR-040).
+
+### REQ-065 · Configurar la comisión y la vitrina — M
+**Como** dueño, **quiero** decidir qué productos dejan comisión y cuánto, **para** premiar al barbero
+que vende la vitrina.
+
+- REQ-065.1 El negocio DEBE tener un "% de comisión por productos" (entero 0–100, **10** por
+  defecto) que el dueño cambia en "Negocio". Es uno solo para todos los productos que dan comisión.
+- REQ-065.2 Cada producto DEBE tener la casilla "Da comisión al que vende" (apagada por defecto); el
+  dueño la cambia en "Productos".
+- REQ-065.3 Cada producto PUEDE tener una categoría de texto libre (1 a 30 caracteres, por ejemplo
+  "Vitrina", "Bebidas", "Helados"); sin categoría queda solo en "Todos".
+- REQ-065.4 CUANDO el dueño cambia el % de comisión por productos o el % de descuento de empleado
+  (REQ-068.1), EL SISTEMA DEBE aplicarlo solo a ventas posteriores y guardar el historial (fecha,
+  quién, valor anterior y nuevo), como REQ-025.3.
+- REQ-065.5 CUANDO el dueño cambia la casilla de un producto, las ventas ya registradas NO DEBEN
+  cambiar su comisión.
+
+### REQ-066 · Vender en la vitrina — M
+**Como** dueño o barbero, **quiero** vender productos tocando su foto, **para** registrar la venta
+rápido y que quede a nombre de quien la hizo.
+
+- REQ-066.1 "Nueva venta" DEBE mostrar la vitrina: los productos activos y a la venta en cuadros con
+  foto (o el nombre si no tiene), nombre, precio y botones + y −, y el total. Los productos de
+  cortesía que no están a la venta NO DEBEN salir.
+- REQ-066.2 SI al menos un producto activo y a la venta tiene categoría, ENTONCES la vitrina DEBE
+  mostrar pestañas: "Todos" y una por categoría (orden alfabético); si ninguno tiene, no hay
+  pestañas.
+- REQ-066.3 CUANDO el dueño registra una venta de productos, EL SISTEMA DEBE pedir "¿Quién vendió?"
+  con los barberos activos y "Nadie (el negocio)", sin opción escogida por defecto, y NO DEBE dejar
+  confirmar hasta que escoja una.
+- REQ-066.4 CUANDO un barbero registra una venta de productos, EL SISTEMA DEBE dejarla a su nombre
+  sin preguntar; un barbero NO DEBE poder registrarla a nombre de otro (REQ-023.7).
+- REQ-066.5 El panel de cobro del turno (REQ-023.2) DEBE usar la misma vitrina para agregar
+  productos; esos productos quedan en la misma venta, a nombre del barbero del turno.
+- REQ-066.6 Cada línea de producto de la venta DEBE guardar el producto (`ref_id`) y la cantidad
+  (`qty`), como hasta ahora: de ahí descuenta la vitrina el Hito 13.
+
+### REQ-067 · Comisión por productos — M
+**Como** barbero, **quiero** ganar un porcentaje de lo que vendo de la vitrina, **para** tener por
+qué recomendarla.
+
+- REQ-067.1 CUANDO se crea una venta con barbero, EL SISTEMA DEBE calcular
+  `comision_productos = redondear(Σ precio × cantidad de las líneas de productos que dan comisión ×
+  % de productos / 100)`, con un solo redondeo por venta al peso más cercano (.5 hacia arriba).
+- REQ-067.2 La venta DEBE guardar el % de productos, la base y la comisión de productos, aparte de la
+  de servicios; y cada línea de producto DEBE guardar si dio comisión. Cambios posteriores no la
+  alteran.
+- REQ-067.3 Una venta con "Nadie (el negocio)" o sin barbero DEBE tener comisión de productos 0.
+- REQ-067.4 La comisión de productos NO DEBE cambiar por el medio de pago, la membresía, el premio de
+  fidelidad ni el descuento de servicios: se calcula solo con las líneas de productos.
+- REQ-067.5 La comisión de productos la asume el negocio: el total que paga el cliente no cambia.
+
+### REQ-068 · Compra de un barbero — M
+**Como** dueño, **quiero** venderle productos a un barbero con descuento, **para** que los use él
+sin que cuente como venta con comisión.
+
+- REQ-068.1 El negocio DEBE tener un "% de descuento de empleado" (entero 0–100, **20** por
+  defecto) que el dueño cambia en "Negocio".
+- REQ-068.2 SI el % de descuento de empleado es mayor que 0, ENTONCES "Nueva venta" del dueño DEBE
+  mostrar el interruptor "Compra de un barbero"; al prenderlo, el dueño escoge qué barbero compra (en
+  vez de "¿Quién vendió?"). Solo el dueño DEBE poder registrarla.
+- REQ-068.3 En una compra de un barbero, EL SISTEMA DEBE descontar a cada línea
+  `redondear(precio × cantidad × % de descuento / 100)` (al peso, .5 hacia arriba) y aceptar solo
+  productos (ni servicios, ni cuotas de membresía, ni tarjetas de regalo).
+- REQ-068.4 Una compra de un barbero NO DEBE generar comisión para nadie y se paga con los medios de
+  la caja en ese momento; no se descuenta de la liquidación.
+- REQ-068.5 La compra de un barbero NO DEBE contar como venta de ese barbero en el cierre, la semana
+  ni "Mis números".
+
+### REQ-069 · Anular y ver la comisión de productos — M
+**Como** dueño y barbero, **queremos** ver la comisión de productos aparte, **para** llegar al
+mismo número a mano.
+
+- REQ-069.1 Anular una venta con productos DEBE seguir las reglas de REQ-026 y sacar también su
+  comisión de productos de los totales.
+- REQ-069.2 La Caja de hoy y el cierre (REQ-027.1, REQ-027.6) DEBEN mostrar, por barbero, servicios y
+  productos en renglones aparte y el total a pagar: "Juan: 8 servicios, $ 240.000 vendidos,
+  comisión 60 % = $ 144.000 · productos $ 60.000, comisión 10 % = $ 6.000 · total a pagar
+  $ 150.000". El renglón de productos sale solo si el barbero vendió productos que dan comisión.
+- REQ-069.3 El cierre DEBE mostrar "Compras de barberos $ X (descuento $ Y)" si hubo alguna; las
+  ventas "Nadie (el negocio)" y las compras de barberos cuentan en el total de productos.
+- REQ-069.4 El resumen semanal (REQ-028.1) DEBE mostrar por barbero la comisión de servicios, la de
+  productos y el total.
+- REQ-069.5 "Mis números" del barbero (REQ-025.5, REQ-029.1) DEBE mostrar la comisión de productos
+  del día y de la semana aparte de la de servicios, y el total, solo de lo suyo.
+
+Fuera de alcance del Hito 12: un % por producto, un barbero distinto por línea en la misma venta,
+descuentos en productos fuera de la compra de un barbero, descontar compras de la liquidación
+(fiado), topes de compras de barberos, metas o niveles de comisión, stock e inventario (Hito 13) y
+lectores de código de barras.
+
+---
+
 ## 5j. Hito 13 — Inventario de insumos y vitrina
 
 > Estado: **APROBADA** (Henry, 2026-11-04, tras grill de 20 preguntas con la respuesta
@@ -1398,7 +1502,7 @@ no bloquear la lectura; no es decisión tomada.
 | PA-14 | ¿Es común que un cliente pague parte en efectivo y parte en Nequi? | REQ-023.5 | Deseable, no imprescindible |
 | PA-15 | ¿Quién maneja la plata? Si el cliente paga en Nequi o transferencia, ¿paga a la cuenta del negocio o a la del barbero? Esto cambia el cierre: hay que saber cuánto le debe el negocio al barbero o el barbero al negocio. | REQ-023.7, REQ-027 | Todo entra a la cuenta/caja del negocio; el negocio liquida la comisión al barbero |
 | PA-16 | ¿Necesitas control de inventario de helados y bebidas (cuántos quedan)? | REQ-024.1 | No en el MVP. Resuelta: Hito 13, REQ-070…074 (ADR-039) |
-| PA-17 | ¿Las ventas de productos dejan algo al barbero que las vende? | REQ-024.3 | No |
+| PA-17 | ¿Las ventas de productos dejan algo al barbero que las vende? | REQ-024.3, REQ-067 | ~~No~~ Sí desde el Hito 12 (ADR-038): los productos marcados dejan el % de productos del negocio (10 % por defecto) al barbero de la venta |
 | PA-18 | Comisión: el porcentaje configurado, ¿es lo que se lleva el barbero o lo que deja al negocio? ¿Hay valores típicos (50/50, 60/40)? ¿Se calcula sobre el precio antes o después de descuento? | REQ-025.1 | Es la parte del barbero; sobre el precio después de descuento |
 | PA-19 | Cuando el corte es gratis por fidelidad, ¿el barbero igual recibe su comisión (la asume el negocio) o también lo regala? | REQ-025.4 | El negocio la asume |
 | PA-20 | ¿Se puede corregir algo después de cerrar la caja? ¿Quién puede reabrir? | REQ-026.2, REQ-027.3 | Solo el dueño, con motivo, queda registrado |

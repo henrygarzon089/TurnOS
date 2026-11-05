@@ -11,12 +11,16 @@ export default async function ProductsPage() {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("products")
-    .select("id, name, price, is_active, for_sale, is_courtesy, photo_path")
+    .select(
+      "id, name, price, is_active, for_sale, is_courtesy, photo_path, commissionable, category",
+    )
     .eq("business_id", session.business.id)
     .order("is_active", { ascending: false })
     .order("sort_order")
     .order("name");
   const products = (data ?? []) as ProductRow[];
+  // REQ-065.3 sugerencias con las categorías que ya existen
+  const categories = [...new Set(products.map((p) => p.category).filter((c) => c !== null))].sort();
 
   return (
     <main className="pb-6">
@@ -27,10 +31,15 @@ export default async function ProductsPage() {
       </p>
       <div className="mt-4 flex flex-col gap-3">
         {products.map((p) => (
-          <ProductForm key={p.id} product={p} businessId={session.business.id} />
+          <ProductForm
+            key={p.id}
+            product={p}
+            businessId={session.business.id}
+            categories={categories}
+          />
         ))}
         <h2 className="mt-2 font-semibold">Nuevo producto</h2>
-        <ProductForm businessId={session.business.id} />
+        <ProductForm businessId={session.business.id} categories={categories} />
       </div>
     </main>
   );
