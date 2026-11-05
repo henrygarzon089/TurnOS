@@ -1537,11 +1537,16 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `BARBER_NOT_FOUND`, `INVALID_STAFF_PURCHASE`).
 - Nota (2026-11-04): hecha con T-111 (misma migración y archivo de pgTAP).
 
-### [ ] T-113 · Caja y semana en SQL
+### [x] T-113 · Caja y semana en SQL
 - REQ: REQ-068.5, REQ-069.2, REQ-069.3, REQ-069.4
 - Archivos: `supabase/migrations/0062_pos_reports.sql` (`cash_day_summary`, `weekly_summary`),
   `supabase/tests/0062_pos_reports.sql`
 - Terminado: pgTAP con el ejemplo R en el cierre (también la foto de `close_cash_day`) y la semana.
+- Nota (2026-11-04): 14 pgTAP en `supabase/tests/0062_pos_reports.sql` (1236 en total; integración
+  142). `cash_day_summary`: `barbers[]` con `productsSold`, `productCommission`, `productPct` y
+  `toPay`; totales `productCommission` y `staffPurchases`; ventas con `productCommission` y
+  `staffBuyerName`. `weekly_summary`: `barbers[]` con `productCommission` y `toPay`; totales
+  `productCommission` y `staffPurchases`. `close_cash_day` no se redefine.
 
 ### [ ] T-114 · Dominio: comisión de productos y descuento de empleado
 - REQ: REQ-067.1, REQ-067.3, REQ-068.3
