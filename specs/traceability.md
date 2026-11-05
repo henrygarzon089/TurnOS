@@ -337,6 +337,32 @@
 | REQ-064.4 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
 | REQ-064.5 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
 | REQ-064.6 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-065.1 | Configurar la comisión y la vitrina | T-110 (pendiente), T-111 (pendiente), T-115 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-065.2 | Configurar la comisión y la vitrina | T-110 (pendiente), T-111 (pendiente), T-115 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-065.3 | Configurar la comisión y la vitrina | T-110 (pendiente), T-111 (pendiente), T-115 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-065.4 | Configurar la comisión y la vitrina | T-110 (pendiente), T-111 (pendiente), T-115 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-065.5 | Configurar la comisión y la vitrina | T-110 (pendiente), T-111 (pendiente), T-115 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-066.1 | Vender en la vitrina | T-111 (pendiente), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-066.2 | Vender en la vitrina | T-111 (pendiente), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-066.3 | Vender en la vitrina | T-111 (pendiente), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-066.4 | Vender en la vitrina | T-111 (pendiente), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-066.5 | Vender en la vitrina | T-111 (pendiente), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-066.6 | Vender en la vitrina | T-111 (pendiente), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-067.1 | Comisión por productos | T-111 (pendiente), T-114 (pendiente) | — | sin prueba |
+| REQ-067.2 | Comisión por productos | T-111 (pendiente), T-114 (pendiente) | — | sin prueba |
+| REQ-067.3 | Comisión por productos | T-111 (pendiente), T-114 (pendiente) | — | sin prueba |
+| REQ-067.4 | Comisión por productos | T-111 (pendiente), T-114 (pendiente) | — | sin prueba |
+| REQ-067.5 | Comisión por productos | T-111 (pendiente), T-114 (pendiente) | — | sin prueba |
+| REQ-068.1 | Compra de un barbero | T-110 (pendiente), T-112 (pendiente), T-113 (pendiente), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-068.2 | Compra de un barbero | T-110 (pendiente), T-112 (pendiente), T-113 (pendiente), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-068.3 | Compra de un barbero | T-110 (pendiente), T-112 (pendiente), T-113 (pendiente), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-068.4 | Compra de un barbero | T-110 (pendiente), T-112 (pendiente), T-113 (pendiente), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-068.5 | Compra de un barbero | T-110 (pendiente), T-112 (pendiente), T-113 (pendiente), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-069.1 | Anular y ver la comisión de productos | T-113 (pendiente), T-118 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-069.2 | Anular y ver la comisión de productos | T-113 (pendiente), T-118 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-069.3 | Anular y ver la comisión de productos | T-113 (pendiente), T-118 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-069.4 | Anular y ver la comisión de productos | T-113 (pendiente), T-118 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-069.5 | Anular y ver la comisión de productos | T-113 (pendiente), T-118 (pendiente), T-119 (pendiente) | — | sin prueba |
 | REQ-070.1 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
 | REQ-070.2 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
 | REQ-070.3 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |

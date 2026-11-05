@@ -23,6 +23,7 @@
 13. Hito 7 — Membresía familiar
 14. Hito 8 — Citas a hora fija
 15. Hito 9 — Tarjetas de regalo (§14 es del Hito 8)
+17. Hito 12 — Punto de venta de productos con comisión (§16 es del Hito 11)
 18. Hito 13 — Inventario de insumos y vitrina (§16 y §17 son de los Hitos 11 y 12)
 
 ---
@@ -599,7 +600,8 @@ commission_amount = round( commission_base × commission_pct / 100 )        // r
 business_amount   = commission_base − commission_amount
 ```
 
-Los productos no entran en la comisión (PA-17). Un descuento que no es premio sí reduce la base
+Los productos no entran en esta comisión (PA-17); desde el Hito 12 los productos marcados tienen
+la suya aparte (§17.4, ADR-038). Un descuento que no es premio sí reduce la base
 (PA-18). Todo se guarda en la venta; cambiar `commission_pct` después no la altera (REQ-025.3).
 
 **Ejemplo A — corte normal.** Corte $ 25.000, barbero Juan 60 %, pago Nequi.
@@ -1025,6 +1027,11 @@ turnos/
 | REQ-052 | 14.3 `mark_appointment_arrived`, `call_next`, `close_expired_queues`, 14.5 |
 | REQ-053 | 14.4 |
 | REQ-054 | 14.1 plantillas, 14.3 `appointments_agenda`, `reassign_appointment`, 14.5 `/admin/citas` |
+| REQ-065 | 17.1 `businesses`, `business_pct_changes`, `products`, 17.5 |
+| REQ-066 | 17.1 gancho del Hito 13, 17.3 `register_sale`, 17.5 vitrina |
+| REQ-067 | 17.1 `sales`/`sale_items`, 17.3 `register_sale`, 17.4 |
+| REQ-068 | 17.1 `sales_staff_purchase_ck`, 17.3 `register_sale`, 17.4 ejemplo P, 17.5 |
+| REQ-069 | 17.3 `void_sale`, `cash_day_summary`, `weekly_summary`, 17.4 ejemplo R, 17.5 |
 | NFR-001…013 | 1, 2.4, 6.4, 6.6, 8 |
 
 ---
@@ -2070,6 +2077,165 @@ En orden; el primer error gana:
 - E2E (Pixel 7 + iPhone 13): el dueño enciende Limpieza; el barbero ve "Apertura pendiente", la
   registra incompleta con nota y desaparece el aviso; el cierre pide foto; el dueño ve el incompleto
   en el panel y hace una revisión con una falla asignada que aparece en el historial.
+
+---
+
+## 17. Hito 12 — Punto de venta de productos con comisión (REQ-065…REQ-069, ADR-038)
+
+> §16 es del Hito 11 (limpieza), en paralelo. Migraciones `0060_pos_products.sql` (datos e
+> historial), `0061_pos_register_sale.sql` (`register_sale` con la comisión de productos y la compra
+> de un barbero) y `0062_pos_reports.sql` (caja y semana), cada una con su pgTAP y permisos explícitos
+> (ADR-019). Sin marcar ningún producto, la caja no cambia: la comisión de productos da 0 (como hoy).
+
+### 17.1 Datos
+
+| Tabla | Cambio | REQ |
+|---|---|---|
+| `businesses` | `product_commission_pct int not null default 10 check (between 0 and 100)`, `staff_discount_pct int not null default 20 check (between 0 and 100)` | 065.1, 068.1 |
+| `business_pct_changes` (nueva) | `id, business_id, kind enum business_pct_kind ('product_commission','staff_discount'), old_pct int, new_pct int, changed_by uuid, at timestamptz default now()`; la llena un trigger `after update` en `businesses` cuando cambia alguno de los dos (como `barbers_commission_change`, §2.5) | 065.4 |
+| `products` | `commissionable boolean not null default false` ("Da comisión al que vende"), `category text null check (length(trim(category)) between 1 and 30)` | 065.2, 065.3 |
+| `sale_items` | `commissionable boolean not null default false`: copia de `products.commissionable` al vender, solo en líneas `product`; `check (kind = 'product' or not commissionable)` | 065.5, 067.2 |
+| `sales` | `product_commission_pct int not null default 0 check (0..100)`, `product_commission_base int not null default 0 check (>= 0)`, `product_commission_amount int not null default 0 check (>= 0)`, `staff_buyer_id uuid null` (FK compuesta con `business_id` a `barbers`), `staff_discount_total int not null default 0 check (>= 0)` | 067.2, 068.2 |
+
+Checks nuevos en `sales`:
+- `sales_staff_purchase_ck`: `staff_buyer_id is null or (barber_id is null and ticket_id is null and
+  services_total = 0 and membership_total = 0 and gift_card_total = 0 and product_commission_amount
+  = 0)` (REQ-068.3, REQ-068.4).
+- `sales_product_commission_ck`: `barber_id is not null or product_commission_amount = 0`
+  (REQ-067.3).
+- `staff_discount_total = 0 or staff_buyer_id is not null`.
+
+`products_total` pasa a ser `Σ line_total` de las líneas `product` (antes `Σ unit_price × qty`: es
+lo mismo mientras no haya descuento, y solo la compra de un barbero lo tiene). `discount_total`
+sigue siendo solo de servicios; el descuento de empleado va en `staff_discount_total`. `commission_*`
+y `business_amount` siguen siendo **solo de servicios**, con el mismo significado (§5.1, §13.4); la
+comisión de productos va en sus tres columnas propias, así ningún reporte viejo cambia de número.
+
+**Gancho del Hito 13.** Las líneas de producto siguen llevando `ref_id = products.id` y `qty`
+(REQ-066.6). El stock de la vitrina lo maneja el Hito 13 con sus propios triggers sobre `sale_items`
+y sobre el cambio de `sales.status`; este hito no los define ni los llama.
+
+### 17.2 RLS
+
+| Tabla | Dueño | Barbero |
+|---|---|---|
+| `businesses` (columnas nuevas) | como hoy: lee y cambia | lee (como hoy) |
+| `business_pct_changes` | select; insert solo por trigger | sin acceso |
+| `products` (columnas nuevas) | como hoy | select (como hoy): la vitrina se lee con RLS |
+| `sales`, `sale_items` (columnas nuevas) | como hoy | como hoy: solo sus ventas (`barber_id = my_barber_id()`); la compra de un barbero tiene `barber_id` null, así que el barbero que compra no la ve (REQ-068.5) |
+
+### 17.3 Funciones SQL
+
+- `register_sale` (redefinida en `0061`; firma nueva con `p_staff_buyer_id uuid default null` al
+  final, así que se borra la anterior y se repiten los `grant`/`revoke` de ADR-019):
+  - Producto: además de `is_active`, exige `for_sale` (si no → `PRODUCT_NOT_FOUND`, REQ-066.1); copia
+    `products.commissionable` a la línea.
+  - Quién vendió: igual que hoy (REQ-023.7). Barbero → la venta queda a su nombre aunque mande otro
+    `p_barber_id` (`FORBIDDEN`). Dueño con `p_barber_id` null y solo productos → "Nadie (el
+    negocio)". La pregunta sin valor por defecto (REQ-066.3) la hace la pantalla.
+  - Comisión de productos (si `v_barber` no es null y no es compra de barbero): `pct =
+    businesses.product_commission_pct` de ese momento, `base = Σ line_total` de las líneas
+    `commissionable`, `amount = round(base × pct / 100)` (al peso, .5 hacia arriba; mismo
+    `round(numeric)` que §5.1). Si no, las tres en 0.
+  - Compra de un barbero (`p_staff_buyer_id` no null): solo dueño (`FORBIDDEN`); el % de descuento
+    de empleado en 0 → `STAFF_DISCOUNT_OFF`; barbero que no es del negocio o no está activo →
+    `BARBER_NOT_FOUND`; `p_ticket_id` o `p_barber_id` no null, o una línea que no es `product` →
+    `INVALID_STAFF_PURCHASE` (P0004). Cada línea lleva `discount = round(unit_price × qty × pct /
+    100)` con `discount_reason = 'Compra de barbero'`; `staff_discount_total = Σ discount`; cliente
+    null; comisión 0. Los pagos se validan como siempre (pueden incluir tarjeta de regalo).
+- `void_sale`: sin cambios. Anular saca la venta de todos los totales porque los reportes solo suman
+  ventas `active` (REQ-069.1).
+- `cash_day_summary` (redefinida en `0062`; `close_cash_day` guarda su foto, como en T-076):
+  - `barbers[]` agrega `productsSold` (Σ `product_commission_base`), `productCommission` (Σ
+    `product_commission_amount`), `productPct` (el % si todas sus ventas del día tienen el mismo; si
+    no, null) y `toPay` (`commission + productCommission`). Un barbero sale si tiene servicios,
+    comisión o comisión de productos.
+  - Totales nuevos: `productCommission` (Σ) y `staffPurchases: {count, total, discount}` (ventas con
+    `staff_buyer_id`). `products` sigue siendo Σ `products_total` (incluye "Nadie" y compras de
+    barberos, REQ-069.3).
+  - Las ventas del día agregan `staffBuyerName` y `productCommission`.
+- `weekly_summary` (redefinida en `0062`): `barbers[]` agrega `productCommission` y `toPay`; totales
+  `productCommission` y `staffPurchases` (REQ-069.4).
+- "Mis números" lee `sales` con RLS (como hoy) y suma `product_commission_amount` aparte (REQ-069.5);
+  no hace falta función nueva.
+
+### 17.4 Comisión y caja (ejemplos)
+
+```
+product_commission_base   = Σ line_total de líneas product con commissionable    (si hay barbero y no es compra de barbero)
+product_commission_amount = round(product_commission_base × product_commission_pct / 100)
+a pagar al barbero        = commission_amount (servicios, §5.1/§13.4) + product_commission_amount
+staff discount por línea  = round(unit_price × qty × staff_discount_pct / 100)
+```
+
+**Ejemplo M — corte + vitrina.** Juan 60 %, productos 10 %. Corte $ 25.000 + cera $ 35.000 (da
+comisión) + gaseosa $ 4.000 (no da). `services_total = 25.000`, `products_total = 39.000`, `total =
+64.000`; servicios: `commission_amount = 15.000`; productos: `base = 35.000`, `amount = 3.500`. A
+pagar a Juan: 18.500.
+
+**Ejemplo N — el dueño vende para Pedro.** Cera $ 35.000 + aceite $ 42.500, "¿Quién vendió?" Pedro.
+Sin servicios: `commission_amount = 0`; `base = 77.500`, `amount = 7.750`. Total 77.500.
+
+**Ejemplo O — "Nadie (el negocio)".** La misma venta de N sin barbero: comisión de productos 0; los
+77.500 son del negocio.
+
+**Ejemplo P — compra de un barbero.** Juan compra una cera de $ 35.000 con 20 %: `discount = 7.000`,
+`line_total = 28.000`, `products_total = 28.000`, `staff_discount_total = 7.000`, `total = 28.000`,
+comisión 0, `barber_id` null. En el cierre: "Compras de barberos $ 28.000 (descuento $ 7.000)".
+
+**Ejemplo Q — redondeo.** Base $ 12.345 al 10 %: `1.234,5 → 1.235`. Un solo redondeo por venta:
+tres productos de $ 4.005 al 10 % dan `round(12.015 × 0,10) = round(1.201,5) = 1.202`, no `3 × 401 =
+1.203`.
+
+**Ejemplo R — cierre.** Día con M, N, O y P. Total vendido: 64.000 + 77.500 + 77.500 + 28.000 =
+247.000 (servicios 25.000, productos 222.000). Juan: "1 servicio, $ 25.000 vendidos, comisión 60 % =
+$ 15.000 · productos $ 35.000, comisión 10 % = $ 3.500 · total a pagar $ 18.500". Pedro: "productos
+$ 77.500, comisión 10 % = $ 7.750 · total a pagar $ 7.750". Compras de barberos $ 28.000 (descuento
+$ 7.000). Comprobación a mano: las comisiones (15.000 + 3.500 + 7.750 = 26.250) salen de la plata del
+negocio; la compra de Juan no le suma nada a Juan.
+
+### 17.5 Server actions y pantallas
+
+- `/admin/negocio`: dos campos nuevos, "Comisión por productos (%)" y "Descuento de empleado (%)",
+  con ayuda corta ("Se aplica a las ventas desde hoy").
+- `/admin/productos`: casilla "Da comisión al que vende" y campo "Categoría" (con sugerencias de las
+  que ya existen en el negocio).
+- Vitrina (`src/components/cash/ProductShowcase.tsx`, nueva): cuadrícula de 2 columnas en el celular
+  (3 en pantallas anchas), cuadro con foto o nombre, precio y + / − (botones ≥ 48 px), pestañas si
+  hay categorías (REQ-066.2), barra fija abajo con el total y "Continuar". La usan "Nueva venta" y el
+  panel de cobro del turno en vez de la lista de productos de hoy.
+- "Nueva venta" del dueño: "¿Quién vendió?" con botones por barbero activo y "Nadie (el negocio)",
+  ninguno marcado; "Confirmar" deshabilitado hasta escoger (REQ-066.3). Si `staff_discount_pct > 0`,
+  interruptor "Compra de un barbero" que cambia la pregunta a "¿Qué barbero compra?", oculta los
+  servicios y muestra cada línea con el descuento. "Nueva venta" del barbero: sin pregunta, dice
+  "Venta a tu nombre".
+- Caja de hoy, cierre (y su texto por WhatsApp), Semana: el renglón por barbero de REQ-069.2 y el
+  recuadro "Compras de barberos" solo si hubo. Mapeos puros en `src/lib/domain/commission.ts`
+  (`productCommission`, `staffDiscount`) y `src/lib/domain/cashReport.ts` (o donde viva hoy el texto
+  del cierre).
+- "Mis números": "Comisión de servicios", "Comisión de productos" y "Total", hoy y semana, y en el
+  detalle por venta la comisión de productos de cada una.
+- Acciones: `registerSale` en `src/lib/actions/cash.ts` agrega `staffBuyerId`; `updateBusiness` y
+  `upsertProduct` en `src/lib/actions/admin.ts` agregan los campos nuevos.
+
+### 17.6 Pruebas
+
+- pgTAP `0060`: columnas, valores por defecto (10 y 20), checks (categoría, `sales_staff_purchase_ck`,
+  `sales_product_commission_ck`, `sale_items.commissionable` solo en productos), historial por trigger
+  de los dos %, RLS (el barbero no ve `business_pct_changes`) y permisos (`anon` nada).
+- pgTAP `0061`: ejemplos M, N, O, P y Q; barbero que manda otro `p_barber_id` → `FORBIDDEN`; producto
+  de cortesía (`for_sale = false`) → `PRODUCT_NOT_FOUND`; cambiar la casilla o el % después no cambia
+  la venta; con membresía, premio y tarjeta de regalo la comisión de productos no cambia (REQ-067.4);
+  cada rechazo de la compra de un barbero (barbero que la intenta, % en 0, con servicio, con turno);
+  `ref_id` y `qty` en las líneas (REQ-066.6); anular (REQ-069.1).
+- pgTAP `0062`: cierre y semana con el ejemplo R (`productCommission`, `toPay`, `staffPurchases`), la
+  compra no cuenta como del barbero que compra, y el día sin productos marcados igual a antes.
+- Unitarias: `commission.ts` (ejemplos M…Q) y el texto del cierre (REQ-069.2, REQ-069.3).
+- Integración: `registerSale` con `staffBuyerId` y las acciones de negocio y productos contra Postgres
+  local.
+- E2E (Pixel 7 + iPhone 13): el dueño vende una cera desde la vitrina escogiendo barbero y ve la
+  comisión en la Caja de hoy; el barbero agrega una cera al cobro de su corte y la ve en "Mis números";
+  el dueño registra una compra de barbero.
 
 ---
 
