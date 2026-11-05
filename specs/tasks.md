@@ -1503,7 +1503,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 > se fusionan después de las del Hito 12 (`0060`…`0062`). La venta de productos es del Hito 12;
 > aquí solo el stock (§18.4).
 
-### [ ] T-120 · Migración y pgTAP: catálogo, sitios y RLS
+### [x] T-120 · Migración y pgTAP: catálogo, sitios y RLS
 - REQ: REQ-070.1, REQ-070.2, REQ-070.3, REQ-070.4, REQ-070.5, REQ-070.6, REQ-071.6, REQ-073.1,
   REQ-074.5
 - Archivos: `supabase/migrations/0063_inventory.sql` (enums, `inventory_items`,
@@ -1511,13 +1511,22 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `businesses.inventory_alert_pct`, triggers de sitios, `save_inventory_item`, `set_item_usage`,
   `inventory_stock`), `supabase/tests/0063_inventory.sql`
 - Terminado: pgTAP de §18.7 para `0063` en verde; sin ítems nada cambia.
+- Nota (2026-11-04): pgTAP 52 nuevas en `supabase/tests/0063_inventory.sql`. Detalles que la spec no
+  fijaba: `sale_items.id` es `bigint`, así que `stock_movements.sale_item_id` también; el trigger de la
+  estación va sobre `barbers.is_active` (no hay `status` de alta/baja); función extra
+  `station_allowance` (la dotación, la reutiliza `my_station`); `FORBIDDEN` usa `42501` como el resto.
 
-### [ ] T-121 · Entradas, transferencias y reposición
+### [x] T-121 · Entradas, transferencias y reposición
 - REQ: REQ-071.1, REQ-071.2, REQ-071.3, REQ-071.4, REQ-071.5, REQ-072.5
 - Archivos: `supabase/migrations/0064_inventory_movements.sql` (`register_stock_purchase`,
   `transfer_stock`, `refill_station`, `inventory_overview`, guardia de inmutabilidad),
   `supabase/tests/0064_inventory_movements.sql`
 - Terminado: pgTAP con cada rechazo y la reposición que no cambia el stock de la estación.
+- Nota (2026-11-04): pgTAP 46 nuevas en `supabase/tests/0064_inventory_movements.sql`. Funciones
+  auxiliares que la spec no nombraba: `stock_qty`, `inventory_transfer` e `inventory_owned_item` (bloquea
+  el ítem con `for update` para que dos cambios a la vez no pasen del stock; solo `service_role`).
+  Una transferencia desde una estación "por cerrar" se permite (hacia ella no). Las sugerencias de
+  rendimiento no van en `inventory_overview` (son de 0066): la pantalla las pide aparte.
 
 ### [ ] T-122 · Vitrina desde la caja y la cortesía
 - REQ: REQ-072.1, REQ-072.2, REQ-072.3, REQ-072.4
