@@ -322,3 +322,52 @@ export async function saveAlertPct(_prev: ActionResult, formData: FormData): Pro
     .eq("id", ctx.session.business.id);
   return error ? { error: inventoryErrorMessage(error) } : { ok: true };
 }
+
+export type CatalogItem = {
+  id: string;
+  name: string;
+  group: InventoryGroup;
+  use: InventoryUse;
+  presentation: string;
+  unit_label: string;
+  unit_cost: number;
+  supplier: string | null;
+  min_qty: number;
+  max_qty: number;
+  shelf_min: number | null;
+  station_qty: number;
+  product_id: string | null;
+  is_active: boolean;
+};
+
+export type InventoryCatalog = {
+  items: CatalogItem[];
+  products: { id: string; name: string }[];
+  services: { id: string; name: string }[];
+  usage: { item_id: string; service_id: string; services_per_unit: number | null }[];
+};
+
+/** /admin/inventario/catalogo: todos los ítems (también los desactivados), productos y servicios. */
+export async function getInventoryCatalog(): Promise<InventoryCatalog | null> {
+  const ctx = await owner();
+  if (!ctx) return null;
+  const biz = ctx.session.business.id;
+  const [items, products, services, usage] = await Promise.all([
+    ctx.supabase
+      .from("inventory_items")
+      .select(
+        "id, name, group, use, presentation, unit_label, unit_cost, supplier, min_qty, max_qty, shelf_min, station_qty, product_id, is_active",
+      )
+      .eq("business_id", biz)
+      .order("sort_order"),
+    ctx.supabase.from("products").select("id, name").eq("business_id", biz).eq("is_active", true).order("sort_order"),
+    ctx.supabase.from("services").select("id, name").eq("business_id", biz).eq("is_active", true).order("sort_order"),
+    getItemUsage(),
+  ]);
+  return {
+    items: (items.data ?? []) as CatalogItem[],
+    products: products.data ?? [],
+    services: services.data ?? [],
+    usage,
+  };
+}

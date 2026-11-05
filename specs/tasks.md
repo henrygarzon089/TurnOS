@@ -1502,11 +1502,18 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   la spec no nombraba: `getItemUsage` (servicios de cada insumo para el catálogo) y `saveAlertPct`
   ("Alerta de consumo (%)" en `/admin/negocio`, REQ-073.4).
 
-### [ ] T-126 · Pantallas del dueño: resumen, catálogo y movimientos
+### [x] T-126 · Pantallas del dueño: resumen, catálogo y movimientos
 - REQ: REQ-070.1, REQ-070.2, REQ-071.2, REQ-071.3, REQ-071.4, REQ-072.3, REQ-072.5, REQ-073.1
 - Archivos: `src/app/(staff)/admin/inventario/**` (resumen, `catalogo`), chip "Inventario" del menú
 - Terminado: desde el celular se crea un ítem, se registra una entrada, se repone con envase vacío y
   se surte la vitrina; `pnpm lint:texts` en verde.
+- Nota (2026-11-04): pantallas `/admin/inventario` (pendientes, movimientos en pestañas
+  Reponer / Entrada a bodega / Transferir, rendimiento sugerido y stock por sitio con negativos en
+  rojo) y `/admin/inventario/catalogo` (por grupo, formulario del ítem, servicios que lo gastan y
+  plantilla básica). Formularios en `src/components/admin/InventoryForms.tsx`, pestañas en
+  `InventoryNav.tsx`. Se agregó la lectura `getInventoryCatalog` (ítems también desactivados,
+  productos y servicios) a `src/lib/actions/inventory.ts`. Sin pruebas nuevas: la lógica ya está
+  cubierta por T-120…T-125. Falta revisarlas en el celular contra un proyecto de Supabase.
 
 ### [ ] T-127 · Pantallas del dueño: conteos, orden de compra y costos
 - REQ: REQ-073.3, REQ-073.4, REQ-073.5, REQ-073.6, REQ-073.7, REQ-074.1, REQ-074.2, REQ-074.3

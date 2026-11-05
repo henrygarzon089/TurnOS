@@ -12,6 +12,7 @@ const ITEMS: { href: string; label: string }[] = [
   { href: "/admin/regalos", label: "Tarjetas de regalo" },
   { href: "/admin/servicios", label: "Servicios" },
   { href: "/admin/productos", label: "Productos" },
+  { href: "/admin/inventario", label: "Inventario" },
   { href: "/admin/barberos", label: "Barberos" },
   { href: "/admin/horario", label: "Horario" },
   { href: "/admin/qr", label: "QR" },
