@@ -303,11 +303,11 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   triggers sobre `sale_items` (`ref_id`, `qty`), sin tocar este código.
 - `pnpm trace --check --hito=12`: 0 sin prueba (26 CA); el hito 12 ya está en el loop de
   `tests/unit/traceability.test.ts`.
-- Falta (Henry): aplicar `0060`…`0062` en producción (`supabase db push --include-all`), marcar en
-  Filo los productos que dan comisión y sus categorías, revisar los dos % en "Negocio", probar una
+- 2026-11-05: Henry aplicó `0060`…`0062` en producción (`supabase db push --include-all` desde
+  `claude/h12-t118`; subieron también `0063` y `0064` del Hito 13). Preview de la cadena:
+  https://turnos-mw7ifckv4-henry-garzons-projects.vercel.app (con sesión de Vercel).
+- Falta (Henry): marcar en Filo los productos que dan comisión y sus categorías, revisar los dos % en "Negocio", probar una
   venta de vitrina y una compra de barbero en la barbería, y aprobar el hito (ADR nuevo).
-- CI: de noche (después de las 11 p. m. de Bogotá) falla `supabase/tests/0046_appointments_queue.sql`
-  del Hito 8 (`NOT_ARRIVABLE`, depende de la hora); no es del Hito 12. Se vuelve a correr de día.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

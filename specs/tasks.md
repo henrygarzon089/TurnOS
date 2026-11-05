@@ -1611,7 +1611,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   spec; el hito 12 entra al loop de `tests/unit/traceability.test.ts` aquí, cuando todas las pruebas
   existen (como el hito 9 en T-097), para no dejar el CI en rojo mientras tanto.
 - Nota (2026-11-04): hito 12 en el loop; `pnpm trace --check --hito=12` sin huecos;
-  `docs/estado-del-proyecto.md` al día. Falta lo de Henry (producción, Filo, prueba y aprobación).
+  `docs/estado-del-proyecto.md` al día. 2026-11-05: `0060`…`0062` en producción (Henry). Falta lo
+  de Henry: Filo, prueba y aprobación.
 
 ---
 
