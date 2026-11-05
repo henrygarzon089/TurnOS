@@ -1346,11 +1346,16 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `getCleaningToday` y `getOwnerCleaningSummary`, y solo si el servidor tiene la llave
   `service_role`. Un PDF de más de 5 MB da "El PDF pesa más de 5 MB".
 
-### [ ] T-104 · Pantalla de registro y aviso en la fila del barbero
+### [x] T-104 · Pantalla de registro y aviso en la fila del barbero
 - REQ: REQ-061.1, REQ-061.4, REQ-061.5, REQ-061.6, REQ-061.11, REQ-062.1, REQ-062.2, REQ-062.6
 - Archivos: `src/app/(staff)/app/limpieza/page.tsx`, componente de lista compartido con el dueño,
   `src/app/(staff)/app/fila/page.tsx` (aviso y botón), E2E `tests/e2e/cleaning-barber.spec.ts`
 - Terminado: E2E del barbero (apertura incompleta con nota, el aviso desaparece, el cierre pide foto).
+- Nota (2026-11-04): `CleaningToday` (tarjetas) y `CleaningChecklist` (formulario) se comparten con el
+  dueño. `CleaningBanner` va arriba de `/app/fila`. `/app/limpieza?abrir=apertura` abre directo la
+  lista de apertura. El cierre del barbero muestra "El cierre se registra desde las …" antes de la
+  hora; la base lo vuelve a revisar. Las fotos ya subidas no se repiten si el envío falla. La E2E
+  la corre el CI (`tests/e2e/cleaning-barber.spec.ts`); aquí no hay Supabase local para E2E.
 
 ### [ ] T-105 · Interruptor, listas y panel del dueño
 - REQ: REQ-060.1, REQ-060.2, REQ-060.3, REQ-062.3, REQ-062.4, REQ-062.5, REQ-062.6
