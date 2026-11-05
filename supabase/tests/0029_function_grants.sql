@@ -44,7 +44,7 @@ select ok(has_function_privilege('authenticated', 'is_member_of(uuid)', 'execute
   'REQ-031.1 las funciones de las políticas RLS (y de storage.objects, REQ-039.1) siguen disponibles para el personal');
 select ok(has_function_privilege('authenticated', 'gen_public_token(int)', 'execute'),
   'REQ-030.2 el token de invitación (default de la columna) se genera con la sesión del dueño');
-select ok(has_function_privilege('service_role', 'register_sale(uuid, uuid, uuid, jsonb, jsonb, uuid)', 'execute')
+select ok(has_function_privilege('service_role', 'register_sale(uuid, uuid, uuid, jsonb, jsonb, uuid, uuid)', 'execute')
           and has_function_privilege('service_role', 'join_queue(text, text, text, uuid, uuid, int, ticket_source, int, int, uuid, boolean)', 'execute'),
   'ADR-009 service_role ejecuta todo');
 

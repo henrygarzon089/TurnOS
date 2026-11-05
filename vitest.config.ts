@@ -15,6 +15,7 @@ export default defineConfig({
         "src/lib/domain/cash-closure.ts",
         "src/lib/domain/money.ts",
         "src/lib/domain/appointments.ts",
+        "src/lib/domain/showcase.ts",
       ],
       reporter: ["text"],
       thresholds: { branches: 100, functions: 100, lines: 100, statements: 100 },
