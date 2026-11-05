@@ -1720,12 +1720,18 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   productos y servicios) a `src/lib/actions/inventory.ts`. Sin pruebas nuevas: la lógica ya está
   cubierta por T-120…T-125. Falta revisarlas en el celular contra un proyecto de Supabase.
 
-### [ ] T-127 · Pantallas del dueño: conteos, orden de compra y costos
+### [x] T-127 · Pantallas del dueño: conteos, orden de compra y costos
 - REQ: REQ-073.3, REQ-073.4, REQ-073.5, REQ-073.6, REQ-073.7, REQ-074.1, REQ-074.2, REQ-074.3
 - Archivos: `src/app/(staff)/admin/inventario/{conteo,compra,costos}/**`,
   `src/app/(staff)/admin/negocio` (campo "Alerta de consumo (%)")
 - Terminado: conteo de una estación con alerta, conteo de bodega con motivo, orden compartida por
   WhatsApp y costo por servicio, en el celular.
+- Nota (2026-11-04): `/admin/inventario/conteo?sitio=<id>` (escoger sitio, formulario con lo
+  calculado al lado, motivo solo si hay diferencia en bodega o vitrina y el sitio ya tiene conteo,
+  resultado por ítem con alerta), `/compra` (por proveedor, total y "Compartir por WhatsApp") y
+  `/costos`. "Alerta de consumo (%)" en `/admin/negocio`. Lecturas nuevas: `hasStockCount`. Los
+  formularios de edición ya no se limpian al guardar (`resetOnDone`). Sin pruebas nuevas: la lógica
+  la cubren T-123…T-125. Falta revisarlas en el celular contra un proyecto de Supabase.
 
 ### [ ] T-128 · "Mi estación" del barbero y E2E
 - REQ: REQ-074.4

@@ -6,6 +6,8 @@ import { ErrorText } from "@/components/auth/LoginForm";
 import {
   acceptYield,
   addBasicTemplate,
+  recordCount,
+  saveAlertPct,
   refillStation,
   registerPurchase,
   saveInventoryItem,
@@ -13,12 +15,15 @@ import {
   transferStock,
   type ActionResult,
   type CatalogItem,
+  type CountResult,
   type InventoryCatalog,
   type InventoryLocation,
   type OverviewItem,
   type YieldSuggestion,
 } from "@/lib/actions/inventory";
 import {
+  ADJUSTMENT_REASON_LABELS,
+  ADJUSTMENT_REASONS,
   INVENTORY_GROUP_LABELS,
   INVENTORY_GROUPS,
   INVENTORY_USE_LABELS,
@@ -33,6 +38,7 @@ function ActionForm({
   pendingText,
   done,
   children,
+  resetOnDone = true,
   className = "border-line bg-card flex flex-col gap-3 rounded-xl border p-4",
 }: {
   action: (prev: ActionResult, fd: FormData) => Promise<ActionResult>;
@@ -41,6 +47,7 @@ function ActionForm({
   pendingText: string;
   done: string;
   children: React.ReactNode;
+  resetOnDone?: boolean;
   className?: string;
 }) {
   const router = useRouter();
@@ -55,7 +62,7 @@ function ActionForm({
       const r = await action(state, new FormData(form));
       setState(r);
       if (r?.ok) {
-        form.reset();
+        if (resetOnDone) form.reset();
         router.refresh();
       }
     });
@@ -297,6 +304,7 @@ export function InventoryItemForm({
       submit={item ? "Guardar cambios" : "Crear ítem"}
       pendingText="Guardando…"
       done="Guardado."
+      resetOnDone={!item}
     >
       {item && <input type="hidden" name="id" value={item.id} />}
       <Field label="Nombre">
@@ -406,6 +414,7 @@ export function ItemUsageForm({ item, catalog }: { item: CatalogItem; catalog: I
       submit="Guardar servicios"
       pendingText="Guardando…"
       done="Servicios guardados."
+      resetOnDone={false}
     >
       <input type="hidden" name="itemId" value={item.id} />
       <p className="text-muted text-sm">
@@ -468,5 +477,157 @@ export function BasicTemplateButton() {
       </p>
       {error && <ErrorText>{error}</ErrorText>}
     </div>
+  );
+}
+
+// --------------------------------------------------------------- conteos ----
+
+export type CountRow = { itemId: string; name: string; unitLabel: string; systemQty: number };
+
+const COUNT_KIND_LABELS: Record<string, string> = {
+  initial: "Conteo inicial",
+  weekly: "Conteo semanal",
+  monthly: "Conteo mensual",
+  closing: "Cierre de estación",
+};
+
+/**
+ * REQ-073.3 / REQ-073.6 / REQ-073.7 conteo de un sitio: todos sus ítems con lo calculado al lado,
+ * motivo cuando hay diferencia en bodega o vitrina y, al guardar, el resultado por ítem.
+ */
+export function CountForm({
+  locationId,
+  needsReason,
+  rows,
+}: {
+  locationId: string;
+  needsReason: boolean;
+  rows: CountRow[];
+}) {
+  const router = useRouter();
+  const [counted, setCounted] = useState<Record<string, string>>({});
+  const [state, setState] = useState<CountResult>(undefined);
+  const [pending, startTransition] = useTransition();
+
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    startTransition(async () => {
+      // Sin refresh aquí: el resultado es estado local. Se refresca al pedir otro conteo.
+      setState(await recordCount(state, new FormData(form)));
+    });
+  }
+
+  if (state?.ok) {
+    return (
+      <section className="mt-4" aria-labelledby="count-result">
+        <h2 id="count-result" className="text-lg font-semibold">
+          {COUNT_KIND_LABELS[state.kind] ?? "Conteo"} guardado
+        </h2>
+        <ul className="mt-2 flex flex-col gap-2">
+          {state.lines.map((l) => (
+            <li
+              key={l.itemId}
+              className={`rounded-xl border p-3 text-sm ${l.alert ? "border-danger text-danger" : "border-line bg-card"}`}
+            >
+              <p className="font-semibold">
+                {l.name}: {l.countedQty} {l.unitLabel}
+                {l.difference !== 0 && ` (diferencia ${l.difference > 0 ? "+" : ""}${l.difference})`}
+              </p>
+              {l.realUse !== null && (
+                <p>
+                  {l.services ?? 0} servicios · gastó {l.realUse}
+                  {l.measuring ? " · Midiendo" : ` · se esperaba ${l.expectedUse ?? 0}`}
+                  {l.alert && " · Revisar"}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+        <button type="button" className="btn-secondary mt-3 w-full" onClick={() => {
+            setState(undefined);
+            router.refresh();
+          }}
+        >
+          Hacer otro conteo
+        </button>
+      </section>
+    );
+  }
+
+  return (
+    <form onSubmit={onSubmit} aria-label="Conteo" className="mt-4 flex flex-col gap-3">
+      <input type="hidden" name="locationId" value={locationId} />
+      {rows.length === 0 && <p className="text-muted text-sm">Este sitio no tiene ítems para contar.</p>}
+      <ul className="flex flex-col gap-2">
+        {rows.map((r) => {
+          const value = counted[r.itemId] ?? "";
+          const differs = value !== "" && /^\d+$/.test(value) && Number(value) !== r.systemQty;
+          return (
+            <li key={r.itemId} className="border-line bg-card flex flex-col gap-2 rounded-xl border p-3">
+              <input type="hidden" name="itemId" value={r.itemId} />
+              <div className="grid grid-cols-[1fr_6rem] items-center gap-2">
+                <label htmlFor={`counted-${r.itemId}`} className="text-sm">
+                  <span className="font-semibold">{r.name}</span>
+                  <span className="text-muted block text-xs">
+                    Calculado: {r.systemQty} {r.unitLabel}
+                  </span>
+                </label>
+                <input
+                  id={`counted-${r.itemId}`}
+                  name={`counted:${r.itemId}`}
+                  inputMode="numeric"
+                  required
+                  value={value}
+                  onChange={(e) => setCounted((c) => ({ ...c, [r.itemId]: e.target.value }))}
+                  className="input text-right"
+                />
+              </div>
+              {needsReason && differs && (
+                <select name={`reason:${r.itemId}`} required className="input" defaultValue="" aria-label={`Motivo de ${r.name}`}>
+                  <option value="" disabled>
+                    Motivo de la diferencia
+                  </option>
+                  {ADJUSTMENT_REASONS.map((m) => (
+                    <option key={m} value={m}>
+                      {ADJUSTMENT_REASON_LABELS[m]}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+      {state && !state.ok && state.error && <ErrorText>{state.error}</ErrorText>}
+      {rows.length > 0 && (
+        <button type="submit" className="btn-primary" disabled={pending}>
+          {pending ? "Guardando…" : "Guardar conteo"}
+        </button>
+      )}
+    </form>
+  );
+}
+
+/** REQ-073.4 porcentaje de alerta de consumo, en /admin/negocio. */
+export function AlertPctForm({ pct }: { pct: number }) {
+  return (
+    <ActionForm
+      action={saveAlertPct}
+      label="Alerta de consumo"
+      submit="Guardar alerta"
+      pendingText="Guardando…"
+      done="Alerta guardada."
+      resetOnDone={false}
+      className="border-line bg-card mt-6 flex flex-col gap-3 rounded-xl border p-4"
+    >
+      <h2 className="text-lg font-semibold">Inventario</h2>
+      <Field
+        label="Alerta de consumo (%)"
+        hint="Si un barbero gasta más que lo esperado por encima de este porcentaje, sale en rojo. Entre 1 y 100."
+      >
+        <input name="alertPct" inputMode="numeric" required defaultValue={pct} className="input" />
+      </Field>
+    </ActionForm>
   );
 }

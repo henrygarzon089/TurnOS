@@ -371,3 +371,14 @@ export async function getInventoryCatalog(): Promise<InventoryCatalog | null> {
     usage,
   };
 }
+
+/** REQ-073.6 ¿el sitio ya tiene conteo? El primero es el inicial y no pide motivo. */
+export async function hasStockCount(locationId: string): Promise<boolean> {
+  const ctx = await owner();
+  if (!ctx) return false;
+  const { count } = await ctx.supabase
+    .from("stock_counts")
+    .select("id", { count: "exact", head: true })
+    .eq("location_id", locationId);
+  return (count ?? 0) > 0;
+}
