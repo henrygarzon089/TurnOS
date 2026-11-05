@@ -27,6 +27,7 @@
 | H6 | Aviso automático por WhatsApp (ADR-027) | T-064…T-070 | REQ-040…REQ-043 |
 | H7 | Membresía familiar (ADR-030) | T-071…T-077 | REQ-044…REQ-048 |
 | H9 | Tarjetas de regalo (ADR-034) | T-090…T-097 | REQ-055…REQ-059 |
+| H11 | Limpieza y bioseguridad (ADR-037) | T-100…T-109 | REQ-060…REQ-064 |
 | H13 | Inventario de insumos y vitrina (ADR-039) | T-120…T-129 | REQ-070…REQ-074 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
@@ -1279,6 +1280,79 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ---
 
+## Hito 11 — Limpieza y bioseguridad (ADR-037)
+
+> REQ-060…REQ-064 y ADR-037 aprobados por Henry (2026-11-04, PR #73). Diseño en `design.md` §16. Una tarea por rama y PR, con las pruebas
+> primero. Todo nace apagado. Migraciones `0057`…`0059`. No depende de los Hitos 12 y 13.
+
+### [ ] T-100 · Migración y pgTAP: datos, listas y bucket privado
+- REQ: REQ-060.1, REQ-060.2, REQ-060.3, REQ-063.4, REQ-064.5
+- Archivos: `supabase/migrations/0057_cleaning.sql` (enum, tablas, `cleaning_set_enabled`,
+  `cleaning_seed_lists`, `cleaning_save_list`, RLS, bucket `cleaning` y sus políticas),
+  `supabase/tests/0057_cleaning.sql`
+- Terminado: pgTAP de §16.7 para `0057` en verde; sin encender el módulo nada cambia.
+
+### [ ] T-101 · Registrar apertura, cierre y profunda en SQL
+- REQ: REQ-060.4, REQ-060.5, REQ-061.1, REQ-061.2, REQ-061.3, REQ-061.4, REQ-061.7, REQ-061.8,
+  REQ-061.9, REQ-061.10, REQ-061.11, REQ-062.1, REQ-062.3, REQ-062.4, REQ-062.5, REQ-062.7, REQ-062.8
+- Archivos: `supabase/migrations/0058_cleaning_records.sql` (`cleaning_is_open_day`,
+  `cleaning_today`, `submit_cleaning_record`, `cleaning_owner_summary`, `ack_missed_closing`),
+  `supabase/tests/0058_cleaning_records.sql`
+- Terminado: cada regla de §16.5 probada en orden; avisos con días abiertos y cerrados.
+
+### [ ] T-102 · Revisión, historial, tareas y purga en SQL
+- REQ: REQ-063.1, REQ-063.2, REQ-063.3, REQ-063.5, REQ-063.6, REQ-063.7, REQ-064.1, REQ-064.2,
+  REQ-064.4, REQ-064.6
+- Archivos: `supabase/migrations/0059_cleaning_review_tasks.sql`,
+  `supabase/tests/0059_cleaning_review_tasks.sql`
+- Terminado: pgTAP de §16.7 para `0059`; `cleaning_owner_summary` agrega las tareas por vencer.
+
+### [ ] T-103 · Dominio y acciones de limpieza
+- REQ: REQ-060.5, REQ-061.2, REQ-061.3, REQ-061.6, REQ-061.7, REQ-064.1, REQ-064.3, REQ-064.4,
+  REQ-064.6
+- Archivos: `src/lib/domain/cleaning.ts`, `src/lib/actions/cleaning.ts`, `src/lib/cleaning/purge.ts`,
+  `tests/unit/cleaning.test.ts`, `tests/integration/cleaning.test.ts`
+- Terminado: unitarias e integración contra Postgres local en verde; la purga con un Storage falso.
+
+### [ ] T-104 · Pantalla de registro y aviso en la fila del barbero
+- REQ: REQ-061.1, REQ-061.4, REQ-061.5, REQ-061.6, REQ-061.11, REQ-062.1, REQ-062.2, REQ-062.6
+- Archivos: `src/app/(staff)/app/limpieza/page.tsx`, componente de lista compartido con el dueño,
+  `src/app/(staff)/app/fila/page.tsx` (aviso y botón), E2E `tests/e2e/cleaning-barber.spec.ts`
+- Terminado: E2E del barbero (apertura incompleta con nota, el aviso desaparece, el cierre pide foto).
+
+### [ ] T-105 · Interruptor, listas y panel del dueño
+- REQ: REQ-060.1, REQ-060.2, REQ-060.3, REQ-062.3, REQ-062.4, REQ-062.5, REQ-062.6
+- Archivos: `src/app/(staff)/admin/limpieza/` (pestañas Hoy y Listas), tarjeta "Limpieza" en
+  `src/app/(staff)/admin/page.tsx`
+- Terminado: el dueño enciende, edita una lista y ve los avisos en su panel; `pnpm lint:texts`.
+
+### [ ] T-106 · Revisión del dueño
+- REQ: REQ-063.1, REQ-063.2, REQ-063.3, REQ-063.4
+- Archivos: pestaña Revisión en `/admin/limpieza`
+- Terminado: E2E con una falla asignada a un barbero, que el barbero no ve.
+
+### [ ] T-107 · Tareas periódicas con adjuntos
+- REQ: REQ-064.1, REQ-064.2, REQ-064.3, REQ-064.4, REQ-064.5
+- Archivos: pestaña Tareas en `/admin/limpieza`
+- Terminado: crear desde una sugerencia, registrar con PDF, ver la vencida en el panel.
+
+### [ ] T-108 · Historial y fotos borradas
+- REQ: REQ-063.5, REQ-063.6, REQ-063.7, REQ-064.6
+- Archivos: pestaña Historial en `/admin/limpieza`, `after()` de la purga en Limpieza y en el panel
+- Terminado: historial de 8 semanas con detalle; un registro de hace más de 90 días muestra "Foto
+  borrada (más de 90 días)".
+
+### [ ] T-109 · Validación Hito 11
+- REQ: REQ-060…REQ-064
+- Archivos: `tests/unit/traceability.test.ts` (el hito 11 entra al loop), `docs/estado-del-proyecto.md`
+- Depende de Henry: `0057`…`0059` en producción, encender Limpieza en Filo, prueba en la barbería y
+  aprobación (nuevo ADR).
+- Terminado: `pnpm trace --hito=11` sin huecos; CI verde. `HITOS["11"]` ya está desde el PR de la
+  spec; el hito entra al loop de la prueba unitaria aquí, cuando todas las pruebas existen (como el
+  9 en T-097), para no dejar el CI en rojo mientras tanto.
+
+---
+
 ## Hito 8 — Citas a hora fija (ADR-033)
 
 > REQ-049…REQ-054 y ADR-033 aprobados por Henry (2026-11-03, autorizó construir sin esperar). Diseño
@@ -1625,5 +1699,6 @@ flowchart LR
   T070 --> T071 --> T072 --> T073 --> T074 --> T075 --> T076 --> T077
   T077 --> T078 --> T079 --> T080 --> T081 --> T082 --> T083 --> T084 --> T085 --> T086 --> T087
   T077 --> T090 --> T091 --> T092 --> T093 --> T094 --> T095 --> T096 --> T097
+  T097 --> T100 --> T101 --> T102 --> T103 --> T104 --> T105 --> T106 --> T107 --> T108 --> T109
   T097 --> T110 --> T111 --> T112 --> T113 --> T114 --> T115 --> T116 --> T117 --> T118 --> T119
 ```
