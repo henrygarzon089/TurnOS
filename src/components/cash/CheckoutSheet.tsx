@@ -12,10 +12,12 @@ import {
   type CheckoutView,
   type PaymentMethod,
 } from "@/lib/actions/cash";
-import { computeSale } from "@/lib/domain/commission";
+import { ProductShowcase } from "@/components/cash/ProductShowcase";
+import { computeSale, productCommission, staffDiscount } from "@/lib/domain/commission";
 import { giftCardSplit, normalizeGiftCardCode } from "@/lib/domain/giftCard";
 import { membershipCheckoutLine, membershipLineKey } from "@/lib/domain/membership";
 import { formatCOP, parseCOP } from "@/lib/domain/money";
+import { saleParties, type Seller } from "@/lib/domain/showcase";
 
 const METHODS: { id: PaymentMethod; label: string }[] = [
   { id: "cash", label: "Efectivo" },
@@ -36,7 +38,9 @@ type ServiceLine = {
 
 /**
  * REQ-023.1–23.3, REQ-019.4, REQ-023.6, REQ-047.1, REQ-047.5: panel "Registrar cobro". Con turno: prellenado con su
- * servicio y precio. Sin turno ("Nueva venta", T-044): se elige barbero (si hay servicios).
+ * servicio y precio. Sin turno ("Nueva venta", T-044): el dueño escoge quién vendió (REQ-066.3) y
+ * puede registrar la compra de un barbero (REQ-068.2); el barbero vende a su nombre (REQ-066.4).
+ * Los productos se escogen en la vitrina (REQ-066.1, REQ-066.5).
  */
 export function CheckoutSheet({
   ticketId,
@@ -50,7 +54,10 @@ export function CheckoutSheet({
   const [view, setView] = useState<CheckoutView | null | undefined>(undefined);
   const [services, setServices] = useState<ServiceLine[]>([]);
   const [products, setProducts] = useState<Record<string, number>>({});
-  const [barberId, setBarberId] = useState<string>("");
+  /** REQ-066.3 "¿Quién vendió?" sin opción por defecto; con turno, el barbero del turno. */
+  const [seller, setSeller] = useState<Seller>(null);
+  /** REQ-068.2 "Compra de un barbero" (solo el dueño, sin turno). */
+  const [staffPurchase, setStaffPurchase] = useState(false);
   const [method, setMethod] = useState<PaymentMethod | "gift_card" | null>(null);
   /** REQ-057: tarjeta de regalo encontrada por código y medio de lo que falta. */
   const [giftCode, setGiftCode] = useState("");
@@ -77,7 +84,8 @@ export function CheckoutSheet({
     void getCheckout(ticketId).then((v) => {
       if (!alive) return;
       setView(v);
-      if (v && !v.ticket && !v.isOwner && v.barbers[0]) setBarberId(v.barbers[0].id);
+      if (v && !v.ticket && !v.isOwner && v.barbers[0])
+        setSeller({ kind: "barber", id: v.barbers[0].id });
       if (v?.ticket) {
         setServices([
           {
@@ -89,7 +97,7 @@ export function CheckoutSheet({
             isReward: false,
           },
         ]);
-        setBarberId(v.ticket.barberId);
+        if (v.ticket.barberId) setSeller({ kind: "barber", id: v.ticket.barberId });
       }
     });
     return () => {
@@ -176,9 +184,28 @@ export function CheckoutSheet({
     view.loyalty?.rewardType === "discount" ? true : l.serviceId === view.rewardServiceId,
   );
   const rewardName = view.services.find((s) => s.id === view.rewardServiceId)?.name ?? "el premio";
-  const total = amounts?.total ?? 0;
-  const hasLines = services.length > 0 || Object.values(products).some((q) => q > 0);
-  const needsBarber = services.length > 0 && !barberId;
+  const productLines = Object.entries(products)
+    .filter(([, qty]) => qty > 0)
+    .map(([id, qty]) => {
+      const p = view.products.find((x) => x.id === id);
+      return { unitPrice: p?.price ?? 0, qty, commissionable: !!p?.commissionable };
+    });
+  /** REQ-068.3 descuento de empleado por línea. */
+  const staffDiscountTotal = staffPurchase
+    ? productLines.reduce((sum, l) => sum + staffDiscount(l, view.staffDiscountPct), 0)
+    : 0;
+  const total = (amounts?.total ?? 0) - staffDiscountTotal;
+  const hasLines = services.length > 0 || productLines.length > 0;
+  const parties = saleParties({ seller, hasServices: services.length > 0, staffPurchase });
+  const sellerName =
+    seller?.kind === "barber" ? (view.barbers.find((b) => b.id === seller.id)?.name ?? "") : "";
+  /** REQ-067.1 lo que gana el barbero por los productos de esta venta (vista previa). */
+  const productCut = productCommission({
+    products: productLines,
+    pct: view.productCommissionPct,
+    hasBarber: seller?.kind === "barber",
+    staffPurchase,
+  }).amount;
   /** REQ-057.3: la tarjeta paga hasta su saldo; el resto con otro medio. */
   const giftSplit = giftCardSplit(total, gift?.balance ?? 0);
 
@@ -215,6 +242,10 @@ export function CheckoutSheet({
 
   function submit() {
     if (!amounts) return;
+    if (!parties.ok) {
+      setError(parties.error);
+      return;
+    }
     if (total > 0 && !method) {
       setError("Elige el medio de pago.");
       return;
@@ -233,8 +264,9 @@ export function CheckoutSheet({
     startTransition(async () => {
       const r = await registerSale({
         ticketId: view?.ticket?.id ?? null,
-        barberId: barberId || null,
-        customerId: view?.ticket ? null : (customer?.id ?? null),
+        barberId: parties.barberId,
+        staffBuyerId: parties.staffBuyerId,
+        customerId: view?.ticket || staffPurchase ? null : (customer?.id ?? null),
         items: [
           ...services.map((l) => {
             const m = !!memberLine(l);
@@ -283,7 +315,71 @@ export function CheckoutSheet({
         </p>
       )}
 
-      {!view.ticket && (
+      {!view.ticket && view.isOwner && view.staffDiscountPct > 0 && (
+        <label className="flex min-h-12 items-center gap-2 text-sm font-semibold">
+          <input
+            type="checkbox"
+            className="h-5 w-5"
+            checked={staffPurchase}
+            onChange={(e) => {
+              setStaffPurchase(e.target.checked);
+              setSeller(null);
+              setServices([]);
+              setCustomer(null);
+              setPhone("");
+            }}
+          />
+          Compra de un barbero (−{view.staffDiscountPct} %)
+        </label>
+      )}
+
+      {!view.ticket && view.isOwner && (
+        <div
+          role="radiogroup"
+          aria-label={staffPurchase ? "¿Qué barbero compra?" : "¿Quién vendió?"}
+          className="flex flex-col gap-2"
+        >
+          <p className="text-sm font-semibold">
+            {staffPurchase ? "¿Qué barbero compra?" : "¿Quién vendió?"}
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              ...view.barbers.map((b) => ({
+                key: b.id,
+                label: b.name,
+                value: { kind: "barber", id: b.id } as const,
+              })),
+              ...(staffPurchase
+                ? []
+                : [{ key: "none", label: "Nadie (el negocio)", value: { kind: "none" } as const }]),
+            ].map((o) => {
+              const on =
+                seller !== null &&
+                seller.kind === o.value.kind &&
+                (seller.kind === "none" || (o.value.kind === "barber" && seller.id === o.value.id));
+              return (
+                <button
+                  key={o.key}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => setSeller(o.value)}
+                  className={`min-h-12 rounded-xl border px-2 font-semibold ${
+                    on ? "bg-accent text-accent-ink border-accent" : "border-line bg-card"
+                  }`}
+                >
+                  {o.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {!view.ticket && !view.isOwner && (
+        <p className="text-muted -mt-2 text-sm">Venta a tu nombre</p>
+      )}
+
+      {!view.ticket && !staffPurchase && (
         <div className="flex flex-col gap-1">
           <label className="flex flex-col gap-1 text-sm font-medium">
             Celular del cliente (opcional)
@@ -318,141 +414,132 @@ export function CheckoutSheet({
         </div>
       )}
 
-      {!view.ticket && services.length > 0 && view.isOwner && (
-        <label className="flex flex-col gap-1 text-sm font-medium">
-          Barbero
-          <select className="input" value={barberId} onChange={(e) => setBarberId(e.target.value)}>
-            <option value="">Elige el barbero</option>
-            {view.barbers.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
-
-      <section aria-label="Servicios" className="flex flex-col gap-2">
-        {services.map((l) => (
-          <div key={l.key} className="border-line rounded-xl border p-3">
-            <div className="flex items-center justify-between gap-2">
-              <select
-                aria-label="Servicio"
-                className="input min-w-0 flex-1"
-                value={l.fromTicket ? `ticket:${l.serviceId}` : l.serviceId}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  const serviceId = v.replace(/^ticket:/, "");
-                  update(l.key, {
-                    serviceId,
-                    fromTicket: v.startsWith("ticket:"),
-                    isReward: false,
-                    discount: 0,
-                  });
-                }}
-              >
-                {view.ticket && l.key === 0 && (
-                  <option value={`ticket:${view.ticket.serviceId}`}>
-                    {view.ticket.serviceName} · {formatCOP(view.ticket.servicePrice)}
-                  </option>
-                )}
-                {view.services
-                  .filter((s) => !(l.key === 0 && view.ticket && s.id === view.ticket.serviceId))
-                  .map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} · {formatCOP(s.price)}
-                    </option>
-                  ))}
-              </select>
-              {services.length > 1 && (
-                <button
-                  type="button"
-                  className="text-danger min-h-12 px-2 text-sm font-semibold"
-                  onClick={() => setServices((ls) => ls.filter((x) => x.key !== l.key))}
-                  aria-label={`Quitar ${nameOf(l)}`}
-                >
-                  Quitar
-                </button>
-              )}
-            </div>
-            {membership && countsFor(l) && (memberKey === null || memberKey === l.key) && (
-              <label className="mt-2 flex min-h-12 items-center gap-2 text-sm font-semibold">
-                <input
-                  type="checkbox"
-                  className="h-5 w-5"
-                  checked={memberKey === l.key}
+      {!staffPurchase && (
+        <section aria-label="Servicios" className="flex flex-col gap-2">
+          {services.map((l) => (
+            <div key={l.key} className="border-line rounded-xl border p-3">
+              <div className="flex items-center justify-between gap-2">
+                <select
+                  aria-label="Servicio"
+                  className="input min-w-0 flex-1"
+                  value={l.fromTicket ? `ticket:${l.serviceId}` : l.serviceId}
                   onChange={(e) => {
-                    setMemberChoice(e.target.checked ? l.key : null);
-                    if (e.target.checked) update(l.key, { discount: 0, reason: "" });
+                    const v = e.target.value;
+                    const serviceId = v.replace(/^ticket:/, "");
+                    update(l.key, {
+                      serviceId,
+                      fromTicket: v.startsWith("ticket:"),
+                      isReward: false,
+                      discount: 0,
+                    });
                   }}
-                />
-                Usar membresía
-              </label>
-            )}
-            {memberLine(l) && (
-              <p className="mt-1 text-sm font-semibold text-blue-800" data-testid="membership-line">
-                {memberLine(l)!.label}: −{formatCOP(memberLine(l)!.discount)}
-              </p>
-            )}
-            {rewardOn(l) && (
-              <p className="text-ok mt-1 text-sm font-semibold">
-                🎁 Premio aplicado: −{formatCOP(rewardValue(l))}
-              </p>
-            )}
-            {view.isOwner && !rewardOn(l) && !memberLine(l) && (
-              <div className="mt-2 grid grid-cols-[110px_1fr] gap-2">
-                <label className="flex flex-col text-xs">
-                  Descuento
-                  <input
-                    className="input"
-                    inputMode="numeric"
-                    placeholder="0"
-                    value={l.discount ? formatCOP(l.discount).replace("$ ", "") : ""}
-                    onChange={(e) =>
-                      update(l.key, {
-                        discount: Math.min(parseCOP(e.target.value) ?? 0, priceOf(l)),
-                      })
-                    }
-                  />
-                </label>
-                {l.discount > 0 && (
-                  <label className="flex flex-col text-xs">
-                    Motivo del descuento
-                    <input
-                      className="input"
-                      maxLength={120}
-                      value={l.reason}
-                      onChange={(e) => update(l.key, { reason: e.target.value })}
-                    />
-                  </label>
+                >
+                  {view.ticket && l.key === 0 && (
+                    <option value={`ticket:${view.ticket.serviceId}`}>
+                      {view.ticket.serviceName} · {formatCOP(view.ticket.servicePrice)}
+                    </option>
+                  )}
+                  {view.services
+                    .filter((s) => !(l.key === 0 && view.ticket && s.id === view.ticket.serviceId))
+                    .map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name} · {formatCOP(s.price)}
+                      </option>
+                    ))}
+                </select>
+                {services.length > 1 && (
+                  <button
+                    type="button"
+                    className="text-danger min-h-12 px-2 text-sm font-semibold"
+                    onClick={() => setServices((ls) => ls.filter((x) => x.key !== l.key))}
+                    aria-label={`Quitar ${nameOf(l)}`}
+                  >
+                    Quitar
+                  </button>
                 )}
               </div>
-            )}
-          </div>
-        ))}
-        <button
-          type="button"
-          className="btn-secondary"
-          onClick={() => {
-            const first = view.services[0];
-            if (!first) return;
-            setServices((ls) => [
-              ...ls,
-              {
-                key: nextKey,
-                serviceId: first.id,
-                fromTicket: false,
-                discount: 0,
-                reason: "",
-                isReward: false,
-              },
-            ]);
-            setNextKey((k) => k + 1);
-          }}
-        >
-          + Agregar servicio
-        </button>
-      </section>
+              {membership && countsFor(l) && (memberKey === null || memberKey === l.key) && (
+                <label className="mt-2 flex min-h-12 items-center gap-2 text-sm font-semibold">
+                  <input
+                    type="checkbox"
+                    className="h-5 w-5"
+                    checked={memberKey === l.key}
+                    onChange={(e) => {
+                      setMemberChoice(e.target.checked ? l.key : null);
+                      if (e.target.checked) update(l.key, { discount: 0, reason: "" });
+                    }}
+                  />
+                  Usar membresía
+                </label>
+              )}
+              {memberLine(l) && (
+                <p
+                  className="mt-1 text-sm font-semibold text-blue-800"
+                  data-testid="membership-line"
+                >
+                  {memberLine(l)!.label}: −{formatCOP(memberLine(l)!.discount)}
+                </p>
+              )}
+              {rewardOn(l) && (
+                <p className="text-ok mt-1 text-sm font-semibold">
+                  🎁 Premio aplicado: −{formatCOP(rewardValue(l))}
+                </p>
+              )}
+              {view.isOwner && !rewardOn(l) && !memberLine(l) && (
+                <div className="mt-2 grid grid-cols-[110px_1fr] gap-2">
+                  <label className="flex flex-col text-xs">
+                    Descuento
+                    <input
+                      className="input"
+                      inputMode="numeric"
+                      placeholder="0"
+                      value={l.discount ? formatCOP(l.discount).replace("$ ", "") : ""}
+                      onChange={(e) =>
+                        update(l.key, {
+                          discount: Math.min(parseCOP(e.target.value) ?? 0, priceOf(l)),
+                        })
+                      }
+                    />
+                  </label>
+                  {l.discount > 0 && (
+                    <label className="flex flex-col text-xs">
+                      Motivo del descuento
+                      <input
+                        className="input"
+                        maxLength={120}
+                        value={l.reason}
+                        onChange={(e) => update(l.key, { reason: e.target.value })}
+                      />
+                    </label>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => {
+              const first = view.services[0];
+              if (!first) return;
+              setServices((ls) => [
+                ...ls,
+                {
+                  key: nextKey,
+                  serviceId: first.id,
+                  fromTicket: false,
+                  discount: 0,
+                  reason: "",
+                  isReward: false,
+                },
+              ]);
+              setNextKey((k) => k + 1);
+            }}
+          >
+            + Agregar servicio
+          </button>
+        </section>
+      )}
 
       {rewardAvailable && (
         <div className="rounded-xl bg-green-50 p-3">
@@ -481,41 +568,22 @@ export function CheckoutSheet({
       )}
 
       {view.products.length > 0 && (
-        <section aria-label="Productos" className="flex flex-col gap-1">
-          <p className="text-sm font-semibold">Productos</p>
-          {view.products.map((p) => {
-            const qty = products[p.id] ?? 0;
-            return (
-              <div key={p.id} className="flex min-h-12 items-center justify-between gap-2">
-                <span className="text-sm">
-                  {p.name} · {formatCOP(p.price)}
-                </span>
-                <span className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    className="btn-secondary h-12 w-12 px-0"
-                    aria-label={`Quitar un ${p.name}`}
-                    disabled={qty === 0}
-                    onClick={() => setProducts((m) => ({ ...m, [p.id]: Math.max(0, qty - 1) }))}
-                  >
-                    −
-                  </button>
-                  <span className="w-6 text-center font-semibold" aria-label={`${p.name}: ${qty}`}>
-                    {qty}
-                  </span>
-                  <button
-                    type="button"
-                    className="btn-secondary h-12 w-12 px-0"
-                    aria-label={`Agregar un ${p.name}`}
-                    onClick={() => setProducts((m) => ({ ...m, [p.id]: qty + 1 }))}
-                  >
-                    +
-                  </button>
-                </span>
-              </div>
-            );
-          })}
-        </section>
+        <ProductShowcase
+          products={view.products}
+          qty={products}
+          onChange={(id, qty) => setProducts((m) => ({ ...m, [id]: qty }))}
+          discountPct={staffPurchase ? view.staffDiscountPct : 0}
+        />
+      )}
+      {productCut > 0 && (
+        <p className="text-muted text-center text-sm" data-testid="product-commission">
+          Comisión de productos para {sellerName}: {formatCOP(productCut)}
+        </p>
+      )}
+      {staffDiscountTotal > 0 && (
+        <p className="text-muted text-center text-sm" data-testid="staff-discount">
+          Descuento de empleado: −{formatCOP(staffDiscountTotal)}
+        </p>
       )}
 
       <p className="text-center text-3xl font-bold" aria-live="polite" data-testid="checkout-total">
@@ -607,6 +675,20 @@ export function CheckoutSheet({
               )}
             </>
           )}
+          {/* REQ-057.1 si se tocó por error: volver a escoger el medio */}
+          <button
+            type="button"
+            className="min-h-12 text-sm font-semibold underline"
+            onClick={() => {
+              setMethod(null);
+              setGift(null);
+              setGiftCode("");
+              setRestMethod(null);
+              setError(null);
+            }}
+          >
+            Usar otro medio de pago
+          </button>
         </section>
       )}
 
@@ -615,7 +697,7 @@ export function CheckoutSheet({
       <button
         type="button"
         className="btn-primary"
-        disabled={pending || !hasLines || needsBarber || !amounts}
+        disabled={pending || !hasLines || !parties.ok || !amounts}
         onClick={submit}
       >
         {pending ? "Registrando…" : `Registrar ${formatCOP(total)}`}
