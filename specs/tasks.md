@@ -1506,12 +1506,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 > (limpieza) y T-120… del Hito 13 (inventario), en paralelo. El Hito 13 depende de que las líneas de
 > producto sigan con `ref_id` y `qty` (REQ-066.6), no de estas tareas.
 
-### [ ] T-110 · Migración y pgTAP: datos del POS
+### [x] T-110 · Migración y pgTAP: datos del POS
 - REQ: REQ-065.1, REQ-065.2, REQ-065.3, REQ-065.4, REQ-068.1
 - Archivos: `supabase/migrations/0060_pos_products.sql` (columnas de `businesses`, `products`,
   `sale_items` y `sales`, `business_pct_changes` y su trigger, checks, permisos),
   `supabase/tests/0060_pos_products.sql`
 - Terminado: pgTAP de §17.6 para `0060` en verde; sin marcar productos la caja no cambia.
+- Nota (2026-11-04): pgTAP 24 nuevas en `supabase/tests/0060_pos_products.sql` (1192 en total, base
+  Docker propia `turnos-ci-db-h12`). El historial lo escribe el trigger `businesses_pct_change`; el
+  personal no puede insertar en `business_pct_changes` (solo `select`).
 
 ### [ ] T-111 · `register_sale` con la comisión de productos
 - REQ: REQ-065.5, REQ-066.1, REQ-066.4, REQ-066.5, REQ-066.6, REQ-067.1, REQ-067.2, REQ-067.3,
