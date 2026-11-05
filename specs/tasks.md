@@ -1318,12 +1318,21 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   - `ALREADY_RECORDED` y `CLOSING_TOO_EARLY` llevan sus datos en el `detail` de la excepción.
   - Para las pruebas: `P0004` es `assert_failure`, que `when others` no atrapa.
 
-### [ ] T-102 · Revisión, historial, tareas y purga en SQL
+### [x] T-102 · Revisión, historial, tareas y purga en SQL
 - REQ: REQ-063.1, REQ-063.2, REQ-063.3, REQ-063.5, REQ-063.6, REQ-063.7, REQ-064.1, REQ-064.2,
   REQ-064.4, REQ-064.6
 - Archivos: `supabase/migrations/0059_cleaning_review_tasks.sql`,
   `supabase/tests/0059_cleaning_review_tasks.sql`
 - Terminado: pgTAP de §16.7 para `0059`; `cleaning_owner_summary` agrega las tareas por vencer.
+- Nota (2026-11-04): 65 pgTAP nuevas (1349 en total, en una base nueva). Detalles que la spec no
+  fijaba:
+  - La revisión rechaza una nota de más de 200 caracteres (`INVALID_NOTE`) y pide el módulo
+    encendido.
+  - `cleaning_history` acepta de 1 a 52 semanas (`INVALID_WEEKS`), y en cada semana muestra solo a
+    quien tuvo actividad.
+  - `save_cleaning_task` y `record_cleaning_task_run` devuelven el id; una tarea ajena da
+    `NOT_FOUND`.
+  - Al purgar, la revisión conserva `photoPurged: true` en cada punto que tenía foto.
 
 ### [ ] T-103 · Dominio y acciones de limpieza
 - REQ: REQ-060.5, REQ-061.2, REQ-061.3, REQ-061.6, REQ-061.7, REQ-064.1, REQ-064.3, REQ-064.4,
