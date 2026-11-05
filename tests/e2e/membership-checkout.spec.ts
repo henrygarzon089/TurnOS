@@ -215,7 +215,10 @@ test.describe("REQ-047 / REQ-048 membresía en el cobro, la fila y Mi turno", ()
       await expect(sheet.getByTestId("membership-line")).toHaveText(
         "Corte de membresía (quedan 3): −$ 25.000",
       );
-      await sheet.getByLabel("Barbero").selectOption({ label: "Juan" });
+      await sheet
+        .getByRole("radiogroup", { name: "¿Quién vendió?" })
+        .getByRole("radio", { name: "Juan" })
+        .click();
       await sheet.getByRole("button", { name: "Registrar $ 0" }).click();
       await expect(
         page.getByRole("status").filter({ hasText: "Venta registrada: $ 0" }),
