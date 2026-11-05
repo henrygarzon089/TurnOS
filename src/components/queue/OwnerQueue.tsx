@@ -45,7 +45,14 @@ const TSTATUS = {
   no_show: "No llegó",
 } as const;
 
-export function OwnerQueue({ initial }: { initial: OwnerQueueView }) {
+export function OwnerQueue({
+  initial,
+  top,
+}: {
+  initial: OwnerQueueView;
+  /** Lo que va entre el menú y la fila (la tarjeta de limpieza, REQ-062). */
+  top?: React.ReactNode;
+}) {
   const [view, setView] = useState(initial);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -92,6 +99,7 @@ export function OwnerQueue({ initial }: { initial: OwnerQueueView }) {
     <main className="pb-24">
       <ConnectionBanner online={online} />
       <AdminNav current="/admin/fila" />
+      {top}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Fila</h1>
         <span

@@ -1353,11 +1353,14 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   hora; la base lo vuelve a revisar. Las fotos ya subidas no se repiten si el envío falla. La E2E
   la corre el CI (`tests/e2e/cleaning-barber.spec.ts`); aquí no hay Supabase local para E2E.
 
-### [ ] T-105 · Interruptor, listas y panel del dueño
+### [x] T-105 · Interruptor, listas y panel del dueño
 - REQ: REQ-060.1, REQ-060.2, REQ-060.3, REQ-062.3, REQ-062.4, REQ-062.5, REQ-062.6
 - Archivos: `src/app/(staff)/admin/limpieza/` (pestañas Hoy y Listas), tarjeta "Limpieza" en
   `src/app/(staff)/admin/page.tsx`
 - Terminado: el dueño enciende, edita una lista y ve los avisos en su panel; `pnpm lint:texts`.
+- Nota: `/admin` redirige a `/admin/fila`, así que la tarjeta vive ahí (prop `top` de
+  `OwnerQueue`) y el chip "Limpieza" va en `AdminNav`. Apagada, `/admin/limpieza` solo muestra el
+  interruptor. E2E: `tests/e2e/cleaning-owner.spec.ts`.
 
 ### [ ] T-106 · Revisión del dueño
 - REQ: REQ-063.1, REQ-063.2, REQ-063.3, REQ-063.4
