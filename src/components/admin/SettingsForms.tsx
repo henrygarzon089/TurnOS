@@ -135,6 +135,8 @@ export type BusinessSettings = {
   grace_minutes: number;
   inactive_days: number;
   reminder_cooldown_days: number;
+  product_commission_pct: number;
+  staff_discount_pct: number;
   pwa_name: string | null;
   slug: string;
 };
@@ -197,7 +199,13 @@ export function BusinessForm({ business }: { business: BusinessSettings }) {
         {num("grace_minutes", "Minutos de gracia al llamar", 1, 60)}
         {num("inactive_days", "Días para 'recordar' clientes", 1, 365)}
         {num("reminder_cooldown_days", "Días entre recordatorios", 1, 90)}
+        {num("product_commission_pct", "Comisión por productos (%)", 0, 100)}
+        {num("staff_discount_pct", "Descuento de empleado (%)", 0, 100)}
       </div>
+      <p className="text-muted -mt-2 text-xs">
+        Los % de productos y de descuento se aplican a las ventas desde hoy. Con descuento en 0 no
+        sale &quot;Compra de un barbero&quot;.
+      </p>
       {state?.error && <ErrorText>{state.error}</ErrorText>}
       {state?.ok && <p className="text-ok text-sm font-medium">Guardado.</p>}
       <button type="submit" className="btn-primary" disabled={pending}>
