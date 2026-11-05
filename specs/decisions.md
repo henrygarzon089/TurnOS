@@ -572,3 +572,58 @@
   `0057`…`0059` y T-100…T-109 son del Hito 11; REQ-070…074, ADR-039, `0063`…`0067` y T-120… del Hito
   13. El Hito 13 pone el stock con sus propios triggers sobre `sale_items` y `sales.status`; este hito
   solo garantiza `ref_id` y `qty` en las líneas de producto (REQ-066.6).
+
+## ADR-039 · Inventario de insumos, estaciones y vitrina (Hito 13)
+- Estado: **aceptada** (Henry, 2026-11-04: aprobó la spec en el PR #72, incluidos los dos detalles
+  de diseño de abajo)
+- Contexto: el plan operativo de Filo ("Gamma") pide que cada barbero tenga una dotación de la casa
+  y que se lleve el control: bodega cerrada que maneja el dueño, una estación por barbero con
+  dotación fija, vitrina con productos para la venta, reposición con envase vacío, consumo esperado
+  por servicio, conteo semanal de estaciones (alerta si se pasa del 10 %), conteo mensual de bodega,
+  mínimos y máximos con compra cada 15 días, y costo de insumos por servicio. Henry decidió el
+  2026-11-04 que todo va en TurnOS (nada en Odoo). PA-16 había dejado el inventario fuera del MVP.
+  En paralelo, el Hito 12 (punto de venta) define la venta de productos con comisión.
+- Opciones:
+  - Para el catálogo: (a) un solo catálogo de inventario, con productos de venta enlazados 1:1 a
+    `products`; (b) inventario solo de insumos y stock en `products`.
+  - Para el stock: (a) se calcula de movimientos inmutables; (b) un contador por sitio que se
+    actualiza.
+  - Para el consumo: (a) se mide con envases vacíos y conteos, en unidades enteras; (b) descontar
+    fracciones por cada servicio cobrado.
+- Decisión: (a) en los tres. Henry aceptó las 20 respuestas recomendadas del grill:
+  - Un catálogo con uso (interno o venta) y los 9 grupos del plan.
+  - Bodega, vitrina y una estación por barbero (no por silla).
+  - Unidades enteras y una dotación estándar igual para todas las estaciones.
+  - Solo el dueño registra, y la reposición exige el envase vacío.
+  - Los servicios se cuentan desde la caja.
+  - Rendimiento por insumo y servicio, con "Midiendo" el primer mes y una sugerencia después de 4
+    conteos.
+  - Conteo semanal entre dos conteos de la estación, con alerta solo en el panel del dueño.
+  - Conteo mensual de bodega y vitrina con motivo.
+  - Orden de compra sugerida (máximo − stock), solo como lista para WhatsApp.
+  - Costo por servicio con el precio de la última compra.
+  - La compra con descuento de empleado es una venta del Hito 12.
+  - El barbero ve su estación en solo lectura.
+  - El sticker de apertura queda fuera del sistema.
+  - El primer conteo es la carga inicial.
+  - Surtir la vitrina es una transferencia.
+  - La caja nunca se bloquea: el stock puede quedar negativo.
+  - Cerrar la estación del barbero que se va.
+  - Los servicios de cada insumo se escogen a mano, con una plantilla básica.
+- Detalles del diseño que Henry no votó, para revisar en la spec:
+  1. *La alerta exige además al menos una unidad de exceso* (REQ-073.4, ejemplo M). Con unidades
+     enteras, una caja de 50 guantes abierta en una semana de 12 barbas sería un "exceso" de 300 %.
+     → Sin esa regla, la alerta saltaría cada semana por los insumos de alto rendimiento.
+  2. *La bebida de cortesía (REQ-038) descuenta la vitrina* (REQ-072.4). Es la misma bebida que se
+     vende. → Si no, la vitrina descuadraría en cada conteo.
+- Frontera con el Hito 12 (acordada con la coordinadora el 2026-11-04): `products` y la venta son
+  del Hito 12. El Hito 13 descuenta la vitrina con triggers sobre `sale_items` y `sales`, sin
+  redefinir `register_sale` ni `void_sale`. La devolución al anular es idempotente y solo dispara
+  con el paso de `active` a `voided`.
+- Consecuencias:
+  - Requisitos y diseño: REQ-070…REQ-074 (§5j) y `design.md` §18.
+  - Migraciones `0063`…`0067` y tareas T-120…T-129. Las migraciones se fusionan después de las del
+    Hito 12 (`0060`…`0062`).
+  - Sale de "Fuera de alcance" el control de inventario de productos, y PA-16 queda resuelta.
+  - Los números saltan: REQ-060…069, ADR-037/038, `0057`…`0062` y T-100…T-119 son de los Hitos 11
+    y 12. La aprobación del Hito 13 tendrá el siguiente ADR libre.
