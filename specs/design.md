@@ -23,6 +23,7 @@
 13. Hito 7 — Membresía familiar
 14. Hito 8 — Citas a hora fija
 15. Hito 9 — Tarjetas de regalo (§14 es del Hito 8)
+18. Hito 13 — Inventario de insumos y vitrina (§16 y §17 son de los Hitos 11 y 12)
 
 ---
 
@@ -2069,3 +2070,231 @@ En orden; el primer error gana:
 - E2E (Pixel 7 + iPhone 13): el dueño enciende Limpieza; el barbero ve "Apertura pendiente", la
   registra incompleta con nota y desaparece el aviso; el cierre pide foto; el dueño ve el incompleto
   en el panel y hace una revisión con una falla asignada que aparece en el historial.
+
+---
+
+## 18. Hito 13 — Inventario de insumos y vitrina (REQ-070…REQ-074, ADR-039)
+
+> §16 y §17 quedan para los Hitos 11 (limpieza) y 12 (punto de venta), que se diseñan en paralelo.
+> Migraciones `0063_inventory.sql` (datos, sitios, catálogo y RLS), `0064_inventory_movements.sql`
+> (entradas, transferencias, reposición y resumen), `0065_inventory_sales_hook.sql` (vitrina desde
+> la caja y la cortesía), `0066_inventory_counts.sql` (conteos, alerta y rendimiento sugerido) y
+> `0067_inventory_reports.sql` (orden de compra, costo por servicio y "Mi estación"), cada una con
+> su pgTAP y permisos explícitos (ADR-019). Sin crear ítems nada cambia en la caja ni en la fila.
+>
+> **Frontera con el Hito 12** (acordada con la coordinadora el 2026-11-04): `products` y la venta
+> (`register_sale`, `void_sale`, comisión por producto, descuento de empleado) son del Hito 12. El
+> Hito 13 no redefine ninguna de esas funciones: descuenta la vitrina con triggers sobre
+> `sale_items` y `sales` (§18.4). Depende solo de que las líneas de producto lleven `kind =
+> 'product'`, `ref_id = products.id` y `qty`, como desde `0021`.
+
+### 18.1 Datos
+
+| Tabla | Cambio | REQ |
+|---|---|---|
+| enum `inventory_group` | `'biosafety','shave_beard','finishing','wash_comfort','machines','facials','manicure','women_chemicals','for_sale'` (en pantalla: Bioseguridad, Afeitado y barba, Acabado, Lavado y comodidad, Cuidado de máquinas, Faciales, Manicure, Mujer y químicos, Productos para la venta) | 070.1 |
+| enum `inventory_use` | `'internal','sale'` | 070.1 |
+| enum `inventory_location_kind` | `'warehouse','shelf','station'` | 070.3 |
+| enum `stock_movement_kind` | `'purchase','transfer','empty','refill','use','adjustment','sale','sale_void','courtesy'` | 071.1 |
+| enum `stock_adjustment_reason` | `'initial','expired','damaged','missing','surplus','other'` | 073.6 |
+| enum `stock_count_kind` | `'initial','weekly','monthly','closing'` | 073.3, 073.6, 073.7 |
+| `businesses` | `inventory_alert_pct int not null default 10 check (between 1 and 100)` | 073.4 |
+| `inventory_items` (nueva) | `id, business_id, name text check (1..60), "group" inventory_group, use inventory_use, presentation text check (1..60), unit_label text check (1..20), unit_cost int not null default 0 check (>= 0), supplier text null check (1..60), min_qty int check (>= 0), max_qty int check (>= min_qty), shelf_min int null check (>= 0), station_qty int not null default 0 check (>= 0), product_id uuid null, is_active bool default true, sort_order int, created_at`; `check (use = 'sale' or (product_id is null and shelf_min is null))`; `check (use = 'internal' or station_qty = 0)`; `unique (business_id, product_id)`; FK compuesta `(business_id, product_id)` a `products` | 070.1, 070.2, 070.4 |
+| `inventory_locations` (nueva) | `id, business_id, kind, barber_id uuid null, status text check in ('open','closing','closed') default 'open', created_at`; `check ((kind = 'station') = (barber_id is not null))`; único parcial `(business_id, kind)` where `kind <> 'station'`; único parcial `(business_id, barber_id)` where `kind = 'station'` | 070.3, 073.7 |
+| `inventory_usage` (nueva) | `business_id, item_id, service_id, services_per_unit int null check (>= 1)` (null = "Midiendo"); PK `(item_id, service_id)`; FK compuestas | 073.1 |
+| `stock_movements` (nueva) | `id, business_id, item_id, kind, from_location_id uuid null, to_location_id uuid null, qty int check (> 0), unit_cost int null, reason stock_adjustment_reason null, sale_id uuid null, sale_item_id uuid null, ticket_id uuid null, count_id uuid null, created_by uuid null, created_at`; `check (from_location_id is not null or to_location_id is not null)`; único parcial `(sale_item_id, kind)` where `sale_item_id is not null`; único parcial `(ticket_id)` where `kind = 'courtesy'`; índices `(business_id, item_id)`, `(from_location_id)`, `(to_location_id)`, `(sale_id)` | 071.1, 072.1, 072.2, 072.4 |
+| `stock_counts` (nueva) | `id, business_id, location_id, kind stock_count_kind, window_start timestamptz null, counted_at timestamptz default now(), created_by` | 073.3, 073.6 |
+| `stock_count_lines` (nueva) | `count_id, business_id, item_id, system_qty int, counted_qty int check (>= 0), difference int` (= counted − system)`, reason stock_adjustment_reason null, services int null, expected_use numeric(10,2) null, real_use int null, measuring bool not null default false, alert bool not null default false`; PK `(count_id, item_id)` | 073.3–073.6 |
+
+**Stock** de un ítem en un sitio = Σ `qty` de los movimientos con `to_location_id` = el sitio − Σ
+`qty` de los que tienen `from_location_id` = el sitio. No se guarda un contador (como el saldo de la
+tarjeta, §15.1); `inventory_stock(p_business_id)` devuelve `(location_id, item_id, qty)`.
+`stock_movements` es inmutable: un trigger rechaza `update` y `delete` (`STOCK_IMMUTABLE`), como
+`sales_guard`. Cada movimiento, por tipo:
+
+| Tipo | Origen → destino | Lo crea |
+|---|---|---|
+| `purchase` | — → bodega | entrada a bodega (`unit_cost` = precio pagado por unidad) |
+| `transfer` | bodega ↔ vitrina, bodega → estación, estación → bodega | transferencia; cierre de estación |
+| `empty` | estación → — | reposición: el envase vacío que entrega el barbero (consumo) |
+| `refill` | bodega → estación | reposición: el lleno |
+| `use` | estación → — | conteo de estación con faltante (consumo) |
+| `adjustment` | — → sitio o sitio → — | conteo con diferencia (con `reason`); el conteo inicial usa `'initial'` |
+| `sale` / `sale_void` | vitrina → — / — → vitrina | trigger de la caja (§18.4) |
+| `courtesy` | vitrina → — | trigger de la cortesía servida (§18.4) |
+
+**Sitios** (REQ-070.3): `0063` crea la bodega y la vitrina de cada negocio existente y un trigger
+`after insert` en `businesses` las crea en los nuevos (como las plantillas de citas, sin tocar
+`create_business`). Un trigger en `barbers` (`after insert or update of status`) abre la estación
+del barbero activo (la crea, o pasa a `'open'` la suya si estaba cerrada) y pasa a `'closing'` la de
+un barbero que se desactiva (REQ-073.7). `0063` crea las estaciones de los barberos activos.
+
+**Dotación** (REQ-070.4): la de toda estación es `station_qty` de cada ítem activo de uso interno
+con `station_qty > 0`. Los ítems "Para la venta" viven en bodega y vitrina; los de uso interno en
+bodega y estaciones (no en vitrina).
+
+### 18.2 RLS
+
+| Tabla | Dueño | Barbero |
+|---|---|---|
+| `inventory_items`, `inventory_locations`, `inventory_usage`, `stock_movements`, `stock_counts`, `stock_count_lines` | select; cambios solo con funciones | sin acceso directo: lo suyo sale de `my_station` |
+| `businesses.inventory_alert_pct` | update como el resto de `businesses` | select |
+
+`anon` no tiene acceso (REQ-074.5). `authenticated` no tiene `insert`/`update`/`delete` directos
+sobre las tablas nuevas: todo pasa por funciones `security definer` que validan `is_owner_of`.
+
+### 18.3 Funciones SQL
+
+Todas `security definer`; las del dueño fallan con `FORBIDDEN` (P0001) si quien llama no es dueño
+del negocio. Los rechazos de negocio son P0004, como en la caja.
+
+- `save_inventory_item(p_business_id, p_item jsonb)` → uuid. Crea o edita (con `id`). Mínimo >
+  máximo, `station_qty` en un ítem de venta o `product_id`/`shelf_min` en uno interno →
+  `INVALID_ITEM`; producto de otro negocio o ya enlazado → `PRODUCT_TAKEN`. Desactivar
+  (`is_active = false`) no borra nada (REQ-070.6).
+- `set_item_usage(p_item_id, p_usage jsonb)` → reemplaza las filas de `inventory_usage` del ítem
+  con `[{serviceId, servicesPerUnit | null}]`. Ítem de venta → `INVALID_ITEM`; servicio de otro
+  negocio → `FORBIDDEN`; rendimiento < 1 → `INVALID_YIELD`.
+- `register_stock_purchase(p_item_id, p_qty, p_unit_cost)` → movimiento `purchase` a la bodega y
+  `inventory_items.unit_cost = p_unit_cost` (REQ-071.2). Cantidad ≤ 0 o precio < 0 →
+  `INVALID_QTY`.
+- `transfer_stock(p_item_id, p_from_location_id, p_to_location_id, p_qty)` → movimiento `transfer`.
+  Solo las rutas de §18.1 y según el uso del ítem (un ítem de venta no va a estación, uno interno no
+  va a vitrina) → si no, `INVALID_TRANSFER`. Más que el stock del origen → `INSUFFICIENT_STOCK`.
+  Estación que queda por encima de la dotación → `OVER_ALLOWANCE`. Estación cerrada →
+  `STATION_CLOSED` (REQ-071.3, REQ-071.5).
+- `refill_station(p_barber_id, p_item_id, p_qty, p_empty_returned bool)` → `p_empty_returned`
+  falso → `EMPTY_REQUIRED`. Si no: movimiento `empty` (estación → —, `p_qty`) y `refill` (bodega →
+  estación, `p_qty`) en la misma transacción, con las mismas validaciones de `transfer_stock`
+  (REQ-071.4). El stock de la estación no cambia: lo vacío sale y lo lleno entra. Lo vacío no
+  puede ser más que el stock de la estación (`INSUFFICIENT_STOCK`): a una estación incompleta se le
+  completa la dotación con `transfer_stock`.
+- `inventory_overview(p_business_id)` → jsonb para el panel: por ítem, stock en bodega, vitrina y
+  cada estación; `negative` (algún sitio < 0, REQ-072.3); `shelfToFill` = `shelf_min − vitrina` si
+  la vitrina está en el mínimo o por debajo (REQ-072.5); las alertas del último conteo de cada
+  estación abierta (REQ-073.4); las estaciones `'closing'` (REQ-073.7) y las sugerencias de
+  rendimiento (REQ-073.5). Solo dueño.
+- `record_stock_count(p_location_id, p_lines jsonb)` → jsonb con el conteo y sus líneas.
+  `[{itemId, counted, reason?}]`. Debe traer una línea por cada ítem activo del sitio (estación: los
+  de la dotación; bodega: todos; vitrina: los de venta) → si falta alguno, `MISSING_LINES`. El tipo
+  sale del sitio: el primer conteo de un sitio es `'initial'`; después, estación `'open'` →
+  `'weekly'`, estación `'closing'` → `'closing'`, bodega o vitrina → `'monthly'`. Por línea,
+  `system_qty` = stock calculado y `difference = counted − system_qty`:
+  - `'initial'`: la diferencia va como `adjustment` con `reason = 'initial'`.
+  - bodega o vitrina (`'monthly'`): si la diferencia ≠ 0 se exige `reason` (no `'initial'`) →
+    `REASON_REQUIRED`; va como `adjustment`.
+  - estación (`'weekly'`): faltante → `use` (consumo); sobrante → `adjustment` con `'surplus'`.
+    `window_start` = `counted_at` del conteo anterior de la estación (REQ-073.3). Por ítem:
+    `services` = Σ `qty` de las líneas `kind = 'service'` de ventas `active` del barbero con
+    `created_at` en `(window_start, counted_at]` cuyo `ref_id` está en `inventory_usage` del ítem;
+    `expected_use` = Σ por servicio (cantidad ÷ `services_per_unit`), con 2 decimales;
+    `real_use` = Σ `empty` de la ventana + el faltante del conteo (0 si sobra); `measuring` = algún
+    servicio del ítem en "Midiendo" (sin rendimiento); `alert` = no `measuring` y `real_use >
+    expected_use × (1 + inventory_alert_pct / 100)` y `real_use − expected_use ≥ 1` (REQ-073.4,
+    §18.5).
+  - estación `'closing'`: como `'weekly'` (con alerta), y después lo contado vuelve a la bodega
+    (`transfer`) y la estación queda `'closed'` (REQ-073.7).
+  Solo dueño; la hace con el barbero al lado, pero la registra el dueño.
+- `inventory_yield_suggestions(p_business_id)` → filas `item_id, name, windows, services,
+  real_use, suggested` para los ítems con algún servicio en "Midiendo" y 4 o más líneas
+  `measuring` con `real_use > 0`, de cualquier estación; `suggested = greatest(1, floor(Σ services
+  ÷ Σ real_use))` (REQ-073.5). `accept_yield(p_item_id, p_services_per_unit)` pone ese rendimiento
+  en las filas "Midiendo" del ítem.
+- `purchase_order(p_business_id)` → filas `supplier, item_id, name, presentation, on_hand,
+  min_qty, max_qty, qty, unit_cost, amount` para los ítems activos con `bodega + vitrina ≤
+  min_qty`, `qty = max_qty − (bodega + vitrina)` y `amount = qty × unit_cost`, ordenadas por
+  proveedor (sin proveedor al final) y nombre (REQ-074.1). Un ítem con `max_qty = 0` no aparece.
+- `service_supply_cost(p_business_id)` → filas `service_id, name, cost, incomplete` para los
+  servicios activos: `cost = round(Σ unit_cost / services_per_unit)` sobre sus ítems activos con
+  rendimiento; `incomplete` si alguno está en "Midiendo" (REQ-074.3).
+- `my_station(p_business_id)` → jsonb para el barbero que llama (`my_barber_id`; si no es barbero,
+  `FORBIDDEN`): por ítem de la dotación, nombre, unidad, dotación y stock de su estación; sus
+  reposiciones de los últimos 30 días (fecha, ítem, cantidad); y las líneas de su último conteo
+  (servicios, esperado, real, alerta). Sin precios, sin bodega ni vitrina ni otras estaciones
+  (REQ-074.4).
+
+### 18.4 Vitrina desde la caja y la cortesía (`0065`)
+
+- `stock_on_sale_item` — `after insert on sale_items for each row when (new.kind = 'product')`: si
+  hay un ítem activo con `product_id = new.ref_id` en el negocio, inserta `sale` (vitrina → —,
+  `new.qty`, `sale_id`, `sale_item_id`). No valida stock: la vitrina puede quedar negativa
+  (REQ-072.3). Un producto sin ítem enlazado no hace nada. No toca `register_sale`.
+- `stock_on_sale_void` — `after update of status on sales for each row when (old.status =
+  'active' and new.status = 'voided')`: por cada `sale` de esa venta inserta `sale_void` (— →
+  vitrina, misma cantidad y `sale_item_id`) con `on conflict do nothing` sobre el único parcial
+  `(sale_item_id, kind)`. Así anular dos veces no devuelve dos veces, y cualquier otro `update` de
+  `sales` no dispara (REQ-072.2). No toca `void_sale`.
+- `stock_on_courtesy` — `after update of courtesy_served_at on tickets for each row when
+  (old.courtesy_served_at is null and new.courtesy_served_at is not null)`: si
+  `courtesy_product_id` tiene ítem enlazado, inserta `courtesy` (vitrina → —, 1, `ticket_id`); el
+  único parcial por `ticket_id` evita el doble descuento (REQ-072.4).
+
+Si el Hito 12 cambia la forma de las líneas de producto, debe avisar: este gancho depende de `kind`,
+`ref_id` y `qty`.
+
+### 18.5 Ejemplos
+
+**Ejemplo M — conteo semanal con alerta.** Negocio al 10 %. Dotación: 1 caja de guantes (Barba
+rinde 50), 1 cera mate (Corte rinde 40). Entre el lunes pasado y hoy, Juan registró en caja 30
+cortes y 12 barbas, y entregó 1 caja de guantes vacía y 1 cera vacía (dos reposiciones). Hoy se
+cuentan 1 caja de guantes (calculado 1) y 0 ceras (calculado 1).
+- Guantes: esperado 12 ÷ 50 = 0,24; real 1 (el vacío) + 0 = 1. `1 > 0,264` pero `1 − 0,24 = 0,76 <
+  1` → sin alerta: con unidades enteras, una caja abierta no es exceso.
+- Cera: esperado 30 ÷ 40 = 0,75; real 1 (vacío) + 1 (faltante) = 2. `2 > 0,825` y `2 − 0,75 = 1,25
+  ≥ 1` → **alerta** "Revisar con Juan". El faltante queda como `use`.
+
+**Ejemplo N — rendimiento sugerido.** Gel en "Midiendo" para Corte. Cuatro conteos semanales (de
+cualquier estación) con consumo: 120 cortes y 3 geles en total → sugerido `floor(120 ÷ 3) = 40`.
+
+**Ejemplo O — costo por servicio.** Barba gasta guantes ($ 30.000 la caja, rinde 50 → 600), papel
+cuello ($ 8.000 el rollo, rinde 100 → 80) y aceite ($ 25.000, rinde 50 → 500): "Barba: $ 1.180 en
+insumos". Si la cuchilla estuviera en "Midiendo": "$ 1.180 · Incompleto".
+
+**Ejemplo P — orden de compra.** Cera mate: mínimo 3, máximo 10, bodega 2 + vitrina 0 = 2 ≤ 3 →
+pedir 8 × $ 18.000 = $ 144.000. Agua: mínimo 12, máximo 48, bodega 20 + vitrina 6 = 26 > 12 → no
+aparece.
+
+**Ejemplo Q — vitrina.** Vitrina con 2 aguas; se venden 3 en un cobro → vitrina −1, en rojo
+(REQ-072.3). Se anula la venta → vitrina 2. Se intenta anular otra vez → sigue en 2.
+
+### 18.6 Server actions y pantallas
+
+- Acciones en `src/lib/actions/inventory.ts`; reglas puras en `src/lib/domain/inventory.ts` (alerta
+  de §18.3, consumo esperado, texto de la orden de compra para WhatsApp, etiquetas de grupos y
+  motivos, plantilla básica).
+- `/admin/inventario` (nueva, dueño), chip "Inventario" en el menú: resumen con alertas de conteo
+  ("Revisar con Juan: cera mate"), "Surtir vitrina", stock negativo, estaciones por cerrar y
+  rendimientos sugeridos; acciones rápidas "Entrada a bodega", "Reponer" (barbero, ítem, cantidad,
+  casilla "Recibí el envase vacío") y "Transferir".
+- `/admin/inventario/catalogo`: lista por grupo; formulario del ítem (REQ-070.1/070.2, selector de
+  producto para los de venta); "Servicios que lo gastan" con rendimiento o "Midiendo"; botón
+  "Agregar plantilla básica" (guantes por caja de 50 pares, cuchillas por paquete de 10, papel cuello
+  por rollo de 100; sin servicios, que el dueño escoge).
+- `/admin/inventario/conteo`: escoger sitio (bodega, vitrina o estación); formulario con todos los
+  ítems del sitio y lo calculado al lado; motivo cuando hay diferencia en bodega o vitrina; al
+  guardar, resultado por ítem (servicios, esperado, real, alerta).
+- `/admin/inventario/compra`: orden de compra agrupada por proveedor, total estimado y botón
+  "Compartir por WhatsApp" (texto plano, `wa.me` sin número).
+- `/admin/inventario/costos`: costo de insumos por servicio.
+- `/admin/negocio`: campo "Alerta de consumo (%)".
+- `/app/estacion` (nueva, barbero), chip "Mi estación": dotación, stock, reposiciones y último
+  conteo, solo lectura (REQ-074.4).
+
+### 18.7 Pruebas
+
+- pgTAP `0063`: sitios en negocios nuevos y existentes; estación al crear, activar y desactivar un
+  barbero; checks de `inventory_items`; `save_inventory_item` y `set_item_usage` (rechazos, producto
+  de otro negocio); RLS (el barbero no ve las tablas, otro negocio tampoco) y permisos (`anon` nada).
+- pgTAP `0064`: entrada con precio; transferencias válidas e inválidas; `INSUFFICIENT_STOCK`,
+  `OVER_ALLOWANCE`, `STATION_CLOSED`; reposición con y sin vacío; movimientos inmutables; resumen.
+- pgTAP `0065`: ejemplo Q (venta, negativo, anular dos veces, otro `update` de `sales` no mueve
+  stock); producto sin ítem; cortesía una sola vez; `register_sale` y `void_sale` sin cambios.
+- pgTAP `0066`: ejemplo M (con venta anulada y venta de otro barbero fuera de la cuenta), conteo
+  inicial, mensual con motivo, `MISSING_LINES`, cierre de estación, ejemplo N y `accept_yield`.
+- pgTAP `0067`: ejemplos O y P; `my_station` (solo lo suyo, sin precios; el dueño o un barbero de
+  otro negocio → `FORBIDDEN`).
+- Unitarias: `inventory.ts` (regla de alerta del ejemplo M, consumo esperado, texto de la orden,
+  plantilla básica).
+- Integración: acciones de inventario contra Postgres local.
+- E2E (Pixel 7 + iPhone 13): el dueño crea un ítem, registra una entrada, repone con envase vacío y
+  cuenta la estación con alerta; el barbero ve "Mi estación".
