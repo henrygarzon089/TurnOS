@@ -27,6 +27,7 @@
 | H6 | Aviso automático por WhatsApp (ADR-027) | T-064…T-070 | REQ-040…REQ-043 |
 | H7 | Membresía familiar (ADR-030) | T-071…T-077 | REQ-044…REQ-048 |
 | H9 | Tarjetas de regalo (ADR-034) | T-090…T-097 | REQ-055…REQ-059 |
+| H11 | Limpieza y bioseguridad (ADR-037) | T-100…T-109 | REQ-060…REQ-064 |
 | H13 | Inventario de insumos y vitrina (ADR-039) | T-120…T-129 | REQ-070…REQ-074 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
@@ -1279,6 +1280,79 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ---
 
+## Hito 11 — Limpieza y bioseguridad (ADR-037)
+
+> REQ-060…REQ-064 y ADR-037 aprobados por Henry (2026-11-04, PR #73). Diseño en `design.md` §16. Una tarea por rama y PR, con las pruebas
+> primero. Todo nace apagado. Migraciones `0057`…`0059`. No depende de los Hitos 12 y 13.
+
+### [ ] T-100 · Migración y pgTAP: datos, listas y bucket privado
+- REQ: REQ-060.1, REQ-060.2, REQ-060.3, REQ-063.4, REQ-064.5
+- Archivos: `supabase/migrations/0057_cleaning.sql` (enum, tablas, `cleaning_set_enabled`,
+  `cleaning_seed_lists`, `cleaning_save_list`, RLS, bucket `cleaning` y sus políticas),
+  `supabase/tests/0057_cleaning.sql`
+- Terminado: pgTAP de §16.7 para `0057` en verde; sin encender el módulo nada cambia.
+
+### [ ] T-101 · Registrar apertura, cierre y profunda en SQL
+- REQ: REQ-060.4, REQ-060.5, REQ-061.1, REQ-061.2, REQ-061.3, REQ-061.4, REQ-061.7, REQ-061.8,
+  REQ-061.9, REQ-061.10, REQ-061.11, REQ-062.1, REQ-062.3, REQ-062.4, REQ-062.5, REQ-062.7, REQ-062.8
+- Archivos: `supabase/migrations/0058_cleaning_records.sql` (`cleaning_is_open_day`,
+  `cleaning_today`, `submit_cleaning_record`, `cleaning_owner_summary`, `ack_missed_closing`),
+  `supabase/tests/0058_cleaning_records.sql`
+- Terminado: cada regla de §16.5 probada en orden; avisos con días abiertos y cerrados.
+
+### [ ] T-102 · Revisión, historial, tareas y purga en SQL
+- REQ: REQ-063.1, REQ-063.2, REQ-063.3, REQ-063.5, REQ-063.6, REQ-063.7, REQ-064.1, REQ-064.2,
+  REQ-064.4, REQ-064.6
+- Archivos: `supabase/migrations/0059_cleaning_review_tasks.sql`,
+  `supabase/tests/0059_cleaning_review_tasks.sql`
+- Terminado: pgTAP de §16.7 para `0059`; `cleaning_owner_summary` agrega las tareas por vencer.
+
+### [ ] T-103 · Dominio y acciones de limpieza
+- REQ: REQ-060.5, REQ-061.2, REQ-061.3, REQ-061.6, REQ-061.7, REQ-064.1, REQ-064.3, REQ-064.4,
+  REQ-064.6
+- Archivos: `src/lib/domain/cleaning.ts`, `src/lib/actions/cleaning.ts`, `src/lib/cleaning/purge.ts`,
+  `tests/unit/cleaning.test.ts`, `tests/integration/cleaning.test.ts`
+- Terminado: unitarias e integración contra Postgres local en verde; la purga con un Storage falso.
+
+### [ ] T-104 · Pantalla de registro y aviso en la fila del barbero
+- REQ: REQ-061.1, REQ-061.4, REQ-061.5, REQ-061.6, REQ-061.11, REQ-062.1, REQ-062.2, REQ-062.6
+- Archivos: `src/app/(staff)/app/limpieza/page.tsx`, componente de lista compartido con el dueño,
+  `src/app/(staff)/app/fila/page.tsx` (aviso y botón), E2E `tests/e2e/cleaning-barber.spec.ts`
+- Terminado: E2E del barbero (apertura incompleta con nota, el aviso desaparece, el cierre pide foto).
+
+### [ ] T-105 · Interruptor, listas y panel del dueño
+- REQ: REQ-060.1, REQ-060.2, REQ-060.3, REQ-062.3, REQ-062.4, REQ-062.5, REQ-062.6
+- Archivos: `src/app/(staff)/admin/limpieza/` (pestañas Hoy y Listas), tarjeta "Limpieza" en
+  `src/app/(staff)/admin/page.tsx`
+- Terminado: el dueño enciende, edita una lista y ve los avisos en su panel; `pnpm lint:texts`.
+
+### [ ] T-106 · Revisión del dueño
+- REQ: REQ-063.1, REQ-063.2, REQ-063.3, REQ-063.4
+- Archivos: pestaña Revisión en `/admin/limpieza`
+- Terminado: E2E con una falla asignada a un barbero, que el barbero no ve.
+
+### [ ] T-107 · Tareas periódicas con adjuntos
+- REQ: REQ-064.1, REQ-064.2, REQ-064.3, REQ-064.4, REQ-064.5
+- Archivos: pestaña Tareas en `/admin/limpieza`
+- Terminado: crear desde una sugerencia, registrar con PDF, ver la vencida en el panel.
+
+### [ ] T-108 · Historial y fotos borradas
+- REQ: REQ-063.5, REQ-063.6, REQ-063.7, REQ-064.6
+- Archivos: pestaña Historial en `/admin/limpieza`, `after()` de la purga en Limpieza y en el panel
+- Terminado: historial de 8 semanas con detalle; un registro de hace más de 90 días muestra "Foto
+  borrada (más de 90 días)".
+
+### [ ] T-109 · Validación Hito 11
+- REQ: REQ-060…REQ-064
+- Archivos: `tests/unit/traceability.test.ts` (el hito 11 entra al loop), `docs/estado-del-proyecto.md`
+- Depende de Henry: `0057`…`0059` en producción, encender Limpieza en Filo, prueba en la barbería y
+  aprobación (nuevo ADR).
+- Terminado: `pnpm trace --hito=11` sin huecos; CI verde. `HITOS["11"]` ya está desde el PR de la
+  spec; el hito entra al loop de la prueba unitaria aquí, cuando todas las pruebas existen (como el
+  9 en T-097), para no dejar el CI en rojo mientras tanto.
+
+---
+
 ## Hito 8 — Citas a hora fija (ADR-033)
 
 > REQ-049…REQ-054 y ADR-033 aprobados por Henry (2026-11-03, autorizó construir sin esperar). Diseño
@@ -1317,6 +1391,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   mismo día (la fecha de hoy no cambia y el rollback lo deshace), y la cita c7 pasa de las 10:00 a
   las 12:00 para quedar en su día con ese corrimiento. Las funciones de citas no cambian; sin cambio
   de spec. Reproducido a las 22:59 (3 fallas) y en verde con la hora fijada a 12:00, 16:00 y 20:00.
+- Corrección (2026-11-05): el E2E `tests/e2e/appointments-queue.spec.ts` tenía el mismo problema
+  (cita a ahora + 30 min, que después de las 23:30 caía en mañana). `appointmentToday` toma como
+  máximo las 23:59 de Bogotá: la cita sigue siendo de hoy y queda dentro de los 10 min de gracia.
 
 ### [x] T-080 · Dominio: estimado con citas, calendario y mensajes
 - REQ: REQ-053.1, REQ-053.2, REQ-053.3, REQ-051.3
@@ -1420,6 +1497,100 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   cita sigue con su nombre y celular. No redefine funciones (las de 0050–0055 no se tocan).
 
 T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una tarea).
+
+---
+
+## Hito 12 — Punto de venta de productos con comisión (ADR-038)
+
+> REQ-065…REQ-069 y ADR-038 aprobados por Henry (2026-11-04, PR #75). Diseño en `design.md` §17. Los números saltan: T-100…T-109 son del Hito 11
+> (limpieza) y T-120… del Hito 13 (inventario), en paralelo. El Hito 13 depende de que las líneas de
+> producto sigan con `ref_id` y `qty` (REQ-066.6), no de estas tareas.
+
+### [x] T-110 · Migración y pgTAP: datos del POS
+- REQ: REQ-065.1, REQ-065.2, REQ-065.3, REQ-065.4, REQ-068.1
+- Archivos: `supabase/migrations/0060_pos_products.sql` (columnas de `businesses`, `products`,
+  `sale_items` y `sales`, `business_pct_changes` y su trigger, checks, permisos),
+  `supabase/tests/0060_pos_products.sql`
+- Terminado: pgTAP de §17.6 para `0060` en verde; sin marcar productos la caja no cambia.
+- Nota (2026-11-04): pgTAP 24 nuevas en `supabase/tests/0060_pos_products.sql` (1192 en total, base
+  Docker propia `turnos-ci-db-h12`). El historial lo escribe el trigger `businesses_pct_change`; el
+  personal no puede insertar en `business_pct_changes` (solo `select`).
+
+### [x] T-111 · `register_sale` con la comisión de productos
+- REQ: REQ-065.5, REQ-066.1, REQ-066.4, REQ-066.5, REQ-066.6, REQ-067.1, REQ-067.2, REQ-067.3,
+  REQ-067.4, REQ-067.5, REQ-069.1
+- Archivos: `supabase/migrations/0061_pos_register_sale.sql` (`register_sale` con la firma nueva),
+  `supabase/tests/0061_pos_register_sale.sql`
+- Terminado: pgTAP con los ejemplos M, N, O y Q, `for_sale`, `FORBIDDEN`, membresía, premio y
+  tarjeta de regalo sin efecto en la comisión de productos, y anular.
+- Nota (2026-11-04): T-111 y T-112 van juntas en `0061` (una sola redefinición de `register_sale`) y en
+  `supabase/tests/0061_pos_register_sale.sql` (30 pgTAP; 1222 en total; integración 142 en verde).
+  `0029_function_grants` pide la firma nueva. Detalle que la spec no fijaba: `sale_items.commissionable`
+  queda en `true` solo si la línea dio comisión (producto marcado, con barbero y sin ser compra de
+  barbero); con "Nadie" queda en `false`. REQ-066.5 (productos en el cobro del turno) se prueba en el
+  E2E de T-117: el cálculo es el mismo con o sin turno.
+
+### [x] T-112 · Compra de un barbero en `register_sale`
+- REQ: REQ-068.2, REQ-068.3, REQ-068.4
+- Archivos: `supabase/migrations/0061_pos_register_sale.sql`, `supabase/tests/0061_pos_register_sale.sql`
+- Terminado: pgTAP con el ejemplo P y cada rechazo (`FORBIDDEN`, `STAFF_DISCOUNT_OFF`,
+  `BARBER_NOT_FOUND`, `INVALID_STAFF_PURCHASE`).
+- Nota (2026-11-04): hecha con T-111 (misma migración y archivo de pgTAP).
+
+### [x] T-113 · Caja y semana en SQL
+- REQ: REQ-068.5, REQ-069.2, REQ-069.3, REQ-069.4
+- Archivos: `supabase/migrations/0062_pos_reports.sql` (`cash_day_summary`, `weekly_summary`),
+  `supabase/tests/0062_pos_reports.sql`
+- Terminado: pgTAP con el ejemplo R en el cierre (también la foto de `close_cash_day`) y la semana.
+- Nota (2026-11-04): 14 pgTAP en `supabase/tests/0062_pos_reports.sql` (1236 en total; integración
+  142). `cash_day_summary`: `barbers[]` con `productsSold`, `productCommission`, `productPct` y
+  `toPay`; totales `productCommission` y `staffPurchases`; ventas con `productCommission` y
+  `staffBuyerName`. `weekly_summary`: `barbers[]` con `productCommission` y `toPay`; totales
+  `productCommission` y `staffPurchases`. `close_cash_day` no se redefine.
+
+### [ ] T-114 · Dominio: comisión de productos y descuento de empleado
+- REQ: REQ-067.1, REQ-067.3, REQ-068.3
+- Archivos: `src/lib/domain/commission.ts` (`productCommission`, `staffDiscount`),
+  `tests/unit/commission.test.ts`
+- Terminado: unitarias con los ejemplos M…Q que dan los mismos números que pgTAP.
+
+### [ ] T-115 · "Negocio" y "Productos" del dueño
+- REQ: REQ-065.1, REQ-065.2, REQ-065.3, REQ-068.1
+- Archivos: `src/app/(staff)/admin/negocio/`, `src/app/(staff)/admin/productos/`,
+  `src/lib/actions/admin.ts`
+- Terminado: integración de las acciones; E2E: marcar una cera con "Da comisión al que vende" y
+  categoría "Vitrina", y cambiar el % de productos.
+
+### [ ] T-116 · Vitrina en "Nueva venta"
+- REQ: REQ-066.1, REQ-066.2, REQ-066.3, REQ-066.4
+- Archivos: `src/components/cash/ProductShowcase.tsx` (nueva), `src/components/cash/NewSaleSheet.tsx`,
+  `src/components/cash/CheckoutSheet.tsx`, `src/lib/actions/cash.ts`
+- Terminado: E2E: el dueño vende una cera escogiendo barbero (y no puede confirmar sin escoger); el
+  barbero vende a su nombre sin pregunta; pestañas por categoría.
+
+### [ ] T-117 · Vitrina en el cobro del turno y compra de un barbero
+- REQ: REQ-066.5, REQ-068.2, REQ-068.3
+- Archivos: `src/components/cash/CheckoutSheet.tsx`, `src/components/cash/NewSaleSheet.tsx`,
+  `src/lib/actions/cash.ts` (`staffBuyerId`)
+- Terminado: integración de `registerSale` con `staffBuyerId`; E2E: el barbero agrega una cera al
+  cobro de su corte; el dueño registra una compra de barbero con el descuento; con 0 % el
+  interruptor no sale.
+
+### [ ] T-118 · Caja de hoy, cierre, semana y "Mis números" en pantalla
+- REQ: REQ-069.2, REQ-069.3, REQ-069.4, REQ-069.5
+- Archivos: Caja de hoy, cierre (y su texto por WhatsApp), Semana, `src/app/(staff)/app/mis-numeros/`
+- Terminado: unitarias del texto del cierre (renglón de productos y "total a pagar", "Compras de
+  barberos"); E2E: la Caja de hoy y "Mis números" muestran la comisión de productos.
+
+### [ ] T-119 · Validación Hito 12
+- REQ: REQ-065…REQ-069
+- Archivos: `scripts/traceability.ts` (`HITOS["12"] = [[65, 69]]`), `tests/unit/traceability.test.ts`,
+  `docs/estado-del-proyecto.md`
+- Depende de Henry: `0060`…`0062` en producción, marcar los productos de Filo, prueba en la barbería y
+  aprobación del hito.
+- Terminado: `pnpm trace --hito=12` sin huecos; CI verde. `HITOS["12"]` ya está desde el PR de la
+  spec; el hito 12 entra al loop de `tests/unit/traceability.test.ts` aquí, cuando todas las pruebas
+  existen (como el hito 9 en T-097), para no dejar el CI en rojo mientras tanto.
 
 ---
 
@@ -1553,4 +1724,6 @@ flowchart LR
   T070 --> T071 --> T072 --> T073 --> T074 --> T075 --> T076 --> T077
   T077 --> T078 --> T079 --> T080 --> T081 --> T082 --> T083 --> T084 --> T085 --> T086 --> T087
   T077 --> T090 --> T091 --> T092 --> T093 --> T094 --> T095 --> T096 --> T097
+  T097 --> T100 --> T101 --> T102 --> T103 --> T104 --> T105 --> T106 --> T107 --> T108 --> T109
+  T097 --> T110 --> T111 --> T112 --> T113 --> T114 --> T115 --> T116 --> T117 --> T118 --> T119
 ```

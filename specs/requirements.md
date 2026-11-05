@@ -27,6 +27,8 @@
 5c. Hito 5 — Experiencia del cliente (REQ-036 a REQ-039)
 5d. Hito 6 — Aviso automático por WhatsApp (REQ-040 a REQ-043)
 5e. Hito 7 — Membresía familiar (REQ-044 a REQ-048)
+5h. Hito 11 — Limpieza y bioseguridad (REQ-060 a REQ-064)
+5i. Hito 12 — Punto de venta de productos con comisión (REQ-065 a REQ-069)
 6. Requisitos no funcionales (NFR)
 7. Casos borde consolidados
 8. Fuera de alcance del MVP
@@ -442,6 +444,8 @@ cuadre.
 - REQ-024.2 CUANDO se abre "Nueva venta" y se escogen productos y cantidades, EL SISTEMA DEBE
   calcular el total, pedir el medio de pago y crear la venta (REQ-023.3) sin barbero.
 - REQ-024.3 Las ventas de productos NO generan comisión salvo configuración explícita `[PA-17]`.
+  Desde el Hito 12 (ADR-038): los productos marcados dejan el % de productos del negocio al barbero
+  de la venta (REQ-067).
 
 ### REQ-025 · Comisión configurable por barbero — M
 **Como** dueño, **quiero** definir qué porcentaje se lleva cada barbero, **para** liquidar sin
@@ -1070,6 +1074,223 @@ WhatsApp, tarjetas impresas con diseño y recordatorio de vencimiento.
 
 ---
 
+## 5h. Hito 11 — Limpieza y bioseguridad
+
+> Estado: **APROBADA** (Henry, 2026-11-04, tras grill de 21 preguntas con la respuesta recomendada;
+> PR #73). Ver ADR-037. Los números saltan: REQ-060…064 son del Hito 11; el Hito 10 (IA en
+> WhatsApp) está reservado y el 12 y el 13 se escriben en paralelo. El control de limpieza es
+> interno: el cliente no ve nada. No hay horario por barbero ni niveles (Henry, 2026-11-04).
+
+### REQ-060 · Encender el módulo y editar las listas — M
+**Como** dueño, **quiero** listas de limpieza a la medida de mi barbería, **para** que todos
+limpien lo mismo.
+
+- REQ-060.1 El dueño DEBE poder encender y apagar "Limpieza activada" en `/admin`. Viene apagada;
+  MIENTRAS esté apagada, NO DEBE salir ningún aviso, botón ni pantalla de limpieza.
+- REQ-060.2 CUANDO el dueño la enciende por primera vez, EL SISTEMA DEBE crear cuatro listas con los
+  puntos por defecto: Apertura (6), Cierre (8), Limpieza profunda (4) y Entre clientes (7).
+- REQ-060.3 El dueño DEBE poder agregar, renombrar, quitar y ordenar los puntos de cada lista (de 1
+  a 80 caracteres, mínimo un punto por lista).
+- REQ-060.4 Cada registro y cada revisión DEBEN guardar los puntos como estaban al enviarse;
+  CUANDO el dueño cambia una lista, los registros anteriores NO DEBEN cambiar.
+- REQ-060.5 SI la lista cambió mientras alguien la llenaba, ENTONCES EL SISTEMA DEBE rechazar el
+  envío con "La lista cambió. Vuelve a abrirla" y no guardar nada.
+
+### REQ-061 · Registrar apertura, cierre y limpieza profunda — M
+**Como** barbero, **quiero** marcar la lista de limpieza en el celular, **para** dejar constancia
+de que el local quedó listo.
+
+- REQ-061.1 Cualquier barbero activo con sesión, o el dueño, DEBE poder registrar la apertura, el
+  cierre y la limpieza profunda; EL SISTEMA DEBE guardar quién y a qué hora. Nadie las asigna.
+- REQ-061.2 DEBE haber a lo sumo una apertura y un cierre por día (Bogotá) y una profunda por
+  semana (lunes a domingo); SI ya existe, ENTONCES EL SISTEMA DEBE mostrar quién la registró y a
+  qué hora ("La apertura de hoy ya la registró Carlos a las 9:05 a. m.") y no guardar otra.
+- REQ-061.3 Se PUEDE enviar con puntos sin marcar, pero cada punto sin marcar DEBE llevar una nota
+  (1 a 200 caracteres); el registro queda "Incompleto".
+- REQ-061.4 El cierre DEBE llevar exactamente una foto; sin foto NO DEBE enviarse. La apertura y la
+  profunda PUEDEN llevar hasta 3 fotos.
+- REQ-061.5 Las fotos DEBEN tomarse con la cámara del celular y reducirse antes de subir como en
+  REQ-039.4; antes de la cámara DEBE salir "Toma la foto del local vacío, sin personas".
+- REQ-061.6 SI una foto no sube, ENTONCES EL SISTEMA DEBE mostrar "No se pudo subir la foto. Intenta
+  de nuevo", no enviar el registro y conservar lo marcado y las notas.
+- REQ-061.7 Un barbero DEBE poder registrar el cierre solo desde 1 hora antes de la hora de cierre
+  del día hasta la medianoche; antes, EL SISTEMA DEBE mostrar "El cierre se registra desde las
+  <hora>". El dueño PUEDE registrarlo a cualquier hora del día.
+- REQ-061.8 CUANDO la apertura se registra más de 30 minutos después de la hora de apertura del día,
+  EL SISTEMA DEBE marcarla "Tarde".
+- REQ-061.9 Un registro enviado NO DEBE poder editarse ni borrarse, ni por el dueño.
+- REQ-061.10 El cierre de un día NO DEBE poder registrarse después de la medianoche de ese día.
+- REQ-061.11 El barbero DEBE ver en "Limpieza" qué registros de hoy y de esta semana ya se hicieron,
+  quién y a qué hora, pero no las revisiones del dueño (REQ-063.4).
+
+### REQ-062 · Avisos dentro de TurnOS — M
+**Como** dueño, **quiero** saber sin preguntar si se abrió y se cerró bien, **para** no tener que
+estar encima.
+
+- REQ-062.1 MIENTRAS el negocio abre hoy, ya pasó la hora de apertura y no hay apertura registrada,
+  EL SISTEMA DEBE mostrar "Apertura pendiente" arriba de la fila del barbero, con un toque que lleva
+  a la lista, y en el panel del dueño. Los días que el horario o el dueño marcan cerrados NO DEBE
+  salir.
+- REQ-062.2 El aviso de apertura NO DEBE impedir llamar ni atender clientes.
+- REQ-062.3 SI ayer el negocio abrió y no se registró el cierre, ENTONCES el cierre DEBE quedar "Sin
+  registrar" y el panel del dueño DEBE mostrar "Cierre sin registrar" con la fecha, hasta que el
+  dueño lo marque como visto (con nota opcional de hasta 200 caracteres). Los barberos NO DEBEN
+  ver este aviso.
+- REQ-062.4 MIENTRAS la semana no tenga profunda, el panel del dueño DEBE mostrar "Profunda pendiente
+  esta semana"; CUANDO termina el domingo sin profunda, la semana DEBE quedar "Sin profunda".
+- REQ-062.5 El panel del dueño DEBE resaltar los registros "Incompleto" y las aperturas "Tarde" de
+  los últimos 7 días, con sus notas.
+- REQ-062.6 La pantalla de fila del barbero DEBE tener el botón "Limpieza"; el dueño DEBE tener
+  "Limpieza" en `/admin`.
+- REQ-062.7 Los avisos de limpieza NO DEBEN enviarse por WhatsApp ni por ningún canal fuera de
+  TurnOS.
+- REQ-062.8 Los avisos y el "Sin registrar" DEBEN contar solo desde el día en que se encendió el
+  módulo.
+
+### REQ-063 · Revisión del dueño e historial — M
+**Como** dueño, **quiero** revisar por sorpresa y ver el historial, **para** saber quién cumple
+sin depender de lo que cada uno marca.
+
+- REQ-063.1 El dueño DEBE poder hacer una revisión cuando quiera, varias por día, con la lista de
+  Cierre más el grupo "Estaciones entre clientes" (los puntos de la lista Entre clientes).
+- REQ-063.2 Cada punto de la revisión DEBE quedar "Bien" o "Falla", con nota y una foto opcionales;
+  sin calificar todos los puntos NO DEBE enviarse.
+- REQ-063.3 Una falla PUEDE asignarse a un barbero activo; si no se asigna, es una falla general.
+- REQ-063.4 Las revisiones, las fallas y el historial DEBEN verse solo por el dueño.
+- REQ-063.5 El historial DEBE mostrar, por semana (lunes a domingo, las últimas 8 por defecto) y por
+  barbero, los registros completos, incompletos y tarde, las fallas asignadas, los cierres "Sin
+  registrar" y si hubo profunda.
+- REQ-063.6 Cada registro y revisión del historial DEBE abrirse con sus puntos, notas, quién y a qué
+  hora, y sus fotos mientras existan.
+- REQ-063.7 EL SISTEMA NO DEBE calcular niveles, puntajes ni consecuencias a partir del historial.
+
+### REQ-064 · Tareas periódicas, fotos privadas y retención — M
+**Como** dueño, **quiero** acordarme del mantenimiento y guardar los certificados, **para** estar
+al día ante la Secretaría de Salud.
+
+- REQ-064.1 Solo el dueño DEBE poder crear, editar, desactivar y registrar tareas periódicas, cada
+  una con nombre (1 a 80 caracteres) y frecuencia en días (1 a 730). Empiezan vacías; EL SISTEMA
+  DEBE sugerir "Aire acondicionado" (30), "Botiquín" (30) y "Control de plagas" (180) con un toque
+  para agregarlas.
+- REQ-064.2 Registrar una tarea DEBE guardar la fecha (hoy o anterior), una nota opcional y un
+  adjunto opcional; cada vez queda en el historial de la tarea y la anterior no se reemplaza.
+- REQ-064.3 El adjunto DEBE ser una foto (reducida como REQ-039.4) o un PDF de hasta 5 MB; otro
+  archivo DEBE rechazarse con "Sube una foto o un PDF".
+- REQ-064.4 El próximo vencimiento DEBE ser la última fecha + la frecuencia; una tarea sin registros
+  está vencida. El panel del dueño DEBE mostrar las vencidas y las que vencen en los próximos 7 días.
+- REQ-064.5 Las fotos y adjuntos de limpieza DEBEN guardarse en un almacenamiento privado: solo los
+  ve personal del negocio con sesión (las de revisiones y tareas, solo el dueño), nunca el público.
+- REQ-064.6 Las fotos de los registros y de las revisiones DEBEN borrarse solas a los 90 días;
+  desde ese día el registro DEBE mostrar "Foto borrada (más de 90 días)". Los registros, las notas y
+  los adjuntos de las tareas periódicas NO DEBEN borrarse.
+
+Fuera de alcance del Hito 11: registrar la limpieza entre clientes, asignar o rotar la limpieza,
+horario por barbero, niveles o sanciones, avisos por WhatsApp o notificaciones push, modo sin
+conexión, inventario de insumos de limpieza (va en el Hito 13) e informes para la Secretaría de Salud.
+
+---
+
+## 5i. Hito 12 — Punto de venta de productos con comisión
+
+> Estado: **APROBADA** (Henry, 2026-11-04, tras grill de 7 preguntas con la respuesta recomendada y
+> abogado del diablo sin cambios; PR #75). Ver ADR-038. Los números saltan: REQ-060…064
+> son del Hito 11 (limpieza) y REQ-070…074 del Hito 13 (inventario), en paralelo. El dueño o el
+> barbero venden los productos de la vitrina (cera, aceite de barba, after shave, helados, bebidas)
+> desde una pantalla con fotos; los productos marcados dejan un porcentaje al barbero de la venta.
+> Cambia PA-17 y REQ-024.3.
+
+### REQ-065 · Configurar la comisión y la vitrina — M
+**Como** dueño, **quiero** decidir qué productos dejan comisión y cuánto, **para** premiar al barbero
+que vende la vitrina.
+
+- REQ-065.1 El negocio DEBE tener un "% de comisión por productos" (entero 0–100, **10** por
+  defecto) que el dueño cambia en "Negocio". Es uno solo para todos los productos que dan comisión.
+- REQ-065.2 Cada producto DEBE tener la casilla "Da comisión al que vende" (apagada por defecto); el
+  dueño la cambia en "Productos".
+- REQ-065.3 Cada producto PUEDE tener una categoría de texto libre (1 a 30 caracteres, por ejemplo
+  "Vitrina", "Bebidas", "Helados"); sin categoría queda solo en "Todos".
+- REQ-065.4 CUANDO el dueño cambia el % de comisión por productos o el % de descuento de empleado
+  (REQ-068.1), EL SISTEMA DEBE aplicarlo solo a ventas posteriores y guardar el historial (fecha,
+  quién, valor anterior y nuevo), como REQ-025.3.
+- REQ-065.5 CUANDO el dueño cambia la casilla de un producto, las ventas ya registradas NO DEBEN
+  cambiar su comisión.
+
+### REQ-066 · Vender en la vitrina — M
+**Como** dueño o barbero, **quiero** vender productos tocando su foto, **para** registrar la venta
+rápido y que quede a nombre de quien la hizo.
+
+- REQ-066.1 "Nueva venta" DEBE mostrar la vitrina: los productos activos y a la venta en cuadros con
+  foto (o el nombre si no tiene), nombre, precio y botones + y −, y el total. Los productos de
+  cortesía que no están a la venta NO DEBEN salir.
+- REQ-066.2 SI al menos un producto activo y a la venta tiene categoría, ENTONCES la vitrina DEBE
+  mostrar pestañas: "Todos" y una por categoría (orden alfabético); si ninguno tiene, no hay
+  pestañas.
+- REQ-066.3 CUANDO el dueño registra una venta de productos, EL SISTEMA DEBE pedir "¿Quién vendió?"
+  con los barberos activos y "Nadie (el negocio)", sin opción escogida por defecto, y NO DEBE dejar
+  confirmar hasta que escoja una.
+- REQ-066.4 CUANDO un barbero registra una venta de productos, EL SISTEMA DEBE dejarla a su nombre
+  sin preguntar; un barbero NO DEBE poder registrarla a nombre de otro (REQ-023.7).
+- REQ-066.5 El panel de cobro del turno (REQ-023.2) DEBE usar la misma vitrina para agregar
+  productos; esos productos quedan en la misma venta, a nombre del barbero del turno.
+- REQ-066.6 Cada línea de producto de la venta DEBE guardar el producto (`ref_id`) y la cantidad
+  (`qty`), como hasta ahora: de ahí descuenta la vitrina el Hito 13.
+
+### REQ-067 · Comisión por productos — M
+**Como** barbero, **quiero** ganar un porcentaje de lo que vendo de la vitrina, **para** tener por
+qué recomendarla.
+
+- REQ-067.1 CUANDO se crea una venta con barbero, EL SISTEMA DEBE calcular
+  `comision_productos = redondear(Σ precio × cantidad de las líneas de productos que dan comisión ×
+  % de productos / 100)`, con un solo redondeo por venta al peso más cercano (.5 hacia arriba).
+- REQ-067.2 La venta DEBE guardar el % de productos, la base y la comisión de productos, aparte de la
+  de servicios; y cada línea de producto DEBE guardar si dio comisión. Cambios posteriores no la
+  alteran.
+- REQ-067.3 Una venta con "Nadie (el negocio)" o sin barbero DEBE tener comisión de productos 0.
+- REQ-067.4 La comisión de productos NO DEBE cambiar por el medio de pago, la membresía, el premio de
+  fidelidad ni el descuento de servicios: se calcula solo con las líneas de productos.
+- REQ-067.5 La comisión de productos la asume el negocio: el total que paga el cliente no cambia.
+
+### REQ-068 · Compra de un barbero — M
+**Como** dueño, **quiero** venderle productos a un barbero con descuento, **para** que los use él
+sin que cuente como venta con comisión.
+
+- REQ-068.1 El negocio DEBE tener un "% de descuento de empleado" (entero 0–100, **20** por
+  defecto) que el dueño cambia en "Negocio".
+- REQ-068.2 SI el % de descuento de empleado es mayor que 0, ENTONCES "Nueva venta" del dueño DEBE
+  mostrar el interruptor "Compra de un barbero"; al prenderlo, el dueño escoge qué barbero compra (en
+  vez de "¿Quién vendió?"). Solo el dueño DEBE poder registrarla.
+- REQ-068.3 En una compra de un barbero, EL SISTEMA DEBE descontar a cada línea
+  `redondear(precio × cantidad × % de descuento / 100)` (al peso, .5 hacia arriba) y aceptar solo
+  productos (ni servicios, ni cuotas de membresía, ni tarjetas de regalo).
+- REQ-068.4 Una compra de un barbero NO DEBE generar comisión para nadie y se paga con los medios de
+  la caja en ese momento; no se descuenta de la liquidación.
+- REQ-068.5 La compra de un barbero NO DEBE contar como venta de ese barbero en el cierre, la semana
+  ni "Mis números".
+
+### REQ-069 · Anular y ver la comisión de productos — M
+**Como** dueño y barbero, **queremos** ver la comisión de productos aparte, **para** llegar al
+mismo número a mano.
+
+- REQ-069.1 Anular una venta con productos DEBE seguir las reglas de REQ-026 y sacar también su
+  comisión de productos de los totales.
+- REQ-069.2 La Caja de hoy y el cierre (REQ-027.1, REQ-027.6) DEBEN mostrar, por barbero, servicios y
+  productos en renglones aparte y el total a pagar: "Juan: 8 servicios, $ 240.000 vendidos,
+  comisión 60 % = $ 144.000 · productos $ 60.000, comisión 10 % = $ 6.000 · total a pagar
+  $ 150.000". El renglón de productos sale solo si el barbero vendió productos que dan comisión.
+- REQ-069.3 El cierre DEBE mostrar "Compras de barberos $ X (descuento $ Y)" si hubo alguna; las
+  ventas "Nadie (el negocio)" y las compras de barberos cuentan en el total de productos.
+- REQ-069.4 El resumen semanal (REQ-028.1) DEBE mostrar por barbero la comisión de servicios, la de
+  productos y el total.
+- REQ-069.5 "Mis números" del barbero (REQ-025.5, REQ-029.1) DEBE mostrar la comisión de productos
+  del día y de la semana aparte de la de servicios, y el total, solo de lo suyo.
+
+Fuera de alcance del Hito 12: un % por producto, un barbero distinto por línea en la misma venta,
+descuentos en productos fuera de la compra de un barbero, descontar compras de la liquidación
+(fiado), topes de compras de barberos, metas o niveles de comisión, stock e inventario (Hito 13) y
+lectores de código de barras.
+
+---
+
 ## 5j. Hito 13 — Inventario de insumos y vitrina
 
 > Estado: **APROBADA** (Henry, 2026-11-04, tras grill de 20 preguntas con la respuesta
@@ -1281,7 +1502,7 @@ no bloquear la lectura; no es decisión tomada.
 | PA-14 | ¿Es común que un cliente pague parte en efectivo y parte en Nequi? | REQ-023.5 | Deseable, no imprescindible |
 | PA-15 | ¿Quién maneja la plata? Si el cliente paga en Nequi o transferencia, ¿paga a la cuenta del negocio o a la del barbero? Esto cambia el cierre: hay que saber cuánto le debe el negocio al barbero o el barbero al negocio. | REQ-023.7, REQ-027 | Todo entra a la cuenta/caja del negocio; el negocio liquida la comisión al barbero |
 | PA-16 | ¿Necesitas control de inventario de helados y bebidas (cuántos quedan)? | REQ-024.1 | No en el MVP. Resuelta: Hito 13, REQ-070…074 (ADR-039) |
-| PA-17 | ¿Las ventas de productos dejan algo al barbero que las vende? | REQ-024.3 | No |
+| PA-17 | ¿Las ventas de productos dejan algo al barbero que las vende? | REQ-024.3, REQ-067 | ~~No~~ Sí desde el Hito 12 (ADR-038): los productos marcados dejan el % de productos del negocio (10 % por defecto) al barbero de la venta |
 | PA-18 | Comisión: el porcentaje configurado, ¿es lo que se lleva el barbero o lo que deja al negocio? ¿Hay valores típicos (50/50, 60/40)? ¿Se calcula sobre el precio antes o después de descuento? | REQ-025.1 | Es la parte del barbero; sobre el precio después de descuento |
 | PA-19 | Cuando el corte es gratis por fidelidad, ¿el barbero igual recibe su comisión (la asume el negocio) o también lo regala? | REQ-025.4 | El negocio la asume |
 | PA-20 | ¿Se puede corregir algo después de cerrar la caja? ¿Quién puede reabrir? | REQ-026.2, REQ-027.3 | Solo el dueño, con motivo, queda registrado |

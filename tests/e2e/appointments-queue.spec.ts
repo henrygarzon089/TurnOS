@@ -21,7 +21,11 @@ async function appointmentToday(name: string, inMin: number) {
     .single();
   await db.from("businesses").update({ appointments_enabled: true }).eq("id", biz!.id);
   await db.from("barbers").update({ accepts_appointments: true }).eq("id", juan!.id);
-  const start = new Date(Date.now() + inMin * 60_000);
+  // Siempre hoy: cerca de la medianoche de Bogotá (sin horario de verano, -05:00) ahora + inMin caía
+  // en el día siguiente. A más tardar a las 23:59: sigue pronto y dentro de los 10 min de gracia.
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" });
+  const lastMinute = new Date(`${today}T23:59:00-05:00`).getTime();
+  const start = new Date(Math.min(Date.now() + inMin * 60_000, lastMinute));
   const { error } = await db.from("appointments").insert({
     business_id: biz!.id,
     customer_name: name,
