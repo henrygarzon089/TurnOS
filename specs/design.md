@@ -1920,7 +1920,7 @@ H solo se anula si la tarjeta no tiene pagos activos; si I sigue activa → `GIF
 | `inventory_items` (nueva) | `id, business_id, name text check (1..60), "group" inventory_group, use inventory_use, presentation text check (1..60), unit_label text check (1..20), unit_cost int not null default 0 check (>= 0), supplier text null check (1..60), min_qty int check (>= 0), max_qty int check (>= min_qty), shelf_min int null check (>= 0), station_qty int not null default 0 check (>= 0), product_id uuid null, is_active bool default true, sort_order int, created_at`; `check (use = 'sale' or (product_id is null and shelf_min is null))`; `check (use = 'internal' or station_qty = 0)`; `unique (business_id, product_id)`; FK compuesta `(business_id, product_id)` a `products` | 070.1, 070.2, 070.4 |
 | `inventory_locations` (nueva) | `id, business_id, kind, barber_id uuid null, status text check in ('open','closing','closed') default 'open', created_at`; `check ((kind = 'station') = (barber_id is not null))`; único parcial `(business_id, kind)` where `kind <> 'station'`; único parcial `(business_id, barber_id)` where `kind = 'station'` | 070.3, 073.7 |
 | `inventory_usage` (nueva) | `business_id, item_id, service_id, services_per_unit int null check (>= 1)` (null = "Midiendo"); PK `(item_id, service_id)`; FK compuestas | 073.1 |
-| `stock_movements` (nueva) | `id, business_id, item_id, kind, from_location_id uuid null, to_location_id uuid null, qty int check (> 0), unit_cost int null, reason stock_adjustment_reason null, sale_id uuid null, sale_item_id uuid null, ticket_id uuid null, count_id uuid null, created_by uuid null, created_at`; `check (from_location_id is not null or to_location_id is not null)`; único parcial `(sale_item_id, kind)` where `sale_item_id is not null`; único parcial `(ticket_id)` where `kind = 'courtesy'`; índices `(business_id, item_id)`, `(from_location_id)`, `(to_location_id)`, `(sale_id)` | 071.1, 072.1, 072.2, 072.4 |
+| `stock_movements` (nueva) | `id, business_id, item_id, kind, from_location_id uuid null, to_location_id uuid null, qty int check (> 0), unit_cost int null, reason stock_adjustment_reason null, sale_id uuid null, sale_item_id bigint null, ticket_id uuid null, count_id uuid null, created_by uuid null, created_at`; `check (from_location_id is not null or to_location_id is not null)`; único parcial `(sale_item_id, kind)` where `sale_item_id is not null`; único parcial `(ticket_id)` where `kind = 'courtesy'`; índices `(business_id, item_id)`, `(from_location_id)`, `(to_location_id)`, `(sale_id)` | 071.1, 072.1, 072.2, 072.4 |
 | `stock_counts` (nueva) | `id, business_id, location_id, kind stock_count_kind, window_start timestamptz null, counted_at timestamptz default now(), created_by` | 073.3, 073.6 |
 | `stock_count_lines` (nueva) | `count_id, business_id, item_id, system_qty int, counted_qty int check (>= 0), difference int` (= counted − system)`, reason stock_adjustment_reason null, services int null, expected_use numeric(10,2) null, real_use int null, measuring bool not null default false, alert bool not null default false`; PK `(count_id, item_id)` | 073.3–073.6 |
 
@@ -1943,7 +1943,7 @@ tarjeta, §15.1); `inventory_stock(p_business_id)` devuelve `(location_id, item_
 
 **Sitios** (REQ-070.3): `0063` crea la bodega y la vitrina de cada negocio existente y un trigger
 `after insert` en `businesses` las crea en los nuevos (como las plantillas de citas, sin tocar
-`create_business`). Un trigger en `barbers` (`after insert or update of status`) abre la estación
+`create_business`). Un trigger en `barbers` (`after insert or update of is_active`) abre la estación
 del barbero activo (la crea, o pasa a `'open'` la suya si estaba cerrada) y pasa a `'closing'` la de
 un barbero que se desactiva (REQ-073.7). `0063` crea las estaciones de los barberos activos.
 
@@ -1964,7 +1964,7 @@ sobre las tablas nuevas: todo pasa por funciones `security definer` que validan 
 ### 18.3 Funciones SQL
 
 Todas `security definer`; las del dueño fallan con `FORBIDDEN` (P0001) si quien llama no es dueño
-del negocio. Los rechazos de negocio son P0004, como en la caja.
+del negocio (errcode `42501`, como en la caja). Los rechazos de negocio son P0004.
 
 - `save_inventory_item(p_business_id, p_item jsonb)` → uuid. Crea o edita (con `id`). Mínimo >
   máximo, `station_qty` en un ítem de venta o `product_id`/`shelf_min` en uno interno →
@@ -1973,6 +1973,8 @@ del negocio. Los rechazos de negocio son P0004, como en la caja.
 - `set_item_usage(p_item_id, p_usage jsonb)` → reemplaza las filas de `inventory_usage` del ítem
   con `[{serviceId, servicesPerUnit | null}]`. Ítem de venta → `INVALID_ITEM`; servicio de otro
   negocio → `FORBIDDEN`; rendimiento < 1 → `INVALID_YIELD`.
+- `station_allowance(p_business_id)` → filas `item_id, qty`: la dotación de toda estación (REQ-070.4).
+  Personal del negocio (la usa también `my_station`).
 - `register_stock_purchase(p_item_id, p_qty, p_unit_cost)` → movimiento `purchase` a la bodega y
   `inventory_items.unit_cost = p_unit_cost` (REQ-071.2). Cantidad ≤ 0 o precio < 0 →
   `INVALID_QTY`.
