@@ -27,6 +27,7 @@
 | H6 | Aviso automático por WhatsApp (ADR-027) | T-064…T-070 | REQ-040…REQ-043 |
 | H7 | Membresía familiar (ADR-030) | T-071…T-077 | REQ-044…REQ-048 |
 | H9 | Tarjetas de regalo (ADR-034) | T-090…T-097 | REQ-055…REQ-059 |
+| H13 | Inventario de insumos y vitrina (ADR-039) | T-120…T-129 | REQ-070…REQ-074 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -1507,6 +1508,86 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: `pnpm trace --hito=12` sin huecos; CI verde. `HITOS["12"]` ya está desde el PR de la
   spec; el hito 12 entra al loop de `tests/unit/traceability.test.ts` aquí, cuando todas las pruebas
   existen (como el hito 9 en T-097), para no dejar el CI en rojo mientras tanto.
+
+---
+
+## Hito 13 — Inventario de insumos y vitrina (ADR-039)
+
+> REQ-070…REQ-074 y ADR-039 aprobados por Henry (2026-11-04, PR #72). Diseño en `design.md` §18.
+> Los números saltan: T-100…T-119 son de los Hitos 11 y 12, en paralelo. Las migraciones `0063`…`0067`
+> se fusionan después de las del Hito 12 (`0060`…`0062`). La venta de productos es del Hito 12;
+> aquí solo el stock (§18.4).
+
+### [ ] T-120 · Migración y pgTAP: catálogo, sitios y RLS
+- REQ: REQ-070.1, REQ-070.2, REQ-070.3, REQ-070.4, REQ-070.5, REQ-070.6, REQ-071.6, REQ-073.1,
+  REQ-074.5
+- Archivos: `supabase/migrations/0063_inventory.sql` (enums, `inventory_items`,
+  `inventory_locations`, `inventory_usage`, `stock_movements`, `stock_counts`, `stock_count_lines`,
+  `businesses.inventory_alert_pct`, triggers de sitios, `save_inventory_item`, `set_item_usage`,
+  `inventory_stock`), `supabase/tests/0063_inventory.sql`
+- Terminado: pgTAP de §18.7 para `0063` en verde; sin ítems nada cambia.
+
+### [ ] T-121 · Entradas, transferencias y reposición
+- REQ: REQ-071.1, REQ-071.2, REQ-071.3, REQ-071.4, REQ-071.5, REQ-072.5
+- Archivos: `supabase/migrations/0064_inventory_movements.sql` (`register_stock_purchase`,
+  `transfer_stock`, `refill_station`, `inventory_overview`, guardia de inmutabilidad),
+  `supabase/tests/0064_inventory_movements.sql`
+- Terminado: pgTAP con cada rechazo y la reposición que no cambia el stock de la estación.
+
+### [ ] T-122 · Vitrina desde la caja y la cortesía
+- REQ: REQ-072.1, REQ-072.2, REQ-072.3, REQ-072.4
+- Archivos: `supabase/migrations/0065_inventory_sales_hook.sql`,
+  `supabase/tests/0065_inventory_sales_hook.sql`
+- Depende de: las migraciones del Hito 12 (`0060`…`0062`) fusionadas, para probar contra su
+  `register_sale`.
+- Terminado: pgTAP del ejemplo Q (anular dos veces, otro `update` no mueve stock) y cortesía una vez.
+
+### [ ] T-123 · Conteos, alerta y rendimiento sugerido
+- REQ: REQ-073.2, REQ-073.3, REQ-073.4, REQ-073.5, REQ-073.6, REQ-073.7
+- Archivos: `supabase/migrations/0066_inventory_counts.sql` (`record_stock_count`,
+  `inventory_yield_suggestions`, `accept_yield`), `supabase/tests/0066_inventory_counts.sql`,
+  `src/lib/domain/inventory.ts` (regla de alerta y consumo esperado), `tests/unit/inventory.test.ts`
+- Terminado: pgTAP de los ejemplos M y N, conteo inicial, mensual con motivo y cierre de estación;
+  unitarias de la regla de alerta.
+
+### [ ] T-124 · Orden de compra, costo por servicio y "Mi estación" en SQL
+- REQ: REQ-074.1, REQ-074.3, REQ-074.4
+- Archivos: `supabase/migrations/0067_inventory_reports.sql` (`purchase_order`,
+  `service_supply_cost`, `my_station`), `supabase/tests/0067_inventory_reports.sql`
+- Terminado: pgTAP de los ejemplos O y P y del alcance de `my_station`.
+
+### [ ] T-125 · Acciones de inventario
+- REQ: REQ-071.6, REQ-074.2, REQ-074.5
+- Archivos: `src/lib/actions/inventory.ts`, `src/lib/domain/inventory.ts` (texto de la orden para
+  WhatsApp, plantilla básica, etiquetas), `tests/unit/inventory.test.ts`,
+  `tests/integration/inventory.test.ts`
+- Terminado: unitarias y de integración en verde; los errores SQL salen en español.
+
+### [ ] T-126 · Pantallas del dueño: resumen, catálogo y movimientos
+- REQ: REQ-070.1, REQ-070.2, REQ-071.2, REQ-071.3, REQ-071.4, REQ-072.3, REQ-072.5, REQ-073.1
+- Archivos: `src/app/(staff)/admin/inventario/**` (resumen, `catalogo`), chip "Inventario" del menú
+- Terminado: desde el celular se crea un ítem, se registra una entrada, se repone con envase vacío y
+  se surte la vitrina; `pnpm lint:texts` en verde.
+
+### [ ] T-127 · Pantallas del dueño: conteos, orden de compra y costos
+- REQ: REQ-073.3, REQ-073.4, REQ-073.5, REQ-073.6, REQ-073.7, REQ-074.1, REQ-074.2, REQ-074.3
+- Archivos: `src/app/(staff)/admin/inventario/{conteo,compra,costos}/**`,
+  `src/app/(staff)/admin/negocio` (campo "Alerta de consumo (%)")
+- Terminado: conteo de una estación con alerta, conteo de bodega con motivo, orden compartida por
+  WhatsApp y costo por servicio, en el celular.
+
+### [ ] T-128 · "Mi estación" del barbero y E2E
+- REQ: REQ-074.4
+- Archivos: `src/app/(staff)/app/estacion/**`, chip "Mi estación", `tests/e2e/inventory.spec.ts`
+- Terminado: E2E de §18.7 en Pixel 7 y iPhone 13.
+
+### [ ] T-129 · Validación Hito 13
+- REQ: REQ-070…REQ-074
+- Archivos: `scripts/traceability.ts` (`HITOS["13"] = [[70, 74]]`, ya desde el PR de la spec),
+  `tests/unit/traceability.test.ts` (el hito 13 entra al loop aquí, cuando todas las pruebas
+  existen, como el 9 en T-097), `docs/estado-del-proyecto.md`
+- Depende de Henry: `0063`…`0067` en producción, catálogo y primer conteo en Filo, y aprobación.
+- Terminado: `pnpm trace --hito=13` sin huecos; CI verde.
 
 ---
 
