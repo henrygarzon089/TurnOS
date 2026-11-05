@@ -1250,6 +1250,9 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   total (`giftCardSplit`), y lo que falta se elige en "Medio para lo que falta". `checkoutPayments`
   arma `p_payments` (tarjeta primero). El E2E prueba "sin saldo" (no "vencida": el vencimiento a un
   año no se puede forzar sin tocar la tabla); "vencida" queda en pgTAP 0052 y en la unitaria.
+- Corrección (2026-11-05, prueba de Henry en el preview del Hito 12): si se toca "Tarjeta de regalo"
+  por error no quedaba claro cómo volver. La sección trae "Usar otro medio de pago", que borra la
+  tarjeta, el código y el medio de lo que falta. E2E en `tests/e2e/gift-card-checkout.spec.ts`.
 
 ### [x] T-096 · Caja de hoy, cierre y semana en pantalla
 - REQ: REQ-059.1, REQ-059.2, REQ-058.1
@@ -1604,7 +1607,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `total`). El cierre en pantalla sigue mostrando el resumen y el texto por WhatsApp. Cierres viejos
   sin los campos nuevos se leen como antes. E2E en `tests/e2e/pos-reports.spec.ts`.
 
-### [~] T-119 · Validación Hito 12
+### [x] T-119 · Validación Hito 12
 - REQ: REQ-065…REQ-069
 - Archivos: `scripts/traceability.ts` (`HITOS["12"] = [[65, 69]]`), `tests/unit/traceability.test.ts`,
   `docs/estado-del-proyecto.md`
@@ -1614,8 +1617,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   spec; el hito 12 entra al loop de `tests/unit/traceability.test.ts` aquí, cuando todas las pruebas
   existen (como el hito 9 en T-097), para no dejar el CI en rojo mientras tanto.
 - Nota (2026-11-04): hito 12 en el loop; `pnpm trace --check --hito=12` sin huecos;
-  `docs/estado-del-proyecto.md` al día. 2026-11-05: `0060`…`0062` en producción (Henry). Falta lo
-  de Henry: Filo, prueba y aprobación.
+  `docs/estado-del-proyecto.md` al día. 2026-11-05: `0060`…`0062` en producción (Henry), prueba en
+  el preview y Hito 12 aprobado (ADR-040). Falta solo la operación en Filo.
 
 ---
 
