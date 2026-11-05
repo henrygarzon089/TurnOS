@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { AlertPctForm } from "@/components/admin/InventoryForms";
 import {
   BusinessForm,
   GoogleReviewForm,
@@ -18,7 +19,7 @@ export default async function BusinessPage() {
   const { data } = await supabase
     .from("businesses")
     .select(
-      "name, slug, address, chairs_count, default_commission_pct, grace_minutes, inactive_days, reminder_cooldown_days, pwa_name, google_review_url, whatsapp_auto_enabled, whatsapp_contact_phone, whatsapp_allowed",
+      "name, slug, address, chairs_count, default_commission_pct, grace_minutes, inactive_days, reminder_cooldown_days, pwa_name, google_review_url, whatsapp_auto_enabled, whatsapp_contact_phone, whatsapp_allowed, inventory_alert_pct",
     )
     .eq("id", session.business.id)
     .single();
@@ -29,6 +30,8 @@ export default async function BusinessPage() {
       <h1 className="text-2xl font-bold">Mi negocio</h1>
       <BusinessForm business={data as BusinessSettings} />
       <GoogleReviewForm url={data?.google_review_url ?? null} />
+      {/* REQ-073.4 porcentaje de la alerta de consumo del inventario. */}
+      <AlertPctForm pct={data?.inventory_alert_pct ?? 10} />
       {/* REQ-043.3: sin credenciales no hay nada que activar. REQ-043.6: ni sin habilitación. */}
       {whatsappChannelReady() && data?.whatsapp_allowed && (
         <WhatsAppForm
