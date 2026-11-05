@@ -311,16 +311,16 @@
 | REQ-066.4 | Vender en la vitrina | T-111 (hecha), T-116 (pendiente), T-117 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
 | REQ-066.5 | Vender en la vitrina | T-111 (hecha), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
 | REQ-066.6 | Vender en la vitrina | T-111 (hecha), T-116 (pendiente), T-117 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
-| REQ-067.1 | Comisión por productos | T-111 (hecha), T-114 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
-| REQ-067.2 | Comisión por productos | T-111 (hecha), T-114 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
-| REQ-067.3 | Comisión por productos | T-111 (hecha), T-114 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
-| REQ-067.4 | Comisión por productos | T-111 (hecha), T-114 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
-| REQ-067.5 | Comisión por productos | T-111 (hecha), T-114 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
-| REQ-068.1 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | 0060_pos_products.sql | prueba escrita |
-| REQ-068.2 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
-| REQ-068.3 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
-| REQ-068.4 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
-| REQ-068.5 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | 0062_pos_reports.sql | prueba escrita |
+| REQ-067.1 | Comisión por productos | T-111 (hecha), T-114 (hecha) | commission.test.ts, 0060_pos_products.sql, 0061_pos_register_sale.sql | cubierto |
+| REQ-067.2 | Comisión por productos | T-111 (hecha), T-114 (hecha) | 0060_pos_products.sql, 0061_pos_register_sale.sql | cubierto |
+| REQ-067.3 | Comisión por productos | T-111 (hecha), T-114 (hecha) | commission.test.ts, 0060_pos_products.sql, 0061_pos_register_sale.sql | cubierto |
+| REQ-067.4 | Comisión por productos | T-111 (hecha), T-114 (hecha) | 0061_pos_register_sale.sql | cubierto |
+| REQ-067.5 | Comisión por productos | T-111 (hecha), T-114 (hecha) | 0061_pos_register_sale.sql | cubierto |
+| REQ-068.1 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (pendiente), T-117 (pendiente) | 0060_pos_products.sql | prueba escrita |
+| REQ-068.2 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (pendiente), T-117 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
+| REQ-068.3 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (pendiente), T-117 (pendiente) | commission.test.ts, 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
+| REQ-068.4 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (pendiente), T-117 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
+| REQ-068.5 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (pendiente), T-117 (pendiente) | 0062_pos_reports.sql | prueba escrita |
 | REQ-069.1 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0061_pos_register_sale.sql, 0062_pos_reports.sql | prueba escrita |
 | REQ-069.2 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0062_pos_reports.sql | prueba escrita |
 | REQ-069.3 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0062_pos_reports.sql | prueba escrita |

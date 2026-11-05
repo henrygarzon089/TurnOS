@@ -1464,11 +1464,13 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `staffBuyerName`. `weekly_summary`: `barbers[]` con `productCommission` y `toPay`; totales
   `productCommission` y `staffPurchases`. `close_cash_day` no se redefine.
 
-### [ ] T-114 · Dominio: comisión de productos y descuento de empleado
+### [x] T-114 · Dominio: comisión de productos y descuento de empleado
 - REQ: REQ-067.1, REQ-067.3, REQ-068.3
 - Archivos: `src/lib/domain/commission.ts` (`productCommission`, `staffDiscount`),
   `tests/unit/commission.test.ts`
 - Terminado: unitarias con los ejemplos M…Q que dan los mismos números que pgTAP.
+- Nota (2026-11-04): `productCommission` y `staffDiscount` aparte de `computeSale` (que no cambia).
+  5 unitarias nuevas (339 en total), cobertura del dominio en 100 %.
 
 ### [ ] T-115 · "Negocio" y "Productos" del dueño
 - REQ: REQ-065.1, REQ-065.2, REQ-065.3, REQ-068.1
