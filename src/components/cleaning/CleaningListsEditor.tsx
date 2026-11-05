@@ -15,6 +15,8 @@ const TITLES: Record<ListKind, string> = {
 /** REQ-060.1: encender o apagar la limpieza. */
 export function CleaningSwitch({ enabled }: { enabled: boolean }) {
   const router = useRouter();
+  // Cambia al tocarlo; si el servidor no lo guarda, vuelve a como estaba
+  const [on, setOn] = useState(enabled);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   return (
@@ -25,15 +27,19 @@ export function CleaningSwitch({ enabled }: { enabled: boolean }) {
           type="checkbox"
           role="switch"
           className="h-6 w-6"
-          checked={enabled}
+          checked={on}
           disabled={busy}
           onChange={async (e) => {
+            const next = e.target.checked;
+            setOn(next);
             setBusy(true);
             setError(null);
-            const res = await setCleaningEnabled(e.target.checked);
+            const res = await setCleaningEnabled(next);
             setBusy(false);
-            if (!res.ok) setError(res.error);
-            else router.refresh();
+            if (!res.ok) {
+              setOn(!next);
+              setError(res.error);
+            } else router.refresh();
           }}
         />
       </label>
