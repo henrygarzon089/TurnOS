@@ -32,6 +32,10 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 - **Hito 8 (citas a hora fija, REQ-049…054, ADR-033)** construido, falta aprobación de Henry
   (ADR-035): reservar, "Mi cita", citas en la fila y agenda; migraciones 0045–0049 (se suben con
   `supabase db push --include-all`). Falta encender citas en Filo y la prueba real.
+- **Hito 12 (punto de venta con comisión, REQ-065…069, ADR-038)** aprobado (ADR-040, 2026-11-05):
+  vitrina con fotos y categorías, "¿Quién vendió?", comisión de productos (un % por negocio), compra
+  de un barbero con descuento y reportes; migraciones 0060–0062 en producción. Falta la operación en
+  Filo (marcar productos y categorías).
 - **Hito 9 (tarjetas de regalo, REQ-055…059, ADR-034)** aprobado (ADR-036, 2026-11-04): venta,
   página `/regalo/[token]`, pago en el cobro y reportes; migraciones 0050–0053 en producción. Falta
   la operación en Filo (aviso nuevo, plantilla, prueba en la barbería).
@@ -98,34 +102,41 @@ a `0005`, PIN `111111` a `555555`. 30 clientes con historial, fidelidad activa (
 En un proyecto real: `pnpm seed:users` crea los usuarios de Auth antes de aplicar `supabase/seed.sql`.
 
 <!-- agent-kit:start -->
+
 ## Seguridad
+
 - Nunca leer, imprimir ni pegar `.env*`, llaves, tokens, dumps de BD ni datos reales de clientes (barberos, clientes de la fila, PINs). `.claude/settings.json` bloquea la lectura de `.env*`.
 - Comandos destructivos (`rm -rf`, `git push --force`, migraciones, SQL en producción, deploys a prod) requieren confirmación explícita de Henry.
 - Supabase/Vercel: solo branches y previews desde el agente. Producción la ejecuta Henry.
 
 ## Git
+
 - Sin atribución de IA en commits, PRs ni issues. Staging por rutas explícitas; nunca `git add -A`.
 - Una sesión = una tarea = una rama/PR.
 
 ## Documentación (dónde vive cada cosa en este repo)
+
 - Estado: `docs/estado-del-proyecto.md` (es el ESTADO de este repo). Actualízalo al cerrar cada sesión.
 - Decisiones: `specs/decisions.md` (ADR-NNN). Requisitos y tareas: `specs/requirements.md`, `specs/tasks.md`.
 - Glosario: `CONTEXT.md`. Términos del dominio (fila, turno, barbero, dueño, cierre de caja, liquidación…).
+
 <!-- agent-kit:end -->
 
 <!-- skills-flow:start -->
+
 ## Flujo de skills
 
 Propón la skill en el momento indicado; si Henry dice que no, sigue sin ella. El método SDD de este repo manda: las skills lo apoyan, no lo reemplazan.
 
-| Fase | Skill | Cuándo proponerla |
-|---|---|---|
-| Idea / decisión | `/abogado-del-diablo` | Antes de un ADR nuevo o una decisión cara (precios, pagos, datos de clientes) |
-| Diseño | `/grill-with-docs` | Requisito nuevo o ambiguo, antes de escribirlo en `specs/requirements.md` |
-| Construcción | `/tdd` | Cada tarea de `specs/tasks.md`, test primero |
-| Construcción | `/caveman` | Sesiones largas de código; apagar para grills, reviews y textos para el cliente |
-| Bugs | `/diagnosing-bugs` | Tras dos intentos fallidos con un bug |
-| Revisión | `/code-review` | Antes de abrir o fusionar un PR |
-| Cierre | `/handoff` | Al terminar: `docs/estado-del-proyecto.md` al día |
-| Cualquiera | `/wait-what` | Si Henry no entendió una respuesta |
+| Fase            | Skill                 | Cuándo proponerla                                                               |
+| --------------- | --------------------- | ------------------------------------------------------------------------------- |
+| Idea / decisión | `/abogado-del-diablo` | Antes de un ADR nuevo o una decisión cara (precios, pagos, datos de clientes)   |
+| Diseño          | `/grill-with-docs`    | Requisito nuevo o ambiguo, antes de escribirlo en `specs/requirements.md`       |
+| Construcción    | `/tdd`                | Cada tarea de `specs/tasks.md`, test primero                                    |
+| Construcción    | `/caveman`            | Sesiones largas de código; apagar para grills, reviews y textos para el cliente |
+| Bugs            | `/diagnosing-bugs`    | Tras dos intentos fallidos con un bug                                           |
+| Revisión        | `/code-review`        | Antes de abrir o fusionar un PR                                                 |
+| Cierre          | `/handoff`            | Al terminar: `docs/estado-del-proyecto.md` al día                               |
+| Cualquiera      | `/wait-what`          | Si Henry no entendió una respuesta                                              |
+
 <!-- skills-flow:end -->

@@ -288,7 +288,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   los Hitos 12 (punto de venta) y 13 (inventario); el 10 (IA en WhatsApp) está reservado.
 - Construcción: una tarea por PR, cada uno sobre el anterior, empezando por T-100.
 
-### Hito 12 — punto de venta con comisión (construido, falta aprobación de Henry; ADR-038)
+### Hito 12 — punto de venta con comisión (aprobado, ADR-040, 2026-11-05; ADR-038)
 
 - 2026-11-04: grill de 7 preguntas con Henry, todas con la respuesta recomendada, y abogado del
   diablo (Henry siguió sin cambios; anotado en ADR-038). Escritos REQ-065…REQ-069 (26 criterios,
@@ -306,6 +306,9 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - 2026-11-05: Henry aplicó `0060`…`0062` en producción (`supabase db push --include-all` desde
   `claude/h12-t118`; subieron también `0063` y `0064` del Hito 13). Preview de la cadena:
   https://turnos-mw7ifckv4-henry-garzons-projects.vercel.app (con sesión de Vercel).
+- 2026-11-05: Henry probó en el preview y aprobó el hito (ADR-040). Corrección de la prueba:
+  "Usar otro medio de pago" para quitar la tarjeta de regalo del cobro (PR #105). Los % de productos
+  y de descuento se quedan uno por negocio.
 - Falta (Henry): marcar en Filo los productos que dan comisión y sus categorías, revisar los dos % en "Negocio", probar una
   venta de vitrina y una compra de barbero en la barbería, y aprobar el hito (ADR nuevo).
 
