@@ -117,7 +117,7 @@
 | REQ-023.6 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (hecha) | checkout.spec.ts, 0006_transitions.sql, 0024_unpaid.sql | cubierto |
 | REQ-023.7 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (hecha) | checkout.spec.ts, rls-cash.test.ts, 0022_register_sale.sql | cubierto |
 | REQ-024.1 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (hecha) | admin-config.spec.ts, new-sale.spec.ts, product-form.test.ts | cubierto |
-| REQ-024.2 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (hecha) | new-sale.spec.ts, 0021_cash.sql, 0022_register_sale.sql | cubierto |
+| REQ-024.2 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (hecha) | new-sale.spec.ts, 0021_cash.sql, 0022_register_sale.sql, 0065_inventory_sales_hook.sql | cubierto |
 | REQ-024.3 | Vender productos | T-040 (hecha), T-041 (hecha), T-044 (hecha) | new-sale.spec.ts, commission.test.ts, 0022_register_sale.sql | cubierto |
 | REQ-025.1 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | rls-core.test.ts, 0002_core.sql, 0003_rls_core.sql, 0021_cash.sql | cubierto |
 | REQ-025.2 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | commission.test.ts, money.test.ts, 0021_cash.sql, 0022_register_sale.sql | cubierto |
@@ -312,11 +312,11 @@
 | REQ-071.4 | Entradas, transferencias y reposición | T-120 (hecha), T-121 (hecha), T-125 (pendiente), T-126 (pendiente) | 0064_inventory_movements.sql | prueba escrita |
 | REQ-071.5 | Entradas, transferencias y reposición | T-120 (hecha), T-121 (hecha), T-125 (pendiente), T-126 (pendiente) | 0064_inventory_movements.sql | prueba escrita |
 | REQ-071.6 | Entradas, transferencias y reposición | T-120 (hecha), T-121 (hecha), T-125 (pendiente), T-126 (pendiente) | 0063_inventory.sql, 0064_inventory_movements.sql | prueba escrita |
-| REQ-072.1 | Vitrina y caja | T-121 (hecha), T-122 (pendiente), T-126 (pendiente) | — | sin prueba |
-| REQ-072.2 | Vitrina y caja | T-121 (hecha), T-122 (pendiente), T-126 (pendiente) | — | sin prueba |
-| REQ-072.3 | Vitrina y caja | T-121 (hecha), T-122 (pendiente), T-126 (pendiente) | — | sin prueba |
-| REQ-072.4 | Vitrina y caja | T-121 (hecha), T-122 (pendiente), T-126 (pendiente) | — | sin prueba |
-| REQ-072.5 | Vitrina y caja | T-121 (hecha), T-122 (pendiente), T-126 (pendiente) | 0064_inventory_movements.sql | prueba escrita |
+| REQ-072.1 | Vitrina y caja | T-121 (hecha), T-122 (hecha), T-126 (pendiente) | 0065_inventory_sales_hook.sql | prueba escrita |
+| REQ-072.2 | Vitrina y caja | T-121 (hecha), T-122 (hecha), T-126 (pendiente) | 0065_inventory_sales_hook.sql | prueba escrita |
+| REQ-072.3 | Vitrina y caja | T-121 (hecha), T-122 (hecha), T-126 (pendiente) | 0065_inventory_sales_hook.sql | prueba escrita |
+| REQ-072.4 | Vitrina y caja | T-121 (hecha), T-122 (hecha), T-126 (pendiente) | 0065_inventory_sales_hook.sql | prueba escrita |
+| REQ-072.5 | Vitrina y caja | T-121 (hecha), T-122 (hecha), T-126 (pendiente) | 0064_inventory_movements.sql | prueba escrita |
 | REQ-073.1 | Consumo esperado y conteos | T-120 (hecha), T-123 (pendiente), T-126 (pendiente), T-127 (pendiente) | 0063_inventory.sql | prueba escrita |
 | REQ-073.2 | Consumo esperado y conteos | T-120 (hecha), T-123 (pendiente), T-126 (pendiente), T-127 (pendiente) | — | sin prueba |
 | REQ-073.3 | Consumo esperado y conteos | T-120 (hecha), T-123 (pendiente), T-126 (pendiente), T-127 (pendiente) | — | sin prueba |
