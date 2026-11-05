@@ -12,6 +12,7 @@ const row = (p: Partial<MyNumbersRow>): MyNumbersRow => ({
   total: 25000,
   commission_pct: 60,
   commission_amount: 15000,
+  product_commission_amount: 0,
   has_service: true,
   ...p,
 });
@@ -40,9 +41,49 @@ describe("REQ-025.5 Mis comisiones: hoy y semana", () => {
       }),
     ];
     const n = summarizeMyNumbers(rows, "2026-10-24", "2026-10-19");
-    expect(n.today).toEqual({ services: 1, sold: 25000, commission: 15000 });
-    expect(n.week).toEqual({ services: 2, sold: 45000, commission: 27000 });
+    expect(n.today).toEqual({
+      services: 1,
+      sold: 25000,
+      commission: 15000,
+      productCommission: 0,
+      total: 15000,
+    });
+    expect(n.week).toEqual({
+      services: 2,
+      sold: 45000,
+      commission: 27000,
+      productCommission: 0,
+      total: 27000,
+    });
     // Más reciente primero
     expect(n.detail.map((d) => d.id)).toEqual(["1", "3", "5", "2"]);
+  });
+});
+
+describe("REQ-069.5 Mis números con la comisión de productos aparte", () => {
+  it("REQ-069.5 suma la comisión de productos aparte de la de servicios y el total", () => {
+    const rows = [
+      row({ id: "1", products_total: 35000, total: 60000, product_commission_amount: 3500 }),
+      row({
+        id: "2",
+        business_day: "2026-10-20",
+        has_service: false,
+        services_total: 0,
+        products_total: 4000,
+        total: 4000,
+        commission_amount: 0,
+        product_commission_amount: 400,
+      }),
+      row({ id: "3", status: "voided", product_commission_amount: 1000 }),
+    ];
+    const n = summarizeMyNumbers(rows, "2026-10-24", "2026-10-19");
+    expect(n.today).toEqual({
+      services: 1,
+      sold: 25000,
+      commission: 15000,
+      productCommission: 3500,
+      total: 18500,
+    });
+    expect(n.week).toMatchObject({ commission: 15000, productCommission: 3900, total: 18900 });
   });
 });

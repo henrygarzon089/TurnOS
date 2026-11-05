@@ -13,6 +13,7 @@ const ITEMS: { href: string; label: string }[] = [
   { href: "/admin/limpieza", label: "Limpieza" },
   { href: "/admin/servicios", label: "Servicios" },
   { href: "/admin/productos", label: "Productos" },
+  { href: "/admin/inventario", label: "Inventario" },
   { href: "/admin/barberos", label: "Barberos" },
   { href: "/admin/horario", label: "Horario" },
   { href: "/admin/qr", label: "QR" },
