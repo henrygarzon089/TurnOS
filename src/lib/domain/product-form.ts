@@ -8,6 +8,10 @@ export type ProductFormInput = {
   isCourtesy: boolean;
   /** Ruta en el bucket `media`; vacía = sin foto. */
   photoPath: string | null;
+  /** REQ-065.2 "Da comisión al que vende". */
+  commissionable?: boolean;
+  /** REQ-065.3 categoría opcional de la vitrina. */
+  category?: string;
 };
 
 export type ProductRowInput = {
@@ -16,6 +20,8 @@ export type ProductRowInput = {
   for_sale: boolean;
   is_courtesy: boolean;
   photo_path: string | null;
+  commissionable: boolean;
+  category: string | null;
 };
 
 /**
@@ -36,6 +42,10 @@ export function parseProductForm(
   if (price === null) {
     return { ok: false, error: "El precio debe ser un número entero en pesos." };
   }
+  const category = (form.category ?? "").trim() || null;
+  if (category && category.length > 30) {
+    return { ok: false, error: "La categoría tiene máximo 30 letras." };
+  }
   const photoPath = form.photoPath || null;
   if (photoPath && !isProductPhotoPath(businessId, photoPath)) {
     return { ok: false, error: "No se pudo guardar la foto. Vuelve a subirla." };
@@ -48,6 +58,8 @@ export function parseProductForm(
       for_sale: form.forSale,
       is_courtesy: form.isCourtesy,
       photo_path: photoPath,
+      commissionable: form.commissionable ?? false,
+      category,
     },
   };
 }
