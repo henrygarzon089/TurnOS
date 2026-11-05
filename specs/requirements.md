@@ -1070,6 +1070,126 @@ WhatsApp, tarjetas impresas con diseño y recordatorio de vencimiento.
 
 ---
 
+## 5j. Hito 13 — Inventario de insumos y vitrina
+
+> Estado: **APROBADA** (Henry, 2026-11-04, tras grill de 20 preguntas con la respuesta
+> recomendada; PR #72). Ver ADR-039. Los números saltan: REQ-060…064 son del Hito 11 (limpieza) y
+> REQ-065…069 del Hito 12 (punto de venta), en paralelo. La venta de productos (vitrina, comisión,
+> descuento de empleado) es del Hito 12; este hito solo lleva el stock.
+> Plan operativo de Filo: cada barbero tiene una **estación** con una dotación fija de la casa; la
+> bodega la maneja solo el dueño; se repone **envase vacío por envase lleno**; cada lunes se cuenta la
+> estación y se compara con lo que debieron gastar sus servicios; una vez al mes se cuenta la bodega.
+
+### REQ-070 · Catálogo de inventario y ubicaciones — M
+**Como** dueño, **quiero** un catálogo de insumos y productos con dónde está cada uno, **para**
+controlar lo que es de la barbería.
+
+- REQ-070.1 El dueño DEBE poder crear, editar y desactivar ítems de inventario con: nombre,
+  grupo (Bioseguridad, Afeitado y barba, Acabado, Lavado y comodidad, Cuidado de máquinas,
+  Faciales, Manicure, Mujer y químicos, Productos para la venta), uso ("Uso interno" o "Para la
+  venta"), presentación (texto, ej. "Frasco 150 g"), unidad de conteo (ej. "frasco"), precio por
+  unidad (COP entero ≥ 0), proveedor (texto, opcional), mínimo y máximo de bodega (enteros, mínimo ≤
+  máximo) y, si es de uso interno, la cantidad de la dotación por estación (entero ≥ 0).
+- REQ-070.2 Un ítem "Para la venta" DEBE poder enlazarse con un único producto de la caja
+  (REQ-024) y tener un mínimo de vitrina; un ítem de uso interno NO DEBE enlazarse con un producto.
+- REQ-070.3 Cada negocio DEBE tener una **Bodega**, una **Vitrina** y una **Estación** por cada
+  barbero activo ("Estación de Juan"); la estación se crea al crear o activar al barbero y es del
+  barbero, no de la silla.
+- REQ-070.4 La **dotación** DEBE ser la misma para todas las estaciones: la suma de los ítems de uso
+  interno con dotación mayor que 0.
+- REQ-070.5 Todas las cantidades DEBEN ser unidades enteras de la presentación; un envase abierto
+  cuenta como 1 hasta que se entrega vacío.
+- REQ-070.6 SI un ítem se desactiva, ENTONCES EL SISTEMA DEBE sacarlo de la dotación, los conteos
+  nuevos y la orden de compra, y conservar su historial.
+
+### REQ-071 · Entradas, transferencias y reposición — M
+**Como** dueño, **quiero** registrar lo que entra y lo que muevo, **para** saber cuánto hay en cada
+sitio sin contar a cada rato.
+
+- REQ-071.1 El stock de un ítem en un sitio DEBE calcularse a partir de sus movimientos; los
+  movimientos son inmutables (no se editan ni se borran) y guardan quién, cuándo, el ítem, la
+  cantidad, el origen y el destino.
+- REQ-071.2 CUANDO el dueño registra una **entrada a bodega** (ítem, cantidad y precio pagado por
+  unidad), EL SISTEMA DEBE sumar a la bodega y actualizar el precio por unidad del ítem.
+- REQ-071.3 El dueño DEBE poder **transferir** entre bodega y vitrina (en los dos sentidos), de
+  bodega a una estación hasta completar la dotación, y de una estación a la bodega.
+- REQ-071.4 CUANDO el dueño registra una **reposición** (barbero, ítem, cantidad), EL SISTEMA DEBE
+  exigir la casilla "Recibí el envase vacío" y registrar el consumo de lo vacío en la estación y la
+  transferencia de lo lleno de bodega a la estación por la misma cantidad.
+- REQ-071.5 SI una transferencia o reposición pide más de lo que hay en el origen, o deja la
+  estación por encima de la dotación, ENTONCES EL SISTEMA DEBE rechazarla con un mensaje claro.
+- REQ-071.6 Solo el dueño DEBE poder registrar entradas, transferencias, reposiciones, conteos y
+  cambios del catálogo.
+
+### REQ-072 · Vitrina y caja — M
+**Como** dueño, **quiero** que lo que se vende en caja salga de la vitrina solo, **para** no
+registrarlo dos veces.
+
+- REQ-072.1 CUANDO se crea una venta con una línea de producto enlazado a un ítem (REQ-070.2), EL
+  SISTEMA DEBE descontar esa cantidad de la vitrina.
+- REQ-072.2 CUANDO una venta pasa a anulada, EL SISTEMA DEBE devolver a la vitrina lo que esa venta
+  descontó, una sola vez, aunque se intente anular de nuevo; otros cambios de la venta NO DEBEN
+  mover stock.
+- REQ-072.3 La caja NUNCA DEBE bloquearse por inventario: SI se vende un producto sin stock en la
+  vitrina, ENTONCES el stock queda negativo y se muestra en rojo para revisarlo en el conteo.
+- REQ-072.4 CUANDO se marca servida una bebida de cortesía (REQ-038) cuyo producto está enlazado a
+  un ítem, EL SISTEMA DEBE descontarla de la vitrina como en REQ-072.1.
+- REQ-072.5 CUANDO la vitrina de un ítem queda en su mínimo o por debajo, el panel del dueño DEBE
+  mostrar "Surtir vitrina" con lo que falta para llegar al mínimo.
+
+### REQ-073 · Consumo esperado y conteos — M
+**Como** dueño, **quiero** comparar lo que gasta cada estación con lo que debió gastar, **para**
+revisar a tiempo con el barbero.
+
+- REQ-073.1 Para cada ítem de uso interno, el dueño DEBE poder escoger qué servicios lo gastan y,
+  por cada uno, el **rendimiento** (cuántos servicios alcanza una unidad, entero ≥ 1) o dejarlo
+  "Midiendo".
+- REQ-073.2 El consumo esperado de una estación en una ventana DEBE ser, por ítem, Σ (servicios de
+  ese barbero en la ventana ÷ rendimiento), contando las líneas de servicio de sus ventas no
+  anuladas de la caja (con o sin turno, con membresía o premio).
+- REQ-073.3 CUANDO el dueño registra el **conteo semanal** de una estación, EL SISTEMA DEBE tomar
+  como ventana el tiempo desde el conteo anterior de esa estación y calcular, por ítem, el consumo
+  real (envases vacíos de las reposiciones + diferencia entre el stock calculado y lo contado) y el
+  esperado; la diferencia del conteo queda como consumo.
+- REQ-073.4 SI el consumo real de un ítem supera el esperado en más del porcentaje de alerta del
+  negocio (10 % por defecto, configurable entre 1 y 100) y en al menos una unidad entera, ENTONCES
+  EL SISTEMA DEBE marcarlo en rojo en el panel del dueño con "Revisar con <barbero>". Un ítem en
+  "Midiendo" no genera alerta.
+- REQ-073.5 CUANDO un ítem en "Midiendo" tiene 4 o más conteos semanales con consumo, EL SISTEMA
+  DEBE sugerir un rendimiento (servicios ÷ consumo real de esas ventanas, redondeado hacia abajo, al
+  menos 1) que el dueño acepta o cambia.
+- REQ-073.6 El dueño DEBE poder registrar el **conteo mensual** de la bodega y la vitrina; cada
+  diferencia DEBE quedar como ajuste con motivo (Vencido, Dañado, Faltante, Sobrante, Otro) y el
+  stock queda igual a lo contado. El primer conteo de cada sitio es el inicial y no pide motivo.
+- REQ-073.7 CUANDO un barbero se desactiva, su estación DEBE quedar "Por cerrar" hasta que el dueño
+  la cuente: lo contado vuelve a la bodega y la diferencia queda como consumo; después la estación
+  queda cerrada con su historial.
+
+### REQ-074 · Compras, costo por servicio y quién ve qué — M
+**Como** dueño, **quiero** saber qué comprar y cuánto me cuestan los insumos de cada servicio,
+**para** comprar a tiempo y cobrar bien.
+
+- REQ-074.1 CUANDO el dueño abre "Orden de compra", EL SISTEMA DEBE listar los ítems activos cuyo
+  stock de bodega + vitrina está en el mínimo o por debajo, con cantidad sugerida = máximo − (bodega
+  + vitrina), agrupados por proveedor, con el valor estimado (cantidad × precio por unidad).
+- REQ-074.2 La orden DEBE poder compartirse por WhatsApp como texto plano prellenado; no hay compra
+  en línea.
+- REQ-074.3 El reporte "Costo de insumos por servicio" DEBE mostrar, por servicio activo, Σ (precio
+  por unidad ÷ rendimiento) de sus ítems, redondeado al peso, y marcar "Incompleto" si alguno está
+  en "Midiendo".
+- REQ-074.4 El barbero DEBE ver en "Mi estación" su dotación, el stock de su estación, sus
+  reposiciones y el resultado de su último conteo, solo en lectura; NO DEBE ver la bodega, la
+  vitrina, los precios ni las estaciones de otros.
+- REQ-074.5 Ningún dato de inventario DEBE ser accesible sin cuenta (`anon`).
+
+Fuera de alcance del Hito 13: la venta de productos, su comisión y el descuento de empleado (Hito
+12); compras en línea o pedidos al proveedor desde la app; varios proveedores o precios por ítem;
+lotes y fechas de vencimiento; códigos de barras; la fecha de apertura del sticker "uso interno";
+dotación distinta por barbero; conteos hechos por el barbero; alertas por WhatsApp; recordatorio
+automático del conteo o de la compra cada 15 días; margen de la vitrina.
+
+---
+
 ## 6. Requisitos no funcionales
 
 | ID | Requisito | Criterio verificable |
@@ -1128,7 +1248,7 @@ Explícitamente **no** se construye en el MVP (el modelo de datos sí debe dejar
 - Referidos. La ficha de cliente admitirá `referred_by`.
 - ~~WhatsApp Cloud API (envío automático).~~ Sale de esta lista: Hito 6, REQ-040 (ADR-027).
 - Varios negocios por dueño en la interfaz. La tabla de membresías ya lo permite (REQ-031.3).
-- Control de inventario de productos.
+- ~~Control de inventario de productos.~~ Sale de esta lista: Hito 13, REQ-070 (ADR-039).
 - Pagos en línea, facturación electrónica DIAN, integración con Nequi/bancos.
 - Propinas `[PA-23]`.
 - Notificaciones push del navegador (el aviso es por WhatsApp).
@@ -1160,7 +1280,7 @@ no bloquear la lectura; no es decisión tomada.
 | PA-13 | ¿Los barberos pueden dar descuentos al cobrar, o solo el dueño? ¿Hay precios distintos para niños? | REQ-023.2 | Barbero: sin descuento salvo premio; precios de niños = servicios aparte |
 | PA-14 | ¿Es común que un cliente pague parte en efectivo y parte en Nequi? | REQ-023.5 | Deseable, no imprescindible |
 | PA-15 | ¿Quién maneja la plata? Si el cliente paga en Nequi o transferencia, ¿paga a la cuenta del negocio o a la del barbero? Esto cambia el cierre: hay que saber cuánto le debe el negocio al barbero o el barbero al negocio. | REQ-023.7, REQ-027 | Todo entra a la cuenta/caja del negocio; el negocio liquida la comisión al barbero |
-| PA-16 | ¿Necesitas control de inventario de helados y bebidas (cuántos quedan)? | REQ-024.1 | No en el MVP |
+| PA-16 | ¿Necesitas control de inventario de helados y bebidas (cuántos quedan)? | REQ-024.1 | No en el MVP. Resuelta: Hito 13, REQ-070…074 (ADR-039) |
 | PA-17 | ¿Las ventas de productos dejan algo al barbero que las vende? | REQ-024.3 | No |
 | PA-18 | Comisión: el porcentaje configurado, ¿es lo que se lleva el barbero o lo que deja al negocio? ¿Hay valores típicos (50/50, 60/40)? ¿Se calcula sobre el precio antes o después de descuento? | REQ-025.1 | Es la parte del barbero; sobre el precio después de descuento |
 | PA-19 | Cuando el corte es gratis por fidelidad, ¿el barbero igual recibe su comisión (la asume el negocio) o también lo regala? | REQ-025.4 | El negocio la asume |

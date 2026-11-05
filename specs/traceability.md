@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-04.
+> Generada por `scripts/traceability.ts` el 2026-11-05.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -300,3 +300,32 @@
 | REQ-059.2 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-card-reports.spec.ts, cash-closure.test.ts, gift-card.test.ts, 0053_gift_card_reports.sql | cubierto |
 | REQ-059.3 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-cards.spec.ts, gift-card.test.ts, 0051_gift_cards.sql, 0056_merge_customers_gift_cards.sql | cubierto |
 | REQ-059.4 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | 0053_gift_card_reports.sql | cubierto |
+| REQ-070.1 | Catálogo de inventario y ubicaciones | T-120 (pendiente), T-126 (pendiente), T-129 (pendiente) | — | sin prueba |
+| REQ-070.2 | Catálogo de inventario y ubicaciones | T-120 (pendiente), T-126 (pendiente), T-129 (pendiente) | — | sin prueba |
+| REQ-070.3 | Catálogo de inventario y ubicaciones | T-120 (pendiente), T-126 (pendiente), T-129 (pendiente) | — | sin prueba |
+| REQ-070.4 | Catálogo de inventario y ubicaciones | T-120 (pendiente), T-126 (pendiente), T-129 (pendiente) | — | sin prueba |
+| REQ-070.5 | Catálogo de inventario y ubicaciones | T-120 (pendiente), T-126 (pendiente), T-129 (pendiente) | — | sin prueba |
+| REQ-070.6 | Catálogo de inventario y ubicaciones | T-120 (pendiente), T-126 (pendiente), T-129 (pendiente) | — | sin prueba |
+| REQ-071.1 | Entradas, transferencias y reposición | T-120 (pendiente), T-121 (pendiente), T-125 (pendiente), T-126 (pendiente) | — | sin prueba |
+| REQ-071.2 | Entradas, transferencias y reposición | T-120 (pendiente), T-121 (pendiente), T-125 (pendiente), T-126 (pendiente) | — | sin prueba |
+| REQ-071.3 | Entradas, transferencias y reposición | T-120 (pendiente), T-121 (pendiente), T-125 (pendiente), T-126 (pendiente) | — | sin prueba |
+| REQ-071.4 | Entradas, transferencias y reposición | T-120 (pendiente), T-121 (pendiente), T-125 (pendiente), T-126 (pendiente) | — | sin prueba |
+| REQ-071.5 | Entradas, transferencias y reposición | T-120 (pendiente), T-121 (pendiente), T-125 (pendiente), T-126 (pendiente) | — | sin prueba |
+| REQ-071.6 | Entradas, transferencias y reposición | T-120 (pendiente), T-121 (pendiente), T-125 (pendiente), T-126 (pendiente) | — | sin prueba |
+| REQ-072.1 | Vitrina y caja | T-121 (pendiente), T-122 (pendiente), T-126 (pendiente) | — | sin prueba |
+| REQ-072.2 | Vitrina y caja | T-121 (pendiente), T-122 (pendiente), T-126 (pendiente) | — | sin prueba |
+| REQ-072.3 | Vitrina y caja | T-121 (pendiente), T-122 (pendiente), T-126 (pendiente) | — | sin prueba |
+| REQ-072.4 | Vitrina y caja | T-121 (pendiente), T-122 (pendiente), T-126 (pendiente) | — | sin prueba |
+| REQ-072.5 | Vitrina y caja | T-121 (pendiente), T-122 (pendiente), T-126 (pendiente) | — | sin prueba |
+| REQ-073.1 | Consumo esperado y conteos | T-120 (pendiente), T-123 (pendiente), T-126 (pendiente), T-127 (pendiente) | — | sin prueba |
+| REQ-073.2 | Consumo esperado y conteos | T-120 (pendiente), T-123 (pendiente), T-126 (pendiente), T-127 (pendiente) | — | sin prueba |
+| REQ-073.3 | Consumo esperado y conteos | T-120 (pendiente), T-123 (pendiente), T-126 (pendiente), T-127 (pendiente) | — | sin prueba |
+| REQ-073.4 | Consumo esperado y conteos | T-120 (pendiente), T-123 (pendiente), T-126 (pendiente), T-127 (pendiente) | — | sin prueba |
+| REQ-073.5 | Consumo esperado y conteos | T-120 (pendiente), T-123 (pendiente), T-126 (pendiente), T-127 (pendiente) | — | sin prueba |
+| REQ-073.6 | Consumo esperado y conteos | T-120 (pendiente), T-123 (pendiente), T-126 (pendiente), T-127 (pendiente) | — | sin prueba |
+| REQ-073.7 | Consumo esperado y conteos | T-120 (pendiente), T-123 (pendiente), T-126 (pendiente), T-127 (pendiente) | — | sin prueba |
+| REQ-074.1 | Compras, costo por servicio y quién ve qué | T-124 (pendiente), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | — | sin prueba |
+| REQ-074.2 | Compras, costo por servicio y quién ve qué | T-124 (pendiente), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | — | sin prueba |
+| REQ-074.3 | Compras, costo por servicio y quién ve qué | T-124 (pendiente), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | — | sin prueba |
+| REQ-074.4 | Compras, costo por servicio y quién ve qué | T-124 (pendiente), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | — | sin prueba |
+| REQ-074.5 | Compras, costo por servicio y quién ve qué | T-124 (pendiente), T-125 (pendiente), T-127 (pendiente), T-128 (pendiente), T-129 (pendiente) | — | sin prueba |
