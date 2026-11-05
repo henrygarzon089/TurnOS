@@ -28,6 +28,7 @@
 | H7 | Membresía familiar (ADR-030) | T-071…T-077 | REQ-044…REQ-048 |
 | H9 | Tarjetas de regalo (ADR-034) | T-090…T-097 | REQ-055…REQ-059 |
 | H11 | Limpieza y bioseguridad (ADR-037) | T-100…T-109 | REQ-060…REQ-064 |
+| H13 | Inventario de insumos y vitrina (ADR-039) | T-120…T-129 | REQ-070…REQ-074 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -1408,6 +1409,12 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   toma el precio vigente del servicio (trigger de `tickets`, REQ-015.3), no el de la reserva.
   `0002_core` y `0043_membership_reports` cuentan sus plantillas sin las de citas. Sin pantallas:
   nada cambia para el cliente ni el barbero hasta encender las citas (T-081).
+- Corrección (2026-11-04): pgTAP 0046 fallaba después de las ~22:30 de Bogotá: las citas a
+  now() + 50/90 min caían en el día siguiente (pruebas 24, 26 y 31 del CI de la noche). Ahora, dentro
+  de la transacción de la prueba, `business_day_bogota` se corre para que now() sea las 12:00 de su
+  mismo día (la fecha de hoy no cambia y el rollback lo deshace), y la cita c7 pasa de las 10:00 a
+  las 12:00 para quedar en su día con ese corrimiento. Las funciones de citas no cambian; sin cambio
+  de spec. Reproducido a las 22:59 (3 fallas) y en verde con la hora fijada a 12:00, 16:00 y 20:00.
 
 ### [x] T-080 · Dominio: estimado con citas, calendario y mensajes
 - REQ: REQ-053.1, REQ-053.2, REQ-053.3, REQ-051.3
@@ -1511,6 +1518,95 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   cita sigue con su nombre y celular. No redefine funciones (las de 0050–0055 no se tocan).
 
 T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una tarea).
+
+---
+
+## Hito 13 — Inventario de insumos y vitrina (ADR-039)
+
+> REQ-070…REQ-074 y ADR-039 aprobados por Henry (2026-11-04, PR #72). Diseño en `design.md` §18.
+> Los números saltan: T-100…T-119 son de los Hitos 11 y 12, en paralelo. Las migraciones `0063`…`0067`
+> se fusionan después de las del Hito 12 (`0060`…`0062`). La venta de productos es del Hito 12;
+> aquí solo el stock (§18.4).
+
+### [x] T-120 · Migración y pgTAP: catálogo, sitios y RLS
+- REQ: REQ-070.1, REQ-070.2, REQ-070.3, REQ-070.4, REQ-070.5, REQ-070.6, REQ-071.6, REQ-073.1,
+  REQ-074.5
+- Archivos: `supabase/migrations/0063_inventory.sql` (enums, `inventory_items`,
+  `inventory_locations`, `inventory_usage`, `stock_movements`, `stock_counts`, `stock_count_lines`,
+  `businesses.inventory_alert_pct`, triggers de sitios, `save_inventory_item`, `set_item_usage`,
+  `inventory_stock`), `supabase/tests/0063_inventory.sql`
+- Terminado: pgTAP de §18.7 para `0063` en verde; sin ítems nada cambia.
+- Nota (2026-11-04): pgTAP 52 nuevas en `supabase/tests/0063_inventory.sql`. Detalles que la spec no
+  fijaba: `sale_items.id` es `bigint`, así que `stock_movements.sale_item_id` también; el trigger de la
+  estación va sobre `barbers.is_active` (no hay `status` de alta/baja); función extra
+  `station_allowance` (la dotación, la reutiliza `my_station`); `FORBIDDEN` usa `42501` como el resto.
+
+### [x] T-121 · Entradas, transferencias y reposición
+- REQ: REQ-071.1, REQ-071.2, REQ-071.3, REQ-071.4, REQ-071.5, REQ-072.5
+- Archivos: `supabase/migrations/0064_inventory_movements.sql` (`register_stock_purchase`,
+  `transfer_stock`, `refill_station`, `inventory_overview`, guardia de inmutabilidad),
+  `supabase/tests/0064_inventory_movements.sql`
+- Terminado: pgTAP con cada rechazo y la reposición que no cambia el stock de la estación.
+- Nota (2026-11-04): pgTAP 46 nuevas en `supabase/tests/0064_inventory_movements.sql`. Funciones
+  auxiliares que la spec no nombraba: `stock_qty`, `inventory_transfer` e `inventory_owned_item` (bloquea
+  el ítem con `for update` para que dos cambios a la vez no pasen del stock; solo `service_role`).
+  Una transferencia desde una estación "por cerrar" se permite (hacia ella no). Las sugerencias de
+  rendimiento no van en `inventory_overview` (son de 0066): la pantalla las pide aparte.
+
+### [ ] T-122 · Vitrina desde la caja y la cortesía
+- REQ: REQ-072.1, REQ-072.2, REQ-072.3, REQ-072.4
+- Archivos: `supabase/migrations/0065_inventory_sales_hook.sql`,
+  `supabase/tests/0065_inventory_sales_hook.sql`
+- Depende de: las migraciones del Hito 12 (`0060`…`0062`) fusionadas, para probar contra su
+  `register_sale`.
+- Terminado: pgTAP del ejemplo Q (anular dos veces, otro `update` no mueve stock) y cortesía una vez.
+
+### [ ] T-123 · Conteos, alerta y rendimiento sugerido
+- REQ: REQ-073.2, REQ-073.3, REQ-073.4, REQ-073.5, REQ-073.6, REQ-073.7
+- Archivos: `supabase/migrations/0066_inventory_counts.sql` (`record_stock_count`,
+  `inventory_yield_suggestions`, `accept_yield`), `supabase/tests/0066_inventory_counts.sql`,
+  `src/lib/domain/inventory.ts` (regla de alerta y consumo esperado), `tests/unit/inventory.test.ts`
+- Terminado: pgTAP de los ejemplos M y N, conteo inicial, mensual con motivo y cierre de estación;
+  unitarias de la regla de alerta.
+
+### [ ] T-124 · Orden de compra, costo por servicio y "Mi estación" en SQL
+- REQ: REQ-074.1, REQ-074.3, REQ-074.4
+- Archivos: `supabase/migrations/0067_inventory_reports.sql` (`purchase_order`,
+  `service_supply_cost`, `my_station`), `supabase/tests/0067_inventory_reports.sql`
+- Terminado: pgTAP de los ejemplos O y P y del alcance de `my_station`.
+
+### [ ] T-125 · Acciones de inventario
+- REQ: REQ-071.6, REQ-074.2, REQ-074.5
+- Archivos: `src/lib/actions/inventory.ts`, `src/lib/domain/inventory.ts` (texto de la orden para
+  WhatsApp, plantilla básica, etiquetas), `tests/unit/inventory.test.ts`,
+  `tests/integration/inventory.test.ts`
+- Terminado: unitarias y de integración en verde; los errores SQL salen en español.
+
+### [ ] T-126 · Pantallas del dueño: resumen, catálogo y movimientos
+- REQ: REQ-070.1, REQ-070.2, REQ-071.2, REQ-071.3, REQ-071.4, REQ-072.3, REQ-072.5, REQ-073.1
+- Archivos: `src/app/(staff)/admin/inventario/**` (resumen, `catalogo`), chip "Inventario" del menú
+- Terminado: desde el celular se crea un ítem, se registra una entrada, se repone con envase vacío y
+  se surte la vitrina; `pnpm lint:texts` en verde.
+
+### [ ] T-127 · Pantallas del dueño: conteos, orden de compra y costos
+- REQ: REQ-073.3, REQ-073.4, REQ-073.5, REQ-073.6, REQ-073.7, REQ-074.1, REQ-074.2, REQ-074.3
+- Archivos: `src/app/(staff)/admin/inventario/{conteo,compra,costos}/**`,
+  `src/app/(staff)/admin/negocio` (campo "Alerta de consumo (%)")
+- Terminado: conteo de una estación con alerta, conteo de bodega con motivo, orden compartida por
+  WhatsApp y costo por servicio, en el celular.
+
+### [ ] T-128 · "Mi estación" del barbero y E2E
+- REQ: REQ-074.4
+- Archivos: `src/app/(staff)/app/estacion/**`, chip "Mi estación", `tests/e2e/inventory.spec.ts`
+- Terminado: E2E de §18.7 en Pixel 7 y iPhone 13.
+
+### [ ] T-129 · Validación Hito 13
+- REQ: REQ-070…REQ-074
+- Archivos: `scripts/traceability.ts` (`HITOS["13"] = [[70, 74]]`, ya desde el PR de la spec),
+  `tests/unit/traceability.test.ts` (el hito 13 entra al loop aquí, cuando todas las pruebas
+  existen, como el 9 en T-097), `docs/estado-del-proyecto.md`
+- Depende de Henry: `0063`…`0067` en producción, catálogo y primer conteo en Filo, y aprobación.
+- Terminado: `pnpm trace --hito=13` sin huecos; CI verde.
 
 ---
 
