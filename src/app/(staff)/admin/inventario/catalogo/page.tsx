@@ -4,11 +4,11 @@ import {
   BasicTemplateButton,
   InventoryItemForm,
   ItemUsageForm,
-  unitCostLabel,
 } from "@/components/admin/InventoryForms";
 import { InventoryNav } from "@/components/admin/InventoryNav";
 import { getInventoryCatalog } from "@/lib/actions/inventory";
 import { INVENTORY_GROUP_LABELS, INVENTORY_GROUPS, INVENTORY_USE_LABELS } from "@/lib/domain/inventory";
+import { formatCOP } from "@/lib/domain/money";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Catálogo de inventario" };
@@ -52,7 +52,7 @@ export default async function InventoryCatalogPage() {
                         {i.name}
                       </span>
                       <span className="text-muted text-xs">
-                        {INVENTORY_USE_LABELS[i.use]} · {i.presentation} · {unitCostLabel(i)}
+                        {INVENTORY_USE_LABELS[i.use]} · {i.presentation} · {formatCOP(i.unit_cost)} / {i.unit_label}
                         {i.use === "internal" &&
                           ` · ${usageCount(i.id) ? `${usageCount(i.id)} servicios` : "sin servicios"}`}
                         {!i.is_active && " · Desactivado"}
