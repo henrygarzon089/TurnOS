@@ -34,7 +34,7 @@ async function register(
         f.businessA,
         a.barberId,
         JSON.stringify(a.items),
-        JSON.stringify(checkoutPayments(a.total, "cash", null)),
+        JSON.stringify(checkoutPayments(a.total, "cash")),
         a.staffBuyerId,
       ],
     );
