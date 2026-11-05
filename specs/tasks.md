@@ -1472,12 +1472,17 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Nota (2026-11-04): `productCommission` y `staffDiscount` aparte de `computeSale` (que no cambia).
   5 unitarias nuevas (339 en total), cobertura del dominio en 100 %.
 
-### [ ] T-115 · "Negocio" y "Productos" del dueño
+### [x] T-115 · "Negocio" y "Productos" del dueño
 - REQ: REQ-065.1, REQ-065.2, REQ-065.3, REQ-068.1
 - Archivos: `src/app/(staff)/admin/negocio/`, `src/app/(staff)/admin/productos/`,
   `src/lib/actions/admin.ts`
 - Terminado: integración de las acciones; E2E: marcar una cera con "Da comisión al que vende" y
   categoría "Vitrina", y cambiar el % de productos.
+- Nota (2026-11-04): "Comisión por productos (%)" y "Descuento de empleado (%)" en `/admin/negocio`
+  (la acción es `updateBusiness`); casilla "Da comisión al que vende" y "Categoría (opcional)" con
+  sugerencias de las categorías del negocio en `/admin/productos` (`saveProduct`, validado en
+  `parseProductForm`). Sin pruebas de integración nuevas: las dos acciones escriben con RLS como
+  antes; las cubren las unitarias de `product-form` y el E2E `tests/e2e/pos-settings.spec.ts` (en CI).
 
 ### [ ] T-116 · Vitrina en "Nueva venta"
 - REQ: REQ-066.1, REQ-066.2, REQ-066.3, REQ-066.4

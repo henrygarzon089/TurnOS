@@ -300,11 +300,11 @@
 | REQ-059.2 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-card-reports.spec.ts, cash-closure.test.ts, gift-card.test.ts, 0053_gift_card_reports.sql | cubierto |
 | REQ-059.3 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-cards.spec.ts, gift-card.test.ts, 0051_gift_cards.sql, 0056_merge_customers_gift_cards.sql | cubierto |
 | REQ-059.4 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | 0053_gift_card_reports.sql | cubierto |
-| REQ-065.1 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (pendiente), T-119 (pendiente) | 0060_pos_products.sql | prueba escrita |
-| REQ-065.2 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (pendiente), T-119 (pendiente) | 0060_pos_products.sql | prueba escrita |
-| REQ-065.3 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (pendiente), T-119 (pendiente) | 0060_pos_products.sql | prueba escrita |
-| REQ-065.4 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (pendiente), T-119 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
-| REQ-065.5 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (pendiente), T-119 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
+| REQ-065.1 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (pendiente) | pos-settings.spec.ts, 0060_pos_products.sql | prueba escrita |
+| REQ-065.2 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (pendiente) | pos-settings.spec.ts, product-form.test.ts, 0060_pos_products.sql | prueba escrita |
+| REQ-065.3 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (pendiente) | pos-settings.spec.ts, product-form.test.ts, 0060_pos_products.sql | prueba escrita |
+| REQ-065.4 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
+| REQ-065.5 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
 | REQ-066.1 | Vender en la vitrina | T-111 (hecha), T-116 (pendiente), T-117 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
 | REQ-066.2 | Vender en la vitrina | T-111 (hecha), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
 | REQ-066.3 | Vender en la vitrina | T-111 (hecha), T-116 (pendiente), T-117 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
@@ -316,11 +316,11 @@
 | REQ-067.3 | Comisión por productos | T-111 (hecha), T-114 (hecha) | commission.test.ts, 0060_pos_products.sql, 0061_pos_register_sale.sql | cubierto |
 | REQ-067.4 | Comisión por productos | T-111 (hecha), T-114 (hecha) | 0061_pos_register_sale.sql | cubierto |
 | REQ-067.5 | Comisión por productos | T-111 (hecha), T-114 (hecha) | 0061_pos_register_sale.sql | cubierto |
-| REQ-068.1 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (pendiente), T-117 (pendiente) | 0060_pos_products.sql | prueba escrita |
-| REQ-068.2 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (pendiente), T-117 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
-| REQ-068.3 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (pendiente), T-117 (pendiente) | commission.test.ts, 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
-| REQ-068.4 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (pendiente), T-117 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
-| REQ-068.5 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (pendiente), T-117 (pendiente) | 0062_pos_reports.sql | prueba escrita |
+| REQ-068.1 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (hecha), T-117 (pendiente) | pos-settings.spec.ts, 0060_pos_products.sql | prueba escrita |
+| REQ-068.2 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (hecha), T-117 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
+| REQ-068.3 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (hecha), T-117 (pendiente) | commission.test.ts, 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
+| REQ-068.4 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (hecha), T-117 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
+| REQ-068.5 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (hecha), T-117 (pendiente) | 0062_pos_reports.sql | prueba escrita |
 | REQ-069.1 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0061_pos_register_sale.sql, 0062_pos_reports.sql | prueba escrita |
 | REQ-069.2 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0062_pos_reports.sql | prueba escrita |
 | REQ-069.3 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0062_pos_reports.sql | prueba escrita |
