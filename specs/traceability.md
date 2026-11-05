@@ -305,25 +305,25 @@
 | REQ-060.3 | Encender el módulo y editar las listas | T-100 (hecha), T-101 (hecha), T-103 (hecha), T-105 (pendiente), T-109 (pendiente) | 0057_cleaning.sql | prueba escrita |
 | REQ-060.4 | Encender el módulo y editar las listas | T-100 (hecha), T-101 (hecha), T-103 (hecha), T-105 (pendiente), T-109 (pendiente) | 0057_cleaning.sql, 0058_cleaning_records.sql | prueba escrita |
 | REQ-060.5 | Encender el módulo y editar las listas | T-100 (hecha), T-101 (hecha), T-103 (hecha), T-105 (pendiente), T-109 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.1 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts, 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.2 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.3 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.4 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.5 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts | prueba escrita |
-| REQ-061.6 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts | prueba escrita |
-| REQ-061.7 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.8 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.9 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.10 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-061.11 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-062.1 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-062.2 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-062.3 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-062.4 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-062.5 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-062.6 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
-| REQ-062.7 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
-| REQ-062.8 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | 0058_cleaning_records.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
+| REQ-061.1 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (hecha) | cleaning.test.ts, 0058_cleaning_records.sql | cubierto |
+| REQ-061.2 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (hecha) | cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | cubierto |
+| REQ-061.3 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (hecha) | cleaning-barber.spec.ts, cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | cubierto |
+| REQ-061.4 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (hecha) | cleaning-barber.spec.ts, cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | cubierto |
+| REQ-061.5 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (hecha) | cleaning-barber.spec.ts, cleaning.test.ts | cubierto |
+| REQ-061.6 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (hecha) | cleaning.test.ts | cubierto |
+| REQ-061.7 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (hecha) | cleaning-barber.spec.ts, cleaning.test.ts, cleaning.test.ts, 0058_cleaning_records.sql | cubierto |
+| REQ-061.8 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (hecha) | cleaning-barber.spec.ts, 0058_cleaning_records.sql | cubierto |
+| REQ-061.9 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (hecha) | 0058_cleaning_records.sql | cubierto |
+| REQ-061.10 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (hecha) | 0058_cleaning_records.sql | cubierto |
+| REQ-061.11 | Registrar apertura, cierre y limpieza profunda | T-101 (hecha), T-103 (hecha), T-104 (hecha) | cleaning-barber.spec.ts, 0058_cleaning_records.sql | cubierto |
+| REQ-062.1 | Avisos dentro de TurnOS | T-104 (hecha), T-105 (pendiente) | cleaning-barber.spec.ts, 0058_cleaning_records.sql | prueba escrita |
+| REQ-062.2 | Avisos dentro de TurnOS | T-104 (hecha), T-105 (pendiente) | cleaning-barber.spec.ts, 0058_cleaning_records.sql | prueba escrita |
+| REQ-062.3 | Avisos dentro de TurnOS | T-104 (hecha), T-105 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
+| REQ-062.4 | Avisos dentro de TurnOS | T-104 (hecha), T-105 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
+| REQ-062.5 | Avisos dentro de TurnOS | T-104 (hecha), T-105 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
+| REQ-062.6 | Avisos dentro de TurnOS | T-104 (hecha), T-105 (pendiente) | cleaning-barber.spec.ts | prueba escrita |
+| REQ-062.7 | Avisos dentro de TurnOS | T-104 (hecha), T-105 (pendiente) | 0058_cleaning_records.sql | prueba escrita |
+| REQ-062.8 | Avisos dentro de TurnOS | T-104 (hecha), T-105 (pendiente) | 0058_cleaning_records.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
 | REQ-063.1 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (pendiente), T-108 (pendiente) | 0057_cleaning.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
 | REQ-063.2 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (pendiente), T-108 (pendiente) | 0057_cleaning.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
 | REQ-063.3 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (pendiente), T-108 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
