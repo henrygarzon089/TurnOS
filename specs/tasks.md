@@ -1418,8 +1418,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ## Hito 12 — Punto de venta de productos con comisión (ADR-038)
 
-> REQ-065…REQ-069 y ADR-038 en propuesta (grill con Henry, 2026-11-04); se construye cuando Henry
-> apruebe el PR de la spec. Diseño en `design.md` §17. Los números saltan: T-100…T-109 son del Hito 11
+> REQ-065…REQ-069 y ADR-038 aprobados por Henry (2026-11-04, PR #75). Diseño en `design.md` §17. Los números saltan: T-100…T-109 son del Hito 11
 > (limpieza) y T-120… del Hito 13 (inventario), en paralelo. El Hito 13 depende de que las líneas de
 > producto sigan con `ref_id` y `qty` (REQ-066.6), no de estas tareas.
 

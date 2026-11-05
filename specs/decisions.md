@@ -532,7 +532,7 @@
   ADR-033/035 son del Hito 8.
 
 ## ADR-038 · Punto de venta de productos con comisión (Hito 12)
-- Estado: **propuesta** (grill con Henry, 2026-11-04; falta su aprobación del PR de la spec)
+- Estado: **aceptada** (Henry, 2026-11-04: aprobó la spec en el chat; PR #75)
 - Contexto: Henry pidió "una sección donde se pueden ver los productos que tenemos, como un punto
   POS para la venta, y se le puede asignar la venta a un barbero, donde va a tener la comisión por
   esa venta". El plan operativo de Gamma habla de 10 % para quien vende la vitrina (cera, aceite de

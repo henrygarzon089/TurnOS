@@ -1075,8 +1075,8 @@ WhatsApp, tarjetas impresas con diseño y recordatorio de vencimiento.
 
 ## 5i. Hito 12 — Punto de venta de productos con comisión
 
-> Estado: **PROPUESTA** (grill con Henry, 2026-11-04: 7 preguntas, todas con la respuesta
-> recomendada; abogado del diablo pasado sin cambios). Ver ADR-038. Los números saltan: REQ-060…064
+> Estado: **APROBADA** (Henry, 2026-11-04, tras grill de 7 preguntas con la respuesta recomendada y
+> abogado del diablo sin cambios; PR #75). Ver ADR-038. Los números saltan: REQ-060…064
 > son del Hito 11 (limpieza) y REQ-070…074 del Hito 13 (inventario), en paralelo. El dueño o el
 > barbero venden los productos de la vitrina (cera, aceite de barba, after shave, helados, bebidas)
 > desde una pantalla con fotos; los productos marcados dejan un porcentaje al barbero de la venta.
