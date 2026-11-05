@@ -110,7 +110,8 @@ test.describe("REQ-060 / REQ-062 Limpieza del dueño", () => {
     await card.getByRole("button", { name: "Marcar visto" }).click();
     await expect(card).not.toContainText("Cierre sin registrar", { timeout: 15_000 });
 
-    // REQ-062.3 el barbero no ve el cierre sin registrar
+    // REQ-062.3 el barbero no ve el cierre sin registrar (/entrar con sesión redirige: salir primero)
+    await page.context().clearCookies();
     await loginAsBarber(page, 0);
     await expect(page.getByText("Cierre sin registrar")).toHaveCount(0);
   });
