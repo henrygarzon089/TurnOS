@@ -98,3 +98,33 @@ export function computeSale(input: {
     rewardsTotal,
   };
 }
+
+/** Línea de producto de la vitrina con la casilla "Da comisión al que vende" (REQ-065.2). */
+export type ShowcaseLine = ProductLine & { commissionable: boolean };
+
+/**
+ * Comisión de productos de una venta (design.md §17.4, REQ-067.1, REQ-067.3): un solo redondeo por
+ * venta sobre las líneas marcadas. Sin barbero ("Nadie (el negocio)") o en una compra de un barbero
+ * no hay comisión. Espejo de `register_sale` (0061).
+ */
+export function productCommission(input: {
+  products: ShowcaseLine[];
+  pct: number;
+  hasBarber: boolean;
+  staffPurchase?: boolean;
+}): { base: number; amount: number } {
+  let base = 0;
+  for (const p of input.products) {
+    assertPesos(p.unitPrice, "El precio");
+    if (!Number.isInteger(p.qty) || p.qty < 1) throw new Error("La cantidad debe ser ≥ 1");
+    if (p.commissionable) base += p.unitPrice * p.qty;
+  }
+  if (!input.hasBarber || input.staffPurchase) return { base: 0, amount: 0 };
+  return { base, amount: roundCommission(base, input.pct) };
+}
+
+/** Descuento de empleado de una línea (REQ-068.3): al peso, .5 hacia arriba. */
+export function staffDiscount(line: ProductLine, pct: number): number {
+  if (!Number.isInteger(line.qty) || line.qty < 1) throw new Error("La cantidad debe ser ≥ 1");
+  return roundCommission(line.unitPrice * line.qty, pct);
+}

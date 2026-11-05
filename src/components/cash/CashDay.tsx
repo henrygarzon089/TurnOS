@@ -8,6 +8,7 @@ import { MembershipTotals } from "@/components/cash/MembershipTotals";
 import { NewSaleButton } from "@/components/cash/NewSaleSheet";
 import { ConnectionBanner } from "@/components/ui/ConnectionBanner";
 import { getCashDay, voidSale, type CashDaySummary } from "@/lib/actions/cash";
+import { productSettlement, staffPurchasesLine } from "@/lib/domain/cash-closure";
 import { formatCOP } from "@/lib/domain/money";
 import { formatTimeBogota } from "@/lib/domain/time";
 import { useQueueSubscription } from "@/lib/realtime/use-queue-subscription";
@@ -95,6 +96,15 @@ export function CashDay({
 
       <GiftCardTotals totals={summary} />
 
+      {staffPurchasesLine(summary) && (
+        <p
+          className="border-line bg-card rounded-xl border p-3 text-sm"
+          data-testid="staff-purchases"
+        >
+          {staffPurchasesLine(summary)}
+        </p>
+      )}
+
       <section aria-label="Por barbero">
         <h2 className="mb-2 font-semibold">Por barbero</h2>
         {summary.barbers.length === 0 ? (
@@ -109,6 +119,11 @@ export function CashDay({
                   {formatCOP(b.sold)} · comisión {formatCOP(b.commission)} · negocio{" "}
                   {formatCOP(b.business)}
                 </p>
+                {productSettlement(b) && (
+                  <p className="text-muted" data-testid={`products-${b.barberId}`}>
+                    {productSettlement(b)}
+                  </p>
+                )}
               </li>
             ))}
           </ul>
@@ -137,6 +152,7 @@ export function CashDay({
                       <p className="text-muted text-xs">
                         {formatTimeBogota(new Date(s.at))}
                         {s.barberName ? ` · ${s.barberName}` : ""}
+                        {s.staffBuyerName ? ` · compra de ${s.staffBuyerName}` : ""}
                         {s.customerName ? ` · ${s.customerName}` : ""} · {s.methods}
                       </p>
                     </div>

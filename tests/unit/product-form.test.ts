@@ -17,7 +17,15 @@ describe("REQ-038.1 formulario de producto", () => {
   it("REQ-038.1 a la venta, de cortesía o ambas", () => {
     expect(parseProductForm(form(), BIZ)).toEqual({
       ok: true,
-      row: { name: "Gaseosa", price: 4000, for_sale: true, is_courtesy: false, photo_path: null },
+      row: {
+        name: "Gaseosa",
+        price: 4000,
+        for_sale: true,
+        is_courtesy: false,
+        photo_path: null,
+        commissionable: false,
+        category: null,
+      },
     });
     expect(parseProductForm(form({ forSale: false, isCourtesy: true }), BIZ)).toMatchObject({
       ok: true,
@@ -103,5 +111,27 @@ describe("REQ-038.1 rutas del bucket media (design.md §11.3)", () => {
   it("REQ-038.2 arma la URL pública del bucket", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://x.supabase.co";
     expect(mediaUrl(PHOTO)).toBe(`https://x.supabase.co/storage/v1/object/public/media/${PHOTO}`);
+  });
+});
+
+describe("REQ-065 vitrina: comisión y categoría del producto", () => {
+  it('REQ-065.2 la casilla "Da comisión al que vende" viene apagada y se puede marcar', () => {
+    expect(parseProductForm(form(), BIZ)).toMatchObject({ row: { commissionable: false } });
+    expect(parseProductForm(form({ commissionable: true }), BIZ)).toMatchObject({
+      row: { commissionable: true },
+    });
+  });
+
+  it("REQ-065.3 la categoría es opcional, sin espacios de sobra y de máximo 30 letras", () => {
+    expect(parseProductForm(form({ category: " Vitrina " }), BIZ)).toMatchObject({
+      row: { category: "Vitrina" },
+    });
+    expect(parseProductForm(form({ category: "   " }), BIZ)).toMatchObject({
+      row: { category: null },
+    });
+    expect(parseProductForm(form({ category: "x".repeat(31) }), BIZ)).toEqual({
+      ok: false,
+      error: "La categoría tiene máximo 30 letras.",
+    });
   });
 });
