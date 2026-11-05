@@ -21,8 +21,14 @@ async function countAsCalculated(page: Page) {
   await form.getByRole("button", { name: "Guardar conteo" }).click();
 }
 
+/** Después de guardar, la página se refresca sola: navegar antes cortaba la navegación en WebKit. */
+async function go(page: Page, url: string) {
+  await page.waitForLoadState("networkidle");
+  await page.goto(url);
+}
+
 async function movement(page: Page, tab: "Reponer" | "Entrada a bodega" | "Transferir") {
-  await page.goto("/admin/inventario");
+  await go(page, "/admin/inventario");
   await page.getByRole("tab", { name: tab }).click();
   return page.getByRole("form", { name: tab });
 }
@@ -78,7 +84,7 @@ test.describe("REQ-070 / REQ-071 / REQ-073 / REQ-074 Inventario", () => {
     await expect(form.getByRole("status")).toBeVisible({ timeout: 15_000 });
 
     // Conteo de la estación: punto de partida de la ventana
-    await page.goto("/admin/inventario/conteo");
+    await go(page, "/admin/inventario/conteo");
     await page.getByRole("link", { name: "Juan", exact: true }).click();
     await countAsCalculated(page);
     await expect(page.getByRole("heading", { name: /guardado$/ })).toBeVisible({ timeout: 15_000 });
@@ -92,7 +98,7 @@ test.describe("REQ-070 / REQ-071 / REQ-073 / REQ-074 Inventario", () => {
     await expect(form.getByRole("status")).toBeVisible({ timeout: 15_000 });
 
     // REQ-073.3 / REQ-073.4 conteo semanal: gastó 1 frasco sin cortes que lo expliquen → alerta
-    await page.goto("/admin/inventario/conteo");
+    await go(page, "/admin/inventario/conteo");
     await page.getByRole("link", { name: "Juan", exact: true }).click();
     await countAsCalculated(page);
     await expect(page.getByRole("heading", { name: "Conteo semanal guardado" })).toBeVisible({
@@ -100,7 +106,7 @@ test.describe("REQ-070 / REQ-071 / REQ-073 / REQ-074 Inventario", () => {
     });
     await expect(page.getByRole("listitem").filter({ hasText: name })).toContainText("Revisar");
 
-    await page.goto("/admin/inventario");
+    await go(page, "/admin/inventario");
     await expect(page.getByText(`Revisar con Juan: ${name}`)).toBeVisible();
 
     // REQ-074.4 el barbero ve su dotación, la reposición y el conteo, sin precios
