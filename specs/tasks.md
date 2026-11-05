@@ -1416,6 +1416,86 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ---
 
+## Hito 12 — Punto de venta de productos con comisión (ADR-038)
+
+> REQ-065…REQ-069 y ADR-038 en propuesta (grill con Henry, 2026-11-04); se construye cuando Henry
+> apruebe el PR de la spec. Diseño en `design.md` §17. Los números saltan: T-100…T-109 son del Hito 11
+> (limpieza) y T-120… del Hito 13 (inventario), en paralelo. El Hito 13 depende de que las líneas de
+> producto sigan con `ref_id` y `qty` (REQ-066.6), no de estas tareas.
+
+### [ ] T-110 · Migración y pgTAP: datos del POS
+- REQ: REQ-065.1, REQ-065.2, REQ-065.3, REQ-065.4, REQ-068.1
+- Archivos: `supabase/migrations/0060_pos_products.sql` (columnas de `businesses`, `products`,
+  `sale_items` y `sales`, `business_pct_changes` y su trigger, checks, permisos),
+  `supabase/tests/0060_pos_products.sql`
+- Terminado: pgTAP de §17.6 para `0060` en verde; sin marcar productos la caja no cambia.
+
+### [ ] T-111 · `register_sale` con la comisión de productos
+- REQ: REQ-065.5, REQ-066.1, REQ-066.4, REQ-066.5, REQ-066.6, REQ-067.1, REQ-067.2, REQ-067.3,
+  REQ-067.4, REQ-067.5, REQ-069.1
+- Archivos: `supabase/migrations/0061_pos_register_sale.sql` (`register_sale` con la firma nueva),
+  `supabase/tests/0061_pos_register_sale.sql`
+- Terminado: pgTAP con los ejemplos M, N, O y Q, `for_sale`, `FORBIDDEN`, membresía, premio y
+  tarjeta de regalo sin efecto en la comisión de productos, y anular.
+
+### [ ] T-112 · Compra de un barbero en `register_sale`
+- REQ: REQ-068.2, REQ-068.3, REQ-068.4
+- Archivos: `supabase/migrations/0061_pos_register_sale.sql`, `supabase/tests/0061_pos_register_sale.sql`
+- Terminado: pgTAP con el ejemplo P y cada rechazo (`FORBIDDEN`, `STAFF_DISCOUNT_OFF`,
+  `BARBER_NOT_FOUND`, `INVALID_STAFF_PURCHASE`).
+
+### [ ] T-113 · Caja y semana en SQL
+- REQ: REQ-068.5, REQ-069.2, REQ-069.3, REQ-069.4
+- Archivos: `supabase/migrations/0062_pos_reports.sql` (`cash_day_summary`, `weekly_summary`),
+  `supabase/tests/0062_pos_reports.sql`
+- Terminado: pgTAP con el ejemplo R en el cierre (también la foto de `close_cash_day`) y la semana.
+
+### [ ] T-114 · Dominio: comisión de productos y descuento de empleado
+- REQ: REQ-067.1, REQ-067.3, REQ-068.3
+- Archivos: `src/lib/domain/commission.ts` (`productCommission`, `staffDiscount`),
+  `tests/unit/commission.test.ts`
+- Terminado: unitarias con los ejemplos M…Q que dan los mismos números que pgTAP.
+
+### [ ] T-115 · "Negocio" y "Productos" del dueño
+- REQ: REQ-065.1, REQ-065.2, REQ-065.3, REQ-068.1
+- Archivos: `src/app/(staff)/admin/negocio/`, `src/app/(staff)/admin/productos/`,
+  `src/lib/actions/admin.ts`
+- Terminado: integración de las acciones; E2E: marcar una cera con "Da comisión al que vende" y
+  categoría "Vitrina", y cambiar el % de productos.
+
+### [ ] T-116 · Vitrina en "Nueva venta"
+- REQ: REQ-066.1, REQ-066.2, REQ-066.3, REQ-066.4
+- Archivos: `src/components/cash/ProductShowcase.tsx` (nueva), `src/components/cash/NewSaleSheet.tsx`,
+  `src/components/cash/CheckoutSheet.tsx`, `src/lib/actions/cash.ts`
+- Terminado: E2E: el dueño vende una cera escogiendo barbero (y no puede confirmar sin escoger); el
+  barbero vende a su nombre sin pregunta; pestañas por categoría.
+
+### [ ] T-117 · Vitrina en el cobro del turno y compra de un barbero
+- REQ: REQ-066.5, REQ-068.2, REQ-068.3
+- Archivos: `src/components/cash/CheckoutSheet.tsx`, `src/components/cash/NewSaleSheet.tsx`,
+  `src/lib/actions/cash.ts` (`staffBuyerId`)
+- Terminado: integración de `registerSale` con `staffBuyerId`; E2E: el barbero agrega una cera al
+  cobro de su corte; el dueño registra una compra de barbero con el descuento; con 0 % el
+  interruptor no sale.
+
+### [ ] T-118 · Caja de hoy, cierre, semana y "Mis números" en pantalla
+- REQ: REQ-069.2, REQ-069.3, REQ-069.4, REQ-069.5
+- Archivos: Caja de hoy, cierre (y su texto por WhatsApp), Semana, `src/app/(staff)/app/mis-numeros/`
+- Terminado: unitarias del texto del cierre (renglón de productos y "total a pagar", "Compras de
+  barberos"); E2E: la Caja de hoy y "Mis números" muestran la comisión de productos.
+
+### [ ] T-119 · Validación Hito 12
+- REQ: REQ-065…REQ-069
+- Archivos: `scripts/traceability.ts` (`HITOS["12"] = [[65, 69]]`), `tests/unit/traceability.test.ts`,
+  `docs/estado-del-proyecto.md`
+- Depende de Henry: `0060`…`0062` en producción, marcar los productos de Filo, prueba en la barbería y
+  aprobación del hito.
+- Terminado: `pnpm trace --hito=12` sin huecos; CI verde. `HITOS["12"]` ya está desde el PR de la
+  spec; el hito 12 entra al loop de `tests/unit/traceability.test.ts` aquí, cuando todas las pruebas
+  existen (como el hito 9 en T-097), para no dejar el CI en rojo mientras tanto.
+
+---
+
 ## Dependencias principales
 
 ```mermaid
@@ -1433,4 +1513,5 @@ flowchart LR
   T070 --> T071 --> T072 --> T073 --> T074 --> T075 --> T076 --> T077
   T077 --> T078 --> T079 --> T080 --> T081 --> T082 --> T083 --> T084 --> T085 --> T086 --> T087
   T077 --> T090 --> T091 --> T092 --> T093 --> T094 --> T095 --> T096 --> T097
+  T097 --> T110 --> T111 --> T112 --> T113 --> T114 --> T115 --> T116 --> T117 --> T118 --> T119
 ```

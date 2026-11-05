@@ -530,3 +530,45 @@
   `gift_cards.buyer_customer_id`: fusionar una ficha que compró una tarjeta falla por la llave
   foránea. Va como corrección aparte (después: `0056`, porque `0054` quedaría antes que `0055`). ADR-031 sigue apartado para el Hito 6 y
   ADR-033/035 son del Hito 8.
+
+## ADR-038 · Punto de venta de productos con comisión (Hito 12)
+- Estado: **propuesta** (grill con Henry, 2026-11-04; falta su aprobación del PR de la spec)
+- Contexto: Henry pidió "una sección donde se pueden ver los productos que tenemos, como un punto
+  POS para la venta, y se le puede asignar la venta a un barbero, donde va a tener la comisión por
+  esa venta". El plan operativo de Gamma habla de 10 % para quien vende la vitrina (cera, aceite de
+  barba, after shave). Hoy PA-17 dice que los productos no dan comisión y cada venta tiene un solo
+  barbero, del que dependen la comisión (§5.1), el cierre, la semana y "Mis números". El stock va en
+  el Hito 13 (inventario), que se cuelga de las líneas de producto. Henry descartó horario por
+  barbero, planes de crecimiento y niveles de comisión (2026-11-04).
+- Opciones del %: (a) uno del negocio con una casilla por producto; (b) uno por producto; (c) uno
+  para todos los productos, helados incluidos. Opciones de a quién va la comisión cuando el producto
+  va en el cobro de un corte: (a) al barbero de la venta (una venta, un barbero); (b) un barbero por
+  línea.
+- Decisión: (a) y (a). Henry escogió las 7 respuestas recomendadas del grill: % del negocio (10 % por
+  defecto) y casilla "Da comisión al que vende" por producto; vende el dueño, que escoge "¿Quién
+  vendió?" (un barbero o "Nadie (el negocio)", sin valor por defecto), y el barbero, solo a su nombre;
+  la vitrina reemplaza la lista de productos de "Nueva venta" y del cobro del turno, y la comisión va
+  al barbero de esa venta; "Compra de un barbero" solo del dueño, con el % de descuento de empleado
+  del negocio (20 % por defecto, 0 la apaga), sin comisión, pagada en el momento y fuera de la
+  liquidación; foto existente y categoría opcional con pestañas; anular como REQ-026 y la comisión de
+  productos en un renglón aparte en la caja, la semana y "Mis números"; un solo redondeo por venta.
+  PA-17 cambia: los productos marcados sí dejan comisión. La comisión de servicios (`commission_*`,
+  `business_amount`) no cambia de significado; la de productos va en columnas propias.
+- Abogado del diablo (pedido por Henry; decidió seguir sin cambios en las reglas):
+  1. *La comisión va al que toca el botón, no al que vendió:* en el cobro del corte de Pedro, la cera
+     que recomendó Juan queda para Pedro. → Aceptado: en Gamma casi siempre vende el que atiende; si
+     no, se registra una venta aparte en la vitrina. Un barbero por línea queda fuera de alcance.
+  2. *Reventa con el descuento de empleado:* comprar a 20 % menos y revender en la silla. → Aceptado
+     sin tope; el cierre muestra "Compras de barberos" para que el dueño lo vea.
+  3. *Un barbero se vende a sí mismo con comisión* cuando el dueño no está. → Aceptado: el valor es
+     bajo (10 % de su propia compra) y queda en "Mis números" y la caja.
+  4. *Cambiar la casilla o el % reescribe ventas viejas.* → La línea guarda `commissionable` y la
+     venta el %, la base y la comisión (REQ-065.5, REQ-067.2).
+  5. *Una pantalla nueva para poco volumen.* → Aceptado: Henry la quiere; la vitrina reemplaza la
+     lista de productos que ya existe, no suma otra pantalla.
+  6. *"Nadie" por pereza.* → "¿Quién vendió?" no trae opción escogida (REQ-066.3).
+- Consecuencias: REQ-065…REQ-069 (§5i), `design.md` §17, migraciones `0060`…`0062` y tareas
+  T-110…T-119. Cambian PA-17 y la nota de REQ-024.3. Los números saltan: REQ-060…064, ADR-037,
+  `0057`…`0059` y T-100…T-109 son del Hito 11; REQ-070…074, ADR-039, `0063`…`0067` y T-120… del Hito
+  13. El Hito 13 pone el stock con sus propios triggers sobre `sale_items` y `sales.status`; este hito
+  solo garantiza `ref_id` y `qty` en las líneas de producto (REQ-066.6).

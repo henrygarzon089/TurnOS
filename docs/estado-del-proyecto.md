@@ -279,6 +279,15 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   la ficha que queda. **En producción** desde el 2026-11-04 (`supabase db push` desde `c113896`,
   la fusión de #69).
 
+### Hito 12 — punto de venta con comisión (spec en propuesta, ADR-038)
+
+- 2026-11-04: grill de 7 preguntas con Henry, todas con la respuesta recomendada, y abogado del
+  diablo (Henry siguió sin cambios; anotado en ADR-038). Escritos REQ-065…REQ-069 (26 criterios,
+  §5i), `design.md` §17, ADR-038 (propuesta; cambia PA-17) y tareas T-110…T-119. Va en paralelo con
+  el Hito 11 (limpieza) y el Hito 13 (inventario): los números saltan a propósito. Espera el sí de
+  Henry a la spec antes de construir. Migraciones previstas `0060`…`0062`.
+- `pnpm trace`: 321 criterios; los 26 del Hito 12 sin prueba hasta construirlo.
+
 ### Hito 4 — servicios por barbero (2026-10-28)
 
 - Origen: Filo (`/filo`, creado en producción el 2026-10-28 con `supabase/data/filo.sql`) tiene

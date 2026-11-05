@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-04.
+> Generada por `scripts/traceability.ts` el 2026-11-05.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -300,3 +300,29 @@
 | REQ-059.2 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-card-reports.spec.ts, cash-closure.test.ts, gift-card.test.ts, 0053_gift_card_reports.sql | cubierto |
 | REQ-059.3 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-cards.spec.ts, gift-card.test.ts, 0051_gift_cards.sql, 0056_merge_customers_gift_cards.sql | cubierto |
 | REQ-059.4 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | 0053_gift_card_reports.sql | cubierto |
+| REQ-065.1 | Configurar la comisión y la vitrina | T-110 (pendiente), T-111 (pendiente), T-115 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-065.2 | Configurar la comisión y la vitrina | T-110 (pendiente), T-111 (pendiente), T-115 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-065.3 | Configurar la comisión y la vitrina | T-110 (pendiente), T-111 (pendiente), T-115 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-065.4 | Configurar la comisión y la vitrina | T-110 (pendiente), T-111 (pendiente), T-115 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-065.5 | Configurar la comisión y la vitrina | T-110 (pendiente), T-111 (pendiente), T-115 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-066.1 | Vender en la vitrina | T-111 (pendiente), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-066.2 | Vender en la vitrina | T-111 (pendiente), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-066.3 | Vender en la vitrina | T-111 (pendiente), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-066.4 | Vender en la vitrina | T-111 (pendiente), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-066.5 | Vender en la vitrina | T-111 (pendiente), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-066.6 | Vender en la vitrina | T-111 (pendiente), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-067.1 | Comisión por productos | T-111 (pendiente), T-114 (pendiente) | — | sin prueba |
+| REQ-067.2 | Comisión por productos | T-111 (pendiente), T-114 (pendiente) | — | sin prueba |
+| REQ-067.3 | Comisión por productos | T-111 (pendiente), T-114 (pendiente) | — | sin prueba |
+| REQ-067.4 | Comisión por productos | T-111 (pendiente), T-114 (pendiente) | — | sin prueba |
+| REQ-067.5 | Comisión por productos | T-111 (pendiente), T-114 (pendiente) | — | sin prueba |
+| REQ-068.1 | Compra de un barbero | T-110 (pendiente), T-112 (pendiente), T-113 (pendiente), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-068.2 | Compra de un barbero | T-110 (pendiente), T-112 (pendiente), T-113 (pendiente), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-068.3 | Compra de un barbero | T-110 (pendiente), T-112 (pendiente), T-113 (pendiente), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-068.4 | Compra de un barbero | T-110 (pendiente), T-112 (pendiente), T-113 (pendiente), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-068.5 | Compra de un barbero | T-110 (pendiente), T-112 (pendiente), T-113 (pendiente), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-069.1 | Anular y ver la comisión de productos | T-113 (pendiente), T-118 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-069.2 | Anular y ver la comisión de productos | T-113 (pendiente), T-118 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-069.3 | Anular y ver la comisión de productos | T-113 (pendiente), T-118 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-069.4 | Anular y ver la comisión de productos | T-113 (pendiente), T-118 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-069.5 | Anular y ver la comisión de productos | T-113 (pendiente), T-118 (pendiente), T-119 (pendiente) | — | sin prueba |
