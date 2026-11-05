@@ -3,6 +3,18 @@
 begin;
 select plan(39);
 
+-- Hora de prueba fija: las citas van a now() + minutos y tienen que caer "hoy". Cerca de la
+-- medianoche de Bogotá (now() + 90 min) se pasaban al día siguiente. Dentro de esta transacción el
+-- día del negocio se corre para que now() sea las 12:00 de su mismo día; la fecha de hoy no cambia
+-- y el rollback lo deshace. La función no cambia fuera de la prueba.
+do $$
+begin
+  execute format(
+    $f$create or replace function business_day_bogota(at timestamptz default now()) returns date
+       language sql immutable as $b$ select ((at - %L::interval) at time zone 'America/Bogota')::date $b$ $f$,
+    ((now() at time zone 'America/Bogota')::time - time '12:00')::text);
+end $$;
+
 create temp table ctx as
 select z.id as biz,
        'a0000000-0000-4000-8000-000000000001'::uuid as owner_u,
@@ -175,8 +187,8 @@ select throws_ok($$ select appointments_agenda((select biz from ctx), (select to
   '42501', 'FORBIDDEN', 'REQ-054.6 el barbero no ve la agenda');
 select auth.test_logout();
 
--- Día cerrado después de dar la cita (REQ-049.5)
-select pg_temp.cita('c7', (select juan from ctx), (((select today from ctx) + 2) + time '10:00') at time zone 'America/Bogota', '+573101000007');
+-- Día cerrado después de dar la cita (REQ-049.5). A las 12:00: con el día corrido (arriba) sigue en su día.
+select pg_temp.cita('c7', (select juan from ctx), (((select today from ctx) + 2) + time '12:00') at time zone 'America/Bogota', '+573101000007');
 update business_hours set is_closed = true
  where business_id = (select biz from ctx) and weekday = extract(dow from (select today from ctx) + 2)::int;
 select auth.test_login((select owner_u from ctx));
