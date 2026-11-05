@@ -1990,7 +1990,7 @@ cuando ya terminó (REQ-062.4).
 | `cleaning_save_list(p_business_id, p_kind, p_items jsonb [{id null, label}])` | dueño | Reemplaza la lista en ese orden: conserva los ids que vienen, crea los nuevos y borra los que faltan. Vacía → `LIST_EMPTY`; etiqueta fuera de 1..80 → `INVALID_LABEL` | 060.3 |
 | `cleaning_today(p_business_id)` | dueño, barbero activo | jsonb `{enabled, businessDay, isOpenDay, opensAt, closesAt, closingFrom, opening, closing, deep, lists}`: cada registro de hoy y de la semana con quién, hora, `isComplete` y `isLate`; `lists` son los puntos actuales con su id; `openingPending` (REQ-062.1). Si el módulo está apagado: `{enabled: false}` | 061.11, 062.1 |
 | `submit_cleaning_record(p_business_id, p_kind, p_items jsonb [{id, done, note}], p_photo_paths text[])` | dueño, barbero activo | Valida y guarda (§16.5). Devuelve `{id, isComplete, isLate}` | 061.1–061.10, 060.4, 060.5 |
-| `cleaning_owner_summary(p_business_id, p_today null)` | dueño | `{enabled, openingPending, missedClosings: [{day}], deepPending, deepMissedWeeks: [weekStart], flagged: [{id, kind, day, doneBy, isLate, isComplete, notes}], tasksDue: [{id, name, nextDue, overdue}]}`. `missedClosings`: días abiertos desde `cleaning_enabled_on` hasta ayer, sin cierre y sin `cleaning_missed_acks`, como máximo los últimos 14 | 062.3–062.5, 064.4 |
+| `cleaning_owner_summary(p_business_id)` | dueño | `{enabled, openingPending, missedClosings: [{day}], deepPending, deepMissedWeeks: [weekStart], flagged: [{id, kind, day, doneBy, isLate, isComplete, notes}], tasksDue: [{id, name, nextDue, overdue}]}`. `missedClosings`: días abiertos desde `cleaning_enabled_on` hasta ayer, sin cierre y sin `cleaning_missed_acks`, como máximo los últimos 14 | 062.3–062.5, 064.4 |
 | `ack_missed_closing(p_business_id, p_day, p_note)` | dueño | Marca visto. Día con cierre o que no estaba abierto → `NOT_MISSED` | 062.3 |
 | `submit_cleaning_inspection(p_business_id, p_items jsonb [{id, ok, note, photoPath, barberId}])` | dueño | Exige todos los puntos actuales de Cierre y Entre clientes, cada uno con `ok` booleano (`INSPECTION_INCOMPLETE`); `barberId` solo en fallas y de un barbero activo del negocio (`INVALID_BARBER`); lista cambiada → `LIST_CHANGED` | 063.1–063.3 |
 | `cleaning_history(p_business_id, p_weeks int default 8, p_today null)` | dueño | Por semana: `deepDone`, `missedClosings`, `inspections`, y por barbero (y "Dueño"): `complete`, `incomplete`, `late`, `failures` (fallas con su `barberId`) más `generalFailures`. Con la lista de registros y revisiones (id, tipo, día, quién, estado) | 063.5 |
@@ -1999,6 +1999,10 @@ cuando ya terminó (REQ-062.4).
 | `record_cleaning_task_run(p_business_id, p_task_id, p_done_on, p_note, p_attachment_path)` | dueño | Fecha futura → `INVALID_DATE`; ruta fuera de `<negocio>/tasks/<task_id>/` → `INVALID_PATH` | 064.2, 064.3 |
 | `cleaning_tasks_list(p_business_id, p_today null)` | dueño | Tareas con `lastDone`, `nextDue`, `status` (`overdue`, `soon` ≤ 7 días, `ok`) y sus registros, los más nuevos primero | 064.4 |
 | `cleaning_photos_to_purge(p_business_id, p_limit)` / `mark_cleaning_photos_purged(p_business_id, p_record_ids, p_inspection_ids)` / `cleaning_purge_claim(p_business_id)` | service_role | §16.3 | 064.6 |
+
+La hora sale de `cleaning_now()`: es `now()`, salvo en las pruebas pgTAP, que la fijan con
+`set_config('turnos.test_now', …)`. Ese valor solo se respeta si `session_user = 'postgres'`; la app
+entra como `authenticator` y no puede cambiarlo. Por eso las funciones no reciben un `p_today`.
 
 El dueño se reconoce con `is_owner_of` y el barbero con `my_barber_id` más `barbers.is_active`. Un
 barbero inactivo, o alguien de otro negocio, recibe `FORBIDDEN` (`42501`, como en `0051`). Los demás
