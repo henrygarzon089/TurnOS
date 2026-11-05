@@ -279,6 +279,14 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   la ficha que queda. **En producción** desde el 2026-11-04 (`supabase db push` desde `c113896`,
   la fusión de #69).
 
+### Hito 11 — limpieza y bioseguridad (spec propuesta, ADR-037)
+
+- 2026-11-04: grill de 21 preguntas con Henry, todas con la respuesta recomendada. Escritos
+  REQ-060…REQ-064 (37 criterios, §5h), `design.md` §16, ADR-037 (propuesta) y tareas T-100…T-109.
+  Migraciones previstas `0057`…`0059`, con un bucket privado nuevo, `cleaning`. Va en paralelo con
+  los Hitos 12 (punto de venta) y 13 (inventario); el 10 (IA en WhatsApp) está reservado.
+- Siguiente: que Henry apruebe el PR de la spec; después, T-100 con pruebas primero.
+
 ### Hito 4 — servicios por barbero (2026-10-28)
 
 - Origen: Filo (`/filo`, creado en producción el 2026-10-28 con `supabase/data/filo.sql`) tiene
