@@ -1654,13 +1654,19 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   Una transferencia desde una estación "por cerrar" se permite (hacia ella no). Las sugerencias de
   rendimiento no van en `inventory_overview` (son de 0066): la pantalla las pide aparte.
 
-### [ ] T-122 · Vitrina desde la caja y la cortesía
+### [x] T-122 · Vitrina desde la caja y la cortesía
 - REQ: REQ-072.1, REQ-072.2, REQ-072.3, REQ-072.4
 - Archivos: `supabase/migrations/0065_inventory_sales_hook.sql`,
   `supabase/tests/0065_inventory_sales_hook.sql`
 - Depende de: las migraciones del Hito 12 (`0060`…`0062`) fusionadas, para probar contra su
   `register_sale`.
 - Terminado: pgTAP del ejemplo Q (anular dos veces, otro `update` no mueve stock) y cortesía una vez.
+- Nota (2026-11-04): pgTAP 18 nuevas en `supabase/tests/0065_inventory_sales_hook.sql`. **Desvío de
+  orden:** se construyó antes de que se fusionaran `0060`…`0062` del Hito 12, probado contra el
+  `register_sale`/`void_sale` de `0052`. Los triggers solo leen `sale_items.kind/ref_id/qty` y el paso
+  de `sales.status`, así que no dependen del cambio del 12; al fusionarlo hay que volver a correr la
+  suite pgTAP. Solo descuenta ítems activos. Anular dos veces ya lo rechaza `sales_guard`; además
+  el único parcial `(sale_item_id, kind)` evita una segunda devolución.
 
 ### [ ] T-123 · Conteos, alerta y rendimiento sugerido
 - REQ: REQ-073.2, REQ-073.3, REQ-073.4, REQ-073.5, REQ-073.6, REQ-073.7
