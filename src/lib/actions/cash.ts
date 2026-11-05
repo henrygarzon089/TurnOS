@@ -26,6 +26,13 @@ export type PaymentMethod = "cash" | "nequi" | "transfer" | "card";
 
 export type CatalogItem = { id: string; name: string; price: number };
 
+/** REQ-066.1 producto de la vitrina (foto, categoría y si da comisión). */
+export type ShowcaseItem = CatalogItem & {
+  photoPath: string | null;
+  category: string | null;
+  commissionable: boolean;
+};
+
 export type CheckoutView = {
   isOwner: boolean;
   ticket: {
@@ -39,7 +46,10 @@ export type CheckoutView = {
     barberName: string;
   } | null;
   services: CatalogItem[];
-  products: CatalogItem[];
+  products: ShowcaseItem[];
+  /** REQ-065.1 % de comisión por productos y REQ-068.1 % de descuento de empleado. */
+  productCommissionPct: number;
+  staffDiscountPct: number;
   loyalty: LoyaltyStatus | null;
   /** REQ-047.1: periodo vigente de la familia del cliente del turno (null si no es miembro). */
   membership: MembershipStatus | null;
@@ -93,6 +103,10 @@ const ERRORS: Record<string, string> = {
   GIFT_CARD_INSUFFICIENT: "La tarjeta de regalo ya no tiene ese saldo. Vuelve a buscar el código.",
   GIFT_CARD_IN_USE: "Esta tarjeta ya se usó: primero anula las ventas que la usaron.",
   ONE_GIFT_CARD_PER_SALE: "Se puede usar una sola tarjeta de regalo por cobro.",
+  PRODUCT_NOT_FOUND: "Ese producto ya no está a la venta. Cierra y vuelve a abrir.",
+  STAFF_DISCOUNT_OFF: "El descuento de empleado está en 0 %: no hay compra de un barbero.",
+  INVALID_STAFF_PURCHASE: "La compra de un barbero es solo de productos.",
+  BARBER_NOT_FOUND: "Ese barbero ya no está activo.",
   FORBIDDEN: "No tienes permiso para esta acción.",
 };
 
@@ -113,7 +127,7 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
   const supabase = await createSupabaseServerClient();
   const biz = session.business.id;
 
-  const [ticketRes, servicesRes, productsRes, progRes, barbersRes] = await Promise.all([
+  const [ticketRes, servicesRes, productsRes, progRes, barbersRes, bizRes] = await Promise.all([
     ticketId
       ? supabase
           .from("tickets")
@@ -131,7 +145,7 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
       .order("sort_order"),
     supabase
       .from("products")
-      .select("id, name, price")
+      .select("id, name, price, photo_path, category, commissionable")
       .eq("business_id", biz)
       .eq("is_active", true)
       .eq("for_sale", true) // REQ-038.7: lo que es solo de cortesía no se cobra
@@ -147,6 +161,11 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
       .eq("business_id", biz)
       .eq("is_active", true)
       .order("sort_order"),
+    supabase
+      .from("businesses")
+      .select("product_commission_pct, staff_discount_pct")
+      .eq("id", biz)
+      .maybeSingle(),
   ]);
 
   const t = ticketRes.data as {
@@ -202,7 +221,22 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
         }
       : null,
     services: services.map(({ id, name, price }) => ({ id, name, price })),
-    products: (productsRes.data ?? []) as CatalogItem[],
+    products: (
+      (productsRes.data ?? []) as (CatalogItem & {
+        photo_path: string | null;
+        category: string | null;
+        commissionable: boolean;
+      })[]
+    ).map((p) => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      photoPath: p.photo_path,
+      category: p.category,
+      commissionable: p.commissionable,
+    })),
+    productCommissionPct: bizRes.data?.product_commission_pct ?? 0,
+    staffDiscountPct: bizRes.data?.staff_discount_pct ?? 0,
     loyalty,
     membership,
     membershipServiceIds: services.filter((s) => s.counts_for_membership).map((s) => s.id),
@@ -227,6 +261,8 @@ const saleSchema = z.object({
   /** "Nueva venta" con el celular del cliente (REQ-047.1); con turno, el cliente sale del turno. */
   customerId: z.uuid().nullable().optional(),
   barberId: z.uuid().nullable(),
+  /** REQ-068.2 compra de un barbero: quién compra (entonces sin turno ni barbero que vende). */
+  staffBuyerId: z.uuid().nullable().optional(),
   items: z.array(lineSchema).min(1, ERRORS.EMPTY_SALE),
   /** Medio de pago del total o, con tarjeta de regalo, de lo que falta (REQ-057.3). */
   method: z.enum(["cash", "nequi", "transfer", "card"]),
@@ -264,6 +300,7 @@ export async function registerSale(input: z.input<typeof saleSchema>): Promise<C
     })),
     p_payments: checkoutPayments(d.total, d.method, d.giftCard),
     p_customer_id: d.customerId ?? null,
+    p_staff_buyer_id: d.staffBuyerId ?? null,
   });
   if (error) return { ok: false, error: mapError(error) };
   return { ok: true, saleId: (data as { id: string }).id };

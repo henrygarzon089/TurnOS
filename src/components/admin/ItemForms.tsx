@@ -36,6 +36,8 @@ export type ProductRow = {
   for_sale: boolean;
   is_courtesy: boolean;
   photo_path: string | null;
+  commissionable: boolean;
+  category: string | null;
 };
 
 function useRefreshOnOk(state: FormState) {
@@ -233,7 +235,15 @@ function ProductPhoto({
 }
 
 /** Fila editable de producto (REQ-024.1, REQ-038.1). */
-export function ProductForm({ product, businessId }: { product?: ProductRow; businessId: string }) {
+export function ProductForm({
+  product,
+  businessId,
+  categories = [],
+}: {
+  product?: ProductRow;
+  businessId: string;
+  categories?: string[];
+}) {
   const [state, action, pending] = useActionState<FormState, FormData>(saveProduct, undefined);
   const [busy, startTransition] = useTransition();
   const router = useRouter();
@@ -242,6 +252,8 @@ export function ProductForm({ product, businessId }: { product?: ProductRow; bus
   // Controlados: React limpia el formulario al terminar la acción, también con error
   const [forSale, setForSale] = useState(product?.for_sale ?? true);
   const [isCourtesy, setIsCourtesy] = useState(product?.is_courtesy ?? false);
+  const [commissionable, setCommissionable] = useState(product?.commissionable ?? false);
+  const [category, setCategory] = useState(product?.category ?? "");
   const [photoPath, setPhotoPath] = useState(product?.photo_path ?? null);
   const [uploading, setUploading] = useState(false);
   const [handled, setHandled] = useState(state);
@@ -250,6 +262,8 @@ export function ProductForm({ product, businessId }: { product?: ProductRow; bus
     if (state?.ok && isNew) {
       setForSale(true);
       setIsCourtesy(false);
+      setCommissionable(false);
+      setCategory("");
       setPhotoPath(null);
     }
   }
@@ -305,6 +319,33 @@ export function ProductForm({ product, businessId }: { product?: ProductRow; bus
           className="h-5 w-5"
         />
         De cortesía
+      </label>
+      <label className="flex min-h-10 items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          name="commissionable"
+          checked={commissionable}
+          onChange={(e) => setCommissionable(e.target.checked)}
+          className="h-5 w-5"
+        />
+        Da comisión al que vende
+      </label>
+      <label className="flex flex-col text-xs">
+        Categoría (opcional)
+        <input
+          name="category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          maxLength={30}
+          list={`categories-${product?.id ?? "new"}`}
+          placeholder="Vitrina, Bebidas…"
+          className="input"
+        />
+        <datalist id={`categories-${product?.id ?? "new"}`}>
+          {categories.map((c) => (
+            <option key={c} value={c} />
+          ))}
+        </datalist>
       </label>
       <ProductPhoto
         businessId={businessId}
