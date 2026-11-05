@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { computeSale, membershipDiscount, roundCommission } from "@/lib/domain/commission";
+import {
+  computeSale,
+  membershipDiscount,
+  productCommission,
+  roundCommission,
+  staffDiscount,
+} from "@/lib/domain/commission";
 
 /** design.md §5.1 — los ejemplos A, B, C y D tal cual. */
 describe("REQ-025.2 comisión por venta (design.md §5.1)", () => {
@@ -178,5 +184,50 @@ describe("REQ-047.4 comisión con membresía (design.md §13.4)", () => {
       commissionAmount: 15000,
       businessAmount: 10000,
     });
+  });
+});
+
+/** design.md §17.4 — ejemplos M, N, O, P y Q del Hito 12 (mismos números que pgTAP 0061). */
+describe("REQ-067.1 comisión de productos (design.md §17.4)", () => {
+  const cera = { unitPrice: 35000, qty: 1, commissionable: true };
+  const aceite = { unitPrice: 42500, qty: 1, commissionable: true };
+  const gaseosa = { unitPrice: 4000, qty: 1, commissionable: false };
+
+  it("REQ-067.1 ejemplo M: la cera (marcada) deja 10 % y la gaseosa nada", () => {
+    expect(productCommission({ products: [cera, gaseosa], pct: 10, hasBarber: true })).toEqual({
+      base: 35000,
+      amount: 3500,
+    });
+  });
+
+  it("REQ-067.1 ejemplo N: el dueño vende para Pedro", () => {
+    expect(productCommission({ products: [cera, aceite], pct: 10, hasBarber: true })).toEqual({
+      base: 77500,
+      amount: 7750,
+    });
+  });
+
+  it('REQ-067.3 ejemplo O: "Nadie (el negocio)" no deja comisión', () => {
+    expect(productCommission({ products: [cera, aceite], pct: 10, hasBarber: false })).toEqual({
+      base: 0,
+      amount: 0,
+    });
+  });
+
+  it("REQ-067.1 ejemplo Q: un solo redondeo por venta", () => {
+    const peinilla = { unitPrice: 4005, qty: 3, commissionable: true };
+    expect(productCommission({ products: [peinilla], pct: 10, hasBarber: true }).amount).toBe(1202);
+    expect(() =>
+      productCommission({ products: [{ ...peinilla, qty: 0 }], pct: 10, hasBarber: true }),
+    ).toThrow();
+  });
+
+  it("REQ-068.3 ejemplo P: la compra de un barbero lleva 20 % por línea y no da comisión", () => {
+    expect(staffDiscount({ unitPrice: 35000, qty: 1 }, 20)).toBe(7000);
+    expect(staffDiscount({ unitPrice: 4005, qty: 1 }, 15)).toBe(601);
+    expect(() => staffDiscount({ unitPrice: 35000, qty: 0 }, 20)).toThrow();
+    expect(
+      productCommission({ products: [cera], pct: 10, hasBarber: true, staffPurchase: true }),
+    ).toEqual({ base: 0, amount: 0 });
   });
 });
