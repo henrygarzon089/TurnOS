@@ -300,6 +300,69 @@
 | REQ-059.2 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-card-reports.spec.ts, cash-closure.test.ts, gift-card.test.ts, 0053_gift_card_reports.sql | cubierto |
 | REQ-059.3 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | gift-cards.spec.ts, gift-card.test.ts, 0051_gift_cards.sql, 0056_merge_customers_gift_cards.sql | cubierto |
 | REQ-059.4 | Lo que ve el dueño | T-090 (hecha), T-092 (hecha), T-093 (hecha), T-096 (hecha), T-097 (hecha) | 0053_gift_card_reports.sql | cubierto |
+| REQ-060.1 | Encender el módulo y editar las listas | T-100 (pendiente), T-101 (pendiente), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-060.2 | Encender el módulo y editar las listas | T-100 (pendiente), T-101 (pendiente), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-060.3 | Encender el módulo y editar las listas | T-100 (pendiente), T-101 (pendiente), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-060.4 | Encender el módulo y editar las listas | T-100 (pendiente), T-101 (pendiente), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-060.5 | Encender el módulo y editar las listas | T-100 (pendiente), T-101 (pendiente), T-103 (pendiente), T-105 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-061.1 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.2 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.3 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.4 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.5 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.6 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.7 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.8 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.9 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.10 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-061.11 | Registrar apertura, cierre y limpieza profunda | T-101 (pendiente), T-103 (pendiente), T-104 (pendiente) | — | sin prueba |
+| REQ-062.1 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.2 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.3 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.4 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.5 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.6 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.7 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-062.8 | Avisos dentro de TurnOS | T-104 (pendiente), T-105 (pendiente) | — | sin prueba |
+| REQ-063.1 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-063.2 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-063.3 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-063.4 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-063.5 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-063.6 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-063.7 | Revisión del dueño e historial | T-100 (pendiente), T-102 (pendiente), T-106 (pendiente), T-108 (pendiente) | — | sin prueba |
+| REQ-064.1 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-064.2 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-064.3 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-064.4 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-064.5 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-064.6 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
+| REQ-065.1 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (pendiente), T-119 (pendiente) | 0060_pos_products.sql | prueba escrita |
+| REQ-065.2 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (pendiente), T-119 (pendiente) | 0060_pos_products.sql | prueba escrita |
+| REQ-065.3 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (pendiente), T-119 (pendiente) | 0060_pos_products.sql | prueba escrita |
+| REQ-065.4 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (pendiente), T-119 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
+| REQ-065.5 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (pendiente), T-119 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
+| REQ-066.1 | Vender en la vitrina | T-111 (hecha), T-116 (pendiente), T-117 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
+| REQ-066.2 | Vender en la vitrina | T-111 (hecha), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-066.3 | Vender en la vitrina | T-111 (hecha), T-116 (pendiente), T-117 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
+| REQ-066.4 | Vender en la vitrina | T-111 (hecha), T-116 (pendiente), T-117 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
+| REQ-066.5 | Vender en la vitrina | T-111 (hecha), T-116 (pendiente), T-117 (pendiente) | — | sin prueba |
+| REQ-066.6 | Vender en la vitrina | T-111 (hecha), T-116 (pendiente), T-117 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
+| REQ-067.1 | Comisión por productos | T-111 (hecha), T-114 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
+| REQ-067.2 | Comisión por productos | T-111 (hecha), T-114 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
+| REQ-067.3 | Comisión por productos | T-111 (hecha), T-114 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
+| REQ-067.4 | Comisión por productos | T-111 (hecha), T-114 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
+| REQ-067.5 | Comisión por productos | T-111 (hecha), T-114 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
+| REQ-068.1 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | 0060_pos_products.sql | prueba escrita |
+| REQ-068.2 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
+| REQ-068.3 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
+| REQ-068.4 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
+| REQ-068.5 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (pendiente), T-115 (pendiente), T-117 (pendiente) | 0062_pos_reports.sql | prueba escrita |
+| REQ-069.1 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0061_pos_register_sale.sql, 0062_pos_reports.sql | prueba escrita |
+| REQ-069.2 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0062_pos_reports.sql | prueba escrita |
+| REQ-069.3 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0062_pos_reports.sql | prueba escrita |
+| REQ-069.4 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0062_pos_reports.sql | prueba escrita |
+| REQ-069.5 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | — | sin prueba |
 | REQ-070.1 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
 | REQ-070.2 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
 | REQ-070.3 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |

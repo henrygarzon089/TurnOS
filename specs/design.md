@@ -23,6 +23,7 @@
 13. Hito 7 — Membresía familiar
 14. Hito 8 — Citas a hora fija
 15. Hito 9 — Tarjetas de regalo (§14 es del Hito 8)
+17. Hito 12 — Punto de venta de productos con comisión (§16 es del Hito 11)
 18. Hito 13 — Inventario de insumos y vitrina (§16 y §17 son de los Hitos 11 y 12)
 
 ---
@@ -599,7 +600,8 @@ commission_amount = round( commission_base × commission_pct / 100 )        // r
 business_amount   = commission_base − commission_amount
 ```
 
-Los productos no entran en la comisión (PA-17). Un descuento que no es premio sí reduce la base
+Los productos no entran en esta comisión (PA-17); desde el Hito 12 los productos marcados tienen
+la suya aparte (§17.4, ADR-038). Un descuento que no es premio sí reduce la base
 (PA-18). Todo se guarda en la venta; cambiar `commission_pct` después no la altera (REQ-025.3).
 
 **Ejemplo A — corte normal.** Corte $ 25.000, barbero Juan 60 %, pago Nequi.
@@ -1025,6 +1027,11 @@ turnos/
 | REQ-052 | 14.3 `mark_appointment_arrived`, `call_next`, `close_expired_queues`, 14.5 |
 | REQ-053 | 14.4 |
 | REQ-054 | 14.1 plantillas, 14.3 `appointments_agenda`, `reassign_appointment`, 14.5 `/admin/citas` |
+| REQ-065 | 17.1 `businesses`, `business_pct_changes`, `products`, 17.5 |
+| REQ-066 | 17.1 gancho del Hito 13, 17.3 `register_sale`, 17.5 vitrina |
+| REQ-067 | 17.1 `sales`/`sale_items`, 17.3 `register_sale`, 17.4 |
+| REQ-068 | 17.1 `sales_staff_purchase_ck`, 17.3 `register_sale`, 17.4 ejemplo P, 17.5 |
+| REQ-069 | 17.3 `void_sale`, `cash_day_summary`, `weekly_summary`, 17.4 ejemplo R, 17.5 |
 | NFR-001…013 | 1, 2.4, 6.4, 6.6, 8 |
 
 ---
@@ -1888,6 +1895,347 @@ H solo se anula si la tarjeta no tiene pagos activos; si I sigue activa → `GIF
 - Integración: acciones de tarjetas contra Postgres local.
 - E2E (Pixel 7 + iPhone 13): el dueño vende una tarjeta y abre su página; el barbero cobra un corte
   con parte en tarjeta y parte en efectivo; la Caja de hoy muestra las líneas nuevas.
+
+---
+
+## 16. Hito 11 — Limpieza y bioseguridad (REQ-060…REQ-064, ADR-037)
+
+> Migraciones `0057_cleaning.sql` (datos, listas, activación, RLS y bucket), `0058_cleaning_records.sql`
+> (registros, avisos y panel) y `0059_cleaning_review_tasks.sql` (revisión, historial, tareas y
+> purga), cada una con su pgTAP y permisos explícitos (ADR-019). Con el módulo apagado nada cambia.
+> No toca la fila, la caja ni `create_business`.
+
+### 16.1 Datos
+
+| Tabla | Cambio | REQ |
+|---|---|---|
+| `businesses` | `cleaning_enabled bool not null default false`, `cleaning_enabled_on date null` (primer día en que se encendió; no cambia al apagar y volver a encender), `cleaning_purged_on date null` (§16.3) | 060.1, 062.8, 064.6 |
+| enum `cleaning_kind` (nuevo) | `'opening'`, `'closing'`, `'deep'`, `'between_clients'` | 060.2 |
+| `cleaning_checklist_items` (nueva) | `id, business_id, kind cleaning_kind, label text check (1..80, sin espacios a los lados), sort_order int, created_at`; índice `(business_id, kind, sort_order)` | 060.2, 060.3 |
+| `cleaning_records` (nueva) | `id, business_id, kind cleaning_kind check (kind <> 'between_clients'), business_day date, week_start date` (lunes de `business_day`), `done_by uuid` (auth.users), `barber_id uuid null` (null = dueño), `created_at, is_complete bool, is_late bool default false, items jsonb, photo_paths text[] default '{}', photos_purged_at timestamptz null`. Índices únicos parciales: `(business_id, kind, business_day) where kind in ('opening','closing')` y `(business_id, week_start) where kind = 'deep'` | 061.1–061.4, 061.8 |
+| `cleaning_inspections` (nueva) | `id, business_id, done_by, created_at, items jsonb, photos_purged_at timestamptz null` | 063.1–063.3 |
+| `cleaning_missed_acks` (nueva) | `business_id, business_day date, note text null check (≤ 200), acked_by, acked_at`; PK `(business_id, business_day)` | 062.3 |
+| `cleaning_tasks` (nueva) | `id, business_id, name text check (1..80), every_days int check (1..730), is_active bool default true, created_at` | 064.1 |
+| `cleaning_task_runs` (nueva) | `id, business_id, task_id, done_on date, note text null check (≤ 200), attachment_path text null, created_by, created_at`; `check (done_on <= business_day_bogota(created_at))` | 064.2, 064.3 |
+
+**Copia de los puntos** (REQ-060.4). `cleaning_records.items` es un arreglo
+`[{label, done, note}]` y `cleaning_inspections.items` es `[{group, label, ok, note, photoPath,
+barberId}]` (`group` ∈ `closing`, `between_clients`). Las etiquetas se copian en el servidor desde
+`cleaning_checklist_items` al enviar: el cliente manda ids, no textos. Cambiar una lista solo toca
+`cleaning_checklist_items`. Quitar un punto lo borra de verdad, porque ningún registro apunta a él.
+
+**Puntos por defecto** (REQ-060.2), en este orden. Se siembran con `cleaning_seed_lists`, que solo
+inserta en las listas vacías:
+
+- Apertura: Ventilar · Preparar la solución desinfectante del día, marcada con la fecha · Dotación y
+  toallas limpias en cada estación · Baño limpio con jabón y toallas · Calentador de toallas
+  encendido · Revisar la nevera de bebidas.
+- Cierre: Barrer y trapear · Desinfectar todas las herramientas y desechar la solución · Lavacabezas
+  y desagüe · Espejos, mesones, sillas y rincón de niños · Baño completo · Basura separada por colores
+  · Toallas a lavar · Apagar equipos. El punto "Foto del local limpio" del documento de Henry es la
+  foto obligatoria (REQ-061.4), no una casilla.
+- Limpieza profunda: Sillas a fondo, con mecanismos · Desagües, vidrios, zonas altas y lámparas ·
+  Debajo de muebles y detrás de estaciones · Nevera, plantas y fechas de vencimiento.
+- Entre clientes: Pelo barrido · Herramientas lavadas y desinfectadas · Máquinas con Cool Care ·
+  Cuchilla nueva · Silla desinfectada · Capa, papel cuello y toalla · Manos o guantes.
+
+**Día de negocio abierto**: `cleaning_is_open_day(p_business_id, p_day)` es verdadero si el horario
+de ese día de la semana no está cerrado y el dueño no lo cerró a mano (`queue_override = 'closed'`
+con `queue_override_day = p_day`). Lo usan el aviso de apertura (REQ-062.1) y "Sin registrar"
+(REQ-062.3). Un cierre manual que después se reemplaza no se recuerda: se acepta, porque el dueño
+puede marcar el aviso como visto.
+
+**Semana**: `week_start = date_trunc('week', business_day)::date` (lunes). La profunda se exige
+desde la semana en que se encendió el módulo, y la semana en curso solo cuenta como "Sin profunda"
+cuando ya terminó (REQ-062.4).
+
+### 16.2 RLS
+
+| Tabla | Dueño | Barbero |
+|---|---|---|
+| `cleaning_checklist_items` | select; cambios con `cleaning_save_list` | sin acceso directo (los puntos llegan con `cleaning_today`) |
+| `cleaning_records` | select | sin acceso directo (`cleaning_today`) |
+| `cleaning_inspections`, `cleaning_missed_acks`, `cleaning_tasks`, `cleaning_task_runs` | select; cambios con funciones | ninguno (REQ-063.4) |
+
+`anon` no tiene acceso. Todas las escrituras van por funciones `security definer`.
+
+### 16.3 Almacenamiento privado
+
+- Bucket nuevo `cleaning`, **privado** (`public = false`), con `file_size_limit` de 5 MB y tipos
+  `image/webp`, `image/jpeg` y `application/pdf`. El de las fotos de cortes (`media`, §11.3) es
+  público y no sirve aquí (REQ-064.5).
+- Rutas y políticas de `storage.objects`, con `cleaning_can_write(name)` y `cleaning_can_read(name)`:
+  - `<business_id>/records/<business_day>/<uuid>.webp`: suben el dueño y los barberos activos; leen
+    el dueño y los barberos activos.
+  - `<business_id>/inspections/<uuid>.webp` y `<business_id>/tasks/<task_id>/<uuid>.(webp|pdf)`:
+    solo el dueño.
+- El navegador sube directo a Storage con la sesión del usuario, como la foto de producto (T-061).
+  Así un PDF de 5 MB no pasa por la función de Vercel, que acepta hasta 4,5 MB. Las fotos se reducen
+  con `src/lib/media/resize.ts` (≤ 1080 px, ≤ 300 KB, REQ-061.5). El servidor solo guarda rutas,
+  después de revisar que empiecen por el negocio y la carpeta correctos (`INVALID_PATH`).
+- Para mostrar las fotos y adjuntos, el servidor crea URL firmadas de 1 hora con la sesión del usuario.
+  Las políticas deciden quién puede abrir cada una.
+- `<input type="file" accept="image/*" capture="environment">` abre la cámara (REQ-061.5); el
+  adjunto de las tareas usa `accept="image/*,application/pdf"` sin `capture`.
+- **Purga a los 90 días** (REQ-064.6). Desde SQL no se pueden borrar objetos de Storage, así que hay
+  dos partes:
+  1. Lectura: toda función que devuelve fotos de un registro o una revisión con `created_at` de hace
+     más de 90 días devuelve `photosPurged: true` y ninguna ruta. La pantalla muestra "Foto borrada
+     (más de 90 días)". Esto se cumple el día 90 aunque el borrado físico se atrase.
+  2. Borrado: `purgeCleaningPhotos(businessId)`, en `src/lib/cleaning/purge.ts`, pide
+     `cleaning_photos_to_purge` (hasta 200 rutas), las borra con el cliente `service_role` de Storage
+     y llama `mark_cleaning_photos_purged`. Corre con `after()` al abrir "Limpieza" (barbero o dueño)
+     y al abrir el panel del dueño, como máximo una vez por día y negocio (`cleaning_purge_claim`, que
+     guarda `businesses.cleaning_purged_on`). No hay cron nuevo. Si falla, se reintenta al día
+     siguiente.
+
+### 16.4 Funciones SQL
+
+| Función | Quién | Qué | REQ |
+|---|---|---|---|
+| `cleaning_set_enabled(p_business_id, p_enabled)` | dueño | Enciende o apaga; la primera vez pone `cleaning_enabled_on = business_day_bogota()` y llama `cleaning_seed_lists` | 060.1, 060.2 |
+| `cleaning_save_list(p_business_id, p_kind, p_items jsonb [{id null, label}])` | dueño | Reemplaza la lista en ese orden: conserva los ids que vienen, crea los nuevos y borra los que faltan. Vacía → `LIST_EMPTY`; etiqueta fuera de 1..80 → `INVALID_LABEL` | 060.3 |
+| `cleaning_today(p_business_id)` | dueño, barbero activo | jsonb `{enabled, businessDay, isOpenDay, opensAt, closesAt, closingFrom, opening, closing, deep, lists}`: cada registro de hoy y de la semana con quién, hora, `isComplete` y `isLate`; `lists` son los puntos actuales con su id; `openingPending` (REQ-062.1). Si el módulo está apagado: `{enabled: false}` | 061.11, 062.1 |
+| `submit_cleaning_record(p_business_id, p_kind, p_items jsonb [{id, done, note}], p_photo_paths text[])` | dueño, barbero activo | Valida y guarda (§16.5). Devuelve `{id, isComplete, isLate}` | 061.1–061.10, 060.4, 060.5 |
+| `cleaning_owner_summary(p_business_id, p_today null)` | dueño | `{enabled, openingPending, missedClosings: [{day}], deepPending, deepMissedWeeks: [weekStart], flagged: [{id, kind, day, doneBy, isLate, isComplete, notes}], tasksDue: [{id, name, nextDue, overdue}]}`. `missedClosings`: días abiertos desde `cleaning_enabled_on` hasta ayer, sin cierre y sin `cleaning_missed_acks`, como máximo los últimos 14 | 062.3–062.5, 064.4 |
+| `ack_missed_closing(p_business_id, p_day, p_note)` | dueño | Marca visto. Día con cierre o que no estaba abierto → `NOT_MISSED` | 062.3 |
+| `submit_cleaning_inspection(p_business_id, p_items jsonb [{id, ok, note, photoPath, barberId}])` | dueño | Exige todos los puntos actuales de Cierre y Entre clientes, cada uno con `ok` booleano (`INSPECTION_INCOMPLETE`); `barberId` solo en fallas y de un barbero activo del negocio (`INVALID_BARBER`); lista cambiada → `LIST_CHANGED` | 063.1–063.3 |
+| `cleaning_history(p_business_id, p_weeks int default 8, p_today null)` | dueño | Por semana: `deepDone`, `missedClosings`, `inspections`, y por barbero (y "Dueño"): `complete`, `incomplete`, `late`, `failures` (fallas con su `barberId`) más `generalFailures`. Con la lista de registros y revisiones (id, tipo, día, quién, estado) | 063.5 |
+| `cleaning_record_detail(p_id)` / `cleaning_inspection_detail(p_id)` | dueño | Puntos, notas, quién, hora y rutas de fotos (o `photosPurged`) | 063.6, 064.6 |
+| `save_cleaning_task(p_business_id, p_id null, p_name, p_every_days, p_is_active)` | dueño | Crea o edita | 064.1 |
+| `record_cleaning_task_run(p_business_id, p_task_id, p_done_on, p_note, p_attachment_path)` | dueño | Fecha futura → `INVALID_DATE`; ruta fuera de `<negocio>/tasks/<task_id>/` → `INVALID_PATH` | 064.2, 064.3 |
+| `cleaning_tasks_list(p_business_id, p_today null)` | dueño | Tareas con `lastDone`, `nextDue`, `status` (`overdue`, `soon` ≤ 7 días, `ok`) y sus registros, los más nuevos primero | 064.4 |
+| `cleaning_photos_to_purge(p_business_id, p_limit)` / `mark_cleaning_photos_purged(p_business_id, p_record_ids, p_inspection_ids)` / `cleaning_purge_claim(p_business_id)` | service_role | §16.3 | 064.6 |
+
+El dueño se reconoce con `is_owner_of` y el barbero con `my_barber_id` más `barbers.is_active`. Un
+barbero inactivo, o alguien de otro negocio, recibe `FORBIDDEN` (`42501`, como en `0051`). Los demás
+errores usan `P0004`.
+
+### 16.5 Reglas de `submit_cleaning_record`
+
+En orden; el primer error gana:
+
+1. Módulo apagado → `CLEANING_DISABLED`. Tipo `'between_clients'` → `INVALID_KIND`.
+2. Ya existe el de hoy (apertura o cierre) o el de esta semana (profunda) → `ALREADY_RECORDED`, con
+   `detail` `{doneBy, at}` para el texto de REQ-061.2. El índice único cubre la carrera entre dos
+   celulares: el segundo recibe el mismo error.
+3. Cierre de un barbero antes de `closes_at − 1 h` de hoy → `CLOSING_TOO_EARLY`, con `detail`
+   `{from}`. En un día cerrado por horario no hay hora mínima. El dueño no tiene hora mínima
+   (REQ-061.7). La medianoche la impone `business_day`: después de las 12 el día ya es otro
+   (REQ-061.10).
+4. Los ids de `p_items` no son exactamente los puntos actuales de la lista → `LIST_CHANGED`
+   (REQ-060.5).
+5. Punto sin marcar sin nota (o nota de más de 200) → `NOTE_REQUIRED`.
+6. Cierre sin exactamente 1 foto → `PHOTO_REQUIRED`. Apertura o profunda con más de 3 →
+   `TOO_MANY_PHOTOS`. Ruta fuera de `<negocio>/records/` → `INVALID_PATH`.
+7. Guarda con la copia de las etiquetas; `is_complete = todos marcados`; en la apertura,
+   `is_late = now() > opens_at de hoy + 30 min` (falso en un día cerrado por horario).
+
+### 16.6 Server actions y pantallas
+
+- Acciones en `src/lib/actions/cleaning.ts`. La lógica pura va en `src/lib/domain/cleaning.ts`:
+  validar el formulario antes de enviar, textos de error, armar "La apertura de hoy ya la registró
+  <nombre> a las <hora>", estado de una tarea, semana de una fecha y lista de sugerencias.
+- **Barbero**: `/app/fila` muestra arriba el aviso "Apertura pendiente" con el botón "Registrar
+  apertura" y, en la barra, el botón "Limpieza" (solo con el módulo encendido). `/app/limpieza`
+  muestra tres tarjetas, Apertura, Cierre y Profunda de la semana. Cada una dice "Hecha por Carlos ·
+  9:05 a. m.", "Incompleta" o "Tarde", o trae el botón para llenarla. El formulario es una lista de
+  casillas de ≥ 48 px, y al desmarcar un punto aparece el campo "¿Por qué?". Después vienen las fotos
+  y "Enviar". El dueño usa la misma pantalla desde `/admin/limpieza`.
+- **Dueño**: tarjeta "Limpieza" en `/admin` con `cleaning_owner_summary`: apertura pendiente,
+  cierres sin registrar (botón "Visto" con nota), profunda pendiente o semanas sin profunda,
+  incompletos y tarde de 7 días, y tareas vencidas o por vencer. `/admin/limpieza` tiene pestañas
+  **Hoy** (registrar), **Revisión** (nueva revisión con "Bien" o "Falla" por punto, nota, foto y
+  barbero), **Tareas** (lista con estado, "Registrar" con fecha, nota y adjunto, sugerencias),
+  **Historial** (8 semanas con detalle) y **Listas** (interruptor y edición de las 4 listas con
+  subir, bajar, renombrar, quitar y agregar).
+- Mensajes: `ALREADY_RECORDED` → REQ-061.2; `CLOSING_TOO_EARLY` → "El cierre se registra desde las
+  7:00 p. m."; `LIST_CHANGED` → "La lista cambió. Vuelve a abrirla"; `PHOTO_REQUIRED` → "Falta la
+  foto del local"; `NOTE_REQUIRED` → "Escribe por qué no se hizo"; falla de subida → REQ-061.6;
+  archivo no válido en tareas → "Sube una foto o un PDF".
+- Sin Realtime: las pantallas releen al abrir y después de enviar (la limpieza no cambia a cada
+  minuto).
+
+### 16.7 Pruebas
+
+- pgTAP `0057`: columnas y checks, siembra (cuenta y orden; no duplica al apagar y encender),
+  `cleaning_save_list` (conserva ids, borra, vacía, etiqueta larga), RLS (el barbero no ve tablas,
+  otro negocio no ve nada), bucket privado y políticas por ruta (el barbero no sube a
+  `inspections/` ni `tasks/`) y permisos (ADR-019).
+- pgTAP `0058`: cada regla de §16.5 en orden, copia de etiquetas tras editar la lista, apertura
+  tarde, cierre del dueño a cualquier hora, la medianoche, la profunda por semana, `cleaning_today`
+  (apertura pendiente antes y después de la hora, día cerrado por horario y a mano, módulo apagado),
+  `cleaning_owner_summary` (sin registrar desde el encendido, visto, semana sin profunda, marcados de
+  7 días) y barbero inactivo.
+- pgTAP `0059`: revisión (completa, falla con barbero, barbero de otro negocio), historial por semana
+  y barbero, tareas (vencida sin registros, `soon`, fecha futura, varios registros), purga (rutas de
+  más de 90 días, `photosPurged` en los detalles, el claim una vez por día) y los adjuntos de
+  tareas, que nunca se purgan.
+- Unitarias: `cleaning.ts` (validación, textos, semana, estado de tarea, sugerencias) y
+  `purge.ts` con un Storage falso.
+- Integración: acciones contra Postgres local (registrar, revisión, tareas, purga con Storage falso).
+- E2E (Pixel 7 + iPhone 13): el dueño enciende Limpieza; el barbero ve "Apertura pendiente", la
+  registra incompleta con nota y desaparece el aviso; el cierre pide foto; el dueño ve el incompleto
+  en el panel y hace una revisión con una falla asignada que aparece en el historial.
+
+---
+
+## 17. Hito 12 — Punto de venta de productos con comisión (REQ-065…REQ-069, ADR-038)
+
+> §16 es del Hito 11 (limpieza), en paralelo. Migraciones `0060_pos_products.sql` (datos e
+> historial), `0061_pos_register_sale.sql` (`register_sale` con la comisión de productos y la compra
+> de un barbero) y `0062_pos_reports.sql` (caja y semana), cada una con su pgTAP y permisos explícitos
+> (ADR-019). Sin marcar ningún producto, la caja no cambia: la comisión de productos da 0 (como hoy).
+
+### 17.1 Datos
+
+| Tabla | Cambio | REQ |
+|---|---|---|
+| `businesses` | `product_commission_pct int not null default 10 check (between 0 and 100)`, `staff_discount_pct int not null default 20 check (between 0 and 100)` | 065.1, 068.1 |
+| `business_pct_changes` (nueva) | `id, business_id, kind enum business_pct_kind ('product_commission','staff_discount'), old_pct int, new_pct int, changed_by uuid, at timestamptz default now()`; la llena un trigger `after update` en `businesses` cuando cambia alguno de los dos (como `barbers_commission_change`, §2.5) | 065.4 |
+| `products` | `commissionable boolean not null default false` ("Da comisión al que vende"), `category text null check (length(trim(category)) between 1 and 30)` | 065.2, 065.3 |
+| `sale_items` | `commissionable boolean not null default false`: copia de `products.commissionable` al vender, solo en líneas `product`; `check (kind = 'product' or not commissionable)` | 065.5, 067.2 |
+| `sales` | `product_commission_pct int not null default 0 check (0..100)`, `product_commission_base int not null default 0 check (>= 0)`, `product_commission_amount int not null default 0 check (>= 0)`, `staff_buyer_id uuid null` (FK compuesta con `business_id` a `barbers`), `staff_discount_total int not null default 0 check (>= 0)` | 067.2, 068.2 |
+
+Checks nuevos en `sales`:
+- `sales_staff_purchase_ck`: `staff_buyer_id is null or (barber_id is null and ticket_id is null and
+  services_total = 0 and membership_total = 0 and gift_card_total = 0 and product_commission_amount
+  = 0)` (REQ-068.3, REQ-068.4).
+- `sales_product_commission_ck`: `barber_id is not null or product_commission_amount = 0`
+  (REQ-067.3).
+- `staff_discount_total = 0 or staff_buyer_id is not null`.
+
+`products_total` pasa a ser `Σ line_total` de las líneas `product` (antes `Σ unit_price × qty`: es
+lo mismo mientras no haya descuento, y solo la compra de un barbero lo tiene). `discount_total`
+sigue siendo solo de servicios; el descuento de empleado va en `staff_discount_total`. `commission_*`
+y `business_amount` siguen siendo **solo de servicios**, con el mismo significado (§5.1, §13.4); la
+comisión de productos va en sus tres columnas propias, así ningún reporte viejo cambia de número.
+
+**Gancho del Hito 13.** Las líneas de producto siguen llevando `ref_id = products.id` y `qty`
+(REQ-066.6). El stock de la vitrina lo maneja el Hito 13 con sus propios triggers sobre `sale_items`
+y sobre el cambio de `sales.status`; este hito no los define ni los llama.
+
+### 17.2 RLS
+
+| Tabla | Dueño | Barbero |
+|---|---|---|
+| `businesses` (columnas nuevas) | como hoy: lee y cambia | lee (como hoy) |
+| `business_pct_changes` | select; insert solo por trigger | sin acceso |
+| `products` (columnas nuevas) | como hoy | select (como hoy): la vitrina se lee con RLS |
+| `sales`, `sale_items` (columnas nuevas) | como hoy | como hoy: solo sus ventas (`barber_id = my_barber_id()`); la compra de un barbero tiene `barber_id` null, así que el barbero que compra no la ve (REQ-068.5) |
+
+### 17.3 Funciones SQL
+
+- `register_sale` (redefinida en `0061`; firma nueva con `p_staff_buyer_id uuid default null` al
+  final, así que se borra la anterior y se repiten los `grant`/`revoke` de ADR-019):
+  - Producto: además de `is_active`, exige `for_sale` (si no → `PRODUCT_NOT_FOUND`, REQ-066.1); copia
+    `products.commissionable` a la línea.
+  - Quién vendió: igual que hoy (REQ-023.7). Barbero → la venta queda a su nombre aunque mande otro
+    `p_barber_id` (`FORBIDDEN`). Dueño con `p_barber_id` null y solo productos → "Nadie (el
+    negocio)". La pregunta sin valor por defecto (REQ-066.3) la hace la pantalla.
+  - Comisión de productos (si `v_barber` no es null y no es compra de barbero): `pct =
+    businesses.product_commission_pct` de ese momento, `base = Σ line_total` de las líneas
+    `commissionable`, `amount = round(base × pct / 100)` (al peso, .5 hacia arriba; mismo
+    `round(numeric)` que §5.1). Si no, las tres en 0.
+  - Compra de un barbero (`p_staff_buyer_id` no null): solo dueño (`FORBIDDEN`); el % de descuento
+    de empleado en 0 → `STAFF_DISCOUNT_OFF`; barbero que no es del negocio o no está activo →
+    `BARBER_NOT_FOUND`; `p_ticket_id` o `p_barber_id` no null, o una línea que no es `product` →
+    `INVALID_STAFF_PURCHASE` (P0004). Cada línea lleva `discount = round(unit_price × qty × pct /
+    100)` con `discount_reason = 'Compra de barbero'`; `staff_discount_total = Σ discount`; cliente
+    null; comisión 0. Los pagos se validan como siempre (pueden incluir tarjeta de regalo).
+- `void_sale`: sin cambios. Anular saca la venta de todos los totales porque los reportes solo suman
+  ventas `active` (REQ-069.1).
+- `cash_day_summary` (redefinida en `0062`; `close_cash_day` guarda su foto, como en T-076):
+  - `barbers[]` agrega `productsSold` (Σ `product_commission_base`), `productCommission` (Σ
+    `product_commission_amount`), `productPct` (el % si todas sus ventas del día tienen el mismo; si
+    no, null) y `toPay` (`commission + productCommission`). Un barbero sale si tiene servicios,
+    comisión o comisión de productos.
+  - Totales nuevos: `productCommission` (Σ) y `staffPurchases: {count, total, discount}` (ventas con
+    `staff_buyer_id`). `products` sigue siendo Σ `products_total` (incluye "Nadie" y compras de
+    barberos, REQ-069.3).
+  - Las ventas del día agregan `staffBuyerName` y `productCommission`.
+- `weekly_summary` (redefinida en `0062`): `barbers[]` agrega `productCommission` y `toPay`; totales
+  `productCommission` y `staffPurchases` (REQ-069.4).
+- "Mis números" lee `sales` con RLS (como hoy) y suma `product_commission_amount` aparte (REQ-069.5);
+  no hace falta función nueva.
+
+### 17.4 Comisión y caja (ejemplos)
+
+```
+product_commission_base   = Σ line_total de líneas product con commissionable    (si hay barbero y no es compra de barbero)
+product_commission_amount = round(product_commission_base × product_commission_pct / 100)
+a pagar al barbero        = commission_amount (servicios, §5.1/§13.4) + product_commission_amount
+staff discount por línea  = round(unit_price × qty × staff_discount_pct / 100)
+```
+
+**Ejemplo M — corte + vitrina.** Juan 60 %, productos 10 %. Corte $ 25.000 + cera $ 35.000 (da
+comisión) + gaseosa $ 4.000 (no da). `services_total = 25.000`, `products_total = 39.000`, `total =
+64.000`; servicios: `commission_amount = 15.000`; productos: `base = 35.000`, `amount = 3.500`. A
+pagar a Juan: 18.500.
+
+**Ejemplo N — el dueño vende para Pedro.** Cera $ 35.000 + aceite $ 42.500, "¿Quién vendió?" Pedro.
+Sin servicios: `commission_amount = 0`; `base = 77.500`, `amount = 7.750`. Total 77.500.
+
+**Ejemplo O — "Nadie (el negocio)".** La misma venta de N sin barbero: comisión de productos 0; los
+77.500 son del negocio.
+
+**Ejemplo P — compra de un barbero.** Juan compra una cera de $ 35.000 con 20 %: `discount = 7.000`,
+`line_total = 28.000`, `products_total = 28.000`, `staff_discount_total = 7.000`, `total = 28.000`,
+comisión 0, `barber_id` null. En el cierre: "Compras de barberos $ 28.000 (descuento $ 7.000)".
+
+**Ejemplo Q — redondeo.** Base $ 12.345 al 10 %: `1.234,5 → 1.235`. Un solo redondeo por venta:
+tres productos de $ 4.005 al 10 % dan `round(12.015 × 0,10) = round(1.201,5) = 1.202`, no `3 × 401 =
+1.203`.
+
+**Ejemplo R — cierre.** Día con M, N, O y P. Total vendido: 64.000 + 77.500 + 77.500 + 28.000 =
+247.000 (servicios 25.000, productos 222.000). Juan: "1 servicio, $ 25.000 vendidos, comisión 60 % =
+$ 15.000 · productos $ 35.000, comisión 10 % = $ 3.500 · total a pagar $ 18.500". Pedro: "productos
+$ 77.500, comisión 10 % = $ 7.750 · total a pagar $ 7.750". Compras de barberos $ 28.000 (descuento
+$ 7.000). Comprobación a mano: las comisiones (15.000 + 3.500 + 7.750 = 26.250) salen de la plata del
+negocio; la compra de Juan no le suma nada a Juan.
+
+### 17.5 Server actions y pantallas
+
+- `/admin/negocio`: dos campos nuevos, "Comisión por productos (%)" y "Descuento de empleado (%)",
+  con ayuda corta ("Se aplica a las ventas desde hoy").
+- `/admin/productos`: casilla "Da comisión al que vende" y campo "Categoría" (con sugerencias de las
+  que ya existen en el negocio).
+- Vitrina (`src/components/cash/ProductShowcase.tsx`, nueva): cuadrícula de 2 columnas en el celular
+  (3 en pantallas anchas), cuadro con foto o nombre, precio y + / − (botones ≥ 48 px), pestañas si
+  hay categorías (REQ-066.2), barra fija abajo con el total y "Continuar". La usan "Nueva venta" y el
+  panel de cobro del turno en vez de la lista de productos de hoy.
+- "Nueva venta" del dueño: "¿Quién vendió?" con botones por barbero activo y "Nadie (el negocio)",
+  ninguno marcado; "Confirmar" deshabilitado hasta escoger (REQ-066.3). Si `staff_discount_pct > 0`,
+  interruptor "Compra de un barbero" que cambia la pregunta a "¿Qué barbero compra?", oculta los
+  servicios y muestra cada línea con el descuento. "Nueva venta" del barbero: sin pregunta, dice
+  "Venta a tu nombre".
+- Caja de hoy, cierre (y su texto por WhatsApp), Semana: el renglón por barbero de REQ-069.2 y el
+  recuadro "Compras de barberos" solo si hubo. Mapeos puros en `src/lib/domain/commission.ts`
+  (`productCommission`, `staffDiscount`) y `src/lib/domain/cashReport.ts` (o donde viva hoy el texto
+  del cierre).
+- "Mis números": "Comisión de servicios", "Comisión de productos" y "Total", hoy y semana, y en el
+  detalle por venta la comisión de productos de cada una.
+- Acciones: `registerSale` en `src/lib/actions/cash.ts` agrega `staffBuyerId`; `updateBusiness` y
+  `upsertProduct` en `src/lib/actions/admin.ts` agregan los campos nuevos.
+
+### 17.6 Pruebas
+
+- pgTAP `0060`: columnas, valores por defecto (10 y 20), checks (categoría, `sales_staff_purchase_ck`,
+  `sales_product_commission_ck`, `sale_items.commissionable` solo en productos), historial por trigger
+  de los dos %, RLS (el barbero no ve `business_pct_changes`) y permisos (`anon` nada).
+- pgTAP `0061`: ejemplos M, N, O, P y Q; barbero que manda otro `p_barber_id` → `FORBIDDEN`; producto
+  de cortesía (`for_sale = false`) → `PRODUCT_NOT_FOUND`; cambiar la casilla o el % después no cambia
+  la venta; con membresía, premio y tarjeta de regalo la comisión de productos no cambia (REQ-067.4);
+  cada rechazo de la compra de un barbero (barbero que la intenta, % en 0, con servicio, con turno);
+  `ref_id` y `qty` en las líneas (REQ-066.6); anular (REQ-069.1).
+- pgTAP `0062`: cierre y semana con el ejemplo R (`productCommission`, `toPay`, `staffPurchases`), la
+  compra no cuenta como del barbero que compra, y el día sin productos marcados igual a antes.
+- Unitarias: `commission.ts` (ejemplos M…Q) y el texto del cierre (REQ-069.2, REQ-069.3).
+- Integración: `registerSale` con `staffBuyerId` y las acciones de negocio y productos contra Postgres
+  local.
+- E2E (Pixel 7 + iPhone 13): el dueño vende una cera desde la vitrina escogiendo barbero y ve la
+  comisión en la Caja de hoy; el barbero agrega una cera al cobro de su corte y la ve en "Mis números";
+  el dueño registra una compra de barbero.
 
 ---
 
