@@ -50,11 +50,20 @@ describe("REQ-025.5 / REQ-029.1 Mis números", () => {
         new Set([f.barberA]),
       );
 
-      const today = (await q<{ d: string }>("select business_day_bogota(now())::text as d")).rows[0].d;
+      const today = (await q<{ d: string }>("select business_day_bogota(now())::text as d")).rows[0]
+        .d;
       const n = summarizeMyNumbers(rows, today, today);
       // 25.000 al 60 % = 15.000 por venta
-      expect(n.today).toEqual({ services: 2, sold: 50000, commission: 30000 });
-      expect(n.week).toEqual({ services: 2, sold: 50000, commission: 30000 });
+      // REQ-069.5 sin productos: comisión de productos 0 y el total es la de servicios
+      const mine = {
+        services: 2,
+        sold: 50000,
+        commission: 30000,
+        productCommission: 0,
+        total: 30000,
+      };
+      expect(n.today).toEqual(mine);
+      expect(n.week).toEqual(mine);
     });
   });
 });
