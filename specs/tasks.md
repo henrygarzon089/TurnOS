@@ -1300,13 +1300,23 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   registros, revisiones, avisos y tareas nacen aquí porque las políticas y la RLS las necesitan; sus
   funciones son T-101 y T-102.
 
-### [ ] T-101 · Registrar apertura, cierre y profunda en SQL
+### [x] T-101 · Registrar apertura, cierre y profunda en SQL
 - REQ: REQ-060.4, REQ-060.5, REQ-061.1, REQ-061.2, REQ-061.3, REQ-061.4, REQ-061.7, REQ-061.8,
   REQ-061.9, REQ-061.10, REQ-061.11, REQ-062.1, REQ-062.3, REQ-062.4, REQ-062.5, REQ-062.7, REQ-062.8
 - Archivos: `supabase/migrations/0058_cleaning_records.sql` (`cleaning_is_open_day`,
   `cleaning_today`, `submit_cleaning_record`, `cleaning_owner_summary`, `ack_missed_closing`),
   `supabase/tests/0058_cleaning_records.sql`
 - Terminado: cada regla de §16.5 probada en orden; avisos con días abiertos y cerrados.
+- Nota (2026-11-04): 70 pgTAP nuevas (1284 en total). La hora de las pruebas se fija con
+  `turnos.test_now` (`cleaning_now()`, §16.4) y por eso `cleaning_owner_summary` no recibe `p_today`.
+  `cleaning_owner_summary` ya devuelve `tasksDue` (la tabla nace en `0057`); T-102 prueba REQ-064.4.
+  Detalles que la spec no fijaba:
+  - Un día abierto a mano que el horario tiene cerrado pide la apertura desde ya, nunca queda
+    "Tarde" y su cierre no tiene hora mínima.
+  - `ack_missed_closing` rechaza la nota de más de 200 caracteres con `INVALID_NOTE`.
+  - `deepMissedWeeks` cubre como máximo 8 semanas.
+  - `ALREADY_RECORDED` y `CLOSING_TOO_EARLY` llevan sus datos en el `detail` de la excepción.
+  - Para las pruebas: `P0004` es `assert_failure`, que `when others` no atrapa.
 
 ### [ ] T-102 · Revisión, historial, tareas y purga en SQL
 - REQ: REQ-063.1, REQ-063.2, REQ-063.3, REQ-063.5, REQ-063.6, REQ-063.7, REQ-064.1, REQ-064.2,
