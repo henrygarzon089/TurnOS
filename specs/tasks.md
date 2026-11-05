@@ -1741,7 +1741,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: `pnpm trace --hito=13` sin huecos; CI verde.
 - Nota (2026-11-04): `pnpm trace --hito=13` con 0 sin prueba y el hito 13 en el loop de
   `tests/unit/traceability.test.ts`; estado y checklist de Henry en `docs/estado-del-proyecto.md`.
-  Queda `[ ]` hasta que Henry haga lo que le toca y apruebe.
+  Queda `[ ]` hasta que Henry haga lo que le toca y apruebe; la aprobación será ADR-042 (reservado).
 
 ---
 

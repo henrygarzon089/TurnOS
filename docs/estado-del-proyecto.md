@@ -325,7 +325,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
      gel, alcohol…) con su dotación, y enlazar los productos de la vitrina.
   4. Primer conteo de bodega, vitrina y cada estación (queda como inicial).
   5. Una semana después: conteo semanal de las estaciones y revisar alertas y la orden de compra.
-  6. Aprobación del hito → ADR nuevo y T-129 `[x]`.
+  6. Aprobación del hito → ADR-042 (reservado) y T-129 `[x]`.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
