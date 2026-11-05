@@ -27,7 +27,7 @@
 | H6 | Aviso automático por WhatsApp (ADR-027) | T-064…T-070 | REQ-040…REQ-043 |
 | H7 | Membresía familiar (ADR-030) | T-071…T-077 | REQ-044…REQ-048 |
 | H9 | Tarjetas de regalo (ADR-034) | T-090…T-097 | REQ-055…REQ-059 |
-| H11 | Limpieza y bioseguridad (ADR-037, propuesta) | T-100…T-109 | REQ-060…REQ-064 |
+| H11 | Limpieza y bioseguridad (ADR-037) | T-100…T-109 | REQ-060…REQ-064 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -1281,8 +1281,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
 ## Hito 11 — Limpieza y bioseguridad (ADR-037)
 
-> REQ-060…REQ-064 y ADR-037 **propuestos** (grill con Henry, 2026-11-04); se construye cuando Henry
-> apruebe el PR de la spec. Diseño en `design.md` §16. Una tarea por rama y PR, con las pruebas
+> REQ-060…REQ-064 y ADR-037 aprobados por Henry (2026-11-04, PR #73). Diseño en `design.md` §16. Una tarea por rama y PR, con las pruebas
 > primero. Todo nace apagado. Migraciones `0057`…`0059`. No depende de los Hitos 12 y 13.
 
 ### [ ] T-100 · Migración y pgTAP: datos, listas y bucket privado

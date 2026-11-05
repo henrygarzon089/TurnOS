@@ -1073,8 +1073,8 @@ WhatsApp, tarjetas impresas con diseño y recordatorio de vencimiento.
 
 ## 5h. Hito 11 — Limpieza y bioseguridad
 
-> Estado: **PROPUESTA** (grill de 21 preguntas con Henry, 2026-11-04; aceptó todas las respuestas
-> recomendadas). Ver ADR-037. Los números saltan: REQ-060…064 son del Hito 11; el Hito 10 (IA en
+> Estado: **APROBADA** (Henry, 2026-11-04, tras grill de 21 preguntas con la respuesta recomendada;
+> PR #73). Ver ADR-037. Los números saltan: REQ-060…064 son del Hito 11; el Hito 10 (IA en
 > WhatsApp) está reservado y el 12 y el 13 se escriben en paralelo. El control de limpieza es
 > interno: el cliente no ve nada. No hay horario por barbero ni niveles (Henry, 2026-11-04).
 

@@ -532,8 +532,8 @@
   ADR-033/035 son del Hito 8.
 
 ## ADR-037 · Control de limpieza y bioseguridad (Hito 11)
-- Estado: **propuesta** (grill con Henry, 2026-11-04: 21 preguntas, todas con la respuesta
-  recomendada)
+- Estado: **aceptada** (Henry, 2026-11-04: grill de 21 preguntas, todas con la respuesta
+  recomendada; aprobó la spec en el PR #73)
 - Contexto: el plan operativo de Henry ("Gamma") pide controlar la limpieza y la bioseguridad de la
   barbería, con listas de apertura, cierre, limpieza profunda y entre clientes. Henry decidió el
   2026-11-04 que todo va en TurnOS (nada en Odoo), que no hay horario por barbero ni niveles de

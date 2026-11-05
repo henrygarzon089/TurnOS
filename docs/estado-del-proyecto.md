@@ -279,13 +279,14 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   la ficha que queda. **En producción** desde el 2026-11-04 (`supabase db push` desde `c113896`,
   la fusión de #69).
 
-### Hito 11 — limpieza y bioseguridad (spec propuesta, ADR-037)
+### Hito 11 — limpieza y bioseguridad (spec aprobada, ADR-037, en construcción)
 
 - 2026-11-04: grill de 21 preguntas con Henry, todas con la respuesta recomendada. Escritos
-  REQ-060…REQ-064 (37 criterios, §5h), `design.md` §16, ADR-037 (propuesta) y tareas T-100…T-109.
+  REQ-060…REQ-064 (37 criterios, §5h), `design.md` §16, ADR-037 y tareas T-100…T-109. Henry aprobó
+  la spec el mismo día (PR #73).
   Migraciones previstas `0057`…`0059`, con un bucket privado nuevo, `cleaning`. Va en paralelo con
   los Hitos 12 (punto de venta) y 13 (inventario); el 10 (IA en WhatsApp) está reservado.
-- Siguiente: que Henry apruebe el PR de la spec; después, T-100 con pruebas primero.
+- Construcción: una tarea por PR, cada uno sobre el anterior, empezando por T-100.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
