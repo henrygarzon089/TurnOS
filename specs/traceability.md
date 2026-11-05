@@ -337,11 +337,11 @@
 | REQ-064.4 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
 | REQ-064.5 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
 | REQ-064.6 | Tareas periódicas, fotos privadas y retención | T-100 (pendiente), T-102 (pendiente), T-103 (pendiente), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | — | sin prueba |
-| REQ-065.1 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (pendiente) | pos-settings.spec.ts, 0060_pos_products.sql | prueba escrita |
-| REQ-065.2 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (pendiente) | pos-settings.spec.ts, product-form.test.ts, 0060_pos_products.sql | prueba escrita |
-| REQ-065.3 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (pendiente) | pos-settings.spec.ts, product-form.test.ts, 0060_pos_products.sql | prueba escrita |
-| REQ-065.4 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (pendiente) | 0060_pos_products.sql, 0061_pos_register_sale.sql | prueba escrita |
-| REQ-065.5 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (pendiente) | 0061_pos_register_sale.sql | prueba escrita |
+| REQ-065.1 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (hecha) | pos-settings.spec.ts, 0060_pos_products.sql | cubierto |
+| REQ-065.2 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (hecha) | pos-settings.spec.ts, product-form.test.ts, 0060_pos_products.sql | cubierto |
+| REQ-065.3 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (hecha) | pos-settings.spec.ts, product-form.test.ts, 0060_pos_products.sql | cubierto |
+| REQ-065.4 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (hecha) | 0060_pos_products.sql, 0061_pos_register_sale.sql | cubierto |
+| REQ-065.5 | Configurar la comisión y la vitrina | T-110 (hecha), T-111 (hecha), T-115 (hecha), T-119 (hecha) | 0061_pos_register_sale.sql | cubierto |
 | REQ-066.1 | Vender en la vitrina | T-111 (hecha), T-116 (hecha), T-117 (hecha) | pos-showcase.spec.ts, 0061_pos_register_sale.sql | cubierto |
 | REQ-066.2 | Vender en la vitrina | T-111 (hecha), T-116 (hecha), T-117 (hecha) | pos-showcase.spec.ts, showcase.test.ts | cubierto |
 | REQ-066.3 | Vender en la vitrina | T-111 (hecha), T-116 (hecha), T-117 (hecha) | new-sale.spec.ts, pos-showcase.spec.ts, showcase.test.ts, 0061_pos_register_sale.sql | cubierto |
@@ -358,11 +358,11 @@
 | REQ-068.3 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (hecha), T-117 (hecha) | pos-showcase.spec.ts, pos.test.ts, commission.test.ts, 0060_pos_products.sql, 0061_pos_register_sale.sql | cubierto |
 | REQ-068.4 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (hecha), T-117 (hecha) | 0060_pos_products.sql, 0061_pos_register_sale.sql | cubierto |
 | REQ-068.5 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (hecha), T-117 (hecha) | 0062_pos_reports.sql | cubierto |
-| REQ-069.1 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0061_pos_register_sale.sql, 0062_pos_reports.sql | prueba escrita |
-| REQ-069.2 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0062_pos_reports.sql | prueba escrita |
-| REQ-069.3 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0062_pos_reports.sql | prueba escrita |
-| REQ-069.4 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0062_pos_reports.sql | prueba escrita |
-| REQ-069.5 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-069.1 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (hecha), T-119 (hecha) | 0061_pos_register_sale.sql, 0062_pos_reports.sql | cubierto |
+| REQ-069.2 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (hecha), T-119 (hecha) | pos-reports.spec.ts, cash-closure.test.ts, 0062_pos_reports.sql | cubierto |
+| REQ-069.3 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (hecha), T-119 (hecha) | pos-reports.spec.ts, cash-closure.test.ts, 0062_pos_reports.sql | cubierto |
+| REQ-069.4 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (hecha), T-119 (hecha) | 0062_pos_reports.sql | cubierto |
+| REQ-069.5 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (hecha), T-119 (hecha) | pos-reports.spec.ts, my-numbers.test.ts, my-numbers.test.ts | cubierto |
 | REQ-070.1 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | inventory.test.ts, inventory.test.ts, 0063_inventory.sql | prueba escrita |
 | REQ-070.2 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | inventory.test.ts, inventory.test.ts, 0063_inventory.sql | prueba escrita |
 | REQ-070.3 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
