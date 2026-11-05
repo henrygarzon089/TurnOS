@@ -39,6 +39,10 @@ export function CleaningSwitch({ enabled }: { enabled: boolean }) {
             if (!res.ok) {
               setOn(!next);
               setError(res.error);
+            } else if (next) {
+              // Encendida, la pestaña por defecto es Hoy: quedarse en Listas para revisarlas
+              router.replace("/admin/limpieza?pestana=listas");
+              router.refresh();
             } else router.refresh();
           }}
         />
