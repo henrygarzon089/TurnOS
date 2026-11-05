@@ -675,6 +675,20 @@ export function CheckoutSheet({
               )}
             </>
           )}
+          {/* REQ-057.1 si se tocó por error: volver a escoger el medio */}
+          <button
+            type="button"
+            className="min-h-12 text-sm font-semibold underline"
+            onClick={() => {
+              setMethod(null);
+              setGift(null);
+              setGiftCode("");
+              setRestMethod(null);
+              setError(null);
+            }}
+          >
+            Usar otro medio de pago
+          </button>
         </section>
       )}
 

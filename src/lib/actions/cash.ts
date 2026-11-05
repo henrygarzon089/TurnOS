@@ -383,6 +383,9 @@ export type CashDaySummary = {
   giftCardsSold: number;
   giftCardsRedeemed: number;
   moneyIn: number;
+  /** REQ-069.2 / REQ-069.3 (0062). */
+  productCommission: number;
+  staffPurchases: { count: number; total: number; discount: number };
   barbers: {
     barberId: string;
     name: string;
@@ -391,6 +394,10 @@ export type CashDaySummary = {
     sold: number;
     commission: number;
     business: number;
+    productsSold: number;
+    productCommission: number;
+    productPct: number | null;
+    toPay: number;
   }[];
   sales: {
     id: string;
@@ -399,7 +406,9 @@ export type CashDaySummary = {
     voidedReason: string | null;
     total: number;
     commission: number;
+    productCommission: number;
     barberName: string | null;
+    staffBuyerName: string | null;
     customerName: string | null;
     items: string;
     methods: string;
@@ -567,6 +576,9 @@ export type WeekSummary = {
     services: number;
     sold: number;
     commission: number;
+    /** REQ-069.4 (0062). */
+    productCommission: number;
+    toPay: number;
   }[];
   newCustomers: number;
   repeatCustomers: number;
@@ -579,6 +591,9 @@ export type WeekSummary = {
   giftCardsSold: number;
   giftCardsRedeemed: number;
   moneyIn: number;
+  /** REQ-069.4 (0062). */
+  productCommission: number;
+  staffPurchases: { count: number; total: number; discount: number };
 };
 
 /** REQ-028.1–28.4 resumen de la semana (lunes a domingo) y la anterior para comparar. */
