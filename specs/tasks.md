@@ -1284,12 +1284,17 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 > REQ-060…REQ-064 y ADR-037 aprobados por Henry (2026-11-04, PR #73). Diseño en `design.md` §16. Una tarea por rama y PR, con las pruebas
 > primero. Todo nace apagado. Migraciones `0057`…`0059`. No depende de los Hitos 12 y 13.
 
-### [ ] T-100 · Migración y pgTAP: datos, listas y bucket privado
+### [x] T-100 · Migración y pgTAP: datos, listas y bucket privado
 - REQ: REQ-060.1, REQ-060.2, REQ-060.3, REQ-063.4, REQ-064.5
 - Archivos: `supabase/migrations/0057_cleaning.sql` (enum, tablas, `cleaning_set_enabled`,
   `cleaning_seed_lists`, `cleaning_save_list`, RLS, bucket `cleaning` y sus políticas),
   `supabase/tests/0057_cleaning.sql`
 - Terminado: pgTAP de §16.7 para `0057` en verde; sin encender el módulo nada cambia.
+- Nota (2026-11-04): 46 pgTAP nuevas (1214 en total). Detalles que la spec no fijaba: una sola
+  función `cleaning_can_access(name)` para subir y abrir (§16.3 corregido), y `cleaning_is_active_barber`
+  como auxiliar. Mover un punto de otra lista o repetir un id → `INVALID_ITEM`. Las tablas de
+  registros, revisiones, avisos y tareas nacen aquí porque las políticas y la RLS las necesitan; sus
+  funciones son T-101 y T-102.
 
 ### [ ] T-101 · Registrar apertura, cierre y profunda en SQL
 - REQ: REQ-060.4, REQ-060.5, REQ-061.1, REQ-061.2, REQ-061.3, REQ-061.4, REQ-061.7, REQ-061.8,

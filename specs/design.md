@@ -1956,7 +1956,8 @@ cuando ya terminó (REQ-062.4).
 - Bucket nuevo `cleaning`, **privado** (`public = false`), con `file_size_limit` de 5 MB y tipos
   `image/webp`, `image/jpeg` y `application/pdf`. El de las fotos de cortes (`media`, §11.3) es
   público y no sirve aquí (REQ-064.5).
-- Rutas y políticas de `storage.objects`, con `cleaning_can_write(name)` y `cleaning_can_read(name)`:
+- Rutas y políticas de `storage.objects`, con `cleaning_can_access(name)` (la misma regla para subir y
+  abrir; borrar, solo el dueño):
   - `<business_id>/records/<business_day>/<uuid>.webp`: suben el dueño y los barberos activos; leen
     el dueño y los barberos activos.
   - `<business_id>/inspections/<uuid>.webp` y `<business_id>/tasks/<task_id>/<uuid>.(webp|pdf)`:
