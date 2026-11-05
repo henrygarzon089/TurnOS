@@ -29,6 +29,7 @@ const HITOS: Record<string, [number, number][]> = {
   "7": [[44, 48]], // membresía familiar (ADR-030)
   "8": [[49, 54]], // citas a hora fija (ADR-033)
   "9": [[55, 59]], // tarjetas de regalo (ADR-034); "8" es de las citas, en paralelo
+  "11": [[60, 64]], // limpieza y bioseguridad (ADR-037); el 10 está reservado
   "13": [[70, 74]], // inventario de insumos y vitrina (ADR-039)
 };
 

@@ -1891,6 +1891,188 @@ H solo se anula si la tarjeta no tiene pagos activos; si I sigue activa → `GIF
 
 ---
 
+## 16. Hito 11 — Limpieza y bioseguridad (REQ-060…REQ-064, ADR-037)
+
+> Migraciones `0057_cleaning.sql` (datos, listas, activación, RLS y bucket), `0058_cleaning_records.sql`
+> (registros, avisos y panel) y `0059_cleaning_review_tasks.sql` (revisión, historial, tareas y
+> purga), cada una con su pgTAP y permisos explícitos (ADR-019). Con el módulo apagado nada cambia.
+> No toca la fila, la caja ni `create_business`.
+
+### 16.1 Datos
+
+| Tabla | Cambio | REQ |
+|---|---|---|
+| `businesses` | `cleaning_enabled bool not null default false`, `cleaning_enabled_on date null` (primer día en que se encendió; no cambia al apagar y volver a encender), `cleaning_purged_on date null` (§16.3) | 060.1, 062.8, 064.6 |
+| enum `cleaning_kind` (nuevo) | `'opening'`, `'closing'`, `'deep'`, `'between_clients'` | 060.2 |
+| `cleaning_checklist_items` (nueva) | `id, business_id, kind cleaning_kind, label text check (1..80, sin espacios a los lados), sort_order int, created_at`; índice `(business_id, kind, sort_order)` | 060.2, 060.3 |
+| `cleaning_records` (nueva) | `id, business_id, kind cleaning_kind check (kind <> 'between_clients'), business_day date, week_start date` (lunes de `business_day`), `done_by uuid` (auth.users), `barber_id uuid null` (null = dueño), `created_at, is_complete bool, is_late bool default false, items jsonb, photo_paths text[] default '{}', photos_purged_at timestamptz null`. Índices únicos parciales: `(business_id, kind, business_day) where kind in ('opening','closing')` y `(business_id, week_start) where kind = 'deep'` | 061.1–061.4, 061.8 |
+| `cleaning_inspections` (nueva) | `id, business_id, done_by, created_at, items jsonb, photos_purged_at timestamptz null` | 063.1–063.3 |
+| `cleaning_missed_acks` (nueva) | `business_id, business_day date, note text null check (≤ 200), acked_by, acked_at`; PK `(business_id, business_day)` | 062.3 |
+| `cleaning_tasks` (nueva) | `id, business_id, name text check (1..80), every_days int check (1..730), is_active bool default true, created_at` | 064.1 |
+| `cleaning_task_runs` (nueva) | `id, business_id, task_id, done_on date, note text null check (≤ 200), attachment_path text null, created_by, created_at`; `check (done_on <= business_day_bogota(created_at))` | 064.2, 064.3 |
+
+**Copia de los puntos** (REQ-060.4). `cleaning_records.items` es un arreglo
+`[{label, done, note}]` y `cleaning_inspections.items` es `[{group, label, ok, note, photoPath,
+barberId}]` (`group` ∈ `closing`, `between_clients`). Las etiquetas se copian en el servidor desde
+`cleaning_checklist_items` al enviar: el cliente manda ids, no textos. Cambiar una lista solo toca
+`cleaning_checklist_items`. Quitar un punto lo borra de verdad, porque ningún registro apunta a él.
+
+**Puntos por defecto** (REQ-060.2), en este orden. Se siembran con `cleaning_seed_lists`, que solo
+inserta en las listas vacías:
+
+- Apertura: Ventilar · Preparar la solución desinfectante del día, marcada con la fecha · Dotación y
+  toallas limpias en cada estación · Baño limpio con jabón y toallas · Calentador de toallas
+  encendido · Revisar la nevera de bebidas.
+- Cierre: Barrer y trapear · Desinfectar todas las herramientas y desechar la solución · Lavacabezas
+  y desagüe · Espejos, mesones, sillas y rincón de niños · Baño completo · Basura separada por colores
+  · Toallas a lavar · Apagar equipos. El punto "Foto del local limpio" del documento de Henry es la
+  foto obligatoria (REQ-061.4), no una casilla.
+- Limpieza profunda: Sillas a fondo, con mecanismos · Desagües, vidrios, zonas altas y lámparas ·
+  Debajo de muebles y detrás de estaciones · Nevera, plantas y fechas de vencimiento.
+- Entre clientes: Pelo barrido · Herramientas lavadas y desinfectadas · Máquinas con Cool Care ·
+  Cuchilla nueva · Silla desinfectada · Capa, papel cuello y toalla · Manos o guantes.
+
+**Día de negocio abierto**: `cleaning_is_open_day(p_business_id, p_day)` es verdadero si el horario
+de ese día de la semana no está cerrado y el dueño no lo cerró a mano (`queue_override = 'closed'`
+con `queue_override_day = p_day`). Lo usan el aviso de apertura (REQ-062.1) y "Sin registrar"
+(REQ-062.3). Un cierre manual que después se reemplaza no se recuerda: se acepta, porque el dueño
+puede marcar el aviso como visto.
+
+**Semana**: `week_start = date_trunc('week', business_day)::date` (lunes). La profunda se exige
+desde la semana en que se encendió el módulo, y la semana en curso solo cuenta como "Sin profunda"
+cuando ya terminó (REQ-062.4).
+
+### 16.2 RLS
+
+| Tabla | Dueño | Barbero |
+|---|---|---|
+| `cleaning_checklist_items` | select; cambios con `cleaning_save_list` | sin acceso directo (los puntos llegan con `cleaning_today`) |
+| `cleaning_records` | select | sin acceso directo (`cleaning_today`) |
+| `cleaning_inspections`, `cleaning_missed_acks`, `cleaning_tasks`, `cleaning_task_runs` | select; cambios con funciones | ninguno (REQ-063.4) |
+
+`anon` no tiene acceso. Todas las escrituras van por funciones `security definer`.
+
+### 16.3 Almacenamiento privado
+
+- Bucket nuevo `cleaning`, **privado** (`public = false`), con `file_size_limit` de 5 MB y tipos
+  `image/webp`, `image/jpeg` y `application/pdf`. El de las fotos de cortes (`media`, §11.3) es
+  público y no sirve aquí (REQ-064.5).
+- Rutas y políticas de `storage.objects`, con `cleaning_can_write(name)` y `cleaning_can_read(name)`:
+  - `<business_id>/records/<business_day>/<uuid>.webp`: suben el dueño y los barberos activos; leen
+    el dueño y los barberos activos.
+  - `<business_id>/inspections/<uuid>.webp` y `<business_id>/tasks/<task_id>/<uuid>.(webp|pdf)`:
+    solo el dueño.
+- El navegador sube directo a Storage con la sesión del usuario, como la foto de producto (T-061).
+  Así un PDF de 5 MB no pasa por la función de Vercel, que acepta hasta 4,5 MB. Las fotos se reducen
+  con `src/lib/media/resize.ts` (≤ 1080 px, ≤ 300 KB, REQ-061.5). El servidor solo guarda rutas,
+  después de revisar que empiecen por el negocio y la carpeta correctos (`INVALID_PATH`).
+- Para mostrar las fotos y adjuntos, el servidor crea URL firmadas de 1 hora con la sesión del usuario.
+  Las políticas deciden quién puede abrir cada una.
+- `<input type="file" accept="image/*" capture="environment">` abre la cámara (REQ-061.5); el
+  adjunto de las tareas usa `accept="image/*,application/pdf"` sin `capture`.
+- **Purga a los 90 días** (REQ-064.6). Desde SQL no se pueden borrar objetos de Storage, así que hay
+  dos partes:
+  1. Lectura: toda función que devuelve fotos de un registro o una revisión con `created_at` de hace
+     más de 90 días devuelve `photosPurged: true` y ninguna ruta. La pantalla muestra "Foto borrada
+     (más de 90 días)". Esto se cumple el día 90 aunque el borrado físico se atrase.
+  2. Borrado: `purgeCleaningPhotos(businessId)`, en `src/lib/cleaning/purge.ts`, pide
+     `cleaning_photos_to_purge` (hasta 200 rutas), las borra con el cliente `service_role` de Storage
+     y llama `mark_cleaning_photos_purged`. Corre con `after()` al abrir "Limpieza" (barbero o dueño)
+     y al abrir el panel del dueño, como máximo una vez por día y negocio (`cleaning_purge_claim`, que
+     guarda `businesses.cleaning_purged_on`). No hay cron nuevo. Si falla, se reintenta al día
+     siguiente.
+
+### 16.4 Funciones SQL
+
+| Función | Quién | Qué | REQ |
+|---|---|---|---|
+| `cleaning_set_enabled(p_business_id, p_enabled)` | dueño | Enciende o apaga; la primera vez pone `cleaning_enabled_on = business_day_bogota()` y llama `cleaning_seed_lists` | 060.1, 060.2 |
+| `cleaning_save_list(p_business_id, p_kind, p_items jsonb [{id null, label}])` | dueño | Reemplaza la lista en ese orden: conserva los ids que vienen, crea los nuevos y borra los que faltan. Vacía → `LIST_EMPTY`; etiqueta fuera de 1..80 → `INVALID_LABEL` | 060.3 |
+| `cleaning_today(p_business_id)` | dueño, barbero activo | jsonb `{enabled, businessDay, isOpenDay, opensAt, closesAt, closingFrom, opening, closing, deep, lists}`: cada registro de hoy y de la semana con quién, hora, `isComplete` y `isLate`; `lists` son los puntos actuales con su id; `openingPending` (REQ-062.1). Si el módulo está apagado: `{enabled: false}` | 061.11, 062.1 |
+| `submit_cleaning_record(p_business_id, p_kind, p_items jsonb [{id, done, note}], p_photo_paths text[])` | dueño, barbero activo | Valida y guarda (§16.5). Devuelve `{id, isComplete, isLate}` | 061.1–061.10, 060.4, 060.5 |
+| `cleaning_owner_summary(p_business_id, p_today null)` | dueño | `{enabled, openingPending, missedClosings: [{day}], deepPending, deepMissedWeeks: [weekStart], flagged: [{id, kind, day, doneBy, isLate, isComplete, notes}], tasksDue: [{id, name, nextDue, overdue}]}`. `missedClosings`: días abiertos desde `cleaning_enabled_on` hasta ayer, sin cierre y sin `cleaning_missed_acks`, como máximo los últimos 14 | 062.3–062.5, 064.4 |
+| `ack_missed_closing(p_business_id, p_day, p_note)` | dueño | Marca visto. Día con cierre o que no estaba abierto → `NOT_MISSED` | 062.3 |
+| `submit_cleaning_inspection(p_business_id, p_items jsonb [{id, ok, note, photoPath, barberId}])` | dueño | Exige todos los puntos actuales de Cierre y Entre clientes, cada uno con `ok` booleano (`INSPECTION_INCOMPLETE`); `barberId` solo en fallas y de un barbero activo del negocio (`INVALID_BARBER`); lista cambiada → `LIST_CHANGED` | 063.1–063.3 |
+| `cleaning_history(p_business_id, p_weeks int default 8, p_today null)` | dueño | Por semana: `deepDone`, `missedClosings`, `inspections`, y por barbero (y "Dueño"): `complete`, `incomplete`, `late`, `failures` (fallas con su `barberId`) más `generalFailures`. Con la lista de registros y revisiones (id, tipo, día, quién, estado) | 063.5 |
+| `cleaning_record_detail(p_id)` / `cleaning_inspection_detail(p_id)` | dueño | Puntos, notas, quién, hora y rutas de fotos (o `photosPurged`) | 063.6, 064.6 |
+| `save_cleaning_task(p_business_id, p_id null, p_name, p_every_days, p_is_active)` | dueño | Crea o edita | 064.1 |
+| `record_cleaning_task_run(p_business_id, p_task_id, p_done_on, p_note, p_attachment_path)` | dueño | Fecha futura → `INVALID_DATE`; ruta fuera de `<negocio>/tasks/<task_id>/` → `INVALID_PATH` | 064.2, 064.3 |
+| `cleaning_tasks_list(p_business_id, p_today null)` | dueño | Tareas con `lastDone`, `nextDue`, `status` (`overdue`, `soon` ≤ 7 días, `ok`) y sus registros, los más nuevos primero | 064.4 |
+| `cleaning_photos_to_purge(p_business_id, p_limit)` / `mark_cleaning_photos_purged(p_business_id, p_record_ids, p_inspection_ids)` / `cleaning_purge_claim(p_business_id)` | service_role | §16.3 | 064.6 |
+
+El dueño se reconoce con `is_owner_of` y el barbero con `my_barber_id` más `barbers.is_active`. Un
+barbero inactivo, o alguien de otro negocio, recibe `FORBIDDEN` (`42501`, como en `0051`). Los demás
+errores usan `P0004`.
+
+### 16.5 Reglas de `submit_cleaning_record`
+
+En orden; el primer error gana:
+
+1. Módulo apagado → `CLEANING_DISABLED`. Tipo `'between_clients'` → `INVALID_KIND`.
+2. Ya existe el de hoy (apertura o cierre) o el de esta semana (profunda) → `ALREADY_RECORDED`, con
+   `detail` `{doneBy, at}` para el texto de REQ-061.2. El índice único cubre la carrera entre dos
+   celulares: el segundo recibe el mismo error.
+3. Cierre de un barbero antes de `closes_at − 1 h` de hoy → `CLOSING_TOO_EARLY`, con `detail`
+   `{from}`. En un día cerrado por horario no hay hora mínima. El dueño no tiene hora mínima
+   (REQ-061.7). La medianoche la impone `business_day`: después de las 12 el día ya es otro
+   (REQ-061.10).
+4. Los ids de `p_items` no son exactamente los puntos actuales de la lista → `LIST_CHANGED`
+   (REQ-060.5).
+5. Punto sin marcar sin nota (o nota de más de 200) → `NOTE_REQUIRED`.
+6. Cierre sin exactamente 1 foto → `PHOTO_REQUIRED`. Apertura o profunda con más de 3 →
+   `TOO_MANY_PHOTOS`. Ruta fuera de `<negocio>/records/` → `INVALID_PATH`.
+7. Guarda con la copia de las etiquetas; `is_complete = todos marcados`; en la apertura,
+   `is_late = now() > opens_at de hoy + 30 min` (falso en un día cerrado por horario).
+
+### 16.6 Server actions y pantallas
+
+- Acciones en `src/lib/actions/cleaning.ts`. La lógica pura va en `src/lib/domain/cleaning.ts`:
+  validar el formulario antes de enviar, textos de error, armar "La apertura de hoy ya la registró
+  <nombre> a las <hora>", estado de una tarea, semana de una fecha y lista de sugerencias.
+- **Barbero**: `/app/fila` muestra arriba el aviso "Apertura pendiente" con el botón "Registrar
+  apertura" y, en la barra, el botón "Limpieza" (solo con el módulo encendido). `/app/limpieza`
+  muestra tres tarjetas, Apertura, Cierre y Profunda de la semana. Cada una dice "Hecha por Carlos ·
+  9:05 a. m.", "Incompleta" o "Tarde", o trae el botón para llenarla. El formulario es una lista de
+  casillas de ≥ 48 px, y al desmarcar un punto aparece el campo "¿Por qué?". Después vienen las fotos
+  y "Enviar". El dueño usa la misma pantalla desde `/admin/limpieza`.
+- **Dueño**: tarjeta "Limpieza" en `/admin` con `cleaning_owner_summary`: apertura pendiente,
+  cierres sin registrar (botón "Visto" con nota), profunda pendiente o semanas sin profunda,
+  incompletos y tarde de 7 días, y tareas vencidas o por vencer. `/admin/limpieza` tiene pestañas
+  **Hoy** (registrar), **Revisión** (nueva revisión con "Bien" o "Falla" por punto, nota, foto y
+  barbero), **Tareas** (lista con estado, "Registrar" con fecha, nota y adjunto, sugerencias),
+  **Historial** (8 semanas con detalle) y **Listas** (interruptor y edición de las 4 listas con
+  subir, bajar, renombrar, quitar y agregar).
+- Mensajes: `ALREADY_RECORDED` → REQ-061.2; `CLOSING_TOO_EARLY` → "El cierre se registra desde las
+  7:00 p. m."; `LIST_CHANGED` → "La lista cambió. Vuelve a abrirla"; `PHOTO_REQUIRED` → "Falta la
+  foto del local"; `NOTE_REQUIRED` → "Escribe por qué no se hizo"; falla de subida → REQ-061.6;
+  archivo no válido en tareas → "Sube una foto o un PDF".
+- Sin Realtime: las pantallas releen al abrir y después de enviar (la limpieza no cambia a cada
+  minuto).
+
+### 16.7 Pruebas
+
+- pgTAP `0057`: columnas y checks, siembra (cuenta y orden; no duplica al apagar y encender),
+  `cleaning_save_list` (conserva ids, borra, vacía, etiqueta larga), RLS (el barbero no ve tablas,
+  otro negocio no ve nada), bucket privado y políticas por ruta (el barbero no sube a
+  `inspections/` ni `tasks/`) y permisos (ADR-019).
+- pgTAP `0058`: cada regla de §16.5 en orden, copia de etiquetas tras editar la lista, apertura
+  tarde, cierre del dueño a cualquier hora, la medianoche, la profunda por semana, `cleaning_today`
+  (apertura pendiente antes y después de la hora, día cerrado por horario y a mano, módulo apagado),
+  `cleaning_owner_summary` (sin registrar desde el encendido, visto, semana sin profunda, marcados de
+  7 días) y barbero inactivo.
+- pgTAP `0059`: revisión (completa, falla con barbero, barbero de otro negocio), historial por semana
+  y barbero, tareas (vencida sin registros, `soon`, fecha futura, varios registros), purga (rutas de
+  más de 90 días, `photosPurged` en los detalles, el claim una vez por día) y los adjuntos de
+  tareas, que nunca se purgan.
+- Unitarias: `cleaning.ts` (validación, textos, semana, estado de tarea, sugerencias) y
+  `purge.ts` con un Storage falso.
+- Integración: acciones contra Postgres local (registrar, revisión, tareas, purga con Storage falso).
+- E2E (Pixel 7 + iPhone 13): el dueño enciende Limpieza; el barbero ve "Apertura pendiente", la
+  registra incompleta con nota y desaparece el aviso; el cierre pide foto; el dueño ve el incompleto
+  en el panel y hace una revisión con una falla asignada que aparece en el historial.
+
+---
+
 ## 18. Hito 13 — Inventario de insumos y vitrina (REQ-070…REQ-074, ADR-039)
 
 > §16 y §17 quedan para los Hitos 11 (limpieza) y 12 (punto de venta), que se diseñan en paralelo.
