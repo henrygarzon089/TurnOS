@@ -1,28 +1,32 @@
 import type { Metadata } from "next";
 import { getMyNumbers } from "@/lib/actions/cash";
+import type { Totals } from "@/lib/domain/my-numbers";
 import { formatCOP } from "@/lib/domain/money";
 import { formatDayCO, formatTimeBogota } from "@/lib/domain/time";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Mis números" };
 
-function Card({
-  title,
-  t,
-  testId,
-}: {
-  title: string;
-  t: { services: number; sold: number; commission: number };
-  testId: string;
-}) {
+function Card({ title, t, testId }: { title: string; t: Totals; testId: string }) {
   return (
     <div className="border-line bg-card rounded-xl border p-4" data-testid={testId}>
       <p className="text-muted text-xs font-semibold uppercase">{title}</p>
-      <p className="mt-1 text-2xl font-bold">{formatCOP(t.commission)}</p>
+      <p className="mt-1 text-2xl font-bold">{formatCOP(t.total)}</p>
       <p className="text-muted text-sm">
-        mi comisión · {t.services} {t.services === 1 ? "servicio" : "servicios"} · vendido{" "}
+        Total · {t.services} {t.services === 1 ? "servicio" : "servicios"} · vendido{" "}
         {formatCOP(t.sold)}
       </p>
+      {/* REQ-069.5 servicios y productos aparte */}
+      <dl className="mt-2 grid grid-cols-2 gap-x-3 text-sm">
+        <dt className="text-muted">Comisión de servicios</dt>
+        <dd className="text-right font-semibold" data-testid={`${testId}-services`}>
+          {formatCOP(t.commission)}
+        </dd>
+        <dt className="text-muted">Comisión de productos</dt>
+        <dd className="text-right font-semibold" data-testid={`${testId}-products`}>
+          {formatCOP(t.productCommission)}
+        </dd>
+      </dl>
     </div>
   );
 }
@@ -76,7 +80,14 @@ export default async function MyNumbersPage() {
                     </p>
                   </div>
                   <div className={`shrink-0 text-right ${voided ? "line-through" : ""}`}>
-                    <p className="font-bold">{formatCOP(s.commission_amount)}</p>
+                    <p className="font-bold">
+                      {formatCOP(s.commission_amount + s.product_commission_amount)}
+                    </p>
+                    {s.product_commission_amount > 0 && (
+                      <p className="text-muted text-xs">
+                        productos {formatCOP(s.product_commission_amount)}
+                      </p>
+                    )}
                     <p className="text-muted text-xs">de {formatCOP(s.total)}</p>
                   </div>
                 </li>

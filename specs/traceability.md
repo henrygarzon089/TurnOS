@@ -322,10 +322,10 @@
 | REQ-068.4 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (hecha), T-117 (hecha) | 0060_pos_products.sql, 0061_pos_register_sale.sql | cubierto |
 | REQ-068.5 | Compra de un barbero | T-110 (hecha), T-112 (hecha), T-113 (hecha), T-114 (hecha), T-115 (hecha), T-117 (hecha) | 0062_pos_reports.sql | cubierto |
 | REQ-069.1 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0061_pos_register_sale.sql, 0062_pos_reports.sql | prueba escrita |
-| REQ-069.2 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0062_pos_reports.sql | prueba escrita |
-| REQ-069.3 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0062_pos_reports.sql | prueba escrita |
+| REQ-069.2 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | pos-reports.spec.ts, cash-closure.test.ts, 0062_pos_reports.sql | prueba escrita |
+| REQ-069.3 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | pos-reports.spec.ts, cash-closure.test.ts, 0062_pos_reports.sql | prueba escrita |
 | REQ-069.4 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | 0062_pos_reports.sql | prueba escrita |
-| REQ-069.5 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | — | sin prueba |
+| REQ-069.5 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (pendiente), T-119 (pendiente) | pos-reports.spec.ts, my-numbers.test.ts, my-numbers.test.ts | prueba escrita |
 | REQ-070.1 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
 | REQ-070.2 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
 | REQ-070.3 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (pendiente), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
