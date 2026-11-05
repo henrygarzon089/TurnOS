@@ -324,13 +324,13 @@
 | REQ-062.6 | Avisos dentro de TurnOS | T-104 (hecha), T-105 (hecha) | cleaning-barber.spec.ts, cleaning-owner.spec.ts | cubierto |
 | REQ-062.7 | Avisos dentro de TurnOS | T-104 (hecha), T-105 (hecha) | 0058_cleaning_records.sql | cubierto |
 | REQ-062.8 | Avisos dentro de TurnOS | T-104 (hecha), T-105 (hecha) | 0058_cleaning_records.sql, 0059_cleaning_review_tasks.sql | cubierto |
-| REQ-063.1 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (pendiente), T-108 (pendiente) | 0057_cleaning.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
-| REQ-063.2 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (pendiente), T-108 (pendiente) | 0057_cleaning.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
-| REQ-063.3 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (pendiente), T-108 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
-| REQ-063.4 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (pendiente), T-108 (pendiente) | 0057_cleaning.sql, 0058_cleaning_records.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
-| REQ-063.5 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (pendiente), T-108 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
-| REQ-063.6 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (pendiente), T-108 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
-| REQ-063.7 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (pendiente), T-108 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
+| REQ-063.1 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (hecha), T-108 (pendiente) | cleaning-inspection.spec.ts, 0057_cleaning.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
+| REQ-063.2 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (hecha), T-108 (pendiente) | cleaning-inspection.spec.ts, 0057_cleaning.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
+| REQ-063.3 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (hecha), T-108 (pendiente) | cleaning-inspection.spec.ts, 0059_cleaning_review_tasks.sql | prueba escrita |
+| REQ-063.4 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (hecha), T-108 (pendiente) | cleaning-inspection.spec.ts, 0057_cleaning.sql, 0058_cleaning_records.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
+| REQ-063.5 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (hecha), T-108 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
+| REQ-063.6 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (hecha), T-108 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
+| REQ-063.7 | Revisión del dueño e historial | T-100 (hecha), T-102 (hecha), T-106 (hecha), T-108 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
 | REQ-064.1 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (hecha), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | cleaning.test.ts, cleaning.test.ts, 0057_cleaning.sql, 0059_cleaning_review_tasks.sql | prueba escrita |
 | REQ-064.2 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (hecha), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | 0059_cleaning_review_tasks.sql | prueba escrita |
 | REQ-064.3 | Tareas periódicas, fotos privadas y retención | T-100 (hecha), T-102 (hecha), T-103 (hecha), T-107 (pendiente), T-108 (pendiente), T-109 (pendiente) | cleaning.test.ts, 0057_cleaning.sql, 0059_cleaning_review_tasks.sql | prueba escrita |

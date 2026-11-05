@@ -1362,10 +1362,13 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `OwnerQueue`) y el chip "Limpieza" va en `AdminNav`. Apagada, `/admin/limpieza` solo muestra el
   interruptor. E2E: `tests/e2e/cleaning-owner.spec.ts`.
 
-### [ ] T-106 · Revisión del dueño
+### [x] T-106 · Revisión del dueño
 - REQ: REQ-063.1, REQ-063.2, REQ-063.3, REQ-063.4
 - Archivos: pestaña Revisión en `/admin/limpieza`
 - Terminado: E2E con una falla asignada a un barbero, que el barbero no ve.
+- Nota: `CleaningInspection` con "Bien"/"Falla" por punto, nota y foto opcionales en cualquier
+  punto calificado, barbero solo en fallas y el botón "Lo demás, bien" para no tocar 15 puntos uno
+  por uno. E2E: `tests/e2e/cleaning-inspection.spec.ts`.
 
 ### [ ] T-107 · Tareas periódicas con adjuntos
 - REQ: REQ-064.1, REQ-064.2, REQ-064.3, REQ-064.4, REQ-064.5
