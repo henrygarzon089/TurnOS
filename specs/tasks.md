@@ -1811,7 +1811,11 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 > REQ-075 y ADR-043 aprobados por Henry (2026-11-06, PR #109). Diseño en `design.md` §19. Sin migraciones. Medición: Speed Insights
 > anónimo (Henry, 2026-11-06).
 
-### [ ] T-130 · Esqueleto base y pantallas públicas
+### [x] T-130 · Esqueleto base y pantallas públicas
+- Nota (2026-11-06): hecha. Desvíos menores: `vitest.config.ts` incluye `tests/unit/**/*.test.tsx` y
+  `scripts/traceability.ts` lee también `.tsx` (antes solo `.ts`/`.sql`), para que la prueba entre a la
+  matriz. La prueba usa `renderToStaticMarkup` en Node (sin dependencias nuevas). El `loading.tsx` de
+  `[slug]` también cubre sus subrutas sin esqueleto propio (`/turno`, `/cita`, `/pantalla`…).
 - REQ: REQ-075.1, REQ-075.2
 - Archivos: `src/components/ui/Skeleton.tsx`, `src/app/(public)/[slug]/loading.tsx`,
   `src/app/(public)/t/[token]/loading.tsx`, `tests/unit/skeleton.test.tsx`

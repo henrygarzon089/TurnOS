@@ -71,7 +71,7 @@ function walk(dir: string) {
   for (const e of readdirSync(dir)) {
     const f = join(dir, e);
     if (statSync(f).isDirectory()) walk(f);
-    else if (/\.(ts|sql)$/.test(e)) testFiles.push(f);
+    else if (/\.(tsx?|sql)$/.test(e)) testFiles.push(f);
   }
 }
 walk("tests");
