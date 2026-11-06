@@ -700,7 +700,7 @@ REQ-013, REQ-030, REQ-032, REQ-033, NFR-002, NFR-004.
 | `/app/fila` | barbero (y dueño como barbero) | "Mi fila" + acciones | REQ-006…REQ-010 |
 | `/app/mis-numeros` | barbero | Mis ventas y comisiones | REQ-025.5, REQ-029 |
 | `/app/clientes`, `/app/clientes/[id]` | barbero, dueño | Lista/ficha (barbero sin montos) | REQ-018 |
-| `/admin` | dueño | Inicio: fila del negocio y estado de barberos | REQ-012 |
+| `/admin` | dueño | Inicio "Hoy": fila, caja, citas, alertas y recordar (Hito 15, §21; antes llevaba a la fila) | REQ-076 |
 | `/admin/fila` | dueño | Fila completa + intervenciones + abrir/cerrar | REQ-012 |
 | `/admin/qr` | dueño | QR, enlace, compartir | REQ-001.2–1.3 |
 | `/admin/servicios`, `/admin/productos` | dueño | CRUD | REQ-015, REQ-024.1 |
@@ -2532,3 +2532,71 @@ aparece.
   (`ClosureTotals.byMethod.daviplata` es opcional).
 - **UI:** el orden es Efectivo, Nequi, Daviplata, Transferencia, Tarjeta en el cobro, la cuota de
   membresía, la venta de tarjeta de regalo y Caja de hoy.
+
+## 21. Hito 15 — Inicio "Hoy" del dueño (REQ-076, REQ-077, ADR-046)
+
+> Aprobado por Henry (2026-11-06, ADR-046). Sin migraciones: reúne server actions que ya existen.
+
+### 21.1 Ruta y carga (REQ-076.1, REQ-076.10, REQ-076.11)
+- `src/app/(staff)/admin/page.tsx` deja de hacer `redirect("/admin/fila")` y pinta "Hoy". El control
+  de rol sigue en `admin/layout.tsx` (barbero → `/app`, REQ-030); `StaffGate` y su esqueleto (§19.1)
+  no cambian.
+- Cada bloque es un Server Component propio dentro de su `<Suspense fallback={<…Skeleton />}>`:
+  `TodayAlerts`, `TodayQueue`, `TodayCash`, `TodayAppointments`, `TodayRemind` y, en escritorio,
+  `TodayWeek`. Next los manda en streaming en el orden en que terminan; ninguno espera a otro.
+- Cada bloque envuelve su carga en `try/catch` y, si falla, pinta `TodayBlockError` ("No se pudo
+  cargar" + "Intentar de nuevo", que hace `router.refresh()`). Un `error.tsx` tumbaría toda la página,
+  por eso el error es por bloque.
+- Orden en el celular (una columna): alertas, fila, caja, citas, recordar. En ≥ 1024 px, rejilla de
+  12 columnas: fila (8) y alertas (4) arriba; caja (4), citas (4) y semana (4) abajo; recordar dentro
+  de la columna de alertas.
+- `loading.tsx` de `/admin` = forma de la rejilla con `SkeletonBlock` (mismo componente de §19.1).
+
+### 21.2 Fuentes de cada bloque (sin datos nuevos)
+| Bloque | Server action existente | CA |
+|---|---|---|
+| Fila en vivo | `getBusinessQueue()` (`queue.ts`): esperando, estimado y estado por barbero | REQ-076.2 |
+| Caja | `getCashDay()` y `getCashDay(hoy − 7)` (`cash.ts`, `cash_day_summary`) | REQ-076.4 |
+| Citas | `getAppointmentAgenda()` (`appointments.ts`); oculto si citas está apagado | REQ-076.5 |
+| Alertas: caja | nueva lectura `getUnclosedDays()` en `cash.ts`: `sales.business_day` de los últimos 7 días (sin hoy, sin anuladas) que no estén en `cash_closures`, con el cliente de la sesión (RLS) | REQ-076.6 |
+| Alertas: limpieza | `getOwnerCleaningSummary()` (`cleaning.ts`); nada si el módulo está apagado | REQ-076.6 |
+| Alertas: inventario | `getInventoryOverview()` (`inventory.ts`), ítems con `inventory_is_alert` | REQ-076.6 |
+| Alertas: membresías | `memberships_expiring` vía `memberships.ts`, ventana de 7 días | REQ-076.6 |
+| Recordar | `getBirthdaysThisWeek()` y `getInactiveCustomers()` (`customers.ts`), solo los conteos | REQ-076.7 |
+| Semana | `getWeekSummary()` (`cash.ts`, `weekly_summary.days`) | REQ-076.9 |
+
+- La lógica de qué alerta va y en qué orden es pura: `buildOwnerAlerts(input)` en
+  `src/lib/domain/owner-alerts.ts` (entra lo que devolvieron las actions, sale una lista ordenada
+  `{kind, text, href}`), probada con Vitest. "Todo en orden" cuando la lista está vacía.
+- Comparación de caja (PA-H15-1, día completo): el texto es "El jueves pasado (todo el día): $ X",
+  con el día de la semana de `src/lib/domain/time.ts`.
+- Nombres cortos con `short_name` / el helper que ya usa la fila; ningún bloque recibe celulares
+  (REQ-076.2, REQ-076.7).
+
+### 21.3 Tiempo real (REQ-076.3)
+- Un componente cliente `TodayLive` usa `use-queue-subscription` (`queue:<business_id>`). El canal ya
+  avisa cambios de turnos y de ventas (`notify_queue_changed(…, 'sale')`, 0025). Al recibir la señal,
+  con el mismo debounce de 300 ms, hace `router.refresh()`: Next vuelve a pedir la página y solo
+  cambian los bloques cuyo resultado cambió. Reconectar también refresca (ADR-008).
+
+### 21.4 Menú del dueño (REQ-077)
+- `AdminNav` pasa de chips a una sola lista de grupos `ADMIN_GROUPS` en `src/lib/domain/admin-nav.ts`
+  (fuente única para la barra, "Más" y el menú lateral; la prueba verifica que contiene los 19 módulos
+  de hoy más "Hoy", REQ-077.4).
+- Celular (< 1024 px): barra inferior fija, 5 destinos de ≥ 48 px, con `env(safe-area-inset-bottom)`;
+  "Más" abre una hoja inferior con los grupos. El contenido deja espacio abajo para que la barra no
+  tape el botón principal.
+- Escritorio (≥ 1024 px): menú lateral fijo de 240 px con los grupos; la barra inferior se oculta.
+- `aria-current="page"` en el destino actual (prefijo de ruta, como hoy).
+- Insignia de "Hoy" (REQ-077.6): el layout del dueño no espera las alertas para pintar el menú; la
+  insignia es un Server Component en su propio `Suspense` con fallback vacío, que llama a la misma
+  `buildOwnerAlerts`.
+- El menú del barbero no cambia.
+
+### 21.5 Pruebas
+- Unitarias: `buildOwnerAlerts` (orden, módulo apagado sin alertas, lista vacía), `ADMIN_GROUPS`
+  (grupos y módulos), texto de comparación de caja, bloque con error sin tumbar los demás.
+- E2E (Pixel 7, iPhone 13, y un escritorio 1280 px): el dueño entra a `/admin` y ve "Hoy"; el barbero
+  va a `/app`; un turno tomado en otro navegador aparece en "Hoy" en < 3 s; una venta cambia el total;
+  la barra inferior en móvil y el menú lateral en escritorio llevan a cada módulo.
+

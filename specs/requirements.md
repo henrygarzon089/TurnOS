@@ -1445,6 +1445,77 @@ Fuera de alcance del Hito 14: actualizar la fila en pantalla antes de que confir
 balanceador; trazas con OpenTelemetry; paginar listas que ya tienen tope (búsqueda de clientes 30/50,
 historial 200).
 
+## 5l. Hito 15 — Inicio "Hoy" del dueño
+
+> Estado: **APROBADA** (Henry, 2026-11-06). Ver ADR-046. PA-H15-1 resuelta: día completo. Sale del rediseño visual
+> (`docs/diseno/prompt-diseno.md`): hoy el dueño entra directo a la fila (design §6.1) y para ver la
+> caja, las citas, la limpieza o el inventario tiene que abrir cada módulo. Con 19 módulos en chips
+> desplazables, lo urgente se pierde. Este hito agrega una pantalla de monitoreo y ordena el menú.
+> No agrega datos nuevos: todo sale de funciones que ya existen.
+
+### REQ-076 · Inicio "Hoy" — M
+**Como** dueño, **quiero** ver en una sola pantalla cómo va el negocio ahora mismo y qué necesita mi
+atención, **para** no tener que abrir módulo por módulo.
+
+- REQ-076.1 CUANDO el dueño abre `/admin`, EL SISTEMA DEBE mostrar la pantalla "Hoy" en vez de
+  llevarlo a la fila. Un barbero que abra `/admin` sigue yendo a `/app` (REQ-030).
+- REQ-076.2 "Hoy" DEBE mostrar la **fila en vivo**: cuántos esperan, el tiempo estimado del próximo
+  turno y, por cada barbero activo, su estado: "Libre", "Atendiendo a Juan P. desde hace 12 min",
+  "En pausa" o "No vino hoy". Los nombres van cortos (`short_name`); NO DEBEN aparecer celulares.
+- REQ-076.3 CUANDO la fila o la caja cambian, "Hoy" DEBE actualizarse en < 3 s sin recargar (mismo
+  canal y relectura que la fila, ADR-008; NFR-002).
+- REQ-076.4 "Hoy" DEBE mostrar la **caja de hoy**: total cobrado, total por medio de pago, ventas de
+  vitrina y número de servicios terminados, con las mismas cifras de la Caja de hoy (REQ-027.1).
+  Junto al total DEBE mostrar el total del **mismo día de la semana pasada** (PA-H15-1).
+- REQ-076.5 "Hoy" DEBE mostrar las **citas de hoy**: cuántas quedan, las próximas 3 con hora, barbero
+  y servicio, y cuáles ya llegaron. SI el módulo de citas está apagado, el bloque NO DEBE aparecer.
+- REQ-076.6 "Hoy" DEBE mostrar la lista de **alertas que piden acción**, cada una con un enlace al
+  módulo donde se resuelve, en este orden:
+  1. Caja de un día anterior con ventas y sin cerrar (REQ-027).
+  2. Limpieza: apertura pendiente, registros "Incompleto" o "Tarde" y profunda pendiente de la semana
+     (REQ-062.1, REQ-062.4, REQ-062.5).
+  3. Inventario: ítems en alerta de existencias o de consumo (REQ-073.4).
+  4. Membresías que vencen en los próximos 7 días (REQ-045).
+  Un módulo apagado no genera alertas. SIN alertas, el bloque DEBE decir "Todo en orden".
+- REQ-076.7 "Hoy" DEBE mostrar cuántos clientes **cumplen años esta semana** y cuántos **hace rato no
+  vienen**, con enlace a "Recordar" (REQ-037, REQ-020). NO DEBE listar sus celulares.
+- REQ-076.8 "Hoy" DEBE tener accesos directos a "Nueva venta", "Fila" y "Cerrar caja".
+- REQ-076.9 En pantallas de 1024 px o más, "Hoy" DEBE mostrar además los **ingresos de la semana en
+  curso por día** (barras simples, mismas cifras de "Semana", REQ-028).
+- REQ-076.10 Cada bloque DEBE cargar por su cuenta: mientras llega, muestra su esqueleto (REQ-075.2);
+  SI un bloque falla, ENTONCES muestra "No se pudo cargar" con "Intentar de nuevo" y los demás
+  bloques DEBEN seguir visibles.
+- REQ-076.11 En el celular el orden DEBE ser: alertas, fila en vivo, caja, citas, recordar.
+
+### REQ-077 · Menú del dueño por grupos — M
+**Como** dueño, **quiero** un menú corto con lo de todos los días a la mano y el resto ordenado,
+**para** encontrar cada módulo sin desplazar una fila de 19 botones.
+
+- REQ-077.1 En el celular, el dueño DEBE tener una barra inferior fija con "Hoy", "Fila", "Caja",
+  "Clientes" y "Más". "Más" DEBE abrir la lista completa de módulos agrupada en **Operación**,
+  **Clientes**, **Local** y **Configuración**.
+- REQ-077.2 En pantallas de 1024 px o más, el dueño DEBE tener un menú lateral fijo con los mismos
+  grupos y módulos.
+- REQ-077.3 Los grupos DEBEN ser: Operación (Hoy, Fila, Citas, Caja, Semana); Clientes (Clientes,
+  Fidelidad, Recordar, Membresías, Tarjetas de regalo); Local (Limpieza, Productos, Inventario);
+  Configuración (Barberos, Servicios, Horario, QR, Mensajes, Negocio, Privacidad).
+- REQ-077.4 Ningún módulo que hoy tiene acceso desde el menú DEBE quedar sin él.
+- REQ-077.5 El destino actual DEBE verse marcado y anunciarse a lectores de pantalla
+  (`aria-current`); cada destino DEBE medir ≥ 48 px (NFR-008).
+- REQ-077.6 "Hoy" en el menú DEBE mostrar el número de alertas pendientes de REQ-076.6 cuando haya
+  alguna.
+
+Preguntas abiertas del Hito 15:
+- **PA-H15-1**: la comparación de REQ-076.4, ¿contra el día completo de la semana pasada (simple, ya
+  existe) o contra lo que se llevaba a esta misma hora (más justo a media mañana, necesita una
+  consulta nueva)? **Resuelta (Henry, 2026-11-06): día completo**, con el texto "El jueves pasado
+  (todo el día): $ X".
+
+Fuera de alcance del Hito 15: el rediseño visual con los colores nuevos (llega cuando estén los
+diseños, con su propio requisito); cambiar el menú del barbero; gráficos más allá de las barras de la
+semana; alertas por WhatsApp o notificaciones push; metas de venta o comparaciones mensuales;
+configurar qué bloques ve el dueño.
+
 ---
 
 ## 6. Requisitos no funcionales

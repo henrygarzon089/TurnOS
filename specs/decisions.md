@@ -770,3 +770,35 @@
   en `byMethod`). Los cierres anteriores guardaron su foto sin Daviplata: se leen como $ 0. El
   efectivo esperado del cierre no cambia (solo cuenta efectivo). Número: ADR-044 está reservado
   para la aprobación del Hito 14.
+
+## ADR-046 · Inicio "Hoy" y menú del dueño por grupos (Hito 15)
+- Estado: **aceptada** (Henry, 2026-11-06). PA-H15-1: comparación contra el día completo.
+- Contexto: el rediseño visual (`docs/diseno/prompt-diseno.md`) pide que el panel del dueño sea un
+  tablero de monitoreo. Hoy `/admin` lleva a la fila (design §6.1) y el menú son 19 chips
+  desplazables (`AdminNav`): la caja, las alertas de limpieza e inventario y las citas viven en
+  módulos separados.
+- Opciones:
+  - Para el inicio: (a) pantalla "Hoy" nueva que reúne lo que ya calculan `queue_snapshot`,
+    `cash_day_summary`, `appointments_today`, `cleaning_owner_summary`, `inventory_overview`,
+    `memberships_expiring`, `birthdays_this_week`, `inactive_customer`, `weekly_summary` y
+    `cash_closures_list`; (b) una sola función SQL nueva `owner_today()` que devuelva todo junto;
+    (c) dejar la fila como inicio y solo agregarle una franja de alertas.
+  - Para el menú: (a) barra inferior con 4 destinos + "Más" en el celular y menú lateral en
+    escritorio, agrupados; (b) dejar los chips y solo reordenarlos.
+- Decisión: (a) en los dos.
+  - (a) para el inicio: cero migraciones; cada bloque llama a su función en paralelo y carga dentro
+    de su propio `Suspense`, así un bloque lento o caído no tumba la pantalla (REQ-076.10). (b) es una
+    consulta menos pero obliga a una migración y a repetir lógica ya probada con pgTAP; se revisa si
+    la medición de REQ-075.3 muestra que "Hoy" es lento. (c) no resuelve que lo urgente esté
+    escondido.
+  - (a) para el menú: 19 chips no caben con el pulgar; los 4 destinos fijos son los que el dueño
+    usa a diario.
+  - Tiempo real: "Hoy" escucha el canal `queue:<business_id>` que ya existe (`queue_changed` y el
+    aviso de ventas) y relee solo los bloques de fila y caja (ADR-008).
+- Consecuencias: Hito 15 con REQ-076…077, diseño en `design.md` §21. Tareas en `tasks.md`: T-150
+  menú por grupos (REQ-077); T-151 "Hoy" con fila y caja en vivo (REQ-076.1–076.4, 076.10, 076.11);
+  T-152 citas, alertas y recordar (REQ-076.5–076.7, 077.6); T-153 accesos directos y semana en
+  escritorio (REQ-076.8, 076.9); T-154 validación del hito. El
+  rediseño visual con los colores nuevos no entra aquí: tendrá su propio requisito cuando estén los
+  diseños. Número: ADR-044 sigue reservado para la aprobación del Hito 14; ADR-046 es el primero
+  libre después de ADR-045.
