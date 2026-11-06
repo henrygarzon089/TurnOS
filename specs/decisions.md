@@ -690,6 +690,22 @@
   hace Henry. Número: ADR-040 es el primero libre después de ADR-039; las aprobaciones de los Hitos
   11 y 13 toman los siguientes.
 
+## ADR-041 · Aprobación del Hito 11 (limpieza y bioseguridad)
+- Estado: **propuesta**, pendiente de Henry
+- Contexto: REQ-060…REQ-064 (37 criterios) implementados en T-100…T-109 (PRs encadenados #73
+  spec, #74, #78, #81, #84, #88, #91, #98, #101, #103 y #104), con `pnpm trace --check --hito=11`
+  sin huecos y las E2E de limpieza (`cleaning-barber`, `cleaning-owner`, `cleaning-inspection`,
+  `cleaning-tasks` y `cleaning-history`) en verde en Pixel 7 y iPhone 13. Henry aplicó
+  `0057`…`0059` el 2026-11-06 (`supabase db push --include-all` desde `main`) y desplegó a
+  producción. Limpieza nace apagada en todos los negocios.
+- Decisión: Henry aprueba el Hito 11, como en los Hitos 12 y 13, sin esperar la prueba en la
+  barbería. Encender Limpieza en Filo y la primera semana de uso quedan como operación, no como
+  condición del hito.
+- Consecuencias: T-109 cerrada. Queda la operación en Filo: encender "Limpieza activada", ajustar
+  las listas, un día con apertura, cierre con foto y una revisión, y crear las tareas periódicas
+  (control de plagas con su certificado en PDF). Si de esa operación sale algo que cambie la spec,
+  va con su propio ADR.
+
 ## ADR-042 · Aprobación del Hito 13 (inventario de insumos y vitrina)
 - Estado: **aceptada** (Henry, 2026-11-05)
 - Contexto: REQ-070…REQ-074 implementados en T-120…T-129 (PRs encadenados #72 spec, #76, #77, #79,
