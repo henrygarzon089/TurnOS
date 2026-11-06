@@ -2505,17 +2505,14 @@ aparece.
   el esqueleto (`aria-busy`) antes del contenido.
 
 ### 19.2 Velocidad real (REQ-075.3, REQ-075.4)
-- Opción propuesta (ADR-043): `@vercel/speed-insights` con `<SpeedInsights beforeSend={…} />` en
+- Opción elegida por Henry (ADR-043, 2026-11-06): `@vercel/speed-insights` con `<SpeedInsights beforeSend={…} />` en
   `src/app/layout.tsx`. El script se sirve desde el mismo dominio (`/_vercel/speed-insights/…`), no
   pone cookies y solo envía en producción.
 - `beforeSend` usa la función pura `redactVitalsUrl` (`src/lib/domain/vitals.ts`, con pruebas):
   quita `?…` y `#…`, y cambia el segmento del token por el patrón en `/t/`, `/c/`, `/regalo/` e
   `/invitacion/` (`/t/abc123?x=1` → `/t/[token]`). Cualquier otra ruta pasa sin el query.
 - Se revisa en Vercel → Speed Insights, filtrando por `/[slug]` y `/app/fila` (pantallas de NFR-001).
-- Alternativa si Henry no acepta el cambio de NFR-005: `useReportWebVitals` de Next en un componente
-  cliente que manda a una server action propia y una tabla `web_vitals` en Supabase (ruta ya
-  redactada, sin `business_id` ni usuario). Eso agrega una migración y una vista de revisión, y
-  T-132 crece.
+- Descartada (ADR-043): `useReportWebVitals` hacia una tabla propia en Supabase.
 
 ### 19.3 Región
 - Las funciones de Vercel van en la misma región que el proyecto de Supabase (configuración del

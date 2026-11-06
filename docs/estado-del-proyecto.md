@@ -366,9 +366,9 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - Spec en PR (`claude/h14-spec-rendimiento`): REQ-075 (esqueletos en `/[slug]`, `/t/[token]`,
   `/app/fila`, `/admin/fila`, `/admin/caja`; velocidad de usuarios reales sin tokens ni cookies),
   design §19, T-130…T-133, sin migraciones. Sin código todavía.
-- Decisiones de Henry antes de aprobar: (1) cambio de texto de NFR-005 para permitir Speed Insights
-  anónimo, o la alternativa con tabla propia en Supabase (ADR-043, design §19.2); (2) revisar la
-  cuota de Speed Insights en el plan de Vercel; (3) región de Supabase y de las funciones de Vercel.
+- Medición: Henry eligió Speed Insights anónimo y el cambio de texto de NFR-005 (2026-11-06).
+- Pendiente de Henry: aprobar la spec; revisar la cuota de Speed Insights en el plan de Vercel
+  (T-132); confirmar la región de Supabase y de las funciones de Vercel (T-133).
 - Al aprobar la spec, ADR-043 pasa a aceptada; la aprobación del hito terminado será ADR-044
   (reservado).
 

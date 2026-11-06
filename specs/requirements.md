@@ -1418,7 +1418,8 @@ automático del conteo o de la compra cada 15 días; margen de la vitrina.
 > TurnOS contra una lista de 31 optimizaciones: la mayoría ya se cumple o no aplica a este tamaño
 > (ADR-043). Quedan dos huecos: no hay pantallas de carga (en 4G se ve en blanco hasta que llega el
 > servidor) y no se mide la velocidad de los celulares reales (NFR-001 hoy solo se prueba con
-> Lighthouse en el CI). Este hito propone además un cambio de texto en NFR-005 (ver ADR-043).
+> Lighthouse en el CI). Este hito cambia además el texto de NFR-005: Henry eligió medir con Speed
+> Insights anónimo (2026-11-06, ADR-043).
 
 ### REQ-075 · Pantallas de carga y velocidad real — M
 **Como** cliente o barbero con datos lentos, **quiero** ver de inmediato la forma de la pantalla
@@ -1454,7 +1455,7 @@ historial 200).
 | NFR-002 Tiempo real | Cambios de fila visibles a todos los interesados | < 3 s entre el cambio en servidor y la actualización en pantalla (prueba E2E con dos navegadores) |
 | NFR-003 Disponibilidad | El negocio no para por una caída corta | Lectura de último estado sin conexión (REQ-011.6); sin dependencia de cron para la operación de la fila |
 | NFR-004 Seguridad | Aislamiento por negocio y mínima exposición | RLS en el 100 % de tablas con `business_id` (REQ-031.4); tokens de "Mi turno" ≥ 128 bits aleatorios; sin `service_role` en el cliente; rate limiting en "Tomar turno" (máx. 5 por celular/hora, 30 por IP/hora) |
-| NFR-005 Privacidad | Ley 1581 | Aviso versionado y aceptación registrada (REQ-002); supresión (REQ-018.6); pantallas públicas sin celulares (REQ-013.2); sin trackers de terceros en páginas públicas. *Propuesta ADR-043:* la medición anónima de velocidad de REQ-075.3 no cuenta como tracker si cumple REQ-075.4 (sin cookies, sin identificadores, sin tokens) |
+| NFR-005 Privacidad | Ley 1581 | Aviso versionado y aceptación registrada (REQ-002); supresión (REQ-018.6); pantallas públicas sin celulares (REQ-013.2); sin trackers de terceros en páginas públicas; la medición anónima de velocidad de REQ-075.3 no cuenta como tracker si cumple REQ-075.4 (sin cookies, sin identificadores, sin tokens; ADR-043) |
 | NFR-006 Localización | Colombia | `es-CO` en toda la UI; COP sin decimales con punto de miles; `America/Bogota` en servidor y cliente; sin textos en inglés visibles (prueba de lint de textos) |
 | NFR-007 Usabilidad | Sin capacitación | Prueba de pasillo: un barbero real completa llamar → en servicio → terminado → cobro sin ayuda en el primer intento; flujo del cliente ≤ 4 campos y 1 pantalla |
 | NFR-008 Accesibilidad | Legible al sol y con una mano | Contraste ≥ 4.5:1; botones ≥ 48 px; tamaño de fuente base ≥ 16 px; funciona con zoom 200 % |

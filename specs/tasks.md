@@ -1808,7 +1808,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ## Hito 14 — Rendimiento percibido y medición (ADR-043)
 
-> PROPUESTA (2026-11-06). Diseño en `design.md` §19. Sin migraciones (con la opción (a) de ADR-043).
+> PROPUESTA (2026-11-06). Diseño en `design.md` §19. Sin migraciones. Medición: Speed Insights
+> anónimo (Henry, 2026-11-06).
 
 ### [ ] T-130 · Esqueleto base y pantallas públicas
 - REQ: REQ-075.1, REQ-075.2
@@ -1833,7 +1834,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `src/lib/domain/vitals.ts` (`redactVitalsUrl`), `tests/unit/vitals.test.ts`
 - Terminado: pruebas de `redactVitalsUrl` para las cuatro rutas con token, con `?…` y `#…`, y para
   una ruta sin token; Henry activa Speed Insights en el proyecto de Vercel y ve datos de `/[slug]` al
-  día siguiente. Si ADR-043 se aprueba con la opción (b), esta tarea se reescribe antes de empezar.
+  día siguiente, revisando la cuota de su plan.
 
 ### [ ] T-133 · Región y validación Hito 14
 - REQ: REQ-075

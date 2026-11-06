@@ -747,12 +747,12 @@
     ("sin trackers de terceros en páginas públicas"): los datos sí salen hacia Vercel, aunque sin
     identificar al visitante. Por eso esta propuesta cambia el texto de NFR-005 de forma explícita
     (la medición anónima que cumple REQ-075.4 no cuenta como tracker) en vez de reinterpretarlo.
-    Si Henry no acepta ese cambio, se toma (b): los datos no salen de Supabase, a cambio de una
-    migración y más trabajo en T-132 (design §19.2). Speed Insights tiene cuota según el plan de
-    Vercel: Henry la revisa antes de aprobar.
+    **Henry eligió (a) el 2026-11-06** y aceptó el cambio de texto de NFR-005. (b) queda descartada
+    (los datos no salían de Supabase, a cambio de una migración y más trabajo en T-132). Speed
+    Insights tiene cuota según el plan de Vercel: Henry la revisa al activarlo (T-132).
   - (a) para el barbero: REQ-011.3 dice que si falla no cambia el estado en pantalla. Con optimistic
     UI el barbero vería "en servicio" y luego se devolvería: es lo que REQ-011 quiere evitar. El
     botón ya muestra "guardando…" al instante.
-- Consecuencias: Hito 14 con T-130…T-133, sin migraciones con la opción (a). NFR-005 cambia de texto
-  si se aprueba. La aprobación del hito será ADR-044 (reservado). Número: ADR-043 es el primero libre
+- Consecuencias: Hito 14 con T-130…T-133, sin migraciones. NFR-005 cambia de texto (ya aplicado en
+  `requirements.md` §6). La aprobación del hito será ADR-044 (reservado). Número: ADR-043 es el primero libre
   después de ADR-042 (Hito 13).
