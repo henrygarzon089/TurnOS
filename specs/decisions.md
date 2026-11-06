@@ -723,7 +723,7 @@
   Hito 12 y ADR-041 queda para el Hito 11).
 
 ## ADR-043 · Rendimiento percibido y medición (Hito 14)
-- Estado: **propuesta** (2026-11-06, pendiente de Henry)
+- Estado: **aceptada** (Henry, 2026-11-06, PR #109)
 - Contexto: Henry pidió revisar TurnOS contra una lista de 31 optimizaciones de rendimiento
   (esqueletos, imágenes, debounce, índices, caché, etc.). Ya se cumplen: imágenes en WebP con
   `next/image` (Hito 5), debounce en la búsqueda de clientes y en la fila en vivo (300 ms), timeout a
@@ -738,7 +738,7 @@
     propia y una tabla en Supabase.
   - Para las acciones del barbero: (a) dejar REQ-011.3 como está; (b) "optimistic UI" (mostrar el
     cambio antes de confirmar).
-- Decisión propuesta: (a) en los tres.
+- Decisión: (a) en los tres.
   - (a) para la carga: un archivo por ruta, sin partir las páginas; (b) obliga a partir cada página.
     Un `loading.tsx` no cubre el layout de su segmento, y el del personal espera la sesión: ese
     `await` pasa a un `Suspense` dentro del layout (design §19.1) para que el link directo también

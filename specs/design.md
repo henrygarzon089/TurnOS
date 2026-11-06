@@ -2475,7 +2475,7 @@ aparece.
 
 ## 19. Hito 14 — Rendimiento percibido y medición (REQ-075, ADR-043)
 
-> PROPUESTA (2026-11-06). Sin migraciones ni cambios de datos. Solo frontend y una dependencia.
+> Aprobado por Henry (2026-11-06, PR #109, ADR-043). Sin migraciones ni cambios de datos. Solo frontend y una dependencia.
 
 ### 19.1 Esqueletos (REQ-075.1, REQ-075.2)
 - Un `loading.tsx` por ruta de REQ-075.1. Next lo usa como `Suspense` de la página: lo manda primero

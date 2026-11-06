@@ -1414,7 +1414,7 @@ automático del conteo o de la compra cada 15 días; margen de la vitrina.
 
 ## 5k. Hito 14 — Rendimiento percibido y medición
 
-> Estado: **PROPUESTA** (2026-11-06, pendiente de aprobación de Henry). Ver ADR-043. Sale de revisar
+> Estado: **APROBADA** (Henry, 2026-11-06, PR #109). Ver ADR-043. Sale de revisar
 > TurnOS contra una lista de 31 optimizaciones: la mayoría ya se cumple o no aplica a este tamaño
 > (ADR-043). Quedan dos huecos: no hay pantallas de carga (en 4G se ve en blanco hasta que llega el
 > servidor) y no se mide la velocidad de los celulares reales (NFR-001 hoy solo se prueba con

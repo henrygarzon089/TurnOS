@@ -29,7 +29,7 @@
 | H9 | Tarjetas de regalo (ADR-034) | T-090…T-097 | REQ-055…REQ-059 |
 | H11 | Limpieza y bioseguridad (ADR-037) | T-100…T-109 | REQ-060…REQ-064 |
 | H13 | Inventario de insumos y vitrina (ADR-039) | T-120…T-129 | REQ-070…REQ-074 |
-| H14 | Rendimiento percibido y medición (ADR-043) — **propuesta** | T-130…T-133 | REQ-075 |
+| H14 | Rendimiento percibido y medición (ADR-043) | T-130…T-133 | REQ-075 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -1808,7 +1808,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ## Hito 14 — Rendimiento percibido y medición (ADR-043)
 
-> PROPUESTA (2026-11-06). Diseño en `design.md` §19. Sin migraciones. Medición: Speed Insights
+> REQ-075 y ADR-043 aprobados por Henry (2026-11-06, PR #109). Diseño en `design.md` §19. Sin migraciones. Medición: Speed Insights
 > anónimo (Henry, 2026-11-06).
 
 ### [ ] T-130 · Esqueleto base y pantallas públicas
