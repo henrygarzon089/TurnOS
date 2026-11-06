@@ -279,14 +279,28 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   la ficha que queda. **En producción** desde el 2026-11-04 (`supabase db push` desde `c113896`,
   la fusión de #69).
 
-### Hito 11 — limpieza y bioseguridad (spec aprobada, ADR-037, en construcción)
+### Hito 11 — limpieza y bioseguridad (construido, ADR-037, falta aprobación de Henry: ADR-041)
 
 - 2026-11-04: grill de 21 preguntas con Henry, todas con la respuesta recomendada. Escritos
   REQ-060…REQ-064 (37 criterios, §5h), `design.md` §16, ADR-037 y tareas T-100…T-109. Henry aprobó
-  la spec el mismo día (PR #73).
-  Migraciones previstas `0057`…`0059`, con un bucket privado nuevo, `cleaning`. Va en paralelo con
-  los Hitos 12 (punto de venta) y 13 (inventario); el 10 (IA en WhatsApp) está reservado.
-- Construcción: una tarea por PR, cada uno sobre el anterior, empezando por T-100.
+  la spec el mismo día (PR #73, ya en `main`).
+- Construido en PRs apilados, uno por tarea; se fusionan en este orden, cada uno con squash:
+  #74 (T-100, `0057`), #78 (T-101, `0058`), #81 (T-102, `0059`), #84 (T-103 acciones), #88 (T-104
+  barbero), #91 (T-105 dueño), #98 (T-106 revisión), #101 (T-107 tareas), #103 (T-108 historial) y
+  el de T-109.
+- Qué hay: interruptor "Limpieza activada" (nace apagada) y cuatro listas editables; apertura,
+  cierre y profunda con foto y nota; aviso "Apertura pendiente" en la fila del barbero; tarjeta
+  "Limpieza" en el panel del dueño; revisión del dueño con fallas por barbero; tareas periódicas
+  con foto o PDF; historial por semana y por barbero. Las fotos van a un bucket privado, `cleaning`,
+  y las de registros y revisiones se borran a los 90 días (`after()` una vez al día, sin cron).
+- `pnpm trace --hito=11`: 0 sin prueba; el hito 11 ya está en el loop de
+  `tests/unit/traceability.test.ts`.
+- Pendiente de Henry:
+  1. Subir `0057`…`0059` a producción con `supabase db push --include-all` (quedaron con número
+     menor que `0063`/`0064` del Hito 13, que ya están en `main`).
+  2. Encender Limpieza en Filo (`/admin/limpieza` → Listas) y revisar las listas sugeridas.
+  3. Probar un día en la barbería: apertura, cierre con foto, una revisión y una tarea.
+  4. Aprobar el hito: queda como ADR-041 (reservado por la sesión coordinadora).
 
 ### Hito 12 — punto de venta con comisión (aprobado, ADR-040, 2026-11-05; ADR-038)
 
