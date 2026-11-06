@@ -367,7 +367,9 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   `/app/fila`, `/admin/fila`, `/admin/caja`; velocidad de usuarios reales sin tokens ni cookies),
   design §19, T-130…T-133, sin migraciones. Sin código todavía.
 - Medición: Henry eligió Speed Insights anónimo y el cambio de texto de NFR-005 (2026-11-06).
-- Siguiente: T-130. Pendiente de Henry: revisar la cuota de Speed Insights en el plan de Vercel
+- T-130 hecha (rama `claude/t-130-esqueletos-dd66c5`, 2026-11-06): `Skeleton.tsx` y `loading.tsx` en
+  `/[slug]` y `/t/[token]`; prueba `tests/unit/skeleton.test.tsx` (REQ-075.1 y .2 con prueba escrita).
+- Siguiente: T-131 (esqueletos del personal). Pendiente de Henry: revisar la cuota de Speed Insights en el plan de Vercel
   (T-132); confirmar la región de Supabase y de las funciones de Vercel (T-133).
 - ADR-043 aceptada; la aprobación del hito terminado será ADR-044 (reservado).
 
