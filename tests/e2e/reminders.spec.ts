@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
-import { loginAsBarber, loginAsOwner, SEED } from "./helpers";
+import { loginAsBarber, loginAsOwner, SEED, waitForContent } from "./helpers";
 
 /**
  * Cada corrida "recuerda" clientes del seed y los saca de la lista 7 días: sin limpiar, la lista
@@ -39,6 +39,7 @@ test.describe("REQ-020 clientes para recordar", () => {
   }) => {
     await loginAsOwner(page);
     await page.goto("/admin/recordar");
+    await waitForContent(page);
     await expect(page.getByLabel("Días sin venir")).toHaveValue("21");
     const texts = await list(page).getByRole("listitem").locator("p.text-muted").allTextContents();
     expect(texts.length).toBeGreaterThan(0);
