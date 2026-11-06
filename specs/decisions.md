@@ -691,7 +691,7 @@
   11 y 13 toman los siguientes.
 
 ## ADR-041 · Aprobación del Hito 11 (limpieza y bioseguridad)
-- Estado: **propuesta**, pendiente de Henry
+- Estado: **aceptada** (Henry, 2026-11-06)
 - Contexto: REQ-060…REQ-064 (37 criterios) implementados en T-100…T-109 (PRs encadenados #73
   spec, #74, #78, #81, #84, #88, #91, #98, #101, #103 y #104), con `pnpm trace --check --hito=11`
   sin huecos y las E2E de limpieza (`cleaning-barber`, `cleaning-owner`, `cleaning-inspection`,

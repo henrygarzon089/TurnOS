@@ -279,7 +279,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   la ficha que queda. **En producción** desde el 2026-11-04 (`supabase db push` desde `c113896`,
   la fusión de #69).
 
-### Hito 11 — limpieza y bioseguridad (en producción, ADR-037; aprobación propuesta: ADR-041)
+### Hito 11 — limpieza y bioseguridad (aprobado, ADR-041, 2026-11-06; ADR-037)
 
 - 2026-11-04: grill de 21 preguntas con Henry, todas con la respuesta recomendada. Escritos
   REQ-060…REQ-064 (37 criterios, §5h), `design.md` §16, ADR-037 y tareas T-100…T-109. Henry aprobó
@@ -296,10 +296,10 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   y las de registros y revisiones se borran a los 90 días (`after()` una vez al día, sin cron).
 - `pnpm trace --hito=11`: 0 sin prueba; el hito 11 ya está en el loop de
   `tests/unit/traceability.test.ts`.
-- Pendiente de Henry:
-  1. Aprobar el hito: ADR-041 está escrito como propuesta en `specs/decisions.md`.
-  2. Encender Limpieza en Filo (`/admin/limpieza` → Listas) y revisar las listas sugeridas.
-  3. Probar un día en la barbería: apertura, cierre con foto, una revisión y una tarea.
+- 2026-11-06: Henry aprobó el hito (ADR-041) sin esperar la prueba en la barbería.
+- Falta la operación en Filo:
+  1. Encender Limpieza (`/admin/limpieza` → Listas) y ajustar las listas sugeridas.
+  2. Probar un día en la barbería: apertura, cierre con foto, una revisión y una tarea.
 
 ### Hito 12 — punto de venta con comisión (aprobado, ADR-040, 2026-11-05; ADR-038)
 
