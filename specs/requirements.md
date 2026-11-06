@@ -29,6 +29,7 @@
 5e. Hito 7 — Membresía familiar (REQ-044 a REQ-048)
 5h. Hito 11 — Limpieza y bioseguridad (REQ-060 a REQ-064)
 5i. Hito 12 — Punto de venta de productos con comisión (REQ-065 a REQ-069)
+5k. Hito 14 — Rendimiento percibido y medición (REQ-075)
 6. Requisitos no funcionales (NFR)
 7. Casos borde consolidados
 8. Fuera de alcance del MVP
@@ -1411,6 +1412,40 @@ automático del conteo o de la compra cada 15 días; margen de la vitrina.
 
 ---
 
+## 5k. Hito 14 — Rendimiento percibido y medición
+
+> Estado: **PROPUESTA** (2026-11-06, pendiente de aprobación de Henry). Ver ADR-043. Sale de revisar
+> TurnOS contra una lista de 31 optimizaciones: la mayoría ya se cumple o no aplica a este tamaño
+> (ADR-043). Quedan dos huecos: no hay pantallas de carga (en 4G se ve en blanco hasta que llega el
+> servidor) y no se mide la velocidad de los celulares reales (NFR-001 hoy solo se prueba con
+> Lighthouse en el CI). Este hito propone además un cambio de texto en NFR-005 (ver ADR-043).
+
+### REQ-075 · Pantallas de carga y velocidad real — M
+**Como** cliente o barbero con datos lentos, **quiero** ver de inmediato la forma de la pantalla
+mientras llegan los datos, **para** saber que la app respondió y no tocar dos veces.
+
+- REQ-075.1 CUANDO se abre o se navega a la página pública del negocio (`/[slug]`), "Mi turno"
+  (`/t/[token]`), "Mi fila" del barbero (`/app/fila`), la fila del dueño (`/admin/fila`) o la Caja de
+  hoy (`/admin/caja`) y los datos aún no llegan, EL SISTEMA DEBE mostrar un esqueleto con la forma de
+  esa pantalla (bloques grises en el lugar del contenido) en vez de una pantalla en blanco o un
+  spinner. Esto aplica también al abrir el link directo, no solo al moverse dentro de la app.
+- REQ-075.2 El esqueleto NO DEBE mostrar datos, cifras ni nombres de ejemplo; DEBE anunciar "Cargando…"
+  a lectores de pantalla (`aria-busy`) y NO DEBE animarse si el celular pide menos movimiento
+  (`prefers-reduced-motion`).
+- REQ-075.3 MIENTRAS la app corre en producción, EL SISTEMA DEBE registrar las métricas de velocidad
+  de los usuarios reales (LCP, INP, CLS) por ruta, para revisar NFR-001 con datos de campo.
+- REQ-075.4 La medición NO DEBE usar cookies ni identificadores del visitante; las rutas con token
+  (`/t/…`, `/c/…`, `/regalo/…`, `/invitacion/…`) DEBEN reportarse con el patrón (`/t/[token]`), nunca
+  con el token, y la URL reportada NO DEBE llevar parámetros de consulta (`?…`) ni fragmento (`#…`)
+  (NFR-005).
+
+Fuera de alcance del Hito 14: actualizar la fila en pantalla antes de que confirme el servidor
+("optimistic UI", REQ-011.3 lo prohíbe a propósito, ADR-043); colas de trabajos, Redis, CDN propia o
+balanceador; trazas con OpenTelemetry; paginar listas que ya tienen tope (búsqueda de clientes 30/50,
+historial 200).
+
+---
+
 ## 6. Requisitos no funcionales
 
 | ID | Requisito | Criterio verificable |
@@ -1419,7 +1454,7 @@ automático del conteo o de la compra cada 15 días; margen de la vitrina.
 | NFR-002 Tiempo real | Cambios de fila visibles a todos los interesados | < 3 s entre el cambio en servidor y la actualización en pantalla (prueba E2E con dos navegadores) |
 | NFR-003 Disponibilidad | El negocio no para por una caída corta | Lectura de último estado sin conexión (REQ-011.6); sin dependencia de cron para la operación de la fila |
 | NFR-004 Seguridad | Aislamiento por negocio y mínima exposición | RLS en el 100 % de tablas con `business_id` (REQ-031.4); tokens de "Mi turno" ≥ 128 bits aleatorios; sin `service_role` en el cliente; rate limiting en "Tomar turno" (máx. 5 por celular/hora, 30 por IP/hora) |
-| NFR-005 Privacidad | Ley 1581 | Aviso versionado y aceptación registrada (REQ-002); supresión (REQ-018.6); pantallas públicas sin celulares (REQ-013.2); sin trackers de terceros en páginas públicas |
+| NFR-005 Privacidad | Ley 1581 | Aviso versionado y aceptación registrada (REQ-002); supresión (REQ-018.6); pantallas públicas sin celulares (REQ-013.2); sin trackers de terceros en páginas públicas. *Propuesta ADR-043:* la medición anónima de velocidad de REQ-075.3 no cuenta como tracker si cumple REQ-075.4 (sin cookies, sin identificadores, sin tokens) |
 | NFR-006 Localización | Colombia | `es-CO` en toda la UI; COP sin decimales con punto de miles; `America/Bogota` en servidor y cliente; sin textos en inglés visibles (prueba de lint de textos) |
 | NFR-007 Usabilidad | Sin capacitación | Prueba de pasillo: un barbero real completa llamar → en servicio → terminado → cobro sin ayuda en el primer intento; flujo del cliente ≤ 4 campos y 1 pantalla |
 | NFR-008 Accesibilidad | Legible al sol y con una mano | Contraste ≥ 4.5:1; botones ≥ 48 px; tamaño de fuente base ≥ 16 px; funciona con zoom 200 % |

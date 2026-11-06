@@ -361,6 +361,17 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   6. ~~Aprobación del hito~~ hecho (ADR-042, 2026-11-05; Henry aprobó antes de la prueba en Filo,
      que queda como operación: pasos 3 a 5).
 
+### Hito 14 — rendimiento percibido y medición (**spec propuesta**, ADR-043, 2026-11-06)
+
+- Spec en PR (`claude/h14-spec-rendimiento`): REQ-075 (esqueletos en `/[slug]`, `/t/[token]`,
+  `/app/fila`, `/admin/fila`, `/admin/caja`; velocidad de usuarios reales sin tokens ni cookies),
+  design §19, T-130…T-133, sin migraciones. Sin código todavía.
+- Decisiones de Henry antes de aprobar: (1) cambio de texto de NFR-005 para permitir Speed Insights
+  anónimo, o la alternativa con tabla propia en Supabase (ADR-043, design §19.2); (2) revisar la
+  cuota de Speed Insights en el plan de Vercel; (3) región de Supabase y de las funciones de Vercel.
+- Al aprobar la spec, ADR-043 pasa a aceptada; la aprobación del hito terminado será ADR-044
+  (reservado).
+
 ### Hito 4 — servicios por barbero (2026-10-28)
 
 - Origen: Filo (`/filo`, creado en producción el 2026-10-28 con `supabase/data/filo.sql`) tiene

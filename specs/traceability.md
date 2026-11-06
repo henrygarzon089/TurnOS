@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-05.
+> Generada por `scripts/traceability.ts` el 2026-11-06.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -392,3 +392,7 @@
 | REQ-074.3 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | 0067_inventory_reports.sql | cubierto |
 | REQ-074.4 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | inventory.spec.ts, inventory.test.ts, 0063_inventory.sql, 0064_inventory_movements.sql, 0067_inventory_reports.sql | cubierto |
 | REQ-074.5 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | 0063_inventory.sql, 0067_inventory_reports.sql | cubierto |
+| REQ-075.1 | Pantallas de carga y velocidad real | T-130 (pendiente), T-131 (pendiente), T-132 (pendiente), T-133 (pendiente) | — | sin prueba |
+| REQ-075.2 | Pantallas de carga y velocidad real | T-130 (pendiente), T-131 (pendiente), T-132 (pendiente), T-133 (pendiente) | — | sin prueba |
+| REQ-075.3 | Pantallas de carga y velocidad real | T-130 (pendiente), T-131 (pendiente), T-132 (pendiente), T-133 (pendiente) | — | sin prueba |
+| REQ-075.4 | Pantallas de carga y velocidad real | T-130 (pendiente), T-131 (pendiente), T-132 (pendiente), T-133 (pendiente) | — | sin prueba |
