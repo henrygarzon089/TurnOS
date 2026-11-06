@@ -1872,6 +1872,53 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ---
 
+## Hito 15 — Inicio "Hoy" del dueño (ADR-046)
+
+> REQ-076, REQ-077 y ADR-046 aprobados por Henry (2026-11-06). Diseño en `design.md` §21. Sin
+> migraciones. PA-H15-1: la caja se compara con el día completo de la semana pasada.
+
+### [ ] T-150 · Menú del dueño por grupos
+- REQ: REQ-077.1, REQ-077.2, REQ-077.3, REQ-077.4, REQ-077.5
+- Archivos: `src/lib/domain/admin-nav.ts` (`ADMIN_GROUPS`), `src/components/admin/AdminNav.tsx`
+  (barra inferior + "Más" + menú lateral), `src/app/(staff)/admin/layout.tsx`,
+  `tests/unit/admin-nav.test.ts`, `tests/e2e/admin-nav.spec.ts`, `playwright.config.ts` (proyecto de
+  escritorio 1280 px)
+- Terminado: prueba de que los 19 módulos y "Hoy" están en sus grupos; en el celular la barra
+  inferior y "Más" llevan a cada módulo y en escritorio el menú lateral; destinos ≥ 48 px con
+  `aria-current`.
+
+### [ ] T-151 · "Hoy" con fila y caja en vivo
+- REQ: REQ-076.1, REQ-076.2, REQ-076.3, REQ-076.4, REQ-076.10, REQ-076.11
+- Archivos: `src/app/(staff)/admin/page.tsx`, `src/app/(staff)/admin/loading.tsx`,
+  `src/components/admin/today/{TodayQueue,TodayCash,TodayLive,TodayBlockError}.tsx`,
+  `src/lib/domain/time.ts` (texto "El jueves pasado"), pruebas unitarias y `tests/e2e/today.spec.ts`
+- Terminado: el dueño entra a `/admin` y ve "Hoy"; el barbero va a `/app`; un turno tomado en otro
+  navegador y una venta se ven en < 3 s; un bloque que falla muestra "No se pudo cargar" y los demás
+  siguen; en el celular, con "Slow 4G", se ve la forma antes de los datos.
+
+### [ ] T-152 · Citas, alertas y recordar
+- REQ: REQ-076.5, REQ-076.6, REQ-076.7, REQ-077.6
+- Archivos: `src/lib/domain/owner-alerts.ts` (`buildOwnerAlerts`), `src/lib/actions/cash.ts`
+  (`getUnclosedDays`), `src/components/admin/today/{TodayAlerts,TodayAppointments,TodayRemind}.tsx`,
+  insignia en `AdminNav`, `tests/unit/owner-alerts.test.ts`, E2E en `today.spec.ts`
+- Terminado: pruebas del orden de alertas, de módulo apagado sin alertas y de "Todo en orden"; con el
+  seed se ven las alertas reales y la insignia cuenta lo mismo; ningún bloque muestra celulares.
+
+### [ ] T-153 · Accesos directos y semana en escritorio
+- REQ: REQ-076.8, REQ-076.9
+- Archivos: `src/components/admin/today/{TodayShortcuts,TodayWeek}.tsx`, E2E en `today.spec.ts`
+- Terminado: "Nueva venta", "Fila" y "Cerrar caja" llevan a su lugar; en 1280 px se ven las barras de
+  la semana con las mismas cifras de "Semana"; en el celular no aparecen.
+
+### [ ] T-154 · Validación Hito 15
+- REQ: REQ-076, REQ-077
+- Archivos: `scripts/traceability.ts` (`HITOS["15"] = [[76, 77]]`, ya desde el PR de la spec),
+  `tests/unit/traceability.test.ts` (agregar "15" al loop), `docs/estado-del-proyecto.md`
+- Depende de Henry: probar "Hoy" en su celular y en el computador; aprobación del hito (ADR nuevo).
+- Terminado: `pnpm trace --hito=15` sin huecos; CI verde.
+
+---
+
 ## Dependencias principales
 
 ```mermaid
@@ -1893,4 +1940,5 @@ flowchart LR
   T097 --> T110 --> T111 --> T112 --> T113 --> T114 --> T115 --> T116 --> T117 --> T118 --> T119
   T129 --> T130 --> T131 --> T132 --> T133
   T119 --> T140
+  T133 --> T150 --> T151 --> T152 --> T153 --> T154
 ```
