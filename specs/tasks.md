@@ -1838,10 +1838,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   demorada (`page.route`) y ve el esqueleto y después la fila; y que al abrir `/app/fila` directo el
   HTML inicial ya trae `aria-busy`. Sin sesión sigue redirigiendo igual que antes.
 
-### [ ] T-132 · Velocidad de usuarios reales
+### [x] T-132 · Velocidad de usuarios reales
+- Nota (2026-11-06): código hecho. `SpeedInsights` va en un componente cliente
+  `src/components/ui/VitalsReporter.tsx` (el layout raíz es de servidor y no puede pasarle la función
+  `beforeSend`). La ruta (`route`) ya sale como patrón desde Next; `redactVitalsUrl` limpia la `url`.
+  Falta la parte de Henry: activar Speed Insights en el proyecto de Vercel y revisar los datos y la cuota.
 - REQ: REQ-075.3, REQ-075.4
 - Archivos: `package.json` (`@vercel/speed-insights`), `src/app/layout.tsx`,
-  `src/lib/domain/vitals.ts` (`redactVitalsUrl`), `tests/unit/vitals.test.ts`
+  `src/lib/domain/vitals.ts` (`redactVitalsUrl`), `src/components/ui/VitalsReporter.tsx`,
+  `tests/unit/vitals.test.ts`, `tests/unit/vitals-reporter.test.tsx`
 - Terminado: pruebas de `redactVitalsUrl` para las cuatro rutas con token, con `?…` y `#…`, y para
   una ruta sin token; Henry activa Speed Insights en el proyecto de Vercel y ve datos de `/[slug]` al
   día siguiente, revisando la cuota de su plan.

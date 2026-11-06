@@ -392,7 +392,7 @@
 | REQ-074.3 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | 0067_inventory_reports.sql | cubierto |
 | REQ-074.4 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | inventory.spec.ts, inventory.test.ts, 0063_inventory.sql, 0064_inventory_movements.sql, 0067_inventory_reports.sql | cubierto |
 | REQ-074.5 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | 0063_inventory.sql, 0067_inventory_reports.sql | cubierto |
-| REQ-075.1 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (pendiente), T-133 (pendiente) | loading.spec.ts, skeleton.test.tsx | prueba escrita |
-| REQ-075.2 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (pendiente), T-133 (pendiente) | skeleton.test.tsx | prueba escrita |
-| REQ-075.3 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (pendiente), T-133 (pendiente) | — | sin prueba |
-| REQ-075.4 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (pendiente), T-133 (pendiente) | — | sin prueba |
+| REQ-075.1 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | helpers.ts, loading.spec.ts, skeleton.test.tsx | prueba escrita |
+| REQ-075.2 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | skeleton.test.tsx | prueba escrita |
+| REQ-075.3 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | vitals-reporter.test.tsx | prueba escrita |
+| REQ-075.4 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | vitals-reporter.test.tsx, vitals.test.ts | prueba escrita |
