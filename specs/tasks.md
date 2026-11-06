@@ -1382,11 +1382,15 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   adjunto, historial con "Ver adjunto" por URL firmada). La foto se reduce y el PDF sube tal cual.
   E2E: `tests/e2e/cleaning-tasks.spec.ts`.
 
-### [ ] T-108 · Historial y fotos borradas
+### [x] T-108 · Historial y fotos borradas
 - REQ: REQ-063.5, REQ-063.6, REQ-063.7, REQ-064.6
 - Archivos: pestaña Historial en `/admin/limpieza`, `after()` de la purga en Limpieza y en el panel
 - Terminado: historial de 8 semanas con detalle; un registro de hace más de 90 días muestra "Foto
   borrada (más de 90 días)".
+- Nota: `CleaningHistory`, con 8 semanas por defecto y la opción de ver 26 o 52 (`?semanas=`,
+  el máximo de `cleaning_history`). Cada registro o revisión se abre con su detalle y sus fotos
+  firmadas. El `after()` de la purga ya quedó en T-103 (`getCleaningToday` y
+  `getOwnerCleaningSummary`). E2E: `tests/e2e/cleaning-history.spec.ts`.
 
 ### [ ] T-109 · Validación Hito 11
 - REQ: REQ-060…REQ-064
