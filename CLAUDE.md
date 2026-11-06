@@ -32,6 +32,10 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 - **Hito 8 (citas a hora fija, REQ-049…054, ADR-033)** construido, falta aprobación de Henry
   (ADR-035): reservar, "Mi cita", citas en la fila y agenda; migraciones 0045–0049 (se suben con
   `supabase db push --include-all`). Falta encender citas en Filo y la prueba real.
+- **Hito 13 (inventario de insumos y vitrina, REQ-070…074, ADR-039)** aprobado (ADR-042,
+  2026-11-05): catálogo, dotación por estación con reposición por envase vacío, vitrina que se
+  descuenta desde la caja, conteos con alerta de consumo, orden de compra y "Mi estación";
+  migraciones 0063–0067 en producción. Falta la operación en Filo (catálogo y primer conteo).
 - **Hito 12 (punto de venta con comisión, REQ-065…069, ADR-038)** aprobado (ADR-040, 2026-11-05):
   vitrina con fotos y categorías, "¿Quién vendió?", comisión de productos (un % por negocio), compra
   de un barbero con descuento y reportes; migraciones 0060–0062 en producción. Falta la operación en

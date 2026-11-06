@@ -363,12 +363,12 @@
 | REQ-069.3 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (hecha), T-119 (hecha) | pos-reports.spec.ts, cash-closure.test.ts, 0062_pos_reports.sql | cubierto |
 | REQ-069.4 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (hecha), T-119 (hecha) | 0062_pos_reports.sql | cubierto |
 | REQ-069.5 | Anular y ver la comisión de productos | T-113 (hecha), T-118 (hecha), T-119 (hecha) | pos-reports.spec.ts, my-numbers.test.ts, my-numbers.test.ts | cubierto |
-| REQ-070.1 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (hecha), T-129 (pendiente) | inventory.spec.ts, inventory.test.ts, inventory.test.ts, 0063_inventory.sql | prueba escrita |
-| REQ-070.2 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (hecha), T-129 (pendiente) | inventory.test.ts, inventory.test.ts, 0063_inventory.sql | prueba escrita |
-| REQ-070.3 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (hecha), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
-| REQ-070.4 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (hecha), T-129 (pendiente) | 0063_inventory.sql | prueba escrita |
-| REQ-070.5 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (hecha), T-129 (pendiente) | 0063_inventory.sql, 0066_inventory_counts.sql | prueba escrita |
-| REQ-070.6 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (hecha), T-129 (pendiente) | inventory.test.ts, 0063_inventory.sql, 0067_inventory_reports.sql | prueba escrita |
+| REQ-070.1 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (hecha), T-129 (hecha) | inventory.spec.ts, inventory.test.ts, inventory.test.ts, 0063_inventory.sql | cubierto |
+| REQ-070.2 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (hecha), T-129 (hecha) | inventory.test.ts, inventory.test.ts, 0063_inventory.sql | cubierto |
+| REQ-070.3 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (hecha), T-129 (hecha) | 0063_inventory.sql | cubierto |
+| REQ-070.4 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (hecha), T-129 (hecha) | 0063_inventory.sql | cubierto |
+| REQ-070.5 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (hecha), T-129 (hecha) | 0063_inventory.sql, 0066_inventory_counts.sql | cubierto |
+| REQ-070.6 | Catálogo de inventario y ubicaciones | T-120 (hecha), T-126 (hecha), T-129 (hecha) | inventory.test.ts, 0063_inventory.sql, 0067_inventory_reports.sql | cubierto |
 | REQ-071.1 | Entradas, transferencias y reposición | T-120 (hecha), T-121 (hecha), T-125 (hecha), T-126 (hecha) | 0064_inventory_movements.sql | cubierto |
 | REQ-071.2 | Entradas, transferencias y reposición | T-120 (hecha), T-121 (hecha), T-125 (hecha), T-126 (hecha) | inventory.spec.ts, 0064_inventory_movements.sql | cubierto |
 | REQ-071.3 | Entradas, transferencias y reposición | T-120 (hecha), T-121 (hecha), T-125 (hecha), T-126 (hecha) | inventory.spec.ts, 0064_inventory_movements.sql | cubierto |
@@ -387,8 +387,8 @@
 | REQ-073.5 | Consumo esperado y conteos | T-120 (hecha), T-123 (hecha), T-126 (hecha), T-127 (hecha) | 0066_inventory_counts.sql | cubierto |
 | REQ-073.6 | Consumo esperado y conteos | T-120 (hecha), T-123 (hecha), T-126 (hecha), T-127 (hecha) | inventory.test.ts, inventory.test.ts, 0066_inventory_counts.sql | cubierto |
 | REQ-073.7 | Consumo esperado y conteos | T-120 (hecha), T-123 (hecha), T-126 (hecha), T-127 (hecha) | 0063_inventory.sql, 0064_inventory_movements.sql, 0066_inventory_counts.sql | cubierto |
-| REQ-074.1 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (pendiente) | 0067_inventory_reports.sql | prueba escrita |
-| REQ-074.2 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (pendiente) | inventory.test.ts, inventory.test.ts | prueba escrita |
-| REQ-074.3 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (pendiente) | 0067_inventory_reports.sql | prueba escrita |
-| REQ-074.4 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (pendiente) | inventory.spec.ts, inventory.test.ts, 0063_inventory.sql, 0064_inventory_movements.sql, 0067_inventory_reports.sql | prueba escrita |
-| REQ-074.5 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (pendiente) | 0063_inventory.sql, 0067_inventory_reports.sql | prueba escrita |
+| REQ-074.1 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | 0067_inventory_reports.sql | cubierto |
+| REQ-074.2 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | inventory.test.ts, inventory.test.ts | cubierto |
+| REQ-074.3 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | 0067_inventory_reports.sql | cubierto |
+| REQ-074.4 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | inventory.spec.ts, inventory.test.ts, 0063_inventory.sql, 0064_inventory_movements.sql, 0067_inventory_reports.sql | cubierto |
+| REQ-074.5 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | 0063_inventory.sql, 0067_inventory_reports.sql | cubierto |

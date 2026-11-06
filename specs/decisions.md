@@ -689,3 +689,19 @@
   sus categorías y revisar los dos %), no código. El despliegue de `main` con la cadena fusionada lo
   hace Henry. Número: ADR-040 es el primero libre después de ADR-039; las aprobaciones de los Hitos
   11 y 13 toman los siguientes.
+
+## ADR-042 · Aprobación del Hito 13 (inventario de insumos y vitrina)
+- Estado: **aceptada** (Henry, 2026-11-05)
+- Contexto: REQ-070…REQ-074 implementados en T-120…T-129 (PRs encadenados #72 spec, #76, #77, #79,
+  #83, #85, #89, #92, #94, #95 y #96), con `pnpm trace --check --hito=13` sin huecos (29 criterios)
+  y la E2E `inventory.spec.ts` en verde en Pixel 7 y iPhone 13. `0063` y `0064` subieron con el
+  Hito 12; Henry aplicó `0065`…`0067` el 2026-11-05 (`supabase db push --include-all` desde
+  `37fee60`) y desplegó `main` con `vercel --prod`. `/admin/inventario` y `/app/estacion` responden
+  en producción.
+- Decisión: Henry aprueba el Hito 13 sin esperar la prueba en la barbería. El catálogo, el primer
+  conteo y el primer conteo semanal en Filo quedan como operación, no como condición del hito.
+- Consecuencias: T-129 cerrada. Queda la operación en Filo: "Agregar plantilla básica", crear los
+  insumos reales con su dotación, enlazar los productos de vitrina, primer conteo de bodega, vitrina
+  y estaciones, y una semana después el conteo semanal con sus alertas y la orden de compra. Si de
+  esa operación sale algo que cambie la spec, va con su propio ADR. Número: ADR-042 (ADR-040 es el
+  Hito 12 y ADR-041 queda para el Hito 11).
