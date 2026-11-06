@@ -1,10 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
-import { appAlert, loginAsBarber, resetQueue, SEED } from "./helpers";
+import { appAlert, loginAsBarber, resetQueue, SEED, waitForContent } from "./helpers";
 
 const phone = () => `300 9${Math.floor(100000 + Math.random() * 899999)}`;
 
 async function takeTicket(page: Page, name: string, cel: string) {
   await page.goto(`/${SEED.slug}/turno`);
+  await waitForContent(page);
   await page.getByLabel("Tu nombre").fill(name);
   await page.getByLabel("Tu celular (WhatsApp)").fill(cel);
   await page.getByRole("radio", { name: /Corte · 20 min/ }).check();

@@ -392,10 +392,10 @@
 | REQ-074.3 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | 0067_inventory_reports.sql | cubierto |
 | REQ-074.4 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | inventory.spec.ts, inventory.test.ts, 0063_inventory.sql, 0064_inventory_movements.sql, 0067_inventory_reports.sql | cubierto |
 | REQ-074.5 | Compras, costo por servicio y quién ve qué | T-124 (hecha), T-125 (hecha), T-127 (hecha), T-128 (hecha), T-129 (hecha) | 0063_inventory.sql, 0067_inventory_reports.sql | cubierto |
-| REQ-075.1 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (pendiente), T-132 (hecha), T-133 (pendiente) | skeleton.test.tsx | prueba escrita |
-| REQ-075.2 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (pendiente), T-132 (hecha), T-133 (pendiente) | skeleton.test.tsx | prueba escrita |
-| REQ-075.3 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (pendiente), T-132 (hecha), T-133 (pendiente) | vitals-reporter.test.tsx | prueba escrita |
-| REQ-075.4 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (pendiente), T-132 (hecha), T-133 (pendiente) | vitals-reporter.test.tsx, vitals.test.ts | prueba escrita |
+| REQ-075.1 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | helpers.ts, loading.spec.ts, skeleton.test.tsx | prueba escrita |
+| REQ-075.2 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | skeleton.test.tsx | prueba escrita |
+| REQ-075.3 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | vitals-reporter.test.tsx | prueba escrita |
+| REQ-075.4 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | vitals-reporter.test.tsx, vitals.test.ts | prueba escrita |
 | REQ-076.1 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
 | REQ-076.2 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
 | REQ-076.3 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
