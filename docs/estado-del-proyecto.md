@@ -327,7 +327,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   pago", #105), antes del código del Hito 13: este necesita `0065`…`0067`, que aún no están en
   producción. Desplegar `main` completo solo después de subir esas migraciones.
 - Falta (Henry): marcar en Filo los productos que dan comisión y sus categorías, revisar los dos % en "Negocio", probar una
-  venta de vitrina y una compra de barbero en la barbería, y aprobar el hito (ADR nuevo).
+  venta de vitrina y una compra de barbero en la barbería. El hito ya está aprobado (ADR-040).
 
 ### Hito 13 — inventario de insumos y vitrina (**aprobado**, ADR-042, 2026-11-05)
 
