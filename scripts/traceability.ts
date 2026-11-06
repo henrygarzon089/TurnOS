@@ -32,6 +32,7 @@ const HITOS: Record<string, [number, number][]> = {
   "11": [[60, 64]], // limpieza y bioseguridad (ADR-037); el 10 está reservado
   "12": [[65, 69]], // punto de venta con comisión (ADR-038); 11 y 13 van en paralelo
   "13": [[70, 74]], // inventario de insumos y vitrina (ADR-039)
+  "14": [[75, 75]], // rendimiento percibido y medición (ADR-043)
 };
 
 const req = readFileSync("specs/requirements.md", "utf8");

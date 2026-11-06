@@ -2472,3 +2472,50 @@ aparece.
 - Integración: acciones de inventario contra Postgres local.
 - E2E (Pixel 7 + iPhone 13): el dueño crea un ítem, registra una entrada, repone con envase vacío y
   cuenta la estación con alerta; el barbero ve "Mi estación".
+
+## 19. Hito 14 — Rendimiento percibido y medición (REQ-075, ADR-043)
+
+> Aprobado por Henry (2026-11-06, PR #109, ADR-043). Sin migraciones ni cambios de datos. Solo frontend y una dependencia.
+
+### 19.1 Esqueletos (REQ-075.1, REQ-075.2)
+- Un `loading.tsx` por ruta de REQ-075.1. Next lo usa como `Suspense` de la página: lo manda primero
+  en el HTML (también al abrir el link directo, por streaming) y lo reemplaza cuando el Server
+  Component trae los datos (`cacheComponents: false` no lo impide).
+- Componente `src/components/ui/Skeleton.tsx`: `<SkeletonBlock className="h-12 w-full" />` (`bg-line`
+  redondeado, `motion-safe:animate-pulse`, sin texto) y `<SkeletonScreen>` (contenedor con
+  `aria-busy="true"` y `<span className="sr-only">Cargando…</span>`). Cada `loading.tsx` arma la
+  forma con bloques: título, tarjeta del turno actual, 3 filas de la lista, botón primario abajo.
+- **Layout del personal.** Un `loading.tsx` solo envuelve la página, no el layout de su segmento.
+  `(staff)/layout.tsx` y `(staff)/admin/layout.tsx` esperan `getStaffSession()` antes de pintar: al
+  abrir el link directo de `/app/fila`, `/admin/fila` o `/admin/caja` la pantalla seguiría en blanco
+  durante esa espera. Por eso el `await` de la sesión pasa a un componente `StaffGate` (misma
+  lógica: sin sesión → `redirect`) dentro de `<Suspense fallback={<StaffShellSkeleton />}>` en
+  `(staff)/layout.tsx`; `StaffShellSkeleton` es el encabezado y tres bloques. `admin/layout.tsx` hace
+  lo mismo con su verificación de rol. Navegando dentro de la app el layout ya está pintado y solo
+  se ve el `loading.tsx` de la página.
+- `(public)/[slug]/layout.tsx` solo espera dentro de `generateMetadata`, que Next 16 manda en
+  streaming a los navegadores: no bloquea el esqueleto.
+- El service worker no cambia: sin red sigue la última copia (REQ-011.6); el esqueleto solo se ve
+  con red lenta.
+- Pruebas: unitaria de `SkeletonScreen` (`aria-busy`, "Cargando…", clase `motion-safe:`, sin texto
+  de datos). E2E: la consulta lenta es del servidor a Supabase, no del navegador, así que frenar la
+  red con Playwright no la simula en la carga inicial. Se navega dentro de la app (clic en un
+  enlace) y se demora con `page.route` la petición de datos de la página (`?_rsc=`); se ve el
+  esqueleto y después la pantalla. Para el link directo basta comprobar que el HTML inicial ya trae
+  el esqueleto (`aria-busy`) antes del contenido.
+
+### 19.2 Velocidad real (REQ-075.3, REQ-075.4)
+- Opción elegida por Henry (ADR-043, 2026-11-06): `@vercel/speed-insights` con `<SpeedInsights beforeSend={…} />` en
+  `src/app/layout.tsx`. El script se sirve desde el mismo dominio (`/_vercel/speed-insights/…`), no
+  pone cookies y solo envía en producción.
+- `beforeSend` usa la función pura `redactVitalsUrl` (`src/lib/domain/vitals.ts`, con pruebas):
+  quita `?…` y `#…`, y cambia el segmento del token por el patrón en `/t/`, `/c/`, `/regalo/` e
+  `/invitacion/` (`/t/abc123?x=1` → `/t/[token]`). Cualquier otra ruta pasa sin el query.
+- Se revisa en Vercel → Speed Insights, filtrando por `/[slug]` y `/app/fila` (pantallas de NFR-001).
+- Descartada (ADR-043): `useReportWebVitals` hacia una tabla propia en Supabase.
+
+### 19.3 Región
+- Las funciones de Vercel van en la misma región que el proyecto de Supabase (configuración del
+  proyecto en Vercel, o `regions` en un `vercel.ts`/`vercel.json` nuevo; hoy el repo no tiene
+  ninguno). Cada server action hace varias consultas: si están en continentes distintos, cada una
+  suma ~100 ms de viaje. Es configuración, no requisito: no tiene CA ni prueba en la matriz.

@@ -721,3 +721,38 @@
   y estaciones, y una semana después el conteo semanal con sus alertas y la orden de compra. Si de
   esa operación sale algo que cambie la spec, va con su propio ADR. Número: ADR-042 (ADR-040 es el
   Hito 12 y ADR-041 queda para el Hito 11).
+
+## ADR-043 · Rendimiento percibido y medición (Hito 14)
+- Estado: **aceptada** (Henry, 2026-11-06, PR #109)
+- Contexto: Henry pidió revisar TurnOS contra una lista de 31 optimizaciones de rendimiento
+  (esqueletos, imágenes, debounce, índices, caché, etc.). Ya se cumplen: imágenes en WebP con
+  `next/image` (Hito 5), debounce en la búsqueda de clientes y en la fila en vivo (300 ms), timeout a
+  WhatsApp Cloud API, consultas en paralelo, índices en las migraciones, columnas explícitas (ningún
+  `select *`), render en el servidor, fuentes del sistema (ninguna externa), service worker y
+  Lighthouse móvil en el CI. Las listas ya tienen tope. No aplican a este tamaño: cola de trabajos,
+  Redis, CDN propia, balanceador, pool (lo da Supabase) ni OpenTelemetry.
+- Opciones:
+  - Para la carga: (a) `loading.tsx` con esqueleto por ruta; (b) `Suspense` por sección dentro de
+    cada página.
+  - Para medir: (a) Vercel Speed Insights; (b) `useReportWebVitals` de Next hacia una server action
+    propia y una tabla en Supabase.
+  - Para las acciones del barbero: (a) dejar REQ-011.3 como está; (b) "optimistic UI" (mostrar el
+    cambio antes de confirmar).
+- Decisión: (a) en los tres.
+  - (a) para la carga: un archivo por ruta, sin partir las páginas; (b) obliga a partir cada página.
+    Un `loading.tsx` no cubre el layout de su segmento, y el del personal espera la sesión: ese
+    `await` pasa a un `Suspense` dentro del layout (design §19.1) para que el link directo también
+    muestre esqueleto.
+  - (a) para medir: una línea, mismo dominio, sin cookies y sin tabla nueva. **Choca con NFR-005**
+    ("sin trackers de terceros en páginas públicas"): los datos sí salen hacia Vercel, aunque sin
+    identificar al visitante. Por eso esta propuesta cambia el texto de NFR-005 de forma explícita
+    (la medición anónima que cumple REQ-075.4 no cuenta como tracker) en vez de reinterpretarlo.
+    **Henry eligió (a) el 2026-11-06** y aceptó el cambio de texto de NFR-005. (b) queda descartada
+    (los datos no salían de Supabase, a cambio de una migración y más trabajo en T-132). Speed
+    Insights tiene cuota según el plan de Vercel: Henry la revisa al activarlo (T-132).
+  - (a) para el barbero: REQ-011.3 dice que si falla no cambia el estado en pantalla. Con optimistic
+    UI el barbero vería "en servicio" y luego se devolvería: es lo que REQ-011 quiere evitar. El
+    botón ya muestra "guardando…" al instante.
+- Consecuencias: Hito 14 con T-130…T-133, sin migraciones. NFR-005 cambia de texto (ya aplicado en
+  `requirements.md` §6). La aprobación del hito será ADR-044 (reservado). Número: ADR-043 es el primero libre
+  después de ADR-042 (Hito 13).

@@ -29,6 +29,7 @@
 | H9 | Tarjetas de regalo (ADR-034) | T-090…T-097 | REQ-055…REQ-059 |
 | H11 | Limpieza y bioseguridad (ADR-037) | T-100…T-109 | REQ-060…REQ-064 |
 | H13 | Inventario de insumos y vitrina (ADR-039) | T-120…T-129 | REQ-070…REQ-074 |
+| H14 | Rendimiento percibido y medición (ADR-043) | T-130…T-133 | REQ-075 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -1805,6 +1806,44 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   2026-11-05: cadena #79…#96 en `main`, `0065`…`0067` en producción y `main` desplegado (Henry);
   Hito 13 aprobado (ADR-042). Falta solo la operación en Filo (catálogo y conteos).
 
+## Hito 14 — Rendimiento percibido y medición (ADR-043)
+
+> REQ-075 y ADR-043 aprobados por Henry (2026-11-06, PR #109). Diseño en `design.md` §19. Sin migraciones. Medición: Speed Insights
+> anónimo (Henry, 2026-11-06).
+
+### [ ] T-130 · Esqueleto base y pantallas públicas
+- REQ: REQ-075.1, REQ-075.2
+- Archivos: `src/components/ui/Skeleton.tsx`, `src/app/(public)/[slug]/loading.tsx`,
+  `src/app/(public)/t/[token]/loading.tsx`, `tests/unit/skeleton.test.tsx`
+- Terminado: prueba de `aria-busy`, "Cargando…", `motion-safe` y sin texto de datos; en el celular
+  con "Slow 4G" se ve la forma de la página del QR y de "Mi turno" antes de los datos.
+
+### [ ] T-131 · Esqueletos del personal
+- REQ: REQ-075.1
+- Archivos: `src/app/(staff)/layout.tsx` (`StaffGate` dentro de `Suspense` con
+  `StaffShellSkeleton`), `src/app/(staff)/admin/layout.tsx`, `src/app/(staff)/app/fila/loading.tsx`,
+  `src/app/(staff)/admin/fila/loading.tsx`, `src/app/(staff)/admin/caja/loading.tsx`,
+  `tests/e2e/loading.spec.ts`
+- Terminado: E2E en Pixel 7 y iPhone 13 que navega dentro de la app con la petición `?_rsc=`
+  demorada (`page.route`) y ve el esqueleto y después la fila; y que al abrir `/app/fila` directo el
+  HTML inicial ya trae `aria-busy`. Sin sesión sigue redirigiendo igual que antes.
+
+### [ ] T-132 · Velocidad de usuarios reales
+- REQ: REQ-075.3, REQ-075.4
+- Archivos: `package.json` (`@vercel/speed-insights`), `src/app/layout.tsx`,
+  `src/lib/domain/vitals.ts` (`redactVitalsUrl`), `tests/unit/vitals.test.ts`
+- Terminado: pruebas de `redactVitalsUrl` para las cuatro rutas con token, con `?…` y `#…`, y para
+  una ruta sin token; Henry activa Speed Insights en el proyecto de Vercel y ve datos de `/[slug]` al
+  día siguiente, revisando la cuota de su plan.
+
+### [ ] T-133 · Región y validación Hito 14
+- REQ: REQ-075
+- Archivos: `scripts/traceability.ts` (`HITOS["14"] = [[75, 75]]`, ya desde el PR de la spec),
+  `tests/unit/traceability.test.ts` (agregar "14" al loop), `docs/estado-del-proyecto.md`
+- Depende de Henry: confirmar la región del proyecto de Supabase y la de las funciones en Vercel
+  (si no coinciden, se cambia en la configuración del proyecto); aprobación (ADR-044, reservado).
+- Terminado: `pnpm trace --hito=14` sin huecos; misma región; CI verde.
+
 ---
 
 ## Dependencias principales
@@ -1826,4 +1865,5 @@ flowchart LR
   T077 --> T090 --> T091 --> T092 --> T093 --> T094 --> T095 --> T096 --> T097
   T097 --> T100 --> T101 --> T102 --> T103 --> T104 --> T105 --> T106 --> T107 --> T108 --> T109
   T097 --> T110 --> T111 --> T112 --> T113 --> T114 --> T115 --> T116 --> T117 --> T118 --> T119
+  T129 --> T130 --> T131 --> T132 --> T133
 ```
