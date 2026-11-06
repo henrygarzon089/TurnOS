@@ -396,3 +396,20 @@
 | REQ-075.2 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | skeleton.test.tsx | prueba escrita |
 | REQ-075.3 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | vitals-reporter.test.tsx | prueba escrita |
 | REQ-075.4 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | vitals-reporter.test.tsx, vitals.test.ts | prueba escrita |
+| REQ-076.1 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.2 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.3 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.4 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.5 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.6 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.7 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.8 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.9 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.10 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.11 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-077.1 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-077.2 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-077.3 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-077.4 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-077.5 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-077.6 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
