@@ -8,7 +8,7 @@ export const GIFT_CARD_MIN = 10_000;
 export const GIFT_CARD_MAX = 500_000;
 
 /** Medios con que se vende una tarjeta: los de la caja, nunca otra tarjeta (REQ-057.7). */
-export const GIFT_CARD_SALE_METHODS = ["cash", "nequi", "transfer", "card"] as const;
+export const GIFT_CARD_SALE_METHODS = ["cash", "nequi", "daviplata", "transfer", "card"] as const;
 export type GiftCardSaleMethod = (typeof GIFT_CARD_SALE_METHODS)[number];
 
 /** Estado que se muestra (`gift_card_state`, design.md §15.1). */

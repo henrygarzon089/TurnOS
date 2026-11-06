@@ -22,6 +22,7 @@ import { saleParties, type Seller } from "@/lib/domain/showcase";
 const METHODS: { id: PaymentMethod; label: string }[] = [
   { id: "cash", label: "Efectivo" },
   { id: "nequi", label: "Nequi" },
+  { id: "daviplata", label: "Daviplata" },
   { id: "transfer", label: "Transferencia" },
   { id: "card", label: "Tarjeta" },
 ];

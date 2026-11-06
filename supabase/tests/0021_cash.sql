@@ -9,7 +9,7 @@ select has_table('sale_items', 'NFR-010 tabla sale_items');
 select has_table('sale_payments', 'NFR-010 tabla sale_payments');
 select has_table('cash_closures', 'NFR-010 tabla cash_closures');
 select has_table('commission_changes', 'NFR-010 tabla commission_changes');
-select enum_has_labels('payment_method', array['cash', 'nequi', 'transfer', 'card', 'gift_card'], 'REQ-023.1 medios de pago: efectivo, Nequi, transferencia, tarjeta (y tarjeta de regalo, 0050)');
+select enum_has_labels('payment_method', array['cash', 'nequi', 'daviplata', 'transfer', 'card', 'gift_card'], 'REQ-023.1 medios de pago: efectivo, Nequi, transferencia, tarjeta (y tarjeta de regalo, 0050; Daviplata, 0068)');
 select enum_has_labels('sale_status', array['active', 'voided'], 'REQ-026.1 estados de venta como enum');
 select enum_has_labels('sale_item_kind', array['service', 'product', 'membership', 'gift_card'], 'REQ-024.2 líneas de servicio o producto (y la cuota de membresía, 0042, y la tarjeta de regalo, 0050)');
 select enum_has_labels('closure_status', array['active', 'voided'], 'REQ-027.3 estados de cierre como enum');
