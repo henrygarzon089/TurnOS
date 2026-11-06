@@ -22,7 +22,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 // ---------------------------------------------------------------- tipos ----
 
-export type PaymentMethod = "cash" | "nequi" | "transfer" | "card";
+export type PaymentMethod = "cash" | "nequi" | "daviplata" | "transfer" | "card";
 
 export type CatalogItem = { id: string; name: string; price: number };
 
@@ -265,7 +265,7 @@ const saleSchema = z.object({
   staffBuyerId: z.uuid().nullable().optional(),
   items: z.array(lineSchema).min(1, ERRORS.EMPTY_SALE),
   /** Medio de pago del total o, con tarjeta de regalo, de lo que falta (REQ-057.3). */
-  method: z.enum(["cash", "nequi", "transfer", "card"]),
+  method: z.enum(["cash", "nequi", "daviplata", "transfer", "card"]),
   /** REQ-057.3 parte pagada con la tarjeta de regalo (a lo sumo una por venta). */
   giftCard: z
     .object({ code: z.string().regex(/^[A-HJKMNP-Z2-9]{8}$/), amount: z.number().int().min(1) })

@@ -6,7 +6,8 @@ import { formatDayCO } from "@/lib/domain/time";
 /** Foto del cierre (design.md §5.2; `cash_closures.totals` = resumen de `cash_day_summary`). */
 export type ClosureTotals = {
   day: string;
-  byMethod: { cash: number; nequi: number; transfer: number; card: number };
+  /** `daviplata` desde ADR-045: los cierres anteriores no lo traen. */
+  byMethod: { cash: number; nequi: number; daviplata?: number; transfer: number; card: number };
   total: number;
   services: number;
   products: number;
@@ -79,6 +80,7 @@ export function closureText(businessName: string, t: ClosureTotals, cashCounted:
     "",
     `Efectivo: ${formatCOP(t.byMethod.cash)}`,
     `Nequi: ${formatCOP(t.byMethod.nequi)}`,
+    `Daviplata: ${formatCOP(t.byMethod.daviplata ?? 0)}`,
     `Transferencia: ${formatCOP(t.byMethod.transfer)}`,
     `Tarjeta: ${formatCOP(t.byMethod.card)}`,
     `Total: ${formatCOP(t.total)} (servicios ${formatCOP(t.services)} · productos ${formatCOP(t.products)})`,

@@ -38,7 +38,7 @@ export type MembershipFormState = { ok?: boolean; error?: string } | undefined;
 export type MembershipResult = { ok: true } | { ok: false; error: string };
 
 const FORBIDDEN = "Solo el dueño puede manejar las membresías.";
-const METHODS = ["cash", "nequi", "transfer", "card"] as const satisfies readonly PaymentMethod[];
+const METHODS = ["cash", "nequi", "daviplata", "transfer", "card"] as const satisfies readonly PaymentMethod[];
 
 // ---------------------------------------------------------------- lectura ----
 

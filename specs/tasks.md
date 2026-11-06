@@ -1846,6 +1846,23 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ---
 
+## Cambio · Daviplata como medio de pago (ADR-045)
+
+> Aprobado por Henry el 2026-11-06. Cambia REQ-023.1 y REQ-027.1. Diseño en `design.md` §20.
+
+### [x] T-140 · Daviplata en el cobro y en la caja
+- REQ: REQ-023.1, REQ-027.1
+- Archivos: `supabase/migrations/0068_daviplata.sql`, `supabase/tests/0068_daviplata.sql`,
+  `src/lib/actions/cash.ts`, `src/lib/actions/memberships.ts`, `src/lib/domain/giftCard.ts`,
+  `src/lib/domain/cash-closure.ts`, `src/components/cash/{CheckoutSheet,CashDay}.tsx`,
+  `src/components/admin/{GiftCardForms,MembershipForms}.tsx`, pruebas unitarias y E2E.
+- Terminado: se puede cobrar con Daviplata en todos los cobros; Caja de hoy, el detalle de ventas y
+  el texto del cierre muestran Daviplata; cierres anteriores siguen abriendo; CI verde.
+- Nota: las pruebas pgTAP 0021 y 0051 fijaban la lista exacta del enum; se agregó `daviplata`.
+  La E2E de botones ≥ 48 px (pwa-usability) ahora incluye Daviplata.
+
+---
+
 ## Dependencias principales
 
 ```mermaid
@@ -1866,4 +1883,5 @@ flowchart LR
   T097 --> T100 --> T101 --> T102 --> T103 --> T104 --> T105 --> T106 --> T107 --> T108 --> T109
   T097 --> T110 --> T111 --> T112 --> T113 --> T114 --> T115 --> T116 --> T117 --> T118 --> T119
   T129 --> T130 --> T131 --> T132 --> T133
+  T119 --> T140
 ```

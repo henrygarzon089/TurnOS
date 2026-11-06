@@ -2519,3 +2519,16 @@ aparece.
   proyecto en Vercel, o `regions` en un `vercel.ts`/`vercel.json` nuevo; hoy el repo no tiene
   ninguno). Cada server action hace varias consultas: si están en continentes distintos, cada una
   suma ~100 ms de viaje. Es configuración, no requisito: no tiene CA ni prueba en la matriz.
+
+## 20. Cambio — Daviplata como medio de pago (REQ-023.1, REQ-027.1, ADR-045)
+
+- **Datos:** `alter type payment_method add value 'daviplata' after 'nequi'` (0068). Ninguna función
+  de cobro valida la lista: todas convierten con `(p ->> 'method')::payment_method`, así que
+  `register_sale`, `register_membership_fee` y `sell_gift_card` lo aceptan sin cambios.
+- **Resumen del día:** 0068 copia `cash_day_summary` de 0062 y solo agrega `'daviplata'` en
+  `byMethod` y la etiqueta "Daviplata" en el detalle de ventas (antes un medio desconocido caía en
+  "Tarjeta de regalo"). `close_cash_day` guarda esa foto, así que los cierres nuevos ya la traen.
+- **Cierres anteriores:** su `totals.byMethod` no tiene `daviplata`; la app lo lee como 0
+  (`ClosureTotals.byMethod.daviplata` es opcional).
+- **UI:** el orden es Efectivo, Nequi, Daviplata, Transferencia, Tarjeta en el cobro, la cuota de
+  membresía, la venta de tarjeta de regalo y Caja de hoy.

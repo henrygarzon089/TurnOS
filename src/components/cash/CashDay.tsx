@@ -16,6 +16,7 @@ import { useQueueSubscription } from "@/lib/realtime/use-queue-subscription";
 const METHODS: { key: keyof CashDaySummary["byMethod"]; label: string }[] = [
   { key: "cash", label: "Efectivo" },
   { key: "nequi", label: "Nequi" },
+  { key: "daviplata", label: "Daviplata" },
   { key: "transfer", label: "Transferencia" },
   { key: "card", label: "Tarjeta" },
 ];
@@ -76,7 +77,7 @@ export function CashDay({
           <div key={m.key} className="border-line bg-card rounded-xl border p-3">
             <p className="text-muted text-xs">{m.label}</p>
             <p className="text-lg font-bold" data-testid={`method-${m.key}`}>
-              {formatCOP(summary.byMethod[m.key])}
+              {formatCOP(summary.byMethod[m.key] ?? 0)}
             </p>
           </div>
         ))}

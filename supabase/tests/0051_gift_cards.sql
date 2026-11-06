@@ -29,7 +29,7 @@ $$;
 
 -- ------------------------------------------------------------------ datos ----
 select has_table('gift_cards', 'REQ-055.4 cada tarjeta se guarda con su código y su enlace');
-select enum_has_labels('payment_method', array['cash', 'nequi', 'transfer', 'card', 'gift_card'],
+select enum_has_labels('payment_method', array['cash', 'nequi', 'daviplata', 'transfer', 'card', 'gift_card'],
   'REQ-057.1 "Tarjeta de regalo" es un medio de pago');
 select enum_has_labels('sale_item_kind', array['service', 'product', 'membership', 'gift_card'],
   'REQ-055.2 una línea de venta puede ser una tarjeta de regalo');

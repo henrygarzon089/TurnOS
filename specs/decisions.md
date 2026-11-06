@@ -756,3 +756,17 @@
 - Consecuencias: Hito 14 con T-130…T-133, sin migraciones. NFR-005 cambia de texto (ya aplicado en
   `requirements.md` §6). La aprobación del hito será ADR-044 (reservado). Número: ADR-043 es el primero libre
   después de ADR-042 (Hito 13).
+
+## ADR-045 · Daviplata como medio de pago
+- Estado: **aceptada** (Henry, 2026-11-06, en el chat de coordinación)
+- Contexto: el plan operativo de Gamma acepta Daviplata además de efectivo, Nequi, transferencia y
+  datáfono. TurnOS solo tenía Efectivo, Nequi, Transferencia y Tarjeta (REQ-023.1), así que un pago
+  por Daviplata quedaba registrado con otro nombre y el cierre por medio no cuadraba.
+- Decisión: agregar **Daviplata** como quinto medio, justo después de Nequi, en todos los cobros que
+  usan la lista de REQ-023.1: cobro de turno, "Nueva venta", punto de venta, cuota de membresía,
+  venta de tarjeta de regalo y cobro dividido. Caja de hoy y el cierre muestran su línea
+  (REQ-027.1). No es un hito nuevo: es un cambio al Hito 3 con su propia tarea (T-140).
+- Consecuencias: migración 0068 (`payment_method` agrega `'daviplata'` y `cash_day_summary` lo suma
+  en `byMethod`). Los cierres anteriores guardaron su foto sin Daviplata: se leen como $ 0. El
+  efectivo esperado del cierre no cambia (solo cuenta efectivo). Número: ADR-044 está reservado
+  para la aprobación del Hito 14.

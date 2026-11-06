@@ -419,7 +419,7 @@ mandarles un recordatorio por WhatsApp.
 
 - REQ-023.1 CUANDO un turno pasa a `terminado`, EL SISTEMA DEBE abrir "Registrar cobro" con el
   servicio y precio del turno prellenados, el barbero, y los medios de pago: **Efectivo, Nequi,
-  Transferencia, Tarjeta**.
+  Daviplata, Transferencia, Tarjeta** (Daviplata desde ADR-045).
 - REQ-023.2 El barbero DEBE poder ajustar el servicio realmente prestado (cambiar o agregar
   servicios del catálogo), ajustar el precio final hacia abajo con un motivo (descuento) `[PA-13]`,
   aplicar el premio de fidelidad (REQ-019.4) y agregar productos (REQ-024) al mismo cobro.
@@ -474,7 +474,7 @@ discusiones.
 cuánto le corresponde a cada barbero.
 
 - REQ-027.1 CUANDO el dueño abre "Caja de hoy", EL SISTEMA DEBE mostrar en vivo: total vendido,
-  total por medio de pago (Efectivo, Nequi, Transferencia, Tarjeta), total servicios vs. productos,
+  total por medio de pago (Efectivo, Nequi, Daviplata, Transferencia, Tarjeta), total servicios vs. productos,
   y por barbero: servicios atendidos, valor vendido, comisión del barbero y parte del negocio.
 - REQ-027.2 CUANDO el dueño toca "Cerrar caja", EL SISTEMA DEBE pedir el efectivo contado (COP
   entero), calcular la diferencia contra el efectivo esperado, y crear un cierre inmutable con
