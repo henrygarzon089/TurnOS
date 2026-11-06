@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { ServiceWorker } from "@/components/ui/ServiceWorker";
+import { VitalsReporter } from "@/components/ui/VitalsReporter";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="bg-surface text-ink flex min-h-full flex-col">
         {children}
         <ServiceWorker />
+        <VitalsReporter />
       </body>
     </html>
   );
