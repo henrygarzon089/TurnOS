@@ -16,7 +16,9 @@ export default async function BarberQueuePage() {
     session?.barberId ? getMyQueue() : null,
     session ? getCleaningToday() : null,
   ]);
-  const banner = cleaning?.enabled ? <CleaningBanner openingPending={cleaning.openingPending} /> : null;
+  const banner = cleaning?.enabled ? (
+    <CleaningBanner openingPending={cleaning.openingPending} />
+  ) : null;
   if (!view) {
     return (
       <main className="py-6">

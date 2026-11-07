@@ -15,7 +15,7 @@ export function StampCard({
   return (
     <section
       aria-label="Tarjeta de fidelidad"
-      className={`border-line bg-card rounded-xl border ${compact ? "p-3" : "p-4"}`}
+      className={`border-line bg-card rounded-md border ${compact ? "p-3" : "p-4"}`}
     >
       {text.reward ? (
         <p className="text-ok text-lg font-bold">{text.reward}</p>

@@ -36,8 +36,7 @@ export function designViolations(
         out.push(`${at}: color hexadecimal "${m[0]}" (usa un token, REQ-078.1)`);
       }
     for (const re of [GRADIENT, BACKDROP, FONTS])
-      for (const m of line.matchAll(re))
-        out.push(`${at}: "${m[0]}" no se usa (REQ-078.14)`);
+      for (const m of line.matchAll(re)) out.push(`${at}: "${m[0]}" no se usa (REQ-078.14)`);
     if (!accentOk)
       for (const m of line.matchAll(ACCENT_FILL))
         out.push(`${at}: "${m[0]}" solo para atención ahora (REQ-078.3, ACCENT_FILL_ALLOWED)`);

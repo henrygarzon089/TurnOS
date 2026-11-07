@@ -3,7 +3,11 @@ import Link from "next/link";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { CountForm, type CountRow } from "@/components/admin/InventoryForms";
 import { InventoryNav } from "@/components/admin/InventoryNav";
-import { getInventoryOverview, hasStockCount, type InventoryLocation } from "@/lib/actions/inventory";
+import {
+  getInventoryOverview,
+  hasStockCount,
+  type InventoryLocation,
+} from "@/lib/actions/inventory";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Conteo de inventario" };
@@ -29,17 +33,23 @@ export default async function InventoryCountPage({
   const loc = locations.find((l) => l.id === sitio);
   const counted = loc ? await hasStockCount(loc.id) : false;
 
-  const rows: CountRow[] = !view || !loc
-    ? []
-    : view.items
-        .filter((i) =>
-          loc.kind === "warehouse"
-            ? true
-            : loc.kind === "shelf"
-              ? i.use === "sale"
-              : i.use === "internal" && (i.stationQty > 0 || (i.stock[loc.id] ?? 0) !== 0),
-        )
-        .map((i) => ({ itemId: i.id, name: i.name, unitLabel: i.unitLabel, systemQty: i.stock[loc.id] ?? 0 }));
+  const rows: CountRow[] =
+    !view || !loc
+      ? []
+      : view.items
+          .filter((i) =>
+            loc.kind === "warehouse"
+              ? true
+              : loc.kind === "shelf"
+                ? i.use === "sale"
+                : i.use === "internal" && (i.stationQty > 0 || (i.stock[loc.id] ?? 0) !== 0),
+          )
+          .map((i) => ({
+            itemId: i.id,
+            name: i.name,
+            unitLabel: i.unitLabel,
+            systemQty: i.stock[loc.id] ?? 0,
+          }));
 
   return (
     <main className="pb-6">
@@ -57,7 +67,7 @@ export default async function InventoryCountPage({
             key={l.id}
             href={`/admin/inventario/conteo?sitio=${l.id}`}
             aria-current={loc?.id === l.id ? "page" : undefined}
-            className={`flex min-h-12 items-center justify-center rounded-xl border px-2 text-center text-sm font-semibold ${
+            className={`flex min-h-12 items-center justify-center rounded-md border px-2 text-center text-sm font-semibold ${
               loc?.id === l.id ? "bg-ink text-card border-ink" : "border-line bg-card"
             }`}
           >
@@ -67,12 +77,17 @@ export default async function InventoryCountPage({
       </nav>
 
       {loc && !counted && (
-        <p className="border-line bg-card mt-4 rounded-xl border p-3 text-sm">
+        <p className="border-line bg-card mt-4 rounded-md border p-3 text-sm">
           Es el conteo inicial de este sitio: lo que cuentes queda como punto de partida.
         </p>
       )}
       {loc && (
-        <CountForm key={loc.id} locationId={loc.id} needsReason={loc.kind !== "station" && counted} rows={rows} />
+        <CountForm
+          key={loc.id}
+          locationId={loc.id}
+          needsReason={loc.kind !== "station" && counted}
+          rows={rows}
+        />
       )}
     </main>
   );

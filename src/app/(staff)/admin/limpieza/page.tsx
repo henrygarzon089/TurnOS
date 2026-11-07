@@ -6,7 +6,12 @@ import { CleaningInspection } from "@/components/cleaning/CleaningInspection";
 import { CleaningListsEditor, CleaningSwitch } from "@/components/cleaning/CleaningListsEditor";
 import { CleaningTasks } from "@/components/cleaning/CleaningTasks";
 import { CleaningToday } from "@/components/cleaning/CleaningToday";
-import { getCleaningHistory, getCleaningLists, getCleaningTasks, getCleaningToday } from "@/lib/actions/cleaning";
+import {
+  getCleaningHistory,
+  getCleaningLists,
+  getCleaningTasks,
+  getCleaningToday,
+} from "@/lib/actions/cleaning";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -33,7 +38,11 @@ export default async function OwnerCleaningPage({
   const today = await getCleaningToday();
   const enabled = Boolean(today?.enabled);
   // Apagada solo se muestran el interruptor y las listas
-  const tab: Tab = !enabled ? "listas" : TABS.some((t) => t.key === pestana) ? (pestana as Tab) : "hoy";
+  const tab: Tab = !enabled
+    ? "listas"
+    : TABS.some((t) => t.key === pestana)
+      ? (pestana as Tab)
+      : "hoy";
 
   return (
     <main className="pb-6">
@@ -55,7 +64,9 @@ export default async function OwnerCleaningPage({
           ))}
         </nav>
       )}
-      {tab === "hoy" && today?.enabled && <CleaningToday today={today} businessId={session.business.id} />}
+      {tab === "hoy" && today?.enabled && (
+        <CleaningToday today={today} businessId={session.business.id} />
+      )}
       {tab === "revision" && (await inspectionTab(session.business.id))}
       {tab === "tareas" && (
         <CleaningTasks tasks={(await getCleaningTasks()) ?? []} businessId={session.business.id} />
@@ -122,7 +133,9 @@ async function historyTab(businessId: string, semanas: string | undefined) {
       </nav>
       <CleaningHistory
         weeks={history ?? []}
-        barberNames={Object.fromEntries((barbers ?? []).map((b) => [b.id as string, b.display_name as string]))}
+        barberNames={Object.fromEntries(
+          (barbers ?? []).map((b) => [b.id as string, b.display_name as string]),
+        )}
       />
     </>
   );

@@ -19,7 +19,13 @@ type Detail =
 const hour = (iso: string) => formatHour(iso.slice(11, 16));
 
 /* eslint-disable @next/next/no-img-element -- URL firmadas de 1 hora del bucket privado */
-function DetailView({ detail, barberNames }: { detail: Detail; barberNames: Record<string, string> }) {
+function DetailView({
+  detail,
+  barberNames,
+}: {
+  detail: Detail;
+  barberNames: Record<string, string>;
+}) {
   if (detail.type === "record") {
     const d = detail.data;
     return (
@@ -35,7 +41,9 @@ function DetailView({ detail, barberNames }: { detail: Detail; barberNames: Reco
         {d.photosPurged ? (
           <p className="text-muted">{PHOTO_PURGED}</p>
         ) : (
-          d.photoUrls.map((u, n) => <img key={u} src={u} alt={`Foto ${n + 1}`} className="w-full rounded-lg" />)
+          d.photoUrls.map((u, n) => (
+            <img key={u} src={u} alt={`Foto ${n + 1}`} className="w-full rounded-sm" />
+          ))
         )}
       </div>
     );
@@ -47,13 +55,19 @@ function DetailView({ detail, barberNames }: { detail: Detail; barberNames: Reco
         {d.items.map((i) => (
           <li key={`${i.group}-${i.label}`} className={i.ok ? undefined : "text-warn"}>
             {i.ok ? "Bien" : "Falla"} · {i.label}
-            {!i.ok && <span> · {i.barberId ? (barberNames[i.barberId] ?? "Barbero") : "General"}</span>}
+            {!i.ok && (
+              <span> · {i.barberId ? (barberNames[i.barberId] ?? "Barbero") : "General"}</span>
+            )}
             {i.note && <span className="text-muted"> · {i.note}</span>}
             {i.photoPath &&
               (d.photosPurged || i.photoPurged || !d.photoUrls[i.photoPath] ? (
                 <p className="text-muted">{PHOTO_PURGED}</p>
               ) : (
-                <img src={d.photoUrls[i.photoPath]} alt={`Foto de ${i.label}`} className="mt-1 w-full rounded-lg" />
+                <img
+                  src={d.photoUrls[i.photoPath]}
+                  alt={`Foto de ${i.label}`}
+                  className="mt-1 w-full rounded-sm"
+                />
               ))}
           </li>
         ))}
@@ -73,7 +87,9 @@ function EntryRow({ entry, barberNames }: { entry: Entry; barberNames: Record<st
           entry.isComplete ? "" : " · Incompleta"
         }${entry.isLate ? " · Tarde" : ""}`
       : `Revisión · ${formatDayCO(entry.businessDay)} · ${hour(entry.at)} · ${
-          entry.failures === 0 ? "todo bien" : `${entry.failures} ${entry.failures === 1 ? "falla" : "fallas"}`
+          entry.failures === 0
+            ? "todo bien"
+            : `${entry.failures} ${entry.failures === 1 ? "falla" : "fallas"}`
         }`;
 
   async function toggle() {
@@ -115,15 +131,22 @@ function EntryRow({ entry, barberNames }: { entry: Entry; barberNames: Record<st
  * REQ-063.5–063.7: por semana y por barbero, solo conteos (sin niveles ni puntajes), y cada
  * registro o revisión se abre con su detalle. Las fotos de más de 90 días ya no se muestran (REQ-064.6).
  */
-export function CleaningHistory({ weeks, barberNames }: { weeks: HistoryWeek[]; barberNames: Record<string, string> }) {
-  if (weeks.length === 0) return <p className="text-muted mt-3 text-sm">Todavía no hay historial.</p>;
+export function CleaningHistory({
+  weeks,
+  barberNames,
+}: {
+  weeks: HistoryWeek[];
+  barberNames: Record<string, string>;
+}) {
+  if (weeks.length === 0)
+    return <p className="text-muted mt-3 text-sm">Todavía no hay historial.</p>;
   return (
     <div className="mt-3 space-y-3">
       {weeks.map((w) => (
         <section
           key={w.weekStart}
           aria-label={`Semana del ${formatDayCO(w.weekStart)}`}
-          className="border-line bg-card rounded-xl border p-3"
+          className="border-line bg-card rounded-md border p-3"
         >
           <h2 className="font-semibold">Semana del {formatDayCO(w.weekStart)}</h2>
           <p className="text-sm">
@@ -133,12 +156,14 @@ export function CleaningHistory({ weeks, barberNames }: { weeks: HistoryWeek[]; 
             {w.missedClosings > 0 && (
               <span className="text-warn">
                 {" "}
-                · {w.missedClosings} {w.missedClosings === 1 ? "cierre sin registrar" : "cierres sin registrar"}
+                · {w.missedClosings}{" "}
+                {w.missedClosings === 1 ? "cierre sin registrar" : "cierres sin registrar"}
               </span>
             )}
             {" · "}
             {w.inspections} {w.inspections === 1 ? "revisión" : "revisiones"}
-            {w.generalFailures > 0 && ` · ${w.generalFailures} ${w.generalFailures === 1 ? "falla general" : "fallas generales"}`}
+            {w.generalFailures > 0 &&
+              ` · ${w.generalFailures} ${w.generalFailures === 1 ? "falla general" : "fallas generales"}`}
           </p>
           {w.barbers.length > 0 && (
             <table className="mt-2 w-full text-sm">

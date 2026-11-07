@@ -365,7 +365,7 @@ export function CheckoutSheet({
                   role="radio"
                   aria-checked={on}
                   onClick={() => setSeller(o.value)}
-                  className={`min-h-12 rounded-xl border px-2 font-semibold ${
+                  className={`min-h-12 rounded-md border px-2 font-semibold ${
                     on ? "bg-brand text-brand-ink border-brand" : "border-line bg-card"
                   }`}
                 >
@@ -418,7 +418,7 @@ export function CheckoutSheet({
       {!staffPurchase && (
         <section aria-label="Servicios" className="flex flex-col gap-2">
           {services.map((l) => (
-            <div key={l.key} className="border-line rounded-xl border p-3">
+            <div key={l.key} className="border-line rounded-md border p-3">
               <div className="flex items-center justify-between gap-2">
                 <select
                   aria-label="Servicio"
@@ -474,10 +474,7 @@ export function CheckoutSheet({
                 </label>
               )}
               {memberLine(l) && (
-                <p
-                  className="mt-1 text-sm font-semibold text-brand"
-                  data-testid="membership-line"
-                >
+                <p className="text-brand mt-1 text-sm font-semibold" data-testid="membership-line">
                   {memberLine(l)!.label}: −{formatCOP(memberLine(l)!.discount)}
                 </p>
               )}
@@ -543,7 +540,7 @@ export function CheckoutSheet({
       )}
 
       {rewardAvailable && (
-        <div className="rounded-xl bg-ok-soft p-3">
+        <div className="bg-ok-soft rounded-md p-3">
           {rewardApplied ? (
             <button
               type="button"
@@ -600,7 +597,7 @@ export function CheckoutSheet({
               role="radio"
               aria-checked={method === m.id}
               onClick={() => setMethod(m.id)}
-              className={`min-h-12 rounded-xl border font-semibold ${
+              className={`min-h-12 rounded-md border font-semibold ${
                 m.id === "gift_card" ? "col-span-2" : ""
               } ${method === m.id ? "bg-brand text-brand-ink border-brand" : "border-line bg-card"}`}
             >
@@ -662,7 +659,7 @@ export function CheckoutSheet({
                         role="radio"
                         aria-checked={restMethod === m.id}
                         onClick={() => setRestMethod(m.id)}
-                        className={`min-h-12 rounded-xl border font-semibold ${
+                        className={`min-h-12 rounded-md border font-semibold ${
                           restMethod === m.id
                             ? "bg-brand text-brand-ink border-brand"
                             : "border-line bg-card"
@@ -760,7 +757,7 @@ function Sheet({
       className="fixed inset-0 z-30 flex items-end bg-black/40"
       onKeyDown={(e) => e.key === "Escape" && onClose()}
     >
-      <div className="bg-card flex max-h-[92dvh] w-full flex-col gap-3 overflow-y-auto rounded-t-2xl p-5">
+      <div className="bg-card flex max-h-[92dvh] w-full flex-col gap-3 overflow-y-auto rounded-t-md p-5">
         {children}
       </div>
     </div>

@@ -63,7 +63,7 @@ export function RemindersList({ view }: { view: RemindersView }) {
           {rows.map((c) => (
             <li
               key={c.id}
-              className="border-line bg-card flex flex-col gap-2 rounded-xl border p-3"
+              className="border-line bg-card flex flex-col gap-2 rounded-md border p-3"
             >
               <div>
                 <p className="font-semibold">{c.name}</p>

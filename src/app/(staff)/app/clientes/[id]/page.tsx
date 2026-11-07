@@ -40,7 +40,7 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
         </p>
       </header>
 
-      <dl className="border-line bg-card grid grid-cols-3 gap-2 rounded-xl border p-4 text-center">
+      <dl className="border-line bg-card grid grid-cols-3 gap-2 rounded-md border p-4 text-center">
         <div>
           <dt className="text-muted text-xs">Visitas</dt>
           <dd className="text-xl font-bold">{c.visitsCount}</dd>

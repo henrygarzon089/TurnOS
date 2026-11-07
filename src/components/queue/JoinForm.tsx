@@ -225,7 +225,7 @@ export function JoinForm({ business, now }: Props) {
             return (
               <label
                 key={s.id}
-                className={`border-line bg-card flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2 ${nobody ? "text-muted cursor-not-allowed bg-surface" : "cursor-pointer"} ${serviceId === s.id ? "border-brand ring-2 ring-brand-soft" : ""}`}
+                className={`border-line bg-card flex min-h-12 items-center justify-between gap-2 rounded-md border px-3 py-2 ${nobody ? "text-muted bg-surface cursor-not-allowed" : "cursor-pointer"} ${serviceId === s.id ? "border-brand ring-brand-soft ring-2" : ""}`}
               >
                 <span className="flex min-w-0 items-center gap-2 break-words">
                   <input
@@ -338,7 +338,7 @@ export function JoinForm({ business, now }: Props) {
               (c) => (
                 <label
                   key={c.id ?? "ninguna"}
-                  className={`border-line bg-card flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 ${shownCourtesyId === c.id ? "border-brand ring-2 ring-brand-soft" : ""}`}
+                  className={`border-line bg-card flex min-h-12 cursor-pointer items-center gap-2 rounded-md border px-3 py-2 ${shownCourtesyId === c.id ? "border-brand ring-brand-soft ring-2" : ""}`}
                 >
                   <input
                     type="radio"
@@ -354,7 +354,7 @@ export function JoinForm({ business, now }: Props) {
                       width={32}
                       height={32}
                       unoptimized
-                      className="h-8 w-8 shrink-0 rounded-md object-cover"
+                      className="h-8 w-8 shrink-0 rounded-sm object-cover"
                     />
                   )}
                   <span className="min-w-0 break-words">{c.name}</span>
@@ -367,7 +367,7 @@ export function JoinForm({ business, now }: Props) {
       )}
 
       {warning && (
-        <p role="status" className="text-warn rounded-xl bg-warn-soft p-3 text-sm font-medium">
+        <p role="status" className="text-warn bg-warn-soft rounded-md p-3 text-sm font-medium">
           {warning}
         </p>
       )}

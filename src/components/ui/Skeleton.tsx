@@ -6,7 +6,7 @@ export function SkeletonBlock({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden="true"
-      className={`bg-line rounded-xl motion-safe:animate-pulse ${className}`}
+      className={`bg-line rounded-md motion-safe:animate-pulse ${className}`}
     />
   );
 }

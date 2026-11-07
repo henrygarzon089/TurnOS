@@ -31,7 +31,7 @@ export function LoyaltyForm({
 
   return (
     <form action={action} className="mt-4 flex flex-col gap-4">
-      <label className="border-line bg-card flex min-h-14 items-center gap-3 rounded-xl border px-4">
+      <label className="border-line bg-card flex min-h-14 items-center gap-3 rounded-md border px-4">
         <input
           type="checkbox"
           name="enabled"
@@ -60,7 +60,7 @@ export function LoyaltyForm({
           />
         </label>
 
-        <fieldset className="border-line bg-card flex flex-col gap-2 rounded-xl border p-4">
+        <fieldset className="border-line bg-card flex flex-col gap-2 rounded-md border p-4">
           <legend className="px-1 text-sm font-semibold">Premio</legend>
           <label className="flex min-h-10 items-center gap-3">
             <input
@@ -117,7 +117,7 @@ export function LoyaltyForm({
           )}
         </fieldset>
 
-        <fieldset className="border-line bg-card flex flex-col gap-1 rounded-xl border p-4">
+        <fieldset className="border-line bg-card flex flex-col gap-1 rounded-md border p-4">
           <legend className="px-1 text-sm font-semibold">Servicios que suman sello</legend>
           {services.map((s) => (
             <label key={s.id} className="flex min-h-10 items-center gap-3">

@@ -81,7 +81,7 @@ export function SellGiftCardForm({ view }: { view: SendProps }) {
         <div
           role="status"
           aria-label="Tarjeta vendida"
-          className="border-ok bg-card mt-3 flex flex-col gap-2 rounded-xl border-2 p-4"
+          className="border-ok bg-card mt-3 flex flex-col gap-2 rounded-md border-2 p-4"
         >
           <p className="text-ok text-sm font-medium">Tarjeta vendida. Quedó en la caja de hoy.</p>
           <p className="text-2xl font-bold tracking-widest">
@@ -98,7 +98,7 @@ export function SellGiftCardForm({ view }: { view: SendProps }) {
       <form
         onSubmit={onSubmit}
         aria-label="Vender tarjeta"
-        className="border-line bg-card mt-3 flex flex-col gap-3 rounded-xl border p-4"
+        className="border-line bg-card mt-3 flex flex-col gap-3 rounded-md border p-4"
       >
         <p className="font-semibold">Vender tarjeta</p>
         <label className="flex flex-col gap-1 text-sm font-medium">
@@ -157,7 +157,7 @@ export function SellGiftCardForm({ view }: { view: SendProps }) {
             {METHODS.map((m) => (
               <label
                 key={m.id}
-                className={`flex min-h-12 items-center justify-center rounded-xl border text-sm font-semibold ${
+                className={`flex min-h-12 items-center justify-center rounded-md border text-sm font-semibold ${
                   method === m.id ? "bg-ink text-card border-ink" : "border-line bg-card"
                 }`}
               >
@@ -195,7 +195,7 @@ export function GiftCardList({ view }: { view: GiftCardsView }) {
       </p>
       <ul aria-label="Tarjetas de regalo" className="mt-2 flex flex-col gap-2">
         {view.cards.map((c) => (
-          <li key={c.id} className="border-line bg-card flex flex-col gap-2 rounded-xl border p-3">
+          <li key={c.id} className="border-line bg-card flex flex-col gap-2 rounded-md border p-3">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="font-semibold tracking-widest">{formatGiftCardCode(c.code)}</p>

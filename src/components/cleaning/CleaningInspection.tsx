@@ -3,11 +3,23 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { submitInspection, type ListItem } from "@/lib/actions/cleaning";
-import { CAMERA_HINT, cleaningErrorMessage, inspectionPhotoPath, PHOTO_UPLOAD_FAILED } from "@/lib/domain/cleaning";
+import {
+  CAMERA_HINT,
+  cleaningErrorMessage,
+  inspectionPhotoPath,
+  PHOTO_UPLOAD_FAILED,
+} from "@/lib/domain/cleaning";
 import { resizePhoto } from "@/lib/media/resize";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-type Answer = { id: string; ok: boolean | null; note: string; barberId: string; file: File | null; path: string | null };
+type Answer = {
+  id: string;
+  ok: boolean | null;
+  note: string;
+  barberId: string;
+  file: File | null;
+  path: string | null;
+};
 
 /**
  * REQ-063.1–063.3: la revisión del dueño. Lista de Cierre más "Estaciones entre clientes"; cada punto
@@ -27,7 +39,14 @@ export function CleaningInspection({
 }) {
   const router = useRouter();
   const fresh = () =>
-    [...closing, ...betweenClients].map((i) => ({ id: i.id, ok: null, note: "", barberId: "", file: null, path: null }));
+    [...closing, ...betweenClients].map((i) => ({
+      id: i.id,
+      ok: null,
+      note: "",
+      barberId: "",
+      file: null,
+      path: null,
+    }));
   const [answers, setAnswers] = useState<Answer[]>(fresh);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -48,7 +67,9 @@ export function CleaningInspection({
         const blob = await resizePhoto(a.file);
         if (!blob) return null;
         const path = inspectionPhotoPath(businessId);
-        const { error: failed } = await supabase.storage.from("cleaning").upload(path, blob, { contentType: blob.type });
+        const { error: failed } = await supabase.storage
+          .from("cleaning")
+          .upload(path, blob, { contentType: blob.type });
         if (failed) return null;
         next[i] = { ...a, path };
       } catch {
@@ -75,14 +96,24 @@ export function CleaningInspection({
         return;
       }
       const res = await submitInspection(
-        done.map((a) => ({ id: a.id, ok: a.ok, note: a.note, photoPath: a.path, barberId: a.barberId || null })),
+        done.map((a) => ({
+          id: a.id,
+          ok: a.ok,
+          note: a.note,
+          photoPath: a.path,
+          barberId: a.barberId || null,
+        })),
       );
       if (!res.ok) {
         setError(res.error);
         return;
       }
       const n = res.data.failures;
-      setNotice(n === 0 ? "Revisión guardada, todo bien." : `Revisión guardada con ${n} ${n === 1 ? "falla" : "fallas"}.`);
+      setNotice(
+        n === 0
+          ? "Revisión guardada, todo bien."
+          : `Revisión guardada con ${n} ${n === 1 ? "falla" : "fallas"}.`,
+      );
       setAnswers(fresh());
       router.refresh();
     } finally {
@@ -96,14 +127,18 @@ export function CleaningInspection({
       {items.map((item) => {
         const a = answers.find((x) => x.id === item.id)!;
         return (
-          <fieldset key={item.id} className="border-line rounded-lg border p-2">
+          <fieldset key={item.id} className="border-line rounded-sm border p-2">
             <legend className="px-1">{item.label}</legend>
             <div className="flex gap-2">
               {([true, false] as const).map((v) => (
                 <label
                   key={String(v)}
-                  className={`flex min-h-12 flex-1 items-center justify-center gap-2 rounded-lg border font-semibold ${
-                    a.ok === v ? (v ? "border-ok text-ok" : "border-danger text-danger") : "border-line"
+                  className={`flex min-h-12 flex-1 items-center justify-center gap-2 rounded-sm border font-semibold ${
+                    a.ok === v
+                      ? v
+                        ? "border-ok text-ok"
+                        : "border-danger text-danger"
+                      : "border-line"
                   }`}
                 >
                   <input
@@ -171,7 +206,7 @@ export function CleaningInspection({
   return (
     <form
       aria-label="Revisión"
-      className="border-line bg-card mt-3 space-y-4 rounded-xl border p-4"
+      className="border-line bg-card mt-3 space-y-4 rounded-md border p-4"
       onSubmit={(e) => {
         e.preventDefault();
         void send();
@@ -182,7 +217,9 @@ export function CleaningInspection({
         <button
           type="button"
           className="btn-secondary min-h-10 px-3 text-sm"
-          onClick={() => setAnswers((prev) => prev.map((a) => (a.ok === null ? { ...a, ok: true } : a)))}
+          onClick={() =>
+            setAnswers((prev) => prev.map((a) => (a.ok === null ? { ...a, ok: true } : a)))
+          }
         >
           Lo demás, bien
         </button>

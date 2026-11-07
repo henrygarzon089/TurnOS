@@ -31,7 +31,7 @@ export function HoursForm({
       {order.map((d) => {
         const h = byDay.get(d);
         return (
-          <div key={d} className="border-line bg-card flex flex-col gap-2 rounded-xl border p-3">
+          <div key={d} className="border-line bg-card flex flex-col gap-2 rounded-md border p-3">
             <div className="flex items-center justify-between">
               <span className="font-semibold">{DAYS[d]}</span>
               <label className="flex min-h-12 items-center gap-2 text-sm">

@@ -62,7 +62,7 @@ export function ProductShowcase({
           return (
             <div
               key={p.id}
-              className={`flex flex-col gap-1 rounded-xl border p-2 ${
+              className={`flex flex-col gap-1 rounded-md border p-2 ${
                 n > 0 ? "border-brand" : "border-line"
               }`}
             >
@@ -73,12 +73,12 @@ export function ProductShowcase({
                   width={160}
                   height={96}
                   unoptimized
-                  className="h-24 w-full rounded-lg object-cover"
+                  className="h-24 w-full rounded-sm object-cover"
                 />
               ) : (
                 <span
                   aria-hidden="true"
-                  className="bg-line/40 text-muted flex h-24 w-full items-center justify-center rounded-lg text-3xl font-bold"
+                  className="bg-line/40 text-muted flex h-24 w-full items-center justify-center rounded-sm text-3xl font-bold"
                 >
                   {p.name.slice(0, 1).toUpperCase()}
                 </span>

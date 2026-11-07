@@ -69,7 +69,7 @@ export function MembershipPlanForm({
 
   return (
     <form onSubmit={onSubmit} className="mt-3 flex flex-col gap-4">
-      <label className="border-line bg-card flex min-h-14 items-center gap-3 rounded-xl border px-4">
+      <label className="border-line bg-card flex min-h-14 items-center gap-3 rounded-md border px-4">
         <input
           type="checkbox"
           name="enabled"
@@ -117,7 +117,7 @@ export function MembershipPlanForm({
         </label>
       </div>
 
-      <fieldset className="border-line bg-card flex flex-col gap-1 rounded-xl border p-4">
+      <fieldset className="border-line bg-card flex flex-col gap-1 rounded-md border p-4">
         <legend className="px-1 text-sm font-semibold">Servicios que gastan cortes</legend>
         {services.map((s) => (
           <label key={s.id} className="flex min-h-10 items-center gap-3">
@@ -162,7 +162,7 @@ export function ExpiringList({ view }: { view: MembershipsView }) {
       {view.expiring.map((m) => (
         <li
           key={m.membershipId}
-          className="border-line bg-card flex flex-col gap-2 rounded-xl border p-3"
+          className="border-line bg-card flex flex-col gap-2 rounded-md border p-3"
         >
           <div>
             <p className="font-semibold">{m.name}</p>
@@ -232,7 +232,7 @@ export function NewFamilyForm() {
     <form
       onSubmit={onSubmit}
       aria-label="Nueva familia"
-      className="border-line bg-card mt-3 flex flex-col gap-3 rounded-xl border p-4"
+      className="border-line bg-card mt-3 flex flex-col gap-3 rounded-md border p-4"
     >
       <p className="font-semibold">Nueva familia</p>
       <p className="text-muted -mt-2 text-xs">
@@ -328,7 +328,7 @@ function PayFee({ family, price }: { family: FamilyRow; price: number }) {
           {METHODS.map((m) => (
             <label
               key={m.id}
-              className={`flex min-h-12 items-center justify-center rounded-xl border text-sm font-semibold ${
+              className={`flex min-h-12 items-center justify-center rounded-md border text-sm font-semibold ${
                 method === m.id ? "bg-ink text-card border-ink" : "border-line bg-card"
               }`}
             >
@@ -378,7 +378,7 @@ export function FamilyCard({ family, plan }: { family: FamilyRow; plan: Membersh
   return (
     <li
       aria-label={`Familia de ${title}`}
-      className="border-line bg-card flex flex-col gap-3 rounded-xl border p-3"
+      className="border-line bg-card flex flex-col gap-3 rounded-md border p-3"
     >
       <div>
         <p className="font-semibold">Familia de {title}</p>

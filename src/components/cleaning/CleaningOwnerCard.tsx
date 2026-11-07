@@ -11,7 +11,11 @@ import { formatDayCO } from "@/lib/domain/time";
  * REQ-062.1/062.3–062.5, REQ-064.4: la tarjeta "Limpieza" en el panel del dueño (/admin/fila).
  * Solo sale lo que pide atención; si no hay nada, una línea "Todo al día".
  */
-export function CleaningOwnerCard({ summary }: { summary: Extract<OwnerSummary, { enabled: true }> }) {
+export function CleaningOwnerCard({
+  summary,
+}: {
+  summary: Extract<OwnerSummary, { enabled: true }>;
+}) {
   const router = useRouter();
   const [acking, setAcking] = useState<string | null>(null);
   const [note, setNote] = useState("");
@@ -38,24 +42,31 @@ export function CleaningOwnerCard({ summary }: { summary: Extract<OwnerSummary, 
   }
 
   return (
-    <section aria-label="Limpieza" className="border-line bg-card mb-3 rounded-xl border p-3">
+    <section aria-label="Limpieza" className="border-line bg-card mb-3 rounded-md border p-3">
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-semibold">Limpieza</h2>
-        <Link href="/admin/limpieza" className="text-brand min-h-10 px-2 py-2 text-sm font-semibold">
+        <Link
+          href="/admin/limpieza"
+          className="text-brand min-h-10 px-2 py-2 text-sm font-semibold"
+        >
           Abrir
         </Link>
       </div>
       {nothing && <p className="text-muted text-sm">Todo al día.</p>}
       <ul className="mt-1 space-y-2 text-sm">
-        {summary.openingPending && (
-          <li className="text-warn font-semibold">Apertura pendiente</li>
-        )}
+        {summary.openingPending && <li className="text-warn font-semibold">Apertura pendiente</li>}
         {summary.missedClosings.map(({ day }) => (
           <li key={day}>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-warn font-semibold">Cierre sin registrar · {formatDayCO(day)}</span>
+              <span className="text-warn font-semibold">
+                Cierre sin registrar · {formatDayCO(day)}
+              </span>
               {acking !== day && (
-                <button type="button" className="btn-secondary min-h-10 px-3" onClick={() => setAcking(day)}>
+                <button
+                  type="button"
+                  className="btn-secondary min-h-10 px-3"
+                  onClick={() => setAcking(day)}
+                >
                   Visto
                 </button>
               )}

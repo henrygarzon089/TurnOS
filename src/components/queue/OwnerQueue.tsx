@@ -110,7 +110,10 @@ export function OwnerQueue({
       </div>
 
       {error && (
-        <p role="alert" className="text-danger mt-2 rounded-xl bg-accent-soft p-3 text-sm font-medium">
+        <p
+          role="alert"
+          className="text-danger bg-accent-soft mt-2 rounded-md p-3 text-sm font-medium"
+        >
           {error}
         </p>
       )}
@@ -159,7 +162,7 @@ export function OwnerQueue({
               );
               const open = openTicket === t.id;
               return (
-                <li key={t.id} className="border-line bg-card rounded-xl border p-3">
+                <li key={t.id} className="border-line bg-card rounded-md border p-3">
                   <button
                     type="button"
                     className="flex w-full items-start justify-between gap-2 text-left"
@@ -221,7 +224,7 @@ export function OwnerQueue({
             {view.pendingPayments.map((t) => (
               <li
                 key={t.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-warn bg-warn-soft p-3 text-sm"
+                className="border-warn bg-warn-soft flex items-center justify-between gap-3 rounded-md border p-3 text-sm"
               >
                 <span className="min-w-0 truncate font-semibold">
                   {t.customerName} · {t.serviceName}
@@ -482,7 +485,7 @@ function ManualTicketSheet({
       className="fixed inset-0 z-30 flex items-end bg-black/40"
     >
       <form
-        className="bg-card flex w-full flex-col gap-3 rounded-t-2xl p-5"
+        className="bg-card flex w-full flex-col gap-3 rounded-t-md p-5"
         onSubmit={(e) => {
           e.preventDefault();
           run(() =>

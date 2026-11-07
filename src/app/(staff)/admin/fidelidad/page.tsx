@@ -58,7 +58,7 @@ export default async function LoyaltyPage() {
       </p>
       <dl
         aria-label="Resumen de la tarjeta"
-        className="border-line bg-card mt-4 grid grid-cols-3 gap-2 rounded-xl border p-4 text-center"
+        className="border-line bg-card mt-4 grid grid-cols-3 gap-2 rounded-md border p-4 text-center"
       >
         <div>
           <dt className="text-muted text-xs">Clientes con tarjeta</dt>

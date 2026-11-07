@@ -95,7 +95,7 @@ export function TemplatesForm({
   return (
     <form action={action} className="mt-4 flex flex-col gap-5">
       {(Object.keys(TEMPLATE_META) as TemplateKey[]).map((key) => (
-        <div key={key} className="border-line bg-card flex flex-col gap-2 rounded-xl border p-3">
+        <div key={key} className="border-line bg-card flex flex-col gap-2 rounded-md border p-3">
           <label htmlFor={key} className="font-semibold">
             {TEMPLATE_META[key].title}
           </label>
@@ -113,7 +113,7 @@ export function TemplatesForm({
           <p className="text-muted text-xs">
             Variables: {TEMPLATE_META[key].vars ?? "{nombre} {negocio} {tiempo} {enlace}"}
           </p>
-          <div className="rounded-lg bg-ok-soft p-2 text-sm" aria-label="Vista previa">
+          <div className="bg-ok-soft rounded-sm p-2 text-sm" aria-label="Vista previa">
             {renderTemplate(values[key], sample)}
           </div>
         </div>

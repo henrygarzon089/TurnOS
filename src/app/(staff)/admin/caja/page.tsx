@@ -29,7 +29,7 @@ export default async function CashPage() {
       {past.length > 0 && (
         <section aria-label="Cierres anteriores" className="mt-6">
           <h2 className="mb-2 font-semibold">Cierres anteriores</h2>
-          <ul className="border-line bg-card divide-line divide-y rounded-xl border">
+          <ul className="border-line bg-card divide-line divide-y rounded-md border">
             {past.map((c) => (
               <li key={c.day}>
                 <Link

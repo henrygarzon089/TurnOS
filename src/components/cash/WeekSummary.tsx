@@ -21,7 +21,7 @@ function Stat({
   testId: string;
 }) {
   return (
-    <div className="border-line bg-card rounded-xl border p-3" data-testid={testId}>
+    <div className="border-line bg-card rounded-md border p-3" data-testid={testId}>
       <p className="text-muted text-xs">{label}</p>
       <p className="text-xl font-bold">{value}</p>
       <p className="text-muted text-xs">vs. semana anterior: {change}</p>
@@ -58,7 +58,7 @@ export function WeekSummary({ current: w, previous: p }: { current: Week; previo
           change={variation(w.sold, p.sold)}
           testId="sold"
         />
-        <div className="bg-ink text-card col-span-2 rounded-xl p-3" data-testid="occupancy">
+        <div className="bg-ink text-card col-span-2 rounded-md p-3" data-testid="occupancy">
           <p className="text-xs opacity-80">Ocupación de sillas</p>
           <p className="text-2xl font-bold">{pct(w.occupancyPct)}</p>
           <p className="text-xs opacity-80">
@@ -73,18 +73,18 @@ export function WeekSummary({ current: w, previous: p }: { current: Week; previo
 
       <GiftCardTotals totals={w} />
 
-      <p className="rounded-xl bg-warn-soft p-3 text-sm font-semibold" data-testid="lost">
+      <p className="bg-warn-soft rounded-md p-3 text-sm font-semibold" data-testid="lost">
         {w.lostTickets} {w.lostTickets === 1 ? "turno perdido" : "turnos perdidos"} (no llegó o
         cancelado)
       </p>
 
       {staffPurchasesLine(w) && (
-        <p className="border-line bg-card rounded-xl border p-3 text-sm">{staffPurchasesLine(w)}</p>
+        <p className="border-line bg-card rounded-md border p-3 text-sm">{staffPurchasesLine(w)}</p>
       )}
 
       <section aria-label="Por barbero">
         <h2 className="mb-2 font-semibold">Por barbero</h2>
-        <ul className="border-line bg-card divide-line divide-y rounded-xl border">
+        <ul className="border-line bg-card divide-line divide-y rounded-md border">
           {w.barbers.map((b) => (
             <li key={b.barberId} className="px-4 py-3 text-sm">
               <p className="font-semibold">
@@ -109,7 +109,7 @@ export function WeekSummary({ current: w, previous: p }: { current: Week; previo
         <h2 className="mb-2 font-semibold">Ocupación por día</h2>
         <ul className="grid grid-cols-7 gap-1 text-center text-xs">
           {w.days.map((d) => (
-            <li key={d.day} className="border-line bg-card rounded-lg border p-1">
+            <li key={d.day} className="border-line bg-card rounded-sm border p-1">
               <p className="font-semibold">
                 {WEEKDAYS[new Date(`${d.day}T12:00:00Z`).getUTCDay()]}
               </p>

@@ -45,7 +45,7 @@ export function MyAppointment({
         {alreadyHad && pendingAppt && (
           <p
             role="status"
-            className="text-warn mt-2 rounded-xl bg-warn-soft p-3 text-sm font-medium"
+            className="text-warn bg-warn-soft mt-2 rounded-md p-3 text-sm font-medium"
           >
             Ya tienes una cita. Esta es.
           </p>
@@ -54,7 +54,7 @@ export function MyAppointment({
 
       <section
         aria-label="Estado de la cita"
-        className={`rounded-2xl p-5 ${pendingAppt ? "bg-card border-brand border" : "bg-card border-line border"}`}
+        className={`rounded-md p-5 ${pendingAppt ? "bg-card border-brand border" : "bg-card border-line border"}`}
       >
         <p className="text-lg font-bold" data-testid="appointment-status">
           {appointmentStatusText(a.status, a.lapsed)}

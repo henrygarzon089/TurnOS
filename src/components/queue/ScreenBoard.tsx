@@ -55,7 +55,7 @@ export function ScreenBoard({
           </p>
         </div>
         {qr && (
-          <div className="bg-card rounded-2xl p-3 text-center">
+          <div className="bg-card rounded-md p-3 text-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={qr} alt="QR para tomar turno" width={160} height={160} />
             <p className="text-ink mt-1 text-base font-semibold">Toma tu turno</p>
@@ -74,7 +74,7 @@ export function ScreenBoard({
           return (
             <article
               key={b.id}
-              className={`rounded-3xl p-6 ${hl ? "bg-called text-accent-ink animate-pulse" : "bg-white/10"}`}
+              className={`rounded-lg p-6 ${hl ? "bg-called text-accent-ink animate-pulse" : "bg-white/10"}`}
               aria-label={b.name}
             >
               <h2 className="text-4xl font-bold">{b.name}</h2>
@@ -106,7 +106,7 @@ export function ScreenBoard({
       </section>
 
       {view.anyone.length > 0 && (
-        <section className="mt-6 rounded-3xl bg-white/10 p-6">
+        <section className="mt-6 rounded-lg bg-white/10 p-6">
           <p className="text-xl uppercase opacity-60">El que esté libre</p>
           <p className="text-3xl">{view.anyone.join(" · ")}</p>
         </section>

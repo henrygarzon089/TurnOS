@@ -62,9 +62,9 @@ export function NewBarberForm({ services }: { services: ServiceOption[] }) {
 
   if (state?.inviteUrl) {
     return (
-      <div className="border-ok flex flex-col gap-3 rounded-xl border bg-ok-soft p-4">
+      <div className="border-ok bg-ok-soft flex flex-col gap-3 rounded-md border p-4">
         <p className="font-semibold">Barbero creado. Compártele este enlace (dura 7 días):</p>
-        <code data-testid="invite-url" className="bg-card rounded-lg p-2 text-sm break-all">
+        <code data-testid="invite-url" className="bg-card rounded-sm p-2 text-sm break-all">
           {state.inviteUrl}
         </code>
         <InviteButtons url={state.inviteUrl} />
@@ -76,7 +76,7 @@ export function NewBarberForm({ services }: { services: ServiceOption[] }) {
   }
 
   return (
-    <form action={action} className="border-line bg-card flex flex-col gap-3 rounded-xl border p-4">
+    <form action={action} className="border-line bg-card flex flex-col gap-3 rounded-md border p-4">
       <Field label="Nombre" htmlFor="nb_name">
         <input id="nb_name" name="display_name" required maxLength={60} className="input" />
       </Field>
@@ -167,7 +167,7 @@ export function BarberCard({ barber, services }: { barber: BarberRow; services: 
 
   return (
     <article
-      className={`border-line bg-card flex flex-col gap-3 rounded-xl border p-4 ${barber.is_active ? "" : "opacity-60"}`}
+      className={`border-line bg-card flex flex-col gap-3 rounded-md border p-4 ${barber.is_active ? "" : "opacity-60"}`}
       aria-label={`Barbero ${barber.display_name}`}
     >
       <div className="flex items-start justify-between gap-2">
@@ -265,7 +265,7 @@ export function BarberCard({ barber, services }: { barber: BarberRow; services: 
       )}
 
       {inviteUrl && (
-        <div className="flex flex-col gap-2 rounded-lg bg-ok-soft p-3">
+        <div className="bg-ok-soft flex flex-col gap-2 rounded-sm p-3">
           <code data-testid="invite-url" className="text-sm break-all">
             {inviteUrl}
           </code>

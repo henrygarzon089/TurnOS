@@ -12,12 +12,18 @@ export default async function CleaningPage({
 }: {
   searchParams: Promise<{ abrir?: string }>;
 }) {
-  const [session, today, { abrir }] = await Promise.all([getStaffSession(), getCleaningToday(), searchParams]);
+  const [session, today, { abrir }] = await Promise.all([
+    getStaffSession(),
+    getCleaningToday(),
+    searchParams,
+  ]);
   if (!session || !today || !today.enabled) {
     return (
       <main className="py-6">
         <h1 className="text-2xl font-bold">Limpieza</h1>
-        <p className="text-muted mt-2">La limpieza está apagada. El dueño la enciende en el panel.</p>
+        <p className="text-muted mt-2">
+          La limpieza está apagada. El dueño la enciende en el panel.
+        </p>
       </main>
     );
   }

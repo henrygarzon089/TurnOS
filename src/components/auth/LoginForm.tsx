@@ -22,7 +22,7 @@ export function LoginForm({ initialTab, volver }: { initialTab: Tab; volver?: st
       <div
         role="tablist"
         aria-label="Tipo de acceso"
-        className="border-line flex rounded-xl border p-1"
+        className="border-line flex rounded-md border p-1"
       >
         <TabButton active={tab === "barber"} onClick={() => setTab("barber")}>
           Soy barbero
@@ -120,7 +120,7 @@ function TabButton({
       role="tab"
       aria-selected={active}
       onClick={onClick}
-      className={`min-h-12 flex-1 rounded-lg text-base font-semibold ${
+      className={`min-h-12 flex-1 rounded-sm text-base font-semibold ${
         active ? "bg-brand text-brand-ink" : "text-muted"
       }`}
     >

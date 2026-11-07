@@ -40,7 +40,7 @@ export function DeleteCustomer({ id, name }: { id: string; name: string }) {
           aria-label="Eliminar datos del cliente"
           className="fixed inset-0 z-30 flex items-end bg-black/40"
         >
-          <div className="bg-card flex w-full flex-col gap-3 rounded-t-2xl p-5">
+          <div className="bg-card flex w-full flex-col gap-3 rounded-t-md p-5">
             <p className="text-lg font-bold">¿Eliminar los datos de {name}?</p>
             <p className="text-sm">
               Úsalo solo si el cliente lo pidió (Ley 1581). Se borran su nombre, su celular y las

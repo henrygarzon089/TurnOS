@@ -12,9 +12,9 @@ describe("REQ-078.1 solo colores de los tokens", () => {
   });
 
   it("REQ-078.1 no marca los tokens ni blanco/negro", () => {
-    expect(tsx(`<p className="bg-warn-soft text-warn border-line bg-white/10 text-black">`)).toEqual(
-      [],
-    );
+    expect(
+      tsx(`<p className="bg-warn-soft text-warn border-line bg-white/10 text-black">`),
+    ).toEqual([]);
   });
 
   it("REQ-078.1 marca hexadecimales sueltos en .tsx pero no en .ts ni en un id de ancla", () => {
@@ -29,7 +29,9 @@ describe("REQ-078.14 sin degradados, desenfoque ni fuentes descargadas", () => {
     expect(tsx(`<div className="bg-gradient-to-r">`)).toHaveLength(1);
     expect(tsx(`<div className="backdrop-blur-sm">`)).toHaveLength(1);
     expect(designViolations("src/app/x.css", `.a { backdrop-filter: blur(4px) }`)).toHaveLength(1);
-    expect(designViolations("src/app/layout.tsx", `import { Inter } from "next/font/google";`)).toHaveLength(1);
+    expect(
+      designViolations("src/app/layout.tsx", `import { Inter } from "next/font/google";`),
+    ).toHaveLength(1);
     expect(tsx(`<link href="https://fonts.googleapis.com/css2" />`)).toHaveLength(1);
   });
 });
@@ -38,7 +40,9 @@ describe("REQ-078.3 rojo relleno solo donde se permite", () => {
   it("REQ-078.3 marca bg-accent fuera de los archivos permitidos", () => {
     expect(tsx(`<button className="bg-accent text-accent-ink">`)).toHaveLength(1);
     expect(
-      designViolations("src/components/X.tsx", `<span className="bg-accent">`, ["src/components/X.tsx"]),
+      designViolations("src/components/X.tsx", `<span className="bg-accent">`, [
+        "src/components/X.tsx",
+      ]),
     ).toEqual([]);
   });
 

@@ -56,10 +56,7 @@ export default async function PublicBusinessPage({ params }: Props) {
         </p>
       </header>
 
-      <section
-        className="bg-card border-line rounded-2xl border p-5 text-center"
-        aria-live="polite"
-      >
+      <section className="bg-card border-line rounded-md border p-5 text-center" aria-live="polite">
         <p className="text-5xl font-bold">{b.waitingCount}</p>
         <p className="text-muted">
           {b.waitingCount === 1 ? "persona en la fila" : "personas en la fila"}
@@ -119,7 +116,7 @@ export default async function PublicBusinessPage({ params }: Props) {
                     width={56}
                     height={56}
                     unoptimized
-                    className="h-14 w-14 shrink-0 rounded-lg object-cover"
+                    className="h-14 w-14 shrink-0 rounded-sm object-cover"
                   />
                 )}
                 <span className="min-w-0 flex-1 break-words">{p.name}</span>

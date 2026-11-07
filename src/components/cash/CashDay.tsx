@@ -74,14 +74,14 @@ export function CashDay({
 
       <section aria-label="Totales por medio de pago" className="grid grid-cols-2 gap-2">
         {METHODS.map((m) => (
-          <div key={m.key} className="border-line bg-card rounded-xl border p-3">
+          <div key={m.key} className="border-line bg-card rounded-md border p-3">
             <p className="text-muted text-xs">{m.label}</p>
             <p className="text-lg font-bold" data-testid={`method-${m.key}`}>
               {formatCOP(summary.byMethod[m.key] ?? 0)}
             </p>
           </div>
         ))}
-        <div className="bg-ink text-card col-span-2 rounded-xl p-3">
+        <div className="bg-ink text-card col-span-2 rounded-md p-3">
           <p className="text-xs opacity-80">Total vendido</p>
           <p className="text-2xl font-bold" data-testid="cash-total">
             {formatCOP(summary.total)}
@@ -99,7 +99,7 @@ export function CashDay({
 
       {staffPurchasesLine(summary) && (
         <p
-          className="border-line bg-card rounded-xl border p-3 text-sm"
+          className="border-line bg-card rounded-md border p-3 text-sm"
           data-testid="staff-purchases"
         >
           {staffPurchasesLine(summary)}
@@ -111,7 +111,7 @@ export function CashDay({
         {summary.barbers.length === 0 ? (
           <p className="text-muted text-sm">Todavía no hay servicios cobrados hoy.</p>
         ) : (
-          <ul className="border-line bg-card divide-line divide-y rounded-xl border">
+          <ul className="border-line bg-card divide-line divide-y rounded-md border">
             {summary.barbers.map((b) => (
               <li key={b.barberId} className="px-4 py-3 text-sm">
                 <p className="font-semibold">{b.name}</p>
@@ -145,7 +145,7 @@ export function CashDay({
                 <li
                   key={s.id}
                   data-testid={`sale-${s.id}`}
-                  className={`border-line bg-card rounded-xl border p-3 text-sm`}
+                  className={`border-line bg-card rounded-md border p-3 text-sm`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className={`min-w-0 ${voided ? "line-through" : ""}`}>
@@ -197,7 +197,7 @@ export function CashDay({
           aria-label="Anular venta"
           className="fixed inset-0 z-30 flex items-end bg-black/40"
         >
-          <div className="bg-card flex w-full flex-col gap-3 rounded-t-2xl p-5">
+          <div className="bg-card flex w-full flex-col gap-3 rounded-t-md p-5">
             <p className="text-lg font-bold">Anular venta</p>
             <p className="text-sm">
               La venta queda visible como anulada y sale de los totales y comisiones. Si era de un

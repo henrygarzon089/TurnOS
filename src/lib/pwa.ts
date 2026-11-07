@@ -5,8 +5,8 @@ import type { Metadata, MetadataRoute } from "next";
  * del personal usa el manifest base `src/app/manifest.ts` ("TurnOS").
  */
 /** Mismos valores que `--color-brand` y `--color-surface` (prueba en design-tokens.test.ts). */
-export const PWA_THEME_COLOR = "#1d4ed8";
-export const PWA_BACKGROUND_COLOR = "#f8fafc";
+export const PWA_THEME_COLOR = "#0e1e3d";
+export const PWA_BACKGROUND_COLOR = "#f5f7fa";
 
 type Biz = { name: string; pwaName?: string | null; slug: string };
 

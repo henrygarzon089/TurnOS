@@ -5,7 +5,7 @@ export function MembershipTotals({ totals }: { totals: Totals }) {
   const lines = membershipReportLines(totals);
   if (!lines.length) return null;
   return (
-    <section aria-label="Membresía familiar" className="border-line bg-card rounded-xl border p-3">
+    <section aria-label="Membresía familiar" className="border-line bg-card rounded-md border p-3">
       <ul className="flex flex-col gap-1 text-sm">
         {lines.map((l) => (
           <li

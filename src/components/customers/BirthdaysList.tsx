@@ -10,7 +10,7 @@ export function BirthdaysList({ view }: { view: BirthdaysView }) {
   return (
     <ul aria-label="Cumplen esta semana" className="mt-2 flex flex-col gap-2">
       {view.customers.map((c) => (
-        <li key={c.id} className="border-line bg-card flex flex-col gap-2 rounded-xl border p-3">
+        <li key={c.id} className="border-line bg-card flex flex-col gap-2 rounded-md border p-3">
           <div>
             <p className="font-semibold">{c.name}</p>
             <p className="text-muted text-sm">{celebrationLabel(c.celebratesOn, view.today)}</p>

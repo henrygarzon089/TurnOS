@@ -39,7 +39,7 @@ function ActionForm({
   done,
   children,
   resetOnDone = true,
-  className = "border-line bg-card flex flex-col gap-3 rounded-xl border p-4",
+  className = "border-line bg-card flex flex-col gap-3 rounded-md border p-4",
 }: {
   action: (prev: ActionResult, fd: FormData) => Promise<ActionResult>;
   label: string;
@@ -84,7 +84,15 @@ function ActionForm({
   );
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <label className="flex flex-col gap-1 text-sm font-medium">
       {label}
@@ -148,7 +156,7 @@ export function InventoryMovements({
             role="tab"
             aria-selected={tab === t.id}
             onClick={() => setTab(t.id)}
-            className={`min-h-12 rounded-xl border px-2 text-sm font-semibold ${
+            className={`min-h-12 rounded-md border px-2 text-sm font-semibold ${
               tab === t.id ? "bg-ink text-card border-ink" : "border-line bg-card"
             }`}
           >
@@ -209,7 +217,13 @@ export function InventoryMovements({
               <input name="qty" inputMode="numeric" required className="input" />
             </Field>
             <Field label="Precio pagado por unidad" hint="Queda como precio del ítem.">
-              <input name="unitCost" inputMode="numeric" required placeholder="18.000" className="input" />
+              <input
+                name="unitCost"
+                inputMode="numeric"
+                required
+                placeholder="18.000"
+                className="input"
+              />
             </Field>
           </ActionForm>
         )}
@@ -275,12 +289,18 @@ export function YieldSuggestionForm({ s }: { s: YieldSuggestion }) {
       done="Rendimiento guardado."
     >
       <p className="text-sm">
-        <span className="font-semibold">{s.name}</span>: {s.services} servicios y {s.real_use} unidades en{" "}
-        {s.windows} conteos.
+        <span className="font-semibold">{s.name}</span>: {s.services} servicios y {s.real_use}{" "}
+        unidades en {s.windows} conteos.
       </p>
       <input type="hidden" name="itemId" value={s.item_id} />
       <Field label="Servicios por unidad">
-        <input name="servicesPerUnit" inputMode="numeric" required defaultValue={s.suggested} className="input" />
+        <input
+          name="servicesPerUnit"
+          inputMode="numeric"
+          required
+          defaultValue={s.suggested}
+          className="input"
+        />
       </Field>
     </ActionForm>
   );
@@ -316,7 +336,7 @@ export function InventoryItemForm({
           {(["internal", "sale"] as const).map((u) => (
             <label
               key={u}
-              className={`flex min-h-12 items-center justify-center rounded-xl border text-sm font-semibold ${
+              className={`flex min-h-12 items-center justify-center rounded-md border text-sm font-semibold ${
                 use === u ? "bg-ink text-card border-ink" : "border-line bg-card"
               }`}
             >
@@ -334,7 +354,12 @@ export function InventoryItemForm({
         </div>
       </fieldset>
       <Field label="Grupo">
-        <select name="group" required className="input" defaultValue={item?.group ?? (use === "sale" ? "for_sale" : "")}>
+        <select
+          name="group"
+          required
+          className="input"
+          defaultValue={item?.group ?? (use === "sale" ? "for_sale" : "")}
+        >
           <option value="" disabled>
             Escoge un grupo
           </option>
@@ -346,10 +371,22 @@ export function InventoryItemForm({
         </select>
       </Field>
       <Field label="Presentación" hint="Ej. Frasco 150 g, Caja 50 pares.">
-        <input name="presentation" required maxLength={60} defaultValue={item?.presentation} className="input" />
+        <input
+          name="presentation"
+          required
+          maxLength={60}
+          defaultValue={item?.presentation}
+          className="input"
+        />
       </Field>
       <Field label="Unidad de conteo" hint="Ej. frasco, caja, paquete.">
-        <input name="unitLabel" required maxLength={20} defaultValue={item?.unit_label} className="input" />
+        <input
+          name="unitLabel"
+          required
+          maxLength={20}
+          defaultValue={item?.unit_label}
+          className="input"
+        />
       </Field>
       <Field label="Precio por unidad">
         <input
@@ -361,19 +398,39 @@ export function InventoryItemForm({
         />
       </Field>
       <Field label="Proveedor (opcional)">
-        <input name="supplier" maxLength={60} defaultValue={item?.supplier ?? ""} className="input" />
+        <input
+          name="supplier"
+          maxLength={60}
+          defaultValue={item?.supplier ?? ""}
+          className="input"
+        />
       </Field>
       <div className="grid grid-cols-2 gap-2">
         <Field label="Mínimo en bodega">
-          <input name="minQty" inputMode="numeric" defaultValue={item?.min_qty ?? 0} className="input" />
+          <input
+            name="minQty"
+            inputMode="numeric"
+            defaultValue={item?.min_qty ?? 0}
+            className="input"
+          />
         </Field>
         <Field label="Máximo en bodega">
-          <input name="maxQty" inputMode="numeric" defaultValue={item?.max_qty ?? 0} className="input" />
+          <input
+            name="maxQty"
+            inputMode="numeric"
+            defaultValue={item?.max_qty ?? 0}
+            className="input"
+          />
         </Field>
       </div>
       {use === "internal" ? (
         <Field label="Dotación por estación" hint="0 = solo vive en bodega.">
-          <input name="stationQty" inputMode="numeric" defaultValue={item?.station_qty ?? 0} className="input" />
+          <input
+            name="stationQty"
+            inputMode="numeric"
+            defaultValue={item?.station_qty ?? 0}
+            className="input"
+          />
         </Field>
       ) : (
         <>
@@ -388,13 +445,23 @@ export function InventoryItemForm({
             </select>
           </Field>
           <Field label="Mínimo en vitrina">
-            <input name="shelfMin" inputMode="numeric" defaultValue={item?.shelf_min ?? ""} className="input" />
+            <input
+              name="shelfMin"
+              inputMode="numeric"
+              defaultValue={item?.shelf_min ?? ""}
+              className="input"
+            />
           </Field>
         </>
       )}
       {item && (
         <label className="flex min-h-12 items-center gap-3 text-sm font-semibold">
-          <input type="checkbox" name="inactive" defaultChecked={!item.is_active} className="h-6 w-6" />
+          <input
+            type="checkbox"
+            name="inactive"
+            defaultChecked={!item.is_active}
+            className="h-6 w-6"
+          />
           Desactivado (sale de la dotación, los conteos y la orden de compra)
         </label>
       )}
@@ -405,7 +472,9 @@ export function InventoryItemForm({
 /** REQ-073.1 servicios que gastan un insumo, con su rendimiento o "Midiendo". */
 export function ItemUsageForm({ item, catalog }: { item: CatalogItem; catalog: InventoryCatalog }) {
   const current = new Map(
-    catalog.usage.filter((u) => u.item_id === item.id).map((u) => [u.service_id, u.services_per_unit]),
+    catalog.usage
+      .filter((u) => u.item_id === item.id)
+      .map((u) => [u.service_id, u.services_per_unit]),
   );
   return (
     <ActionForm
@@ -418,8 +487,8 @@ export function ItemUsageForm({ item, catalog }: { item: CatalogItem; catalog: I
     >
       <input type="hidden" name="itemId" value={item.id} />
       <p className="text-muted text-sm">
-        Marca los servicios que lo gastan. Rendimiento = cuántos servicios alcanza una unidad; vacío =
-        &quot;Midiendo&quot;.
+        Marca los servicios que lo gastan. Rendimiento = cuántos servicios alcanza una unidad; vacío
+        = &quot;Midiendo&quot;.
       </p>
       <ul className="flex flex-col gap-2">
         {catalog.services.map((s) => (
@@ -528,11 +597,12 @@ export function CountForm({
           {state.lines.map((l) => (
             <li
               key={l.itemId}
-              className={`rounded-xl border p-3 text-sm ${l.alert ? "border-danger text-danger" : "border-line bg-card"}`}
+              className={`rounded-md border p-3 text-sm ${l.alert ? "border-danger text-danger" : "border-line bg-card"}`}
             >
               <p className="font-semibold">
                 {l.name}: {l.countedQty} {l.unitLabel}
-                {l.difference !== 0 && ` (diferencia ${l.difference > 0 ? "+" : ""}${l.difference})`}
+                {l.difference !== 0 &&
+                  ` (diferencia ${l.difference > 0 ? "+" : ""}${l.difference})`}
               </p>
               {l.realUse !== null && (
                 <p>
@@ -544,7 +614,10 @@ export function CountForm({
             </li>
           ))}
         </ul>
-        <button type="button" className="btn-secondary mt-3 w-full" onClick={() => {
+        <button
+          type="button"
+          className="btn-secondary mt-3 w-full"
+          onClick={() => {
             setState(undefined);
             router.refresh();
           }}
@@ -558,13 +631,18 @@ export function CountForm({
   return (
     <form onSubmit={onSubmit} aria-label="Conteo" className="mt-4 flex flex-col gap-3">
       <input type="hidden" name="locationId" value={locationId} />
-      {rows.length === 0 && <p className="text-muted text-sm">Este sitio no tiene ítems para contar.</p>}
+      {rows.length === 0 && (
+        <p className="text-muted text-sm">Este sitio no tiene ítems para contar.</p>
+      )}
       <ul className="flex flex-col gap-2">
         {rows.map((r) => {
           const value = counted[r.itemId] ?? "";
           const differs = value !== "" && /^\d+$/.test(value) && Number(value) !== r.systemQty;
           return (
-            <li key={r.itemId} className="border-line bg-card flex flex-col gap-2 rounded-xl border p-3">
+            <li
+              key={r.itemId}
+              className="border-line bg-card flex flex-col gap-2 rounded-md border p-3"
+            >
               <input type="hidden" name="itemId" value={r.itemId} />
               <div className="grid grid-cols-[1fr_6rem] items-center gap-2">
                 <label htmlFor={`counted-${r.itemId}`} className="text-sm">
@@ -584,7 +662,13 @@ export function CountForm({
                 />
               </div>
               {needsReason && differs && (
-                <select name={`reason:${r.itemId}`} required className="input" defaultValue="" aria-label={`Motivo de ${r.name}`}>
+                <select
+                  name={`reason:${r.itemId}`}
+                  required
+                  className="input"
+                  defaultValue=""
+                  aria-label={`Motivo de ${r.name}`}
+                >
                   <option value="" disabled>
                     Motivo de la diferencia
                   </option>
@@ -619,7 +703,7 @@ export function AlertPctForm({ pct }: { pct: number }) {
       pendingText="Guardando…"
       done="Alerta guardada."
       resetOnDone={false}
-      className="border-line bg-card mt-6 flex flex-col gap-3 rounded-xl border p-4"
+      className="border-line bg-card mt-6 flex flex-col gap-3 rounded-md border p-4"
     >
       <h2 className="text-lg font-semibold">Inventario</h2>
       <Field

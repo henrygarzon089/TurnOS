@@ -21,7 +21,7 @@ export default async function SupplyCostPage() {
         Suma de (precio por unidad ÷ rendimiento) de los insumos que gasta cada servicio.
       </p>
       {rows.length === 0 ? (
-        <p className="border-line bg-card mt-3 rounded-xl border p-4 text-sm">
+        <p className="border-line bg-card mt-3 rounded-md border p-4 text-sm">
           Ningún servicio tiene insumos todavía. Escógelos en el catálogo.
         </p>
       ) : (
@@ -29,11 +29,15 @@ export default async function SupplyCostPage() {
           {rows.map((r) => (
             <li
               key={r.service_id}
-              className="border-line bg-card flex min-h-12 items-center justify-between rounded-xl border px-4 py-2"
+              className="border-line bg-card flex min-h-12 items-center justify-between rounded-md border px-4 py-2"
             >
               <span>
                 {r.name}
-                {r.incomplete && <span className="text-muted block text-xs">Incompleto: hay insumos en Midiendo</span>}
+                {r.incomplete && (
+                  <span className="text-muted block text-xs">
+                    Incompleto: hay insumos en Midiendo
+                  </span>
+                )}
               </span>
               <span className="font-semibold tabular-nums">{formatCOP(r.cost)}</span>
             </li>
