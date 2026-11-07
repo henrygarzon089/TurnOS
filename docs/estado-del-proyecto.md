@@ -1,4 +1,4 @@
-# Estado del proyecto — traspaso (2026-11-04)
+# Estado del proyecto — traspaso (2026-11-07)
 
 Este documento resume la conversación en la que se construyó todo hasta aquí, para que cualquier
 persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `specs/`.
@@ -372,6 +372,22 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - Siguiente: T-131 (esqueletos del personal). Pendiente de Henry: revisar la cuota de Speed Insights en el plan de Vercel
   (T-132); confirmar la región de Supabase y de las funciones de Vercel (T-133).
 - ADR-043 aceptada; la aprobación del hito terminado será ADR-044 (reservado).
+
+### Hito 15 — inicio "Hoy" y menú del dueño (**spec aprobada**, ADR-046, 2026-11-06)
+
+- Spec en `main` (PR #114): REQ-076, REQ-077, design §21, T-150…T-154, sin migraciones. Sin código.
+- Se construye después de T-160 y T-161, ya con el sistema visual nuevo (PA-H16-1).
+
+### Hito 16 — sistema visual nuevo (**spec aprobada**, ADR-047, 2026-11-07)
+
+- Diseño: lienzo "TurnOS — Rediseño" (https://claude.ai/artifact/VK8TXA9Aw9tnZMnrXZ4kPU, 20
+  tableros, versión 22 tras la revisión visual) hecho con `docs/diseno/prompt-diseno.md`; capturas en
+  `docs/diseno/tableros/`.
+- Spec aprobada por Henry (rama `claude/h16-spec-rediseno`): REQ-078 (15 criterios), design §22,
+  T-160…T-168, sin migraciones. PA-H16-1…3 con la recomendación. Sin código todavía.
+- Orden: T-160 (tokens, `accent` → `brand` antes de volver rojo a `accent`; `pnpm lint:design`) →
+  T-161 (componentes base) → Hito 15 → T-162…T-168 (cliente, barbero, acceso, dueño, validación).
+- La aprobación del hito terminado será un ADR nuevo.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

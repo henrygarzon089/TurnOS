@@ -804,7 +804,7 @@
   libre después de ADR-045.
 
 ## ADR-047 · Sistema visual nuevo (Hito 16)
-- Estado: **propuesta** (2026-11-07). Espera aprobación de Henry y respuesta a PA-H16-1…PA-H16-3.
+- Estado: **aceptada** (Henry, 2026-11-07). PA-H16-1…PA-H16-3 resueltas con la recomendación.
 - Contexto: las pantallas usan un azul de Tailwind (#1d4ed8) como color de acción, esquinas muy
   redondeadas y estados de carga y error distintos en cada módulo. El brief de
   `docs/diseno/prompt-diseno.md` produjo un diseño completo en el lienzo "TurnOS — Rediseño"
@@ -836,5 +836,5 @@
   actual, se verifica que nada cambió a la vista, y solo después se redefinen los valores y `accent`
   pasa a ser el rojo. Así ningún botón queda rojo por error.
 - Consecuencias: Hito 16 con REQ-078, diseño en `design.md` §22. Tareas T-160…T-168 en `tasks.md`.
-  El Hito 15 se construye ya con el sistema nuevo (PA-H16-1). Sin migraciones de base de datos.
+  El Hito 15 se construye ya con el sistema nuevo, después de T-160 y T-161 (PA-H16-1). Sin migraciones de base de datos.
   Número: ADR-044 sigue reservado para la aprobación del Hito 14; ADR-047 es el primero libre.

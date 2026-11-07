@@ -1520,7 +1520,7 @@ configurar qué bloques ve el dueño.
 
 ## 5m. Hito 16 — Sistema visual nuevo
 
-> Estado: **PROPUESTA** (2026-11-07). Ver ADR-047. Sale del lienzo "TurnOS — Rediseño"
+> Estado: **APROBADA** (Henry, 2026-11-07). Ver ADR-047. PA-H16-1…3 resueltas con la recomendación. Sale del lienzo "TurnOS — Rediseño"
 > (https://claude.ai/artifact/VK8TXA9Aw9tnZMnrXZ4kPU), hecho con `docs/diseno/prompt-diseno.md`.
 > Cambia cómo se ve la app, no qué hace: mismos flujos, mismas funciones, sin migraciones.
 
@@ -1569,12 +1569,12 @@ pantallas públicas sin celulares (REQ-013.2) y los textos en español colombian
 
 Preguntas abiertas del Hito 16:
 - **PA-H16-1**: ¿el Hito 15 ("Hoy" y menú) se construye después de T-160 y T-161 (tokens y
-  componentes nuevos), para no hacer "Hoy" dos veces? Recomendación: sí.
+  componentes nuevos), para no hacer "Hoy" dos veces? **Resuelta (Henry, 2026-11-07): sí.**
 - **PA-H16-2**: el número enorme de "Mi turno" (120 px) y la pantalla roja de "¡Es tu turno!" a
   pantalla casi completa, ¿se quedan así o quieres probarlos primero con un cliente en Filo?
-  Recomendación: construirlos y validarlos en la prueba de T-168.
+  **Resuelta (Henry, 2026-11-07): se construyen así y se validan en la prueba de T-168.**
 - **PA-H16-3**: ¿se guardan en el repo (`docs/diseno/tableros/`) capturas PNG de los 20 tableros para
-  que el diseño no dependa del enlace del lienzo? Recomendación: sí, ≈ 6 MB.
+  que el diseño no dependa del enlace del lienzo? **Resuelta (Henry, 2026-11-07): sí.**
 
 Fuera de alcance del Hito 16: cambiar flujos, textos de negocio o funciones; modo oscuro; logo o
 marca propia de TurnOS más allá del punto rojo y el nombre; ilustraciones; animaciones de celebración.

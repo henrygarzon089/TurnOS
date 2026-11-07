@@ -2603,8 +2603,9 @@ aparece.
 
 ## 22. Hito 16 — Sistema visual nuevo (REQ-078, ADR-047)
 
-> Propuesta (2026-11-07). Fuente visual: lienzo "TurnOS — Rediseño"
-> (https://claude.ai/artifact/VK8TXA9Aw9tnZMnrXZ4kPU). Sin migraciones ni cambios de flujo.
+> Aprobado por Henry (2026-11-07, ADR-047). Fuente visual: lienzo "TurnOS — Rediseño"
+> (https://claude.ai/artifact/VK8TXA9Aw9tnZMnrXZ4kPU) y su copia en `docs/diseno/tableros/` (una
+> captura PNG por tablero, PA-H16-3). Sin migraciones ni cambios de flujo.
 
 ### 22.1 Tokens (`src/app/globals.css`, `@theme`) (REQ-078.1, REQ-078.2)
 | Token | Valor | Uso | Contraste |

@@ -31,7 +31,7 @@
 | H13 | Inventario de insumos y vitrina (ADR-039) | T-120…T-129 | REQ-070…REQ-074 |
 | H14 | Rendimiento percibido y medición (ADR-043) | T-130…T-133 | REQ-075 |
 | H15 | Inicio "Hoy" y menú del dueño (ADR-046) | T-150…T-154 | REQ-076, REQ-077 |
-| H16 | Sistema visual nuevo (ADR-047, propuesta) | T-160…T-168 | REQ-078 |
+| H16 | Sistema visual nuevo (ADR-047) | T-160…T-168 | REQ-078 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -1878,6 +1878,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 > REQ-076, REQ-077 y ADR-046 aprobados por Henry (2026-11-06). Diseño en `design.md` §21. Sin
 > migraciones. PA-H15-1: la caja se compara con el día completo de la semana pasada.
+> Se construye después de T-160 y T-161, ya con el sistema visual nuevo (PA-H16-1, ADR-047).
 
 ### [ ] T-150 · Menú del dueño por grupos
 - REQ: REQ-077.1, REQ-077.2, REQ-077.3, REQ-077.4, REQ-077.5
@@ -1923,10 +1924,10 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ## Hito 16 — Sistema visual nuevo (ADR-047)
 
-> **Propuesta** (2026-11-07): espera aprobación de REQ-078 y ADR-047 y respuesta a PA-H16-1…3.
-> Diseño en `design.md` §22; fuente visual en el lienzo "TurnOS — Rediseño". Sin migraciones. Cada
+> REQ-078 y ADR-047 aprobados por Henry (2026-11-07). Diseño en `design.md` §22; fuente visual en el
+> lienzo "TurnOS — Rediseño" y en `docs/diseno/tableros/`. Sin migraciones. Cada
 > tarea es un PR; en el PR va la captura de cada ruta tocada junto a su tablero.
-> Si se aprueba PA-H16-1, el orden es T-160 → T-161 → Hito 15 (T-150…T-154) → T-162…T-168.
+> Orden (PA-H16-1): T-160 → T-161 → Hito 15 (T-150…T-154) → T-162…T-168.
 
 ### [ ] T-160 · Tokens nuevos sin sorpresas
 - REQ: REQ-078.1, REQ-078.2, REQ-078.14
@@ -2020,7 +2021,6 @@ flowchart LR
   T097 --> T110 --> T111 --> T112 --> T113 --> T114 --> T115 --> T116 --> T117 --> T118 --> T119
   T129 --> T130 --> T131 --> T132 --> T133
   T119 --> T140
-  T133 --> T150 --> T151 --> T152 --> T153 --> T154
-  T133 --> T160 --> T161 --> T162 --> T163 --> T164 --> T165 --> T166 --> T167 --> T168
-  T161 -.-> T150
+  T133 --> T160 --> T161 --> T150 --> T151 --> T152 --> T153 --> T154
+  T154 --> T162 --> T163 --> T164 --> T165 --> T166 --> T167 --> T168
 ```

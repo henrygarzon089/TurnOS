@@ -27,8 +27,12 @@ comisión, venta de helados y bebidas). Dueño del producto: Henry Garzón.
 Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 …'`.
 `scripts/traceability.ts` las encuentra así. `--hito=N` falla si falta alguna.
 
-## Estado actual (2026-10-24)
+## Estado actual (2026-11-07)
 
+- **Hito 16 (sistema visual nuevo, REQ-078, ADR-047)** spec aprobada: tokens nuevos (acción en
+  `brand` azul marino, `accent` rojo solo para "atención ahora"), componentes base y cada superficie
+  en su PR (T-160…T-168). Diseño en el lienzo y en `docs/diseno/tableros/`. Va primero T-160 y
+  T-161, luego el Hito 15 ("Hoy", spec aprobada, ADR-046), luego el resto.
 - **Hito 8 (citas a hora fija, REQ-049…054, ADR-033)** construido, falta aprobación de Henry
   (ADR-035): reservar, "Mi cita", citas en la fila y agenda; migraciones 0045–0049 (se suben con
   `supabase db push --include-all`). Falta encender citas en Filo y la prueba real.
