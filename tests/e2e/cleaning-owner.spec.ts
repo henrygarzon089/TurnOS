@@ -4,7 +4,9 @@ import { adminDb, loginAsBarber, loginAsOwner, SEED } from "./helpers";
 /** T-105 · REQ-060 y REQ-062: el dueño enciende la limpieza, edita listas y ve su panel. */
 
 const dayBogota = (offset = 0) =>
-  new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" }).format(new Date(Date.now() + offset * 86_400_000));
+  new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" }).format(
+    new Date(Date.now() + offset * 86_400_000),
+  );
 
 function monday(day: string): string {
   const d = new Date(`${day}T00:00:00Z`);
@@ -24,7 +26,10 @@ async function wipeCleaning() {
   await db.from("cleaning_records").delete().eq("business_id", biz);
   await db.from("cleaning_missed_acks").delete().eq("business_id", biz);
   await db.from("cleaning_checklist_items").delete().eq("business_id", biz);
-  await db.from("businesses").update({ cleaning_enabled: false, cleaning_enabled_on: null }).eq("id", biz);
+  await db
+    .from("businesses")
+    .update({ cleaning_enabled: false, cleaning_enabled_on: null })
+    .eq("id", biz);
 }
 
 test.describe("REQ-060 / REQ-062 Limpieza del dueño", () => {
@@ -35,7 +40,9 @@ test.describe("REQ-060 / REQ-062 Limpieza del dueño", () => {
     await adminDb().rpc("cleaning_seed_lists", { p_business_id: await bizId() });
   });
 
-  test("REQ-060.1 la enciende, REQ-060.2 aparecen las listas y REQ-060.3 edita la profunda", async ({ page }) => {
+  test("REQ-060.1 la enciende, REQ-060.2 aparecen las listas y REQ-060.3 edita la profunda", async ({
+    page,
+  }) => {
     await loginAsOwner(page);
     // REQ-060.1 apagada: el panel no muestra limpieza
     await expect(page.getByRole("region", { name: "Limpieza" })).toHaveCount(0);
@@ -49,9 +56,9 @@ test.describe("REQ-060 / REQ-062 Limpieza del dueño", () => {
     const opening = page.getByRole("region", { name: "Apertura" });
     await expect(opening.getByLabel("Punto 1")).toHaveValue("Ventilar");
     await expect(opening.getByRole("textbox", { name: /^Punto/ })).toHaveCount(6);
-    await expect(page.getByRole("region", { name: "Entre clientes (para la revisión)" }).getByLabel("Punto 3")).toHaveValue(
-      "Máquinas con Cool Care",
-    );
+    await expect(
+      page.getByRole("region", { name: "Entre clientes (para la revisión)" }).getByLabel("Punto 3"),
+    ).toHaveValue("Máquinas con Cool Care");
 
     const deep = page.getByRole("region", { name: "Limpieza profunda" });
     await deep.getByLabel("Punto 1").fill("Sillas y mecanismos");
@@ -81,10 +88,18 @@ test.describe("REQ-060 / REQ-062 Limpieza del dueño", () => {
   }) => {
     const db = adminDb();
     const biz = await bizId();
-    await db.from("businesses").update({ cleaning_enabled: true, cleaning_enabled_on: dayBogota(-1) }).eq("id", biz);
+    await db
+      .from("businesses")
+      .update({ cleaning_enabled: true, cleaning_enabled_on: dayBogota(-1) })
+      .eq("id", biz);
     await db.rpc("cleaning_seed_lists", { p_business_id: biz });
     const yesterday = dayBogota(-1);
-    const { data: owner } = await db.from("memberships").select("user_id").eq("business_id", biz).eq("role", "owner").single();
+    const { data: owner } = await db
+      .from("memberships")
+      .select("user_id")
+      .eq("business_id", biz)
+      .eq("role", "owner")
+      .single();
     // Ayer: apertura incompleta y sin cierre
     await db.from("cleaning_records").insert({
       business_id: biz,
@@ -103,7 +118,15 @@ test.describe("REQ-060 / REQ-062 Limpieza del dueño", () => {
     await expect(card).toContainText("Ventilar: Llovía");
     await expect(card).toContainText("Cierre sin registrar");
     await expect(card).toContainText("Profunda pendiente esta semana");
-    await expect(page.getByRole("link", { name: "Limpieza", exact: true })).toBeVisible();
+    // Con el módulo encendido, Limpieza está en el menú del dueño (grupo Local, REQ-077.3)
+    await page
+      .getByRole("navigation", { name: "Accesos rápidos" })
+      .getByRole("button", { name: "Más" })
+      .click();
+    const menu = page.getByRole("dialog", { name: "Todo el menú" });
+    await expect(menu.getByRole("link", { name: "Limpieza", exact: true })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(menu).toBeHidden();
 
     await card.getByRole("button", { name: "Visto" }).click();
     await card.getByLabel("Nota (opcional)").fill("Se fue la luz");
