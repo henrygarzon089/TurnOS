@@ -129,7 +129,7 @@ export function OwnerQueue({
                   ),
                 )
               }
-              className={`min-h-10 rounded-full border px-3 text-sm font-medium ${b.status === "off" ? "border-line text-muted" : b.status === "paused" ? "border-amber-400 bg-amber-50" : b.status === "busy" ? "border-accent bg-blue-50" : "border-ok bg-green-50"}`}
+              className={`min-h-10 rounded-full border px-3 text-sm font-medium ${b.status === "off" ? "border-line text-muted" : b.status === "paused" ? "border-amber-400 bg-amber-50" : b.status === "busy" ? "border-brand bg-blue-50" : "border-ok bg-green-50"}`}
               title="Tocar para marcar presente / ausente"
             >
               {b.name} · {STATUS[b.status]}

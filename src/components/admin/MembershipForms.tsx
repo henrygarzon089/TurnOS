@@ -404,7 +404,7 @@ export function FamilyCard({ family, plan }: { family: FamilyRow; plan: Membersh
               <p className="font-medium">
                 {m.name}
                 {m.isHolder && (
-                  <span className="bg-accent text-card ml-2 rounded-full px-2 py-0.5 text-xs">
+                  <span className="bg-brand text-card ml-2 rounded-full px-2 py-0.5 text-xs">
                     Titular
                   </span>
                 )}

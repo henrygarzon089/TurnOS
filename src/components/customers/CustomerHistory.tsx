@@ -6,7 +6,7 @@ const STATUS_STYLE: Record<string, string> = {
   Terminado: "text-ok",
   "No llegó": "text-danger",
   Cancelado: "text-muted",
-  "En la fila": "text-accent",
+  "En la fila": "text-brand",
 };
 
 /** REQ-018.2 historial: fecha, servicio, barbero, valor, medio de pago (H3) y estado. */

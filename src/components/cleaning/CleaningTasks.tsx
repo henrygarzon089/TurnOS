@@ -252,7 +252,7 @@ function TaskCard({ task, businessId }: { task: CleaningTask; businessId: string
                 {r.note && <span className="text-muted"> · {r.note}</span>}
               </span>
               {r.attachmentPath && (
-                <button type="button" className="text-accent min-h-10 px-2 font-semibold" onClick={() => void openAttachment(r.attachmentPath!)}>
+                <button type="button" className="text-brand min-h-10 px-2 font-semibold" onClick={() => void openAttachment(r.attachmentPath!)}>
                   Ver adjunto
                 </button>
               )}

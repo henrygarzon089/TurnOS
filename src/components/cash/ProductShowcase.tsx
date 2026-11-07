@@ -48,7 +48,7 @@ export function ProductShowcase({
               aria-selected={tab === c}
               onClick={() => setTab(c)}
               className={`min-h-12 shrink-0 rounded-full border px-4 text-sm font-semibold ${
-                tab === c ? "bg-accent text-accent-ink border-accent" : "border-line bg-card"
+                tab === c ? "bg-brand text-brand-ink border-brand" : "border-line bg-card"
               }`}
             >
               {c ?? "Todos"}
@@ -63,7 +63,7 @@ export function ProductShowcase({
             <div
               key={p.id}
               className={`flex flex-col gap-1 rounded-xl border p-2 ${
-                n > 0 ? "border-accent" : "border-line"
+                n > 0 ? "border-brand" : "border-line"
               }`}
             >
               {p.photoPath ? (

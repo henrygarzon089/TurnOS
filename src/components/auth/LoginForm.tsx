@@ -96,7 +96,7 @@ export function LoginForm({ initialTab, volver }: { initialTab: Tab; volver?: st
           <button type="submit" className="btn-primary" disabled={ownerPending}>
             {ownerPending ? "Entrando…" : "Entrar"}
           </button>
-          <Link href="/crear-negocio" className="text-accent text-center text-sm font-medium">
+          <Link href="/crear-negocio" className="text-brand text-center text-sm font-medium">
             ¿Nuevo negocio? Crear mi cuenta
           </Link>
         </form>
@@ -121,7 +121,7 @@ function TabButton({
       aria-selected={active}
       onClick={onClick}
       className={`min-h-12 flex-1 rounded-lg text-base font-semibold ${
-        active ? "bg-accent text-accent-ink" : "text-muted"
+        active ? "bg-brand text-brand-ink" : "text-muted"
       }`}
     >
       {children}

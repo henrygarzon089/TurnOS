@@ -28,7 +28,7 @@ export function StampCard({
             <li
               key={i}
               className={`h-5 w-5 rounded-full border-2 ${
-                i < filled ? "border-accent bg-accent" : "border-line bg-surface"
+                i < filled ? "border-brand bg-brand" : "border-line bg-surface"
               }`}
             />
           ))}

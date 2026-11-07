@@ -27,7 +27,7 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
 
   return (
     <main className="flex flex-col gap-4 py-4">
-      <Link href="/app/clientes" className="text-accent min-h-10 text-sm font-medium">
+      <Link href="/app/clientes" className="text-brand min-h-10 text-sm font-medium">
         ← Clientes
       </Link>
       <header>

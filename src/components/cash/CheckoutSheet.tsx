@@ -366,7 +366,7 @@ export function CheckoutSheet({
                   aria-checked={on}
                   onClick={() => setSeller(o.value)}
                   className={`min-h-12 rounded-xl border px-2 font-semibold ${
-                    on ? "bg-accent text-accent-ink border-accent" : "border-line bg-card"
+                    on ? "bg-brand text-brand-ink border-brand" : "border-line bg-card"
                   }`}
                 >
                   {o.label}
@@ -602,7 +602,7 @@ export function CheckoutSheet({
               onClick={() => setMethod(m.id)}
               className={`min-h-12 rounded-xl border font-semibold ${
                 m.id === "gift_card" ? "col-span-2" : ""
-              } ${method === m.id ? "bg-accent text-accent-ink border-accent" : "border-line bg-card"}`}
+              } ${method === m.id ? "bg-brand text-brand-ink border-brand" : "border-line bg-card"}`}
             >
               {m.label}
             </button>
@@ -664,7 +664,7 @@ export function CheckoutSheet({
                         onClick={() => setRestMethod(m.id)}
                         className={`min-h-12 rounded-xl border font-semibold ${
                           restMethod === m.id
-                            ? "bg-accent text-accent-ink border-accent"
+                            ? "bg-brand text-brand-ink border-brand"
                             : "border-line bg-card"
                         }`}
                       >

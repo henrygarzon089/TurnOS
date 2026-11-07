@@ -41,7 +41,7 @@ export function CleaningOwnerCard({ summary }: { summary: Extract<OwnerSummary, 
     <section aria-label="Limpieza" className="border-line bg-card mb-3 rounded-xl border p-3">
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-semibold">Limpieza</h2>
-        <Link href="/admin/limpieza" className="text-accent min-h-10 px-2 py-2 text-sm font-semibold">
+        <Link href="/admin/limpieza" className="text-brand min-h-10 px-2 py-2 text-sm font-semibold">
           Abrir
         </Link>
       </div>

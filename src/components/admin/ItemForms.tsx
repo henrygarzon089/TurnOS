@@ -222,7 +222,7 @@ function ProductPhoto({
           />
           <button
             type="button"
-            className="text-accent min-h-12 text-sm underline"
+            className="text-brand min-h-12 text-sm underline"
             onClick={() => onChange(null)}
           >
             Quitar foto

@@ -294,7 +294,7 @@ function CurrentCard({
 
   return (
     <article
-      className={`mt-1 rounded-2xl border-2 p-4 ${overGrace ? "border-amber-400 bg-amber-50" : "border-accent bg-card"}`}
+      className={`mt-1 rounded-2xl border-2 p-4 ${overGrace ? "border-amber-400 bg-amber-50" : "border-brand bg-card"}`}
       aria-label={`Turno actual ${ticket.customerName}`}
     >
       <p className="text-lg font-bold">
@@ -428,7 +428,7 @@ function WaitingRow({
               ticket.notifiedAt
                 ? "text-ok bg-green-50"
                 : shouldNotify
-                  ? "bg-accent text-accent-ink"
+                  ? "bg-brand text-brand-ink"
                   : "border-line border"
             }`}
           >

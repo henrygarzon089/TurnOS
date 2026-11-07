@@ -118,7 +118,7 @@ export function AppointmentForm({ business, info, today }: Props) {
             <label
               key={s.id}
               className={`flex min-h-12 items-center justify-between gap-3 rounded-xl border px-4 ${
-                s.id === serviceId ? "border-accent bg-card" : "border-line bg-card"
+                s.id === serviceId ? "border-brand bg-card" : "border-line bg-card"
               }`}
             >
               <span className="flex items-center gap-3">
@@ -215,7 +215,7 @@ export function AppointmentForm({ business, info, today }: Props) {
       {alreadyAccepted ? (
         <p className="text-muted text-sm">
           Ya aceptaste nuestra política de datos.{" "}
-          <Link href={`/${business.slug}/privacidad`} className="text-accent underline">
+          <Link href={`/${business.slug}/privacidad`} className="text-brand underline">
             Leerla
           </Link>
         </p>
@@ -233,7 +233,7 @@ export function AppointmentForm({ business, info, today }: Props) {
             cita y contactarme por WhatsApp (Ley 1581 de 2012).{" "}
             <Link
               href={`/${business.slug}/privacidad`}
-              className="text-accent underline"
+              className="text-brand underline"
               target="_blank"
             >
               Ver aviso completo

@@ -85,7 +85,7 @@ export function MyTicket({
         </p>
         <h1 className="text-2xl font-bold">Hola, {ticket.customerName.split(" ")[0]}</h1>
         {ticket.scheduledAt && ticket.status === "waiting" && (
-          <p className="bg-accent text-accent-ink mt-2 inline-block rounded-full px-3 py-1 text-sm font-semibold">
+          <p className="bg-brand text-brand-ink mt-2 inline-block rounded-full px-3 py-1 text-sm font-semibold">
             {appointmentTag(ticket.scheduledAt)}
           </p>
         )}
@@ -222,7 +222,7 @@ function Courtesy({
         {canChange && (
           <button
             type="button"
-            className="text-accent min-h-12 shrink-0 underline"
+            className="text-brand min-h-12 shrink-0 underline"
             onClick={toggle}
           >
             {courtesy ? "Cambiar bebida" : "Escoger bebida"}
@@ -300,7 +300,7 @@ function WhatsappOptOut({
     <div className="mt-2 text-sm">
       <button
         type="button"
-        className="text-accent min-h-12 underline"
+        className="text-brand min-h-12 underline"
         onClick={optOut}
         disabled={saving}
       >
