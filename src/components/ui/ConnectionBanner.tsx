@@ -1,17 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { formatTimeBogota } from "@/lib/domain/time";
+import { Icon } from "./Icon";
 
-/** REQ-011.1: franja visible mientras no hay conexión con el servidor en tiempo real. */
-export function ConnectionBanner({ online }: { online: boolean }) {
+/**
+ * REQ-011.1, REQ-078.10: franja visible mientras no hay conexión con el servidor en tiempo real.
+ * Con `lastSeen` dice desde qué hora es lo que se ve; sin ella, que sigue intentando.
+ */
+export function ConnectionBanner({
+  online,
+  lastSeen,
+}: {
+  online: boolean;
+  lastSeen?: Date | null;
+}) {
   if (online) return null;
   return (
     <div
       role="status"
       aria-live="polite"
-      className="bg-warn text-card sticky top-0 z-20 px-4 py-2 text-center text-sm font-semibold"
+      className="bg-warn-soft text-warn border-warn/30 sticky top-0 z-20 flex items-center gap-2 border-b px-4 py-2 text-sm font-semibold"
     >
-      Sin conexión. Reintentando…
+      <Icon name="offline" className="size-4" />
+      <span>
+        {lastSeen
+          ? `Sin conexión. Mostrando lo último que vimos · ${formatTimeBogota(lastSeen)}`
+          : "Sin conexión. Reintentando…"}
+      </span>
     </div>
   );
 }

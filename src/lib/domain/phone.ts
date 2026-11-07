@@ -27,6 +27,12 @@ export function formatPhoneCO(e164: string): string {
   return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}`;
 }
 
+/** Mientras se escribe: solo dígitos, máximo 10, en grupos `300 100 0001` (design §22.3). */
+export function formatPhoneTyping(raw: string): string {
+  const d = raw.replace(/\D/g, "").slice(0, 10);
+  return [d.slice(0, 3), d.slice(3, 6), d.slice(6)].filter(Boolean).join(" ");
+}
+
 /** Para pantallas públicas: nunca el número completo (P6). */
 export function maskPhone(e164: string): string {
   return `••• ••• ${e164.slice(-4)}`;

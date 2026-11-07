@@ -390,7 +390,13 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - T-160 hecha (rama `claude/t-160-tokens`, 2026-11-07): tokens nuevos en `globals.css`, `accent` → `brand`
   sin cambio visual y luego los valores del diseño; `pnpm lint:design` en CI; prueba de contraste;
   esquinas 5/8/10/20. Revisado con Supabase local (`.claude/launch.json` → `turnos-local`, puerto
-  3001): ningún botón de acción quedó rojo. Siguiente: T-161 (componentes base).
+  3001): ningún botón de acción quedó rojo.
+- T-161 hecha (rama `claude/t-161-componentes`, encima de T-160, 2026-11-07): `Button`
+  (`onAction` con candado contra doble envío, `SubmitButton`), `Field`, `PhoneField`,
+  `MoneyField`, `PinField`, `OptionList`, `StatusChip`, `Sheet`/`Dialog`, `Toast`, `FlashRow`,
+  `EmptyState`/`ErrorState`, `Icon`; `Skeleton` y `ConnectionBanner` reescritos; movimiento en
+  `globals.css`. Muestra en `/diseno` (solo desarrollo). Siguiente: Hito 15 (T-150, menú del
+  dueño) ya con estos componentes (PA-H16-1).
 - La aprobación del hito terminado será un ADR nuevo.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
