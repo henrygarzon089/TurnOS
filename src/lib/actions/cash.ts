@@ -631,6 +631,40 @@ export type WeekSummary = {
   staffPurchases: { count: number; total: number; discount: number };
 };
 
+/**
+ * REQ-076.9 / ADR-048 total por día de esta semana (lunes a hoy) para las barras de "Hoy": el
+ * `total` de `cash_day_summary` de cada día, la misma cifra de la Caja; su suma es el "Vendido" de
+ * Semana. Por día con la función y no con un `select` de ventas, que corta en 1000 filas.
+ */
+export async function getWeekDailyTotals(): Promise<{
+  weekStart: string;
+  today: string;
+  totals: Record<string, number>;
+} | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  const supabase = await createSupabaseServerClient();
+  const weekStart = bogotaWeekStart();
+  const today = businessDayBogota();
+  const days: string[] = [];
+  for (const d = new Date(`${weekStart}T00:00:00Z`); ; d.setUTCDate(d.getUTCDate() + 1)) {
+    const day = d.toISOString().slice(0, 10);
+    if (day > today) break;
+    days.push(day);
+  }
+  const results = await Promise.all(
+    days.map((day) =>
+      supabase.rpc("cash_day_summary", { p_business_id: session.business.id, p_day: day }),
+    ),
+  );
+  if (results.some((r) => r.error || !r.data)) return null;
+  const totals: Record<string, number> = {};
+  days.forEach((day, i) => {
+    totals[day] = (results[i].data as CashDaySummary).total;
+  });
+  return { weekStart, today, totals };
+}
+
 /** REQ-028.1–28.4 resumen de la semana (lunes a domingo) y la anterior para comparar. */
 export async function getWeekSummary(
   weekStart?: string,

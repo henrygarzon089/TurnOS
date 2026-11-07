@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { adminDb, loginAsBarber, loginOwnerToToday, SEED } from "./helpers";
 
-/** T-151/T-152 · "Hoy" del dueño (REQ-076.1–076.7, 076.10, 076.11, REQ-077.6; design §21). */
+/** T-151…T-153 · "Hoy" del dueño (REQ-076.1–076.11, REQ-077.6; design §21). */
 
 async function seedIds() {
   const db = adminDb();
@@ -196,5 +196,64 @@ test.describe("Hoy: alertas, citas y recordar", () => {
       "/admin/recordar",
     );
     await expect(remind).not.toContainText(/\+57|3\d{2} ?\d{3} ?\d{4}/);
+  });
+});
+
+test.describe("Hoy: accesos directos y semana", () => {
+  test("REQ-076.8 los accesos llevan a Fila, a Cerrar caja y abren Nueva venta", async ({
+    page,
+  }) => {
+    await loginOwnerToToday(page);
+    const shortcuts = page.getByRole("group", { name: "Accesos directos" });
+    await shortcuts.getByRole("button", { name: "+ Nueva venta" }).click();
+    await expect(page.getByRole("dialog", { name: "Nueva venta" })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await page.reload(); // cierra la hoja sin depender de cómo se cierra
+
+    await shortcuts.getByRole("link", { name: "Fila" }).click();
+    await expect(page).toHaveURL(/\/admin\/fila$/, { timeout: 15_000 });
+    await page.goBack();
+    await expect(page.getByRole("heading", { name: "Hoy", level: 1 })).toBeVisible();
+    await shortcuts.getByRole("link", { name: "Cerrar caja" }).click();
+    await expect(page).toHaveURL(/\/admin\/caja$/, { timeout: 15_000 });
+  });
+
+  test("REQ-076.9 en el celular no aparece la semana", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "solo celular");
+    await loginOwnerToToday(page);
+    await expect(page.getByRole("region", { name: "Caja de hoy" })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Ingresos de la semana" })).toBeHidden();
+  });
+
+  test("REQ-076.9 en escritorio, la barra de hoy es la Caja de hoy y la suma es el Vendido de Semana", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(isMobile, "solo escritorio (1280 px)");
+    test.setTimeout(90_000);
+    await loginOwnerToToday(page);
+    const week = page.getByRole("region", { name: "Ingresos de la semana" });
+    await expect(week).toBeVisible();
+    const todayBar = week.locator("[data-today]");
+    // Otras pruebas venden a la vez: se comparan las dos cifras hasta que coincidan
+    await expect
+      .poll(
+        async () =>
+          Number(await todayBar.getAttribute("data-total")) === (await pesos(page, "today-total")),
+      )
+      .toBe(true);
+    await expect
+      .poll(
+        async () => {
+          await page.goto("/admin");
+          const sum = await pesos(page, "today-week-sum");
+          await page.goto("/admin/semana");
+          // la cifra en negrita de "Vendido" (la tarjeta también trae el % de cambio)
+          const sold = await page.getByTestId("sold").locator("p").nth(1).textContent();
+          return sum === Number((sold ?? "").replace(/[^\d]/g, ""));
+        },
+        { timeout: 60_000 },
+      )
+      .toBe(true);
   });
 });

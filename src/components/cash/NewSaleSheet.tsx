@@ -3,9 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckoutSheet } from "@/components/cash/CheckoutSheet";
+import { Toast } from "@/components/ui/Toast";
 
-/** REQ-023.4 / REQ-024.2 "Nueva venta": productos o servicios sin turno. */
-export function NewSaleButton({ onSaved }: { onSaved?: () => void }) {
+/**
+ * REQ-023.4 / REQ-024.2 "Nueva venta": productos o servicios sin turno. En "Hoy" (REQ-076.8) va
+ * como botón principal y el aviso sale como `Toast`, porque el botón vive en una barra fija.
+ */
+export function NewSaleButton({
+  onSaved,
+  className = "btn-secondary",
+  toast = false,
+}: {
+  onSaved?: () => void;
+  className?: string;
+  toast?: boolean;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -13,7 +25,7 @@ export function NewSaleButton({ onSaved }: { onSaved?: () => void }) {
     <>
       <button
         type="button"
-        className="btn-secondary"
+        className={className}
         onClick={() => {
           setNotice(null);
           setOpen(true);
@@ -21,7 +33,8 @@ export function NewSaleButton({ onSaved }: { onSaved?: () => void }) {
       >
         + Nueva venta
       </button>
-      {notice && (
+      {notice && toast && <Toast onClose={() => setNotice(null)}>{notice}</Toast>}
+      {notice && !toast && (
         <p role="status" className="text-ok bg-ok-soft mt-2 rounded-md p-3 text-sm font-medium">
           {notice}
         </p>

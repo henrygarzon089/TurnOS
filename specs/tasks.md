@@ -1930,7 +1930,16 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: pruebas del orden de alertas, de módulo apagado sin alertas y de "Todo en orden"; con el
   seed se ven las alertas reales y la insignia cuenta lo mismo; ningún bloque muestra celulares.
 
-### [ ] T-153 · Accesos directos y semana en escritorio
+### [x] T-153 · Accesos directos y semana en escritorio
+- Nota (2026-11-07): REQ-076.9 se corrigió al empezar (ADR-048): `weekly_summary.days` solo trae
+  ocupación, así que las barras salen de `getWeekDailyTotals()` (`cash_day_summary` de cada día,
+  lunes a hoy, en paralelo; sin migración). La barra de hoy es la Caja de hoy y la suma es el
+  "Vendido" de Semana. Lógica pura en `today.ts` (`buildWeekBars`, `barAmount`). En escritorio la
+  semana ocupa 8 columnas si citas está apagado (`peer-empty`); angosta, las cifras van en miles con
+  la nota "Cifras en miles" (container query). "Nueva venta" reusa `NewSaleButton` (nuevas props
+  `className` y `toast`) y abre la hoja ahí mismo; "Fila" y "Cerrar caja" son enlaces. En el celular
+  los tres van en una barra fija encima del menú. La rejilla de escritorio quedó como dice §21.1
+  (recordar bajo las alertas). El proyecto E2E `escritorio` ahora también corre `today.spec.ts`.
 - REQ: REQ-076.8, REQ-076.9
 - Archivos: `src/components/admin/today/{TodayShortcuts,TodayWeek}.tsx`, E2E en `today.spec.ts`
 - Terminado: "Nueva venta", "Fila" y "Cerrar caja" llevan a su lugar; en 1280 px se ven las barras de

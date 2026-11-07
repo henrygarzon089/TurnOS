@@ -1481,7 +1481,8 @@ atención, **para** no tener que abrir módulo por módulo.
   vienen**, con enlace a "Recordar" (REQ-037, REQ-020). NO DEBE listar sus celulares.
 - REQ-076.8 "Hoy" DEBE tener accesos directos a "Nueva venta", "Fila" y "Cerrar caja".
 - REQ-076.9 En pantallas de 1024 px o más, "Hoy" DEBE mostrar además los **ingresos de la semana en
-  curso por día** (barras simples, mismas cifras de "Semana", REQ-028).
+  curso por día** (barras simples, lunes a domingo): cada barra es el total de la Caja de ese día
+  (REQ-027.1) y su suma es el "Vendido" de "Semana" (REQ-028). (Corregido 2026-11-07, ADR-048.)
 - REQ-076.10 Cada bloque DEBE cargar por su cuenta: mientras llega, muestra su esqueleto (REQ-075.2);
   SI un bloque falla, ENTONCES muestra "No se pudo cargar" con "Intentar de nuevo" y los demás
   bloques DEBEN seguir visibles.
