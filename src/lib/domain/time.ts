@@ -76,3 +76,22 @@ export function formatDayCO(day: string): string {
   const [y, m, d] = day.split("-").map(Number);
   return `${d} ${MONTHS[m - 1]} ${y}`;
 }
+
+const WEEKDAYS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+
+/** "2026-11-06" → "2026-10-30": el mismo día de la semana pasada (calendario, sin horas). */
+export function sameDayLastWeek(day: string): string {
+  const d = new Date(`${day}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() - 7);
+  return d.toISOString().slice(0, 10);
+}
+
+/** "2026-11-06" → "jueves". */
+export function weekdayName(day: string): string {
+  return WEEKDAYS[new Date(`${day}T00:00:00Z`).getUTCDay()];
+}
+
+/** REQ-076.4 (PA-H15-1): "El jueves pasado (todo el día)". */
+export function lastWeekLabel(day: string): string {
+  return `El ${weekdayName(day)} pasado (todo el día)`;
+}

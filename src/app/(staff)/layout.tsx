@@ -19,7 +19,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
     <div className={`flex flex-1 flex-col ${owner ? "lg:pl-60" : ""}`}>
       <StaffHeader session={session} />
       <div
-        className={`mx-auto flex w-full max-w-md flex-1 flex-col px-4 ${owner ? "pt-6 pb-40 lg:pb-24" : "pb-24"}`}
+        className={`mx-auto flex w-full max-w-md flex-1 flex-col px-4 ${owner ? "pt-6 pb-40 lg:pb-24 lg:has-[[data-wide]]:max-w-6xl" : "pb-24"}`}
       >
         {children}
       </div>

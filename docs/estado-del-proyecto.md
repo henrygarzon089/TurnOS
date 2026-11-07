@@ -382,7 +382,15 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   el celular y menú lateral de 240 px desde 1024 px, montados una vez en el layout del personal (también
   en `/app/clientes`); las 23 pantallas ya no pintan la fila de chips. La barra de acciones de la
   fila del dueño sube encima del menú. "Hoy" (`/admin`) sigue llevando a la fila hasta T-151.
-  E2E con proyecto `escritorio` (1280 px). Siguiente: T-151.
+  E2E con proyecto `escritorio` (1280 px).
+- T-151 hecha (rama `claude/t-151-hoy`, encima de T-150, 2026-11-07): `/admin` ya no lleva a la
+  fila: muestra "Hoy" con la fila en vivo (esperando, estimado de la portada, estado de cada
+  barbero con nombre corto y sin celulares) y la caja de hoy (total, medios, vitrina, servicios y
+  el mismo día de la semana pasada). Cada bloque carga con su esqueleto y falla solo; se relee con
+  el canal de la fila. Siguiente: T-152 (citas, alertas y recordar).
+- Ojo con el E2E local: con el servidor de desarrollo cargado (muchas corridas seguidas) los
+  ingresos se cuelgan y fallan pruebas que no tienen que ver; reiniciar el servidor y usar
+  `--workers=2` lo deja estable.
 
 ### Hito 16 — sistema visual nuevo (**spec aprobada**, ADR-047, 2026-11-07)
 
