@@ -5,7 +5,10 @@
  * Reglas (REQ-011.1, REQ-011.2, NFR-002):
  *  - al recibir queue_changed → reload() con debounce de 300 ms
  *  - al conectar o reconectar (SUBSCRIBED) → reload() y onConnection(true)
- *  - en CHANNEL_ERROR / TIMED_OUT / CLOSED → onConnection(false)
+ *  - en CHANNEL_ERROR / TIMED_OUT / CLOSED → onConnection(false), solo si ya había conectado: un
+ *    primer intento que vence en red lenta no es "sin conexión" (la página viene fresca del
+ *    servidor) y prender la franja ahí movía todo (REQ-078.8). La caída de red del navegador la
+ *    avisa el hook aparte.
  *  - polling de respaldo cada `pollMs` (por defecto 30 s)
  */
 export type ChannelStatus = "SUBSCRIBED" | "TIMED_OUT" | "CLOSED" | "CHANNEL_ERROR";
@@ -53,6 +56,7 @@ export function subscribeToQueue(opts: SubscriptionOptions): () => void {
 
   let debounce: ReturnType<typeof setTimeout> | undefined;
   let wasOnline: boolean | undefined;
+  let everConnected = false;
 
   const scheduleReload = () => {
     if (debounce) clearTimeoutFn(debounce);
@@ -67,6 +71,8 @@ export function subscribeToQueue(opts: SubscriptionOptions): () => void {
     .on("broadcast", { event: "queue_changed" }, () => scheduleReload())
     .subscribe((status) => {
       const online = status === "SUBSCRIBED";
+      if (online) everConnected = true;
+      if (!everConnected) return;
       if (online) {
         // Conexión o reconexión: recargar el estado completo, no confiar en eventos perdidos
         void reload();

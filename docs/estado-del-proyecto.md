@@ -433,6 +433,16 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   `EmptyState`/`ErrorState`, `Icon`; `Skeleton` y `ConnectionBanner` reescritos; movimiento en
   `globals.css`. Muestra en `/diseno` (solo desarrollo). Siguiente: Hito 15 (T-150, menú del
   dueño) ya con estos componentes (PA-H16-1).
+- T-162 hecha (rama `claude/t-162-cliente`, encima de T-154, 2026-11-07): pantallas del cliente con
+  el sistema nuevo. Portada con la marca del negocio, fila en vivo por barbero y "Tomar turno" fijo
+  abajo (en escritorio, dos columnas); tomar turno con tarjetas de servicio y "Confirmar turno"
+  fijo; "Mi turno" con el número grande y cancelar con hoja de confirmación; "Mi cita" igual;
+  reservar cita, privacidad, tarjeta de regalo y pantalla TV restilizadas; sin red, la franja con
+  la hora y las acciones deshabilitadas con el motivo. Arreglo: en red lenta la franja "Sin
+  conexión" ya no parpadea al cargar (movía la página). Detalle y desvíos en `tasks.md`.
+  Prueba desde el celular: abrir el QR de La 33 (o `/la-33`), tomar turno, ver el número grande,
+  tocar "Cancelar mi turno" y elegir "No, seguir en la fila"; con el modo avión, ver la franja y
+  el botón deshabilitado. Siguiente: T-163 (barbero).
 - La aprobación del hito terminado será un ADR nuevo.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
