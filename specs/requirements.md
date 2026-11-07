@@ -1518,6 +1518,69 @@ configurar qué bloques ve el dueño.
 
 ---
 
+## 5m. Hito 16 — Sistema visual nuevo
+
+> Estado: **APROBADA** (Henry, 2026-11-07). Ver ADR-047. PA-H16-1…3 resueltas con la recomendación. Sale del lienzo "TurnOS — Rediseño"
+> (https://claude.ai/artifact/VK8TXA9Aw9tnZMnrXZ4kPU), hecho con `docs/diseno/prompt-diseno.md`.
+> Cambia cómo se ve la app, no qué hace: mismos flujos, mismas funciones, sin migraciones.
+
+### REQ-078 · Sistema visual nuevo — M
+**Como** cliente, barbero o dueño, **quiero** que todas las pantallas se vean y se comporten igual,
+con lo urgente en rojo y la acción principal en azul marino, **para** saber qué hacer de un vistazo,
+también al sol y con una mano.
+
+- REQ-078.1 Los colores de la interfaz DEBEN salir solo de los tokens de `globals.css` (design
+  §22.1). Ningún componente DEBE usar colores de la paleta de Tailwind (`blue-200`, `red-50`…) ni
+  valores hexadecimales sueltos.
+- REQ-078.2 Cada combinación de texto y fondo definida en los tokens DEBE tener contraste ≥ 4.5:1, y
+  el borde de los campos ≥ 3:1 contra la tarjeta (NFR-008).
+- REQ-078.3 El rojo relleno DEBE usarse solo para "atención ahora": "¡Es tu turno!", turno llamado,
+  alertas que piden acción e insignias de conteo. Las acciones destructivas (cancelar, anular,
+  borrar, quitar) DEBEN verse en contorno o texto rojo y DEBEN pedir confirmación antes de actuar.
+- REQ-078.4 Cada pantalla DEBE mostrar a lo más un botón principal relleno a la vez.
+- REQ-078.5 Botones, casillas y destinos del menú DEBEN medir ≥ 48 px de alto; el botón principal de
+  la fila del barbero ("Llamar a …", "Empezar corte", "Terminar y cobrar") DEBE medir ≥ 80 px. El
+  texto base DEBE ser ≥ 16 px.
+- REQ-078.6 En listas y tablas (fila del dueño, clientes, barberos, solicitudes de privacidad), el
+  celular DEBE verse enmascarado con `maskPhone` (`300 *** 0001`). El número completo solo DEBE
+  verse en la ficha de un cliente y en el campo donde alguien escribe el suyo.
+- REQ-078.7 Las casillas del PIN NUNCA DEBEN mostrar dígitos: un punto por cada dígito escrito.
+- REQ-078.8 MIENTRAS una pantalla carga, EL SISTEMA DEBE mostrar un esqueleto con las mismas medidas
+  del contenido, de modo que al llegar los datos nada se desplace (CLS ≤ 0,1).
+- REQ-078.9 MIENTRAS se guarda una acción, su botón DEBE quedar deshabilitado con el texto
+  "Guardando…" y la acción NO DEBE poder enviarse dos veces.
+- REQ-078.10 MIENTRAS no hay conexión, las pantallas de cliente, barbero y dueño DEBEN mostrar la
+  franja "Sin conexión. Mostrando lo último que vimos · <hora>" y deshabilitar las acciones que
+  necesitan servidor, diciendo por qué (REQ-011).
+- REQ-078.11 Una lista vacía DEBE decir qué pasa y qué hacer; un error DEBE decir qué pasó, que los
+  datos no se perdieron cuando sea cierto, y ofrecer "Intentar de nuevo".
+- REQ-078.12 CUANDO llega por tiempo real un turno o una venta nueva, la fila DEBE entrar con fondo
+  resaltado que se desvanece en ≈ 1,2 s, sin reordenar lo que el usuario tiene bajo el dedo.
+- REQ-078.13 Las animaciones DEBEN usar solo `transform` y `opacity` y durar entre 150 y 250 ms
+  (salvo el desvanecido de REQ-078.12). SI el celular pide movimiento reducido, ENTONCES EL SISTEMA
+  DEBE quitar los desplazamientos y dejar solo cambios de opacidad.
+- REQ-078.14 La interfaz NO DEBE usar degradados, desenfoque de fondo ni fuentes descargadas: usa
+  `system-ui`. Los íconos DEBEN ser SVG de trazo dentro del código.
+- REQ-078.15 Cada pantalla DEBE verse sin desplazamiento horizontal en 360 px, 390 px y 1280 px; "Hoy"
+  y "Caja" además en 768 px con su disposición de tablet.
+
+Se mantienen sin cambio: la casilla del aviso de privacidad antes de guardar datos (REQ-002), las
+pantallas públicas sin celulares (REQ-013.2) y los textos en español colombiano (NFR-006).
+
+Preguntas abiertas del Hito 16:
+- **PA-H16-1**: ¿el Hito 15 ("Hoy" y menú) se construye después de T-160 y T-161 (tokens y
+  componentes nuevos), para no hacer "Hoy" dos veces? **Resuelta (Henry, 2026-11-07): sí.**
+- **PA-H16-2**: el número enorme de "Mi turno" (120 px) y la pantalla roja de "¡Es tu turno!" a
+  pantalla casi completa, ¿se quedan así o quieres probarlos primero con un cliente en Filo?
+  **Resuelta (Henry, 2026-11-07): se construyen así y se validan en la prueba de T-168.**
+- **PA-H16-3**: ¿se guardan en el repo (`docs/diseno/tableros/`) capturas PNG de los 20 tableros para
+  que el diseño no dependa del enlace del lienzo? **Resuelta (Henry, 2026-11-07): sí.**
+
+Fuera de alcance del Hito 16: cambiar flujos, textos de negocio o funciones; modo oscuro; logo o
+marca propia de TurnOS más allá del punto rojo y el nombre; ilustraciones; animaciones de celebración.
+
+---
+
 ## 6. Requisitos no funcionales
 
 | ID | Requisito | Criterio verificable |
