@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { GiftCardList, SellGiftCardForm } from "@/components/admin/GiftCardForms";
 import { getGiftCardsView } from "@/lib/actions/giftCards";
 
@@ -14,7 +13,6 @@ export default async function GiftCardsPage() {
   const view = (await getGiftCardsView())!;
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/regalos" />
       <h1 className="text-2xl font-bold">Tarjetas de regalo</h1>
       <p className="text-muted mt-1 text-sm">
         Se paga hoy y quien la recibe la usa como medio de pago, en una o varias visitas, durante un

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { ServiceForm, type BarberOption, type ServiceRow } from "@/components/admin/ItemForms";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -38,7 +37,6 @@ export default async function ServicesPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/servicios" />
       <h1 className="text-2xl font-bold">Servicios</h1>
       <p className="text-muted mt-1 text-sm">
         La duración define el tiempo estimado de la fila; el precio, el cobro. Un servicio

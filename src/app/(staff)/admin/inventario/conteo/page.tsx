@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { CountForm, type CountRow } from "@/components/admin/InventoryForms";
 import { InventoryNav } from "@/components/admin/InventoryNav";
 import {
@@ -53,7 +52,6 @@ export default async function InventoryCountPage({
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/inventario" />
       <h1 className="text-2xl font-bold">Inventario</h1>
       <InventoryNav current="/admin/inventario/conteo" />
 

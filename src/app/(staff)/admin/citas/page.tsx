@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { AppointmentAgenda } from "@/components/admin/AppointmentAgenda";
 import { AppointmentSettingsForm } from "@/components/admin/AppointmentForms";
 import { getAppointmentAgenda, getAppointmentSettings } from "@/lib/actions/appointments";
@@ -15,7 +14,6 @@ export default async function AppointmentsPage() {
   const [settings, agenda] = await Promise.all([getAppointmentSettings(), getAppointmentAgenda()]);
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/citas" />
       <h1 className="text-2xl font-bold">Citas</h1>
       <p className="text-muted mt-1 text-sm">
         El cliente reserva una hora con un barbero. Al llegar, pasa de primero en la fila de ese

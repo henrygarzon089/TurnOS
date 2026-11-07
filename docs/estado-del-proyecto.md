@@ -377,6 +377,12 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 
 - Spec en `main` (PR #114): REQ-076, REQ-077, design §21, T-150…T-154, sin migraciones. Sin código.
 - Se construye después de T-160 y T-161, ya con el sistema visual nuevo (PA-H16-1).
+- T-150 hecha (rama `claude/t-150-menu-dueno`, encima de T-161, 2026-11-07): `ADMIN_GROUPS` en
+  `src/lib/domain/admin-nav.ts`; el dueño tiene barra inferior (Hoy, Fila, Caja, Clientes, Más) en
+  el celular y menú lateral de 240 px desde 1024 px, montados una vez en el layout del personal (también
+  en `/app/clientes`); las 23 pantallas ya no pintan la fila de chips. La barra de acciones de la
+  fila del dueño sube encima del menú. "Hoy" (`/admin`) sigue llevando a la fila hasta T-151.
+  E2E con proyecto `escritorio` (1280 px). Siguiente: T-151.
 
 ### Hito 16 — sistema visual nuevo (**spec aprobada**, ADR-047, 2026-11-07)
 

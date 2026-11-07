@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import {
   BarberCard,
   NewBarberForm,
@@ -51,7 +50,6 @@ export default async function BarbersPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/barberos" />
       <h1 className="text-2xl font-bold">Barberos</h1>
       <p className="text-muted mt-1 text-sm">
         Marca &ldquo;Hoy&rdquo; a los que trabajan hoy: solo ellos aparecen cuando el cliente toma

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import {
   BasicTemplateButton,
   InventoryItemForm,
@@ -27,7 +26,6 @@ export default async function InventoryCatalogPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/inventario" />
       <h1 className="text-2xl font-bold">Inventario</h1>
       <InventoryNav current="/admin/inventario/catalogo" />
 

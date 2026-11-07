@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { CashDay } from "@/components/cash/CashDay";
 import { getCashDay } from "@/lib/actions/cash";
 import { getStaffSession } from "@/lib/auth/session";
@@ -20,7 +19,6 @@ export default async function PastCashPage({ params }: { params: Promise<{ fecha
   if (!summary) notFound();
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/caja" />
       <Link href="/admin/caja" className="text-brand min-h-10 text-sm font-medium">
         ← Caja de hoy
       </Link>

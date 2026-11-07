@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { InventoryMovements, YieldSuggestionForm } from "@/components/admin/InventoryForms";
 import { InventoryNav } from "@/components/admin/InventoryNav";
 import { getInventoryOverview, type InventoryLocation } from "@/lib/actions/inventory";
@@ -24,7 +23,6 @@ export default async function InventoryPage() {
   if (!view) {
     return (
       <main className="pb-6">
-        <AdminNav current="/admin/inventario" />
         <h1 className="text-2xl font-bold">Inventario</h1>
         <p className="text-danger mt-2">No se pudo cargar el inventario. Recarga la página.</p>
       </main>
@@ -38,7 +36,6 @@ export default async function InventoryPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/inventario" />
       <h1 className="text-2xl font-bold">Inventario</h1>
       <InventoryNav current="/admin/inventario" />
 

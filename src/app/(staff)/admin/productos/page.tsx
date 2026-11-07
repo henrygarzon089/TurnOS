@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { ProductForm, type ProductRow } from "@/components/admin/ItemForms";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -24,7 +23,6 @@ export default async function ProductsPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/productos" />
       <h1 className="text-2xl font-bold">Productos</h1>
       <p className="text-muted mt-1 text-sm">
         Helados, bebidas y lo que vendas sin cita. Los de cortesía se ofrecen gratis con el turno.

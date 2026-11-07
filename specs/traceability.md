@@ -407,12 +407,12 @@
 | REQ-076.9 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
 | REQ-076.10 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
 | REQ-076.11 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-077.1 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-077.2 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-077.3 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-077.4 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-077.5 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-077.6 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-077.1 | Menú del dueño por grupos | T-150 (hecha), T-152 (pendiente), T-154 (pendiente) | admin-nav.spec.ts, admin-nav.test.tsx | prueba escrita |
+| REQ-077.2 | Menú del dueño por grupos | T-150 (hecha), T-152 (pendiente), T-154 (pendiente) | admin-nav.spec.ts, admin-nav.test.tsx | prueba escrita |
+| REQ-077.3 | Menú del dueño por grupos | T-150 (hecha), T-152 (pendiente), T-154 (pendiente) | admin-nav.test.tsx | prueba escrita |
+| REQ-077.4 | Menú del dueño por grupos | T-150 (hecha), T-152 (pendiente), T-154 (pendiente) | admin-nav.test.tsx | prueba escrita |
+| REQ-077.5 | Menú del dueño por grupos | T-150 (hecha), T-152 (pendiente), T-154 (pendiente) | admin-nav.spec.ts, admin-nav.test.tsx | prueba escrita |
+| REQ-077.6 | Menú del dueño por grupos | T-150 (hecha), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
 | REQ-078.1 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (pendiente), T-163 (pendiente), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | design-tokens.test.ts, lint-design.test.ts | prueba escrita |
 | REQ-078.2 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (pendiente), T-163 (pendiente), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | design-tokens.test.ts | prueba escrita |
 | REQ-078.3 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (pendiente), T-163 (pendiente), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | ui-components.spec.ts, lint-design.test.ts, ui-components.test.tsx | prueba escrita |

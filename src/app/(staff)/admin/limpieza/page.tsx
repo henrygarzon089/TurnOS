@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { CleaningHistory } from "@/components/cleaning/CleaningHistory";
 import { CleaningInspection } from "@/components/cleaning/CleaningInspection";
 import { CleaningListsEditor, CleaningSwitch } from "@/components/cleaning/CleaningListsEditor";
@@ -46,7 +45,6 @@ export default async function OwnerCleaningPage({
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/limpieza" />
       <h1 className="text-2xl font-bold">Limpieza</h1>
       {enabled && (
         <nav aria-label="Pestañas de limpieza" className="mt-3 flex gap-2 overflow-x-auto">

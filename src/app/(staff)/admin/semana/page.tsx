@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { WeekSummary } from "@/components/cash/WeekSummary";
 import { getWeekSummary } from "@/lib/actions/cash";
 import { bogotaWeekStart, formatDayCO } from "@/lib/domain/time";
@@ -23,7 +22,6 @@ export default async function WeekPage({
   const thisWeek = bogotaWeekStart();
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/semana" />
       <h1 className="text-2xl font-bold">Semana</h1>
       <nav aria-label="Elegir semana" className="mt-2 flex items-center justify-between gap-2">
         <Link

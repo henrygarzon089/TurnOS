@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { QrCard } from "@/components/admin/QrCard";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -20,7 +19,6 @@ export default async function QrPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/qr" />
       <h1 className="text-2xl font-bold">QR de la fila</h1>
       <p className="text-muted mt-1 text-sm">
         Imprímelo y pégalo en el local. El mismo enlace sirve para compartir por WhatsApp.

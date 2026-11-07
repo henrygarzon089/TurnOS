@@ -1880,7 +1880,12 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 > migraciones. PA-H15-1: la caja se compara con el día completo de la semana pasada.
 > Se construye después de T-160 y T-161, ya con el sistema visual nuevo (PA-H16-1, ADR-047).
 
-### [ ] T-150 · Menú del dueño por grupos
+### [x] T-150 · Menú del dueño por grupos
+- Nota (2026-11-07): el menú se monta en `src/app/(staff)/layout.tsx` (solo para el dueño) y no en
+  `admin/layout.tsx`, porque "Clientes" vive en `/app/clientes`; `admin/layout.tsx` no cambia. La
+  prueba unitaria es `tests/unit/admin-nav.test.tsx` (renderiza el componente). "Hoy" apunta a
+  `/admin`, que sigue redirigiendo a la fila hasta T-151. La barra de acciones de `OwnerQueue` sube
+  encima del menú en el celular.
 - REQ: REQ-077.1, REQ-077.2, REQ-077.3, REQ-077.4, REQ-077.5
 - Archivos: `src/lib/domain/admin-nav.ts` (`ADMIN_GROUPS`), `src/components/admin/AdminNav.tsx`
   (barra inferior + "Más" + menú lateral), `src/app/(staff)/admin/layout.tsx`,

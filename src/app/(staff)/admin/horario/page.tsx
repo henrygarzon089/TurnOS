@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { HoursForm, type HoursRow } from "@/components/admin/HoursForm";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -17,7 +16,6 @@ export default async function HoursPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/horario" />
       <h1 className="text-2xl font-bold">Horario</h1>
       <p className="text-muted mt-1 text-sm">
         La fila acepta turnos dentro de este horario. Fuera de él, el cliente ve cuándo abres.
