@@ -1,10 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { appAlert, loginAsBarber, loginAsOwner, SEED } from "./helpers";
+import { appAlert, loginAsBarber, loginOwnerToToday, SEED } from "./helpers";
 
 test.describe("REQ-030 acceso del personal", () => {
   test("REQ-030.1 dueño entra con correo y contraseña y llega a /admin", async ({ page }) => {
-    await loginAsOwner(page);
-    await expect(page.getByRole("heading", { name: "Fila" })).toBeVisible();
+    await loginOwnerToToday(page); // espera /admin y el título "Hoy" (REQ-076.1)
     await expect(page.getByText("Dueño")).toBeVisible();
   });
 

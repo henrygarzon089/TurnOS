@@ -8,10 +8,13 @@ import { SkeletonBlock, SkeletonScreen } from "@/components/ui/Skeleton";
  */
 export function TodayCard({
   title,
+  badge,
   link,
   children,
 }: {
   title: string;
+  /** Insignia de conteo junto al título (fuera del nombre de la región). */
+  badge?: React.ReactNode;
   link?: { href: string; label: string };
   children: React.ReactNode;
 }) {
@@ -19,9 +22,12 @@ export function TodayCard({
   return (
     <section aria-labelledby={id} className="bg-card border-line rounded-md border">
       <div className="border-line flex min-h-14 items-center justify-between gap-3 border-b px-4">
-        <h2 id={id} className="text-lg font-bold">
-          {title}
-        </h2>
+        <div className="flex items-center gap-2">
+          <h2 id={id} className="text-lg font-bold">
+            {title}
+          </h2>
+          {badge}
+        </div>
         {link && (
           <Link
             href={link.href}

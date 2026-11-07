@@ -436,6 +436,41 @@ export async function getCashDay(day?: string): Promise<CashDaySummary | null> {
   return error ? null : (data as CashDaySummary);
 }
 
+/**
+ * REQ-076.6 alerta de caja: días de los últimos 7 (sin hoy) con ventas activas y sin cierre activo
+ * (un cierre reabierto queda anulado). Con la sesión del dueño: lo filtra RLS. null si falla.
+ */
+export async function getUnclosedDays(): Promise<string[] | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  const supabase = await createSupabaseServerClient();
+  const biz = session.business.id;
+  const today = businessDayBogota();
+  const from = new Date(`${today}T00:00:00Z`);
+  from.setUTCDate(from.getUTCDate() - 7);
+  const since = from.toISOString().slice(0, 10);
+  const [salesRes, closuresRes] = await Promise.all([
+    supabase
+      .from("sales")
+      .select("business_day")
+      .eq("business_id", biz)
+      .eq("status", "active")
+      .gte("business_day", since)
+      .lt("business_day", today),
+    supabase
+      .from("cash_closures")
+      .select("business_day")
+      .eq("business_id", biz)
+      .eq("status", "active")
+      .gte("business_day", since)
+      .lt("business_day", today),
+  ]);
+  if (salesRes.error || closuresRes.error) return null;
+  const closed = new Set((closuresRes.data ?? []).map((c) => c.business_day as string));
+  const days = new Set((salesRes.data ?? []).map((s) => s.business_day as string));
+  return [...days].filter((d) => !closed.has(d)).sort();
+}
+
 /** REQ-026.1 anular una venta del día con motivo (solo dueño). */
 export async function voidSale(saleId: string, reason: string): Promise<CashResult> {
   const session = await getStaffSession();

@@ -1,16 +1,35 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
+import { AdminNav } from "@/components/admin/AdminNav";
+import { CountBadge } from "@/components/admin/today/CountBadge";
+import { TodayAlerts } from "@/components/admin/today/TodayAlerts";
+import { TodayAppointments } from "@/components/admin/today/TodayAppointments";
 import { TodayCash } from "@/components/admin/today/TodayCash";
 import { TodayQueue } from "@/components/admin/today/TodayQueue";
+import { TodayRemind } from "@/components/admin/today/TodayRemind";
 import type { CashDaySummary } from "@/lib/actions/cash";
 import { buildTodayQueue, shortName, type TodayQueueInput } from "@/lib/domain/today";
 import { lastWeekLabel, sameDayLastWeek, weekdayName } from "@/lib/domain/time";
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => {} }) }));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ refresh: () => {} }),
+  usePathname: () => "/admin",
+}));
 // Las acciones reales no se llaman: cada bloque recibe su carga en la prueba
 vi.mock("@/lib/actions/queue", () => ({ getBusinessQueue: vi.fn() }));
-vi.mock("@/lib/actions/cash", () => ({ getCashDay: vi.fn() }));
+vi.mock("@/lib/actions/cash", () => ({ getCashDay: vi.fn(), getUnclosedDays: vi.fn() }));
 vi.mock("@/lib/actions/public", () => ({ getPublicBusiness: vi.fn() }));
+vi.mock("@/lib/actions/cleaning", () => ({ getOwnerCleaningSummary: vi.fn() }));
+vi.mock("@/lib/actions/inventory", () => ({ getInventoryOverview: vi.fn() }));
+vi.mock("@/lib/actions/memberships", () => ({ getExpiringMemberships: vi.fn() }));
+vi.mock("@/lib/actions/appointments", () => ({
+  getAppointmentAgenda: vi.fn(),
+  getAppointmentSettings: vi.fn(),
+}));
+vi.mock("@/lib/actions/customers", () => ({
+  getBirthdaysThisWeek: vi.fn(),
+  getInactiveCustomers: vi.fn(),
+}));
 
 const NOW = new Date("2026-11-05T20:52:00Z"); // jueves 3:52 p. m. en Bogotá
 const min = (n: number) => new Date(NOW.getTime() - n * 60_000).toISOString();
@@ -160,5 +179,95 @@ describe("bloques de Hoy", () => {
     expect(hq).toContain("Atendiendo a Ana M.");
     expect(hq).not.toContain("No se pudo cargar");
     expect(renderToStaticMarkup(cash)).toContain("No se pudo cargar");
+  });
+});
+
+describe("alertas, citas y recordar (T-152)", () => {
+  const html = async (el: Promise<React.ReactElement | null>) => renderToStaticMarkup((await el)!);
+
+  it("REQ-076.6 sin alertas el bloque dice 'Todo en orden' y no lleva insignia", async () => {
+    const h = await html(TodayAlerts({ load: async () => [] }));
+    expect(h).toContain("Piden tu atención");
+    expect(h).toContain("Todo en orden.");
+    expect(h).not.toContain("bg-accent");
+  });
+
+  it("REQ-076.6 cada alerta con su enlace; la insignia cuenta cuántas hay", async () => {
+    const h = await html(
+      TodayAlerts({
+        load: async () => [
+          {
+            kind: "cash",
+            title: "La caja del 4 nov 2026 sigue abierta.",
+            href: "/admin/caja/2026-11-04",
+            action: "Cerrar",
+            urgent: true,
+          },
+          {
+            kind: "membership",
+            title: "1 membresía vence esta semana.",
+            href: "/admin/membresias",
+            action: "Ver",
+            urgent: false,
+          },
+        ],
+      }),
+    );
+    expect(h).toMatch(/href="\/admin\/caja\/2026-11-04"[^>]*>Cerrar/);
+    expect(h).toMatch(/href="\/admin\/membresias"[^>]*>Ver/);
+    expect(h).toMatch(/aria-label="2 alertas"[^>]*>2</);
+    expect(h).toContain("bg-danger"); // raya roja de la caja
+    expect(h).toContain("bg-warn"); // raya ámbar de la membresía
+  });
+
+  it("REQ-076.10 las alertas que fallan dicen 'No se pudo cargar'", async () => {
+    expect(await html(TodayAlerts({ load: async () => null }))).toContain("No se pudo cargar");
+  });
+
+  it("REQ-076.5 con citas apagadas el bloque no aparece", async () => {
+    expect(await TodayAppointments({ load: async () => "off" })).toBeNull();
+  });
+
+  it("REQ-076.5 las próximas citas con hora, cliente, barbero y si llegó; sin celulares", async () => {
+    const h = await html(
+      TodayAppointments({
+        load: async () => ({
+          remaining: 2,
+          next: [
+            {
+              id: "a",
+              startsAt: "2026-11-05T21:15:00Z",
+              customer: "Luis M.",
+              service: "Corte",
+              barber: "Andrés",
+              arrived: true,
+            },
+          ],
+        }),
+      }),
+    );
+    expect(h).toContain("2 quedan por llegar.");
+    expect(h).toContain("4:15 p. m.");
+    expect(h).toContain("Luis M. · Andrés");
+    expect(h).toContain("Llegó");
+    expect(h).not.toMatch(/\+57/);
+  });
+
+  it("REQ-076.7 recordar muestra solo los conteos y el enlace a Recordar", async () => {
+    const h = await html(
+      TodayRemind({ load: async () => ({ birthdays: 2, inactive: 1, inactiveDays: 21 }) }),
+    );
+    expect(h).toContain("Cumplen años esta semana");
+    expect(h).toContain("Hace rato no viene");
+    expect(h).toContain("más de 21 días");
+    expect(h).toMatch(/href="\/admin\/recordar"[^>]*>Recordar/);
+  });
+
+  it("REQ-077.6 la insignia de Hoy sale en la barra y en el menú lateral", () => {
+    const h = renderToStaticMarkup(
+      <AdminNav todayBadge={<CountBadge count={3} label="alertas" testId="today-badge" />} />,
+    );
+    expect(h.match(/data-testid="today-badge"/g)).toHaveLength(2);
+    expect(h).toMatch(/href="\/admin"[^>]*>Hoy<span[^>]*><span data-testid="today-badge"/);
   });
 });

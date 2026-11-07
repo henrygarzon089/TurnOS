@@ -15,9 +15,10 @@ import {
 /**
  * Menú del dueño (REQ-077, design §21.4). Celular: barra inferior fija con lo de todos los días y
  * "Más", que abre los grupos en una hoja. 1024 px o más: menú lateral fijo de 240 px con los mismos
- * grupos. Se monta una vez en el layout del personal, solo para el dueño.
+ * grupos. Se monta una vez en el layout del personal, solo para el dueño. `todayBadge` es la
+ * insignia de alertas de "Hoy" (REQ-077.6), un Server Component que llega por su cuenta.
  */
-export function AdminNav() {
+export function AdminNav({ todayBadge }: { todayBadge?: React.ReactNode } = {}) {
   const pathname = usePathname();
   const [more, setMore] = useState(false);
   const closeMore = useCallback(() => setMore(false), []);
@@ -47,6 +48,7 @@ export function AdminNav() {
                     }`}
                   >
                     {it.label}
+                    {it.href === "/admin" && <span className="ml-auto">{todayBadge}</span>}
                   </Link>
                 </li>
               ))}
@@ -64,6 +66,9 @@ export function AdminNav() {
             <li key={it.href}>
               <Link href={it.href} aria-current={current(it)} className={tabClass(!!current(it))}>
                 {it.label}
+                {it.href === "/admin" && (
+                  <span className="absolute top-1.5 left-1/2 ml-3">{todayBadge}</span>
+                )}
               </Link>
             </li>
           ))}

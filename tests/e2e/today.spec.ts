@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { adminDb, loginAsBarber, loginOwnerToToday, SEED } from "./helpers";
 
-/** T-151 · "Hoy" del dueño (REQ-076.1–076.4, 076.10, 076.11; design §21). */
+/** T-151/T-152 · "Hoy" del dueño (REQ-076.1–076.7, 076.10, 076.11, REQ-077.6; design §21). */
 
 async function seedIds() {
   const db = adminDb();
@@ -98,15 +98,103 @@ test.describe("Hoy del dueño", () => {
 
     // Mismas cifras que la Caja de hoy (REQ-027.1)
     await cash.getByRole("link", { name: "Ver caja" }).click();
-    await expect(page).toHaveURL(/\/admin\/caja/);
+    await expect(page).toHaveURL(/\/admin\/caja/, { timeout: 15_000 });
     await expect.poll(() => pesos(page, "cash-total")).toBeGreaterThanOrEqual(shown);
   });
 
-  test("REQ-076.11 en el celular la fila va antes que la caja", async ({ page, isMobile }) => {
+  test("REQ-076.11 en el celular el orden es alertas, fila, caja y recordar", async ({
+    page,
+    isMobile,
+  }) => {
     test.skip(!isMobile, "orden de una columna");
     await loginOwnerToToday(page);
-    const fila = await page.getByRole("region", { name: "Fila en vivo" }).boundingBox();
-    const caja = await page.getByRole("region", { name: "Caja de hoy" }).boundingBox();
-    expect(fila!.y).toBeLessThan(caja!.y);
+    const ys: number[] = [];
+    for (const name of ["Piden tu atención", "Fila en vivo", "Caja de hoy", "Para recordar"])
+      ys.push((await page.getByRole("region", { name }).boundingBox())!.y);
+    expect([...ys].sort((a, b) => a - b)).toEqual(ys);
+  });
+});
+
+/** Una venta de $ 0 en un día pasado sin cierre: deja ese día "sin cerrar" (REQ-076.6). */
+async function unclosedDayFromOutside(): Promise<{ day: string; saleId: string }> {
+  const { db, bizId } = await seedIds();
+  for (let back = 6; back >= 2; back--) {
+    const d = new Date(Date.now() - 5 * 3600_000); // fecha de Bogotá
+    d.setUTCDate(d.getUTCDate() - back);
+    const day = d.toISOString().slice(0, 10);
+    const { data, error } = await db
+      .from("sales")
+      .insert({
+        business_id: bizId,
+        business_day: day,
+        services_total: 0,
+        products_total: 0,
+        total: 0,
+      })
+      .select("id")
+      .single();
+    if (!error) return { day, saleId: data.id as string };
+  }
+  throw new Error("No hubo un día de la última semana sin cierre");
+}
+
+test.describe("Hoy: alertas, citas y recordar", () => {
+  test("REQ-076.6 REQ-077.6 un día sin cerrar sale en las alertas y la insignia cuenta lo mismo", async ({
+    page,
+    isMobile,
+  }) => {
+    const { day, saleId } = await unclosedDayFromOutside();
+    try {
+      await loginOwnerToToday(page);
+      const alerts = page.getByRole("region", { name: "Piden tu atención" });
+      const link = alerts
+        .getByRole("link", { name: "Cerrar" })
+        .and(alerts.locator(`a[href="/admin/caja/${day}"]`));
+      await expect(link).toBeVisible();
+      const count = await alerts.getByRole("listitem").count();
+      expect(count).toBeGreaterThanOrEqual(1);
+      const nav = page.getByRole("navigation", {
+        name: isMobile ? "Accesos rápidos" : "Menú del dueño",
+      });
+      await expect(nav.getByTestId("today-badge")).toHaveText(String(count));
+      await link.click();
+      await expect(page).toHaveURL(new RegExp(`/admin/caja/${day}`), { timeout: 15_000 });
+    } finally {
+      await adminDb().from("sales").delete().eq("id", saleId);
+    }
+  });
+
+  test("REQ-076.5 las citas solo aparecen con el módulo encendido", async ({ page }) => {
+    const { db, bizId } = await seedIds();
+    await loginOwnerToToday(page);
+    await expect(page.getByRole("region", { name: "Fila en vivo" })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Citas de hoy" })).toHaveCount(0);
+    await db.from("businesses").update({ appointments_enabled: true }).eq("id", bizId);
+    try {
+      await page.reload();
+      const appts = page.getByRole("region", { name: "Citas de hoy" });
+      await expect(appts).toBeVisible();
+      await expect(appts).toContainText(/quedan|No quedan citas hoy/);
+      await expect(appts.getByRole("link", { name: "Agenda" })).toHaveAttribute(
+        "href",
+        "/admin/citas",
+      );
+    } finally {
+      await db.from("businesses").update({ appointments_enabled: false }).eq("id", bizId);
+    }
+  });
+
+  test("REQ-076.7 recordar muestra cuántos cumplen y cuántos no vienen, sin celulares", async ({
+    page,
+  }) => {
+    await loginOwnerToToday(page);
+    const remind = page.getByRole("region", { name: "Para recordar" });
+    await expect(remind).toContainText(/cumplen? años esta semana/i);
+    await expect(remind).toContainText(/hace rato no vienen?/i);
+    await expect(remind.getByRole("link", { name: "Recordar" })).toHaveAttribute(
+      "href",
+      "/admin/recordar",
+    );
+    await expect(remind).not.toContainText(/\+57|3\d{2} ?\d{3} ?\d{4}/);
   });
 });
