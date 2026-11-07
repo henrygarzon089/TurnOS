@@ -1951,6 +1951,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `tests/unit/traceability.test.ts` (agregar "15" al loop), `docs/estado-del-proyecto.md`
 - Depende de Henry: probar "Hoy" en su celular y en el computador; aprobación del hito (ADR nuevo).
 - Terminado: `pnpm trace --hito=15` sin huecos; CI verde.
+- Nota (2026-11-07): `pnpm trace --hito=15` con 0 sin prueba y el hito 15 en el loop de
+  `tests/unit/traceability.test.ts`. De paso, `getUnclosedDays` (T-152) ya no lee todas las ventas
+  de 7 días (cortaba en 1000 filas): una consulta de una fila por día. Latencia de "Hoy" medida en
+  local (servidor de desarrollo, carga 11): de una venta hecha afuera al total cambiado, 1,4–2,3 s
+  con solo fila y caja y 1,8–4,2 s con todos los bloques; la base responde en decenas de ms, el
+  tiempo es el render de desarrollo. Las pruebas de < 3 s (REQ-076.3) fallan a veces en local por
+  eso. El < 3 s se confirma en producción, en el celular de Henry. Queda `[ ]` hasta que Henry
+  pruebe y apruebe; la aprobación será ADR-049 (reservado).
 
 ---
 
