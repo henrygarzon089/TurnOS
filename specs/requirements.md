@@ -1542,8 +1542,9 @@ también al sol y con una mano.
   la fila del barbero ("Llamar a …", "Empezar corte", "Terminar y cobrar") DEBE medir ≥ 80 px. El
   texto base DEBE ser ≥ 16 px.
 - REQ-078.6 En listas y tablas (fila del dueño, clientes, barberos, solicitudes de privacidad), el
-  celular DEBE verse enmascarado con `maskPhone` (`300 *** 0001`). El número completo solo DEBE
-  verse en la ficha de un cliente y en el campo donde alguien escribe el suyo.
+  celular DEBE verse enmascarado con `maskPhone` (`••• ••• 0001`, solo los 4 últimos dígitos). El
+  número completo solo DEBE verse en la ficha de un cliente y en el campo donde alguien escribe el
+  suyo.
 - REQ-078.7 Las casillas del PIN NUNCA DEBEN mostrar dígitos: un punto por cada dígito escrito.
 - REQ-078.8 MIENTRAS una pantalla carga, EL SISTEMA DEBE mostrar un esqueleto con las mismas medidas
   del contenido, de modo que al llegar los datos nada se desplace (CLS ≤ 0,1).
