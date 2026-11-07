@@ -72,7 +72,7 @@ export function TodayAppointments({
 export function AppointmentBadge({ scheduledAt }: { scheduledAt: string | null }) {
   if (!scheduledAt) return null;
   return (
-    <span className="bg-brand text-brand-ink mt-0.5 mr-1 inline-block rounded-full px-2 py-0.5 text-xs font-semibold">
+    <span className="border-ink bg-card text-ink mt-0.5 mr-1 inline-block rounded-xs border px-2 py-0.5 text-xs font-semibold">
       {appointmentTag(scheduledAt)}
     </span>
   );

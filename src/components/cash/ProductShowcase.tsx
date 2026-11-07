@@ -47,8 +47,10 @@ export function ProductShowcase({
               role="tab"
               aria-selected={tab === c}
               onClick={() => setTab(c)}
-              className={`min-h-12 shrink-0 rounded-full border px-4 text-sm font-semibold ${
-                tab === c ? "bg-brand text-brand-ink border-brand" : "border-line bg-card"
+              className={`min-h-12 shrink-0 rounded-md border px-4 text-sm font-semibold ${
+                tab === c
+                  ? "border-brand bg-brand-soft text-ink border-2"
+                  : "border-line-strong bg-card"
               }`}
             >
               {c ?? "Todos"}

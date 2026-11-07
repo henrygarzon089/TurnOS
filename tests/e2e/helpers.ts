@@ -161,3 +161,12 @@ export async function cancelMyTicket(page: Page) {
     .getByRole("button", { name: "Sí, cancelar mi turno" })
     .click();
 }
+
+/** Abre un destino del barbero que vive en "Más" (Mis fotos, Mi estación; T-163). */
+export async function openBarberMore(page: Page, label: string) {
+  await page
+    .getByRole("navigation", { name: "Menú del barbero" })
+    .getByRole("button", { name: "Más" })
+    .click();
+  await page.getByRole("dialog", { name: "Más" }).getByRole("link", { name: label }).click();
+}

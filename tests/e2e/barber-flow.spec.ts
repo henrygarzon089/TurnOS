@@ -40,7 +40,8 @@ test.describe("Hito 1 · flujo del barbero", () => {
     await ensurePresent(page);
     await page.getByRole("button", { name: "Llamar al siguiente" }).click();
     await expect(page.getByRole("article", { name: /Turno actual/ })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Llamar al siguiente" })).toBeDisabled();
+    // REQ-007.5: con turno abierto no hay cómo llamar (T-163: el botón de abajo pasa a lo que sigue)
+    await expect(page.getByRole("button", { name: "Llamar al siguiente" })).toHaveCount(0);
 
     await page.getByRole("button", { name: "Ya está en la silla" }).click();
     await expect(page.getByText(/En servicio hace/)).toBeVisible();

@@ -141,8 +141,9 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     await page.getByRole("button", { name: "Llamar al siguiente" }).click();
     const current = page.getByRole("article", { name: `Turno actual ${name}` });
     await expect(current.getByText("🥤 Tinto")).toBeVisible();
-    await current.getByRole("button", { name: "Ya está en la silla" }).click();
-    await current.getByRole("button", { name: "Terminado" }).click();
+    // Los botones van en la barra fija de abajo, fuera de la tarjeta (REQ-078.5)
+    await page.getByRole("button", { name: "Ya está en la silla" }).click();
+    await page.getByRole("button", { name: "Terminado" }).click();
     const products = page.getByRole("region", { name: "Productos" });
     await expect(products.getByText("Helado")).toBeVisible();
     await expect(products.getByText("Tinto")).toHaveCount(0);
