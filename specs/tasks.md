@@ -30,6 +30,8 @@
 | H11 | Limpieza y bioseguridad (ADR-037) | T-100…T-109 | REQ-060…REQ-064 |
 | H13 | Inventario de insumos y vitrina (ADR-039) | T-120…T-129 | REQ-070…REQ-074 |
 | H14 | Rendimiento percibido y medición (ADR-043) | T-130…T-133 | REQ-075 |
+| H15 | Inicio "Hoy" y menú del dueño (ADR-046) | T-150…T-154 | REQ-076, REQ-077 |
+| H16 | Sistema visual nuevo (ADR-047, propuesta) | T-160…T-168 | REQ-078 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -1919,6 +1921,84 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ---
 
+## Hito 16 — Sistema visual nuevo (ADR-047)
+
+> **Propuesta** (2026-11-07): espera aprobación de REQ-078 y ADR-047 y respuesta a PA-H16-1…3.
+> Diseño en `design.md` §22; fuente visual en el lienzo "TurnOS — Rediseño". Sin migraciones. Cada
+> tarea es un PR; en el PR va la captura de cada ruta tocada junto a su tablero.
+> Si se aprueba PA-H16-1, el orden es T-160 → T-161 → Hito 15 (T-150…T-154) → T-162…T-168.
+
+### [ ] T-160 · Tokens nuevos sin sorpresas
+- REQ: REQ-078.1, REQ-078.2, REQ-078.14
+- Archivos: `src/app/globals.css` (`@theme`, `.btn-*`, `.field`), todos los `src/**/*.tsx` que usan
+  `accent` o colores de paleta, `scripts/lint-design.ts`, `package.json` (`lint:design`),
+  `.github/workflows/*` (correrlo en CI), `tests/unit/design-tokens.test.ts`,
+  `tests/unit/lint-design.test.ts`
+- Pasos: los tres de `design.md` §22.2, en commits separados dentro del mismo PR.
+- Terminado: `pnpm lint:design` en verde y en CI; prueba de contraste en verde; ningún botón de
+  acción quedó rojo (recorrido de las rutas de §22.4 con el seed); ninguna prueba E2E rota.
+
+### [ ] T-161 · Componentes base
+- REQ: REQ-078.3, REQ-078.5, REQ-078.7, REQ-078.9, REQ-078.11, REQ-078.12, REQ-078.13
+- Archivos: `src/components/ui/{Button,Field,PhoneField,MoneyField,PinField,OptionList,StatusChip,Sheet,Dialog,EmptyState,ErrorState,Toast,FlashRow,Icon}.tsx`,
+  `src/components/ui/{Skeleton,ConnectionBanner}.tsx` (reescritos), utilidades de movimiento en
+  `globals.css`, pruebas unitarias de cada uno
+- Terminado: pruebas de `PinField` (solo puntos), `Button` guardando (un solo envío), `Sheet` y
+  `Dialog` (foco y cierre), movimiento reducido; se ven igual que el tablero Componentes.
+
+### [ ] T-162 · Pantallas del cliente
+- REQ: REQ-078.3, REQ-078.4, REQ-078.8, REQ-078.10, REQ-078.11, REQ-078.15
+- Archivos: `src/app/(public)/**`, `src/components/queue/*` usados por el cliente,
+  `tests/e2e/visual-cliente.spec.ts`
+- Terminado: página del negocio, tomar turno, "Mi turno" (espera, llamado, en servicio, terminado),
+  cita, tarjeta de regalo, privacidad y pantalla TV como sus tableros; E2E de §22.5 en verde; prueba
+  desde el celular con el QR de La 33.
+
+### [ ] T-163 · Pantallas del barbero
+- REQ: REQ-078.4, REQ-078.5, REQ-078.8, REQ-078.10, REQ-078.12
+- Archivos: `src/app/(staff)/app/**`, `src/components/{queue,cash,staff,customers}/*` del barbero,
+  `tests/e2e/visual-barbero.spec.ts`
+- Terminado: botón gigante ≥ 80 px; cobro con total y botón fijos abajo; turno nuevo entra al final
+  con resaltado sin mover lo que está bajo el dedo; sin conexión deshabilita "Llamar" con el motivo.
+
+### [ ] T-164 · Acceso
+- REQ: REQ-078.7, REQ-078.9, REQ-078.15
+- Archivos: `src/app/(auth)/**`, `src/components/auth/*`, `tests/e2e/visual-acceso.spec.ts`
+- Terminado: PIN con 6 casillas y teclado numérico, nunca dígitos; error "Ese PIN no es" con
+  intentos; invitación y crear negocio como su tablero; tarjeta centrada en escritorio.
+
+### [ ] T-165 · Dueño: fila y caja
+- REQ: REQ-078.3, REQ-078.6, REQ-078.12, REQ-078.15
+- Archivos: `src/app/(staff)/admin/{fila,caja}/**`, `src/components/{queue,cash}/*` del dueño,
+  `tests/e2e/visual-dueno-fila-caja.spec.ts`
+- Terminado: fila por carriles en escritorio y lista en el celular con celulares enmascarados; caja
+  en 390, 768 y 1280 px; anular y cerrar caja con hoja de confirmación; venta nueva con resaltado.
+
+### [ ] T-166 · Dueño: operación y clientes
+- REQ: REQ-078.3, REQ-078.6, REQ-078.11
+- Archivos: `src/app/(staff)/admin/{citas,semana,fidelidad,recordar,membresias,regalos}/**` y sus
+  componentes, `tests/e2e/visual-dueno-modulos.spec.ts`
+- Terminado: como los tableros Dueno-Operacion y Dueno-Clientes; listas con `maskPhone`; vacíos con
+  qué hacer.
+
+### [ ] T-167 · Dueño: local y configuración
+- REQ: REQ-078.3, REQ-078.6, REQ-078.11
+- Archivos: `src/app/(staff)/admin/{limpieza,productos,inventario,barberos,servicios,horario,qr,mensajes,negocio,privacidad}/**`
+  y sus componentes, E2E en `visual-dueno-modulos.spec.ts`
+- Terminado: como los tableros Dueno-Local y Dueno-Config; cambiar el % de un barbero y borrar datos
+  de un cliente piden confirmación; celulares de barberos enmascarados en la tabla.
+
+### [ ] T-168 · Validación Hito 16
+- REQ: REQ-078
+- Archivos: `scripts/traceability.ts` (`HITOS["16"] = [[78, 78]]`, ya desde el PR de la spec),
+  `tests/unit/traceability.test.ts` (agregar "16" al loop), `docs/estado-del-proyecto.md`
+- Depende de Henry: recorrer cliente, barbero y dueño en su celular y en el computador, y una prueba
+  en la barbería (PA-H16-2); aprobación del hito (ADR nuevo).
+- Terminado: `pnpm trace --hito=16` sin huecos; CI verde; Speed Insights sin empeorar respecto al
+  Hito 14 (REQ-075.3).
+
+---
+
 ## Dependencias principales
 
 ```mermaid
@@ -1941,4 +2021,6 @@ flowchart LR
   T129 --> T130 --> T131 --> T132 --> T133
   T119 --> T140
   T133 --> T150 --> T151 --> T152 --> T153 --> T154
+  T133 --> T160 --> T161 --> T162 --> T163 --> T164 --> T165 --> T166 --> T167 --> T168
+  T161 -.-> T150
 ```

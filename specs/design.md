@@ -2600,3 +2600,90 @@ aparece.
   va a `/app`; un turno tomado en otro navegador aparece en "Hoy" en < 3 s; una venta cambia el total;
   la barra inferior en móvil y el menú lateral en escritorio llevan a cada módulo.
 
+
+## 22. Hito 16 — Sistema visual nuevo (REQ-078, ADR-047)
+
+> Propuesta (2026-11-07). Fuente visual: lienzo "TurnOS — Rediseño"
+> (https://claude.ai/artifact/VK8TXA9Aw9tnZMnrXZ4kPU). Sin migraciones ni cambios de flujo.
+
+### 22.1 Tokens (`src/app/globals.css`, `@theme`) (REQ-078.1, REQ-078.2)
+| Token | Valor | Uso | Contraste |
+|---|---|---|---|
+| `surface` | #F5F7FA | fondo de página | — |
+| `card` | #FFFFFF | tarjetas, hojas, filas | — |
+| `ink` | #14213A | texto principal | 14,96 sobre `surface` |
+| `muted` | #4A5872 | texto secundario | 7,17 sobre `card` |
+| `line` | #DCE2EA | divisores | decorativo |
+| `line-strong` | #8593A8 | borde de campos | 3,12 (no texto) |
+| `brand` / `brand-ink` | #0E1E3D / #FFFFFF | acción principal, cabecera | 16,9 |
+| `brand-soft` | #E8ECF4 | opción elegida, destino activo | — |
+| `accent` / `accent-ink` | #C21E2F / #FFFFFF | **solo** atención ahora | 5,96 |
+| `accent-soft` | #FBEAEC | fondo de alerta | `danger` encima: 6,39 |
+| `accent-on-brand` | #FF5A68 | punto "en vivo" sobre azul marino | 5,44 |
+| `called` | #C21E2F | "¡Es tu turno!" y turno llamado (antes era el amarillo #fef3c7) | 5,96 |
+| `danger` | #A8182A | texto y contorno destructivo, errores | 6,39 sobre `accent-soft` |
+| `ok` / `ok-soft` | #1E6B3A / #E6F2EA | terminado, cuadra | 6,52 |
+| `warn` / `warn-soft` | #8A4B00 / #FBF0DC | sin conexión, por vencer | 6,8 |
+| `skeleton` | #E3E8EF | esqueletos | — |
+| `flash` | #FFF6D6 | fila nueva por tiempo real | — |
+
+- Esquinas: `xs` 5 (chips), `sm` 8 (opciones), `md` 10 (botones, campos, paneles), `lg` 20 (hojas
+  inferiores). Sin `rounded-full` salvo puntos e interruptores.
+- Sombra solo en hojas y diálogos (`shadow-overlay`); tarjetas con borde `line`, sin sombra.
+- Tipografía `system-ui`: número del turno 120 px, cifra de caja 40, título 28, encabezado 20,
+  botón 18, cuerpo 16, meta 14. Cifras con `tabular-nums`.
+- `tests/unit/design-tokens.test.ts` lee `globals.css`, calcula el contraste de cada par de la tabla
+  y falla si alguno baja del mínimo (REQ-078.2).
+
+### 22.2 Migración sin sorpresas (ADR-047)
+1. Agregar `brand` con el azul actual (#1d4ed8) y cambiar todos los usos de `accent` a `brand`
+   (`rg "(bg|text|border|ring|outline|from|fill|stroke)-accent"`). A la vista no cambia nada.
+2. Cambiar `ring-blue-200` y demás colores de paleta por tokens (REQ-078.1).
+3. Poner los valores nuevos de la tabla; `accent` pasa a rojo y se usa solo donde REQ-078.3 lo
+   permite.
+- `scripts/lint-design.ts` (`pnpm lint:design`, en CI junto a `lint:texts`) falla si en `src/`
+  aparece: clase de paleta Tailwind (`-(slate|gray|blue|red|green|amber|yellow)-\d{2,3}`), hex suelto
+  en `.tsx`, `gradient`, `backdrop-blur`/`backdrop-filter`, `next/font` o `fonts.googleapis`
+  (REQ-078.1, REQ-078.14), o `bg-accent` fuera de la lista de archivos permitidos (REQ-078.3).
+
+### 22.3 Componentes base (`src/components/ui/`)
+| Componente | Estados | CA |
+|---|---|---|
+| `Button` (`primary`, `secondary`, `danger`, `text`; tamaño `giant` 80 px) | normal, tocado, foco visible, deshabilitado, guardando ("Guardando…"), error | 078.3, 078.5, 078.9 |
+| `Field`, `PhoneField` (+57, formato 3XX XXX XXXX), `MoneyField` (`parseCOP`), `PinField` (6 casillas, solo puntos) | vacío, foco, error con texto, deshabilitado | 078.5, 078.7 |
+| `OptionList` (servicio, barbero, medio de pago) | elegido = borde 2 px `brand` + `brand-soft` + marca; nunca solo color | 078.5 |
+| `StatusChip` | en espera, llamado (rojo relleno), en servicio, terminado, cancelado, no vino, cita | 078.3 |
+| `Sheet` (móvil) y `Dialog` (escritorio) | confirmación de destructivos; foco al primer campo; Esc / deslizar cierra | 078.3, 078.13 |
+| `Skeleton`, `EmptyState`, `ErrorState`, `OfflineBar`, `Toast` (con "Deshacer") | — | 078.8–078.11 |
+| `FlashRow` | entra con `flash` y se desvanece 1,2 s | 078.12 |
+| `Icon` | SVG de trazo 1,75 px en línea, `currentColor` | 078.14 |
+
+- Los que ya existen (`ui/Skeleton.tsx` de §19.1, `ui/ConnectionBanner.tsx` y los diálogos de
+  confirmación de cada módulo) se reescriben con estas piezas, no se duplican.
+- Movimiento: utilidades `motion-enter` (translateY 8 px + opacidad, 200 ms) y `motion-sheet`
+  (translateY 100 % → 0, 250 ms) con `@media (prefers-reduced-motion: reduce)` que deja solo
+  opacidad (REQ-078.13).
+
+### 22.4 Pantallas y su tablero del lienzo
+| Superficie | Rutas | Tablero | Tarea |
+|---|---|---|---|
+| Cliente | `/[slug]`, `/[slug]/turno`, `/t/[token]`, `/[slug]/cita`, `/c/[token]`, `/regalo/[token]`, `/[slug]/privacidad`, `/[slug]/pantalla` | Cliente-Negocio, Cliente-MiTurno, Cliente-Cita, Cliente-Escritorio, Cliente-Pantalla | T-162 |
+| Barbero | `/app/fila` (con cobro), `/app/clientes`, `/app/mis-numeros`, `/app/limpieza`, `/app/estacion`, `/app/mis-fotos` | Barbero-Fila, Barbero-Cobro, Barbero-Otros | T-163 |
+| Acceso | `/entrar`, `/invitacion/[token]`, `/crear-negocio` | Acceso | T-164 |
+| Dueño: Hoy y menú | `/admin` | Dueno-Hoy, Dueno-Hoy-Movil (Hito 15, §21) | T-150…T-153 |
+| Dueño: fila y caja | `/admin/fila`, `/admin/caja`, `/admin/caja/[fecha]` | Dueno-Fila, Dueno-Caja, Dueno-Caja-Movil | T-165 |
+| Dueño: módulos | `/admin/{citas,semana,fidelidad,recordar,membresias,regalos}` (T-166); `/admin/{limpieza,productos,inventario/*,barberos,servicios,horario,qr,mensajes,negocio,privacidad}` (T-167) | Dueno-Operacion, Dueno-Clientes, Dueno-Local, Dueno-Config | T-166, T-167 |
+
+- Cada tablero trae notas "Carga primero", "Se reserva" y "Movimiento": son la guía para el
+  esqueleto y el orden de `Suspense` de cada pantalla.
+- Si un tablero muestra un dato o botón que la app no tiene, no se construye: se anota en la tarea.
+
+### 22.5 Pruebas
+- Unitarias: contraste de tokens; `maskPhone` en cada lista; `PinField` nunca pinta dígitos; `Button`
+  en guardando no dispara dos veces.
+- `pnpm lint:design` en CI.
+- E2E (Pixel 7, iPhone 13, 360 px y escritorio 1280 px; tablet 768 para "Hoy" y caja): por cada ruta
+  de §22.4, sin desplazamiento horizontal, ≤ 1 botón principal visible, botones ≥ 48 px, CLS ≤ 0,1
+  medido con `PerformanceObserver` sobre "Slow 4G", estado sin conexión con `context.setOffline`, y
+  con `reducedMotion: 'reduce'` las transiciones no usan `transform`.
+- Revisión visual: captura de cada ruta junto al tablero en el PR (no bloquea CI).
