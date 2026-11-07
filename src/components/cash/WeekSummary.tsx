@@ -73,7 +73,7 @@ export function WeekSummary({ current: w, previous: p }: { current: Week; previo
 
       <GiftCardTotals totals={w} />
 
-      <p className="rounded-xl bg-amber-50 p-3 text-sm font-semibold" data-testid="lost">
+      <p className="rounded-xl bg-warn-soft p-3 text-sm font-semibold" data-testid="lost">
         {w.lostTickets} {w.lostTickets === 1 ? "turno perdido" : "turnos perdidos"} (no llegó o
         cancelado)
       </p>

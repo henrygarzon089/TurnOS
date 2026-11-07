@@ -113,7 +113,7 @@ export function TemplatesForm({
           <p className="text-muted text-xs">
             Variables: {TEMPLATE_META[key].vars ?? "{nombre} {negocio} {tiempo} {enlace}"}
           </p>
-          <div className="rounded-lg bg-green-50 p-2 text-sm" aria-label="Vista previa">
+          <div className="rounded-lg bg-ok-soft p-2 text-sm" aria-label="Vista previa">
             {renderTemplate(values[key], sample)}
           </div>
         </div>

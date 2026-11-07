@@ -29,7 +29,7 @@ export function TodayAppointments({
         {appointments.map((a) => (
           <li
             key={a.id}
-            className={`bg-card rounded-xl border p-3 ${a.barberUnavailable ? "border-amber-400" : "border-line"}`}
+            className={`bg-card rounded-xl border p-3 ${a.barberUnavailable ? "border-warn" : "border-line"}`}
           >
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">

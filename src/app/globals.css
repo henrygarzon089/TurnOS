@@ -15,7 +15,11 @@
   --color-brand-ink: #ffffff;
   --color-accent: #1d4ed8; /* acción principal (6.3:1 con blanco) */
   --color-accent-ink: #ffffff;
+  --color-brand-soft: #e8ecf4; /* opción elegida, destino activo */
+  --color-accent-soft: #fbeaec; /* fondo de alerta */
   --color-ok: #166534; /* estados positivos */
+  --color-ok-soft: #e6f2ea;
+  --color-warn-soft: #fbf0dc;
   --color-warn: #92400e; /* advertencias */
   --color-danger: #991b1b; /* cancelar, errores */
   --color-called: #fef3c7; /* fondo "es tu turno" */
@@ -46,11 +50,11 @@ body {
     @apply border-line bg-card text-ink active:bg-surface flex min-h-12 w-full items-center justify-center rounded-xl border px-4 text-lg font-semibold disabled:opacity-50;
   }
   .btn-danger {
-    @apply border-danger text-danger flex min-h-12 w-full items-center justify-center rounded-xl border px-4 text-lg font-semibold active:bg-red-50 disabled:opacity-50;
+    @apply border-danger text-danger flex min-h-12 w-full items-center justify-center rounded-xl border px-4 text-lg font-semibold active:bg-accent-soft disabled:opacity-50;
   }
 }
 
 /* Campos de formulario: altos, legibles con una mano (NFR-008) */
 .input {
-  @apply border-line bg-card text-ink focus:border-brand min-h-12 w-full rounded-xl border px-3 text-base outline-none focus:ring-2 focus:ring-blue-200;
+  @apply border-line bg-card text-ink focus:border-brand min-h-12 w-full rounded-xl border px-3 text-base outline-none focus:ring-2 focus:ring-brand-soft;
 }

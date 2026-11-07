@@ -48,7 +48,7 @@ export function CloseCash({
     return (
       <section
         aria-label="Cierre de caja"
-        className="rounded-xl border-2 border-green-700 bg-green-50 p-4"
+        className="rounded-xl border-2 border-ok bg-ok-soft p-4"
       >
         <p className="font-bold">
           Caja cerrada a las {formatTimeBogota(new Date(closure.closedAt))}

@@ -78,7 +78,7 @@ export function AppointmentAgenda({
       {canBook && <NewAppointment view={view} appUrl={appUrl} />}
 
       {error && (
-        <p role="alert" className="text-danger mt-3 rounded-xl bg-red-50 p-3 text-sm font-medium">
+        <p role="alert" className="text-danger mt-3 rounded-xl bg-accent-soft p-3 text-sm font-medium">
           {error}
         </p>
       )}
@@ -168,7 +168,7 @@ function AgendaRow({
 
   return (
     <li
-      className={`bg-card rounded-xl border p-3 ${warn ? "border-amber-400" : "border-line"}`}
+      className={`bg-card rounded-xl border p-3 ${warn ? "border-warn" : "border-line"}`}
       aria-label={`Cita de ${a.customerName}`}
     >
       <div className="flex items-start justify-between gap-2">
@@ -180,7 +180,7 @@ function AgendaRow({
             {a.serviceName} · {formatCOP(a.price)} · con {a.barberName}
           </p>
         </div>
-        <span className="shrink-0 rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold">
+        <span className="shrink-0 rounded-full bg-surface px-2 py-1 text-xs font-semibold">
           {booked && a.late ? "Perdió la hora" : STATUS[a.status]}
         </span>
       </div>
@@ -286,7 +286,7 @@ function NewAppointment({ view, appUrl }: { view: AgendaView; appUrl: string }) 
   if (services.length === 0) return null;
   // REQ-050.6: el aviso y el wa.me de confirmación quedan a la vista con el formulario cerrado
   const notice = done && (
-    <div role="status" className="mt-4 rounded-xl bg-green-50 p-3">
+    <div role="status" className="mt-4 rounded-xl bg-ok-soft p-3">
       <p className="text-ok text-sm font-medium">
         {done.existing ? "Ese celular ya tenía una cita: es esa." : "Cita creada."}
       </p>

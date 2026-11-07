@@ -99,7 +99,7 @@ export function BarberPhotos({
       </p>
 
       {full ? (
-        <p role="alert" className="text-warn rounded-xl bg-amber-50 p-3 text-sm font-medium">
+        <p role="alert" className="text-warn rounded-xl bg-warn-soft p-3 text-sm font-medium">
           {PHOTO_LIMIT_ERROR}
         </p>
       ) : (

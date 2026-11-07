@@ -45,7 +45,7 @@ export function MyAppointment({
         {alreadyHad && pendingAppt && (
           <p
             role="status"
-            className="text-warn mt-2 rounded-xl bg-amber-50 p-3 text-sm font-medium"
+            className="text-warn mt-2 rounded-xl bg-warn-soft p-3 text-sm font-medium"
           >
             Ya tienes una cita. Esta es.
           </p>

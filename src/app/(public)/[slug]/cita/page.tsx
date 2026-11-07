@@ -28,7 +28,7 @@ export default async function BookAppointmentPage({
       {info.enabled && info.barbers.length > 0 ? (
         <AppointmentForm business={b} info={info} today={businessDayBogota()} />
       ) : (
-        <p className="mt-4 rounded-xl bg-amber-50 p-4">
+        <p className="mt-4 rounded-xl bg-warn-soft p-4">
           {b.name} no está recibiendo citas por ahora. Puedes tomar turno en la fila.
         </p>
       )}

@@ -92,7 +92,7 @@ export function MyTicket({
         {alreadyHad && ticket.status === "waiting" && (
           <p
             role="status"
-            className="text-warn mt-2 rounded-xl bg-amber-50 p-3 text-sm font-medium"
+            className="text-warn mt-2 rounded-xl bg-warn-soft p-3 text-sm font-medium"
           >
             Ya tienes un turno en la fila. Este es.
           </p>
@@ -117,7 +117,7 @@ export function MyTicket({
 
       {ticket.membership && (
         <p
-          className="mt-4 rounded-xl bg-blue-50 p-3 text-sm font-semibold text-blue-800"
+          className="mt-4 rounded-xl bg-brand-soft p-3 text-sm font-semibold text-brand"
           data-testid="my-membership"
         >
           {membershipTicketLine(ticket.membership)}
@@ -359,27 +359,27 @@ function StatusCard({ ticket }: { ticket: Ticket }) {
       return (
         <section
           aria-live="assertive"
-          className="bg-called rounded-2xl border-2 border-amber-400 p-6 text-center"
+          className="bg-called text-accent-ink rounded-2xl p-6 text-center"
         >
           <p className="text-3xl font-bold">¡Es tu turno!</p>
           <p className="mt-2 text-lg">
             Pasa a la silla de <strong>{ticket.assignedBarberName ?? "tu barbero"}</strong>
           </p>
-          <p className="text-muted mt-2 text-sm">
+          <p className="mt-2 text-sm">
             Tienes {ticket.business.graceMinutes} minutos para llegar.
           </p>
         </section>
       );
     case "in_service":
       return (
-        <section className="rounded-2xl bg-green-50 p-6 text-center">
+        <section className="rounded-2xl bg-ok-soft p-6 text-center">
           <p className="text-2xl font-bold">Te están atendiendo</p>
           <p className="text-muted mt-1">con {ticket.assignedBarberName}</p>
         </section>
       );
     case "done":
       return (
-        <section className="rounded-2xl bg-green-50 p-6 text-center">
+        <section className="rounded-2xl bg-ok-soft p-6 text-center">
           <p className="text-2xl font-bold">¡Gracias por venir!</p>
           <p className="text-muted mt-1">Te esperamos la próxima.</p>
           {ticket.googleReviewUrl && (
@@ -396,14 +396,14 @@ function StatusCard({ ticket }: { ticket: Ticket }) {
       );
     case "no_show":
       return (
-        <section className="rounded-2xl bg-amber-50 p-6 text-center">
+        <section className="rounded-2xl bg-warn-soft p-6 text-center">
           <p className="text-2xl font-bold">Te llamamos y no estabas</p>
           <p className="text-muted mt-1">Puedes tomar un turno nuevo cuando llegues.</p>
         </section>
       );
     case "cancelled":
       return (
-        <section className="rounded-2xl bg-gray-100 p-6 text-center">
+        <section className="rounded-2xl bg-surface p-6 text-center">
           <p className="text-2xl font-bold">Turno cancelado</p>
           <p className="text-muted mt-1">
             {ticket.cancelReason === "closing"

@@ -62,7 +62,7 @@ export function NewBarberForm({ services }: { services: ServiceOption[] }) {
 
   if (state?.inviteUrl) {
     return (
-      <div className="border-ok flex flex-col gap-3 rounded-xl border bg-green-50 p-4">
+      <div className="border-ok flex flex-col gap-3 rounded-xl border bg-ok-soft p-4">
         <p className="font-semibold">Barbero creado. Compártele este enlace (dura 7 días):</p>
         <code data-testid="invite-url" className="bg-card rounded-lg p-2 text-sm break-all">
           {state.inviteUrl}
@@ -265,7 +265,7 @@ export function BarberCard({ barber, services }: { barber: BarberRow; services: 
       )}
 
       {inviteUrl && (
-        <div className="flex flex-col gap-2 rounded-lg bg-green-50 p-3">
+        <div className="flex flex-col gap-2 rounded-lg bg-ok-soft p-3">
           <code data-testid="invite-url" className="text-sm break-all">
             {inviteUrl}
           </code>

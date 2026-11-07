@@ -74,7 +74,7 @@ export function ScreenBoard({
           return (
             <article
               key={b.id}
-              className={`rounded-3xl p-6 ${hl ? "text-ink animate-pulse bg-amber-300" : "bg-white/10"}`}
+              className={`rounded-3xl p-6 ${hl ? "bg-called text-accent-ink animate-pulse" : "bg-white/10"}`}
               aria-label={b.name}
             >
               <h2 className="text-4xl font-bold">{b.name}</h2>

@@ -24,7 +24,7 @@ export default async function JoinPage({ params }: { params: Promise<{ slug: str
           <JoinForm business={b} now={new Date().toISOString()} />
         </div>
       ) : (
-        <p className="mt-4 rounded-xl bg-amber-50 p-4">
+        <p className="mt-4 rounded-xl bg-warn-soft p-4">
           La fila está cerrada ahora.{b.nextOpening ? ` ${b.nextOpening}.` : ""}
         </p>
       )}

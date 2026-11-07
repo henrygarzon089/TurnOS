@@ -11,7 +11,7 @@ export function AutoMessages({ stats, businessName }: { stats: MonthStats; busin
     <section aria-label="Avisos automáticos" className="mt-4 flex flex-col gap-3">
       <h2 className="text-lg font-bold">Avisos automáticos</h2>
       {stats.capReached && (
-        <p role="alert" className="text-warn rounded-xl bg-amber-50 p-3 text-sm font-medium">
+        <p role="alert" className="text-warn rounded-xl bg-warn-soft p-3 text-sm font-medium">
           Llegaste al tope de 3.000 avisos del mes. Los turnos vuelven al botón manual hasta el
           próximo mes.
         </p>
@@ -29,7 +29,7 @@ export function AutoMessages({ stats, businessName }: { stats: MonthStats; busin
       {AUTO_MESSAGES.map((m) => (
         <div key={m.title} className="border-line bg-card rounded-xl border p-3">
           <p className="font-semibold">{m.title}</p>
-          <p className="mt-1 rounded-lg bg-green-50 p-2 text-sm">
+          <p className="mt-1 rounded-lg bg-ok-soft p-2 text-sm">
             {renderTemplate(m.body, { negocio: businessName })}
           </p>
         </div>

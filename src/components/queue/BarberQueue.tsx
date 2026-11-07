@@ -129,12 +129,12 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
       </section>
 
       {error && (
-        <p role="alert" className="text-danger mb-3 rounded-xl bg-red-50 p-3 text-sm font-medium">
+        <p role="alert" className="text-danger mb-3 rounded-xl bg-accent-soft p-3 text-sm font-medium">
           {error}
         </p>
       )}
       {notice && (
-        <p role="status" className="text-ok mb-3 rounded-xl bg-green-50 p-3 text-sm font-medium">
+        <p role="status" className="text-ok mb-3 rounded-xl bg-ok-soft p-3 text-sm font-medium">
           {notice}
         </p>
       )}
@@ -167,7 +167,7 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
             {view.pendingPayments.map((t) => (
               <li
                 key={t.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-amber-400 bg-amber-50 p-3"
+                className="flex items-center justify-between gap-3 rounded-xl border border-warn bg-warn-soft p-3"
               >
                 <span className="min-w-0 truncate font-semibold">
                   {t.customerName} · {t.serviceName}
@@ -294,7 +294,7 @@ function CurrentCard({
 
   return (
     <article
-      className={`mt-1 rounded-2xl border-2 p-4 ${overGrace ? "border-amber-400 bg-amber-50" : "border-brand bg-card"}`}
+      className={`mt-1 rounded-2xl border-2 p-4 ${overGrace ? "border-warn bg-warn-soft" : "border-brand bg-card"}`}
       aria-label={`Turno actual ${ticket.customerName}`}
     >
       <p className="text-lg font-bold">
@@ -402,7 +402,7 @@ function WaitingRow({
 
   return (
     <li
-      className={`border-line bg-card rounded-xl border p-3 ${shouldNotify ? "border-amber-400" : ""}`}
+      className={`border-line bg-card rounded-xl border p-3 ${shouldNotify ? "border-warn" : ""}`}
     >
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
@@ -426,7 +426,7 @@ function WaitingRow({
             aria-disabled={busy !== null}
             className={`flex min-h-12 shrink-0 items-center rounded-full px-3 text-sm font-semibold ${
               ticket.notifiedAt
-                ? "text-ok bg-green-50"
+                ? "text-ok bg-ok-soft"
                 : shouldNotify
                   ? "bg-brand text-brand-ink"
                   : "border-line border"
@@ -490,7 +490,7 @@ function PauseSheet({
 /** REQ-019.3: el cliente tiene el premio de fidelidad disponible. */
 function RewardBadge() {
   return (
-    <span className="text-ok mt-0.5 inline-block rounded-full bg-green-50 px-2 py-0.5 text-xs font-semibold">
+    <span className="text-ok mt-0.5 inline-block rounded-full bg-ok-soft px-2 py-0.5 text-xs font-semibold">
       🎁 Premio disponible
     </span>
   );

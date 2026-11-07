@@ -225,7 +225,7 @@ export function JoinForm({ business, now }: Props) {
             return (
               <label
                 key={s.id}
-                className={`border-line bg-card flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2 ${nobody ? "text-muted cursor-not-allowed bg-gray-100" : "cursor-pointer"} ${serviceId === s.id ? "border-brand ring-2 ring-blue-200" : ""}`}
+                className={`border-line bg-card flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2 ${nobody ? "text-muted cursor-not-allowed bg-surface" : "cursor-pointer"} ${serviceId === s.id ? "border-brand ring-2 ring-brand-soft" : ""}`}
               >
                 <span className="flex min-w-0 items-center gap-2 break-words">
                   <input
@@ -338,7 +338,7 @@ export function JoinForm({ business, now }: Props) {
               (c) => (
                 <label
                   key={c.id ?? "ninguna"}
-                  className={`border-line bg-card flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 ${shownCourtesyId === c.id ? "border-brand ring-2 ring-blue-200" : ""}`}
+                  className={`border-line bg-card flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 ${shownCourtesyId === c.id ? "border-brand ring-2 ring-brand-soft" : ""}`}
                 >
                   <input
                     type="radio"
@@ -367,7 +367,7 @@ export function JoinForm({ business, now }: Props) {
       )}
 
       {warning && (
-        <p role="status" className="text-warn rounded-xl bg-amber-50 p-3 text-sm font-medium">
+        <p role="status" className="text-warn rounded-xl bg-warn-soft p-3 text-sm font-medium">
           {warning}
         </p>
       )}

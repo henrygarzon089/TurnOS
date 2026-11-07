@@ -475,7 +475,7 @@ export function CheckoutSheet({
               )}
               {memberLine(l) && (
                 <p
-                  className="mt-1 text-sm font-semibold text-blue-800"
+                  className="mt-1 text-sm font-semibold text-brand"
                   data-testid="membership-line"
                 >
                   {memberLine(l)!.label}: −{formatCOP(memberLine(l)!.discount)}
@@ -543,7 +543,7 @@ export function CheckoutSheet({
       )}
 
       {rewardAvailable && (
-        <div className="rounded-xl bg-green-50 p-3">
+        <div className="rounded-xl bg-ok-soft p-3">
           {rewardApplied ? (
             <button
               type="button"

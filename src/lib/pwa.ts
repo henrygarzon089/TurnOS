@@ -4,6 +4,10 @@ import type { Metadata, MetadataRoute } from "next";
  * PWA por negocio (REQ-032.1, PA-22: la app del cliente lleva el nombre de la barbería). La app
  * del personal usa el manifest base `src/app/manifest.ts` ("TurnOS").
  */
+/** Mismos valores que `--color-brand` y `--color-surface` (prueba en design-tokens.test.ts). */
+export const PWA_THEME_COLOR = "#1d4ed8";
+export const PWA_BACKGROUND_COLOR = "#f8fafc";
+
 type Biz = { name: string; pwaName?: string | null; slug: string };
 
 const ICONS: MetadataRoute.Manifest["icons"] = [
@@ -32,8 +36,8 @@ export function businessManifest(b: Biz): MetadataRoute.Manifest {
     // "Mi turno" vive en /t/[token]: el alcance es todo el sitio
     scope: "/",
     display: "standalone",
-    background_color: "#f8fafc",
-    theme_color: "#1d4ed8",
+    background_color: PWA_BACKGROUND_COLOR,
+    theme_color: PWA_THEME_COLOR,
     icons: ICONS,
   };
 }

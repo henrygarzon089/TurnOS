@@ -106,7 +106,7 @@ export function AppointmentForm({ business, info, today }: Props) {
   }
 
   if (services.length === 0) {
-    return <p className="mt-4 rounded-xl bg-amber-50 p-4">Por ahora no hay horas para reservar.</p>;
+    return <p className="mt-4 rounded-xl bg-warn-soft p-4">Por ahora no hay horas para reservar.</p>;
   }
 
   return (
