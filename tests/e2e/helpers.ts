@@ -15,6 +15,15 @@ export const SEED = {
   slug: "la-33",
 };
 
+/**
+ * REQ-075.1: tras `page.goto` el contenido ya llegó en el HTML pero React puede tardar un instante en
+ * cambiar el esqueleto por él (y en hidratarlo). Las pruebas que actúan sin auto-espera
+ * (`setInputFiles`, `allTextContents`, `isVisible`) lo esperan aquí.
+ */
+export async function waitForContent(page: Page) {
+  await expect(page.locator('[aria-busy="true"]')).toHaveCount(0, { timeout: 10_000 });
+}
+
 /** Mensajes role=alert de la app, sin el anunciador de rutas de Next (`__next-route-announcer__`). */
 export function appAlert(page: Page) {
   return page.locator('[role="alert"]:not(#__next-route-announcer__)');

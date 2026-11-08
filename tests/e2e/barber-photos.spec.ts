@@ -1,6 +1,14 @@
 import { randomUUID } from "node:crypto";
 import { expect, test, type Page } from "@playwright/test";
-import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED, openBarberMore } from "./helpers";
+import {
+  adminDb,
+  loginAsBarber,
+  loginAsOwner,
+  openBarberMore,
+  resetQueue,
+  SEED,
+  waitForContent,
+} from "./helpers";
 
 /** T-062 · REQ-039. Juan es el barbero 0 del seed; Mateo, el 4. */
 const CONSENT = "El cliente me dio permiso de publicar esta foto";
@@ -51,6 +59,7 @@ async function countPhotos(barber: string) {
 }
 
 async function uploadWithConsent(page: Page) {
+  await waitForContent(page);
   await page.getByLabel("Escoger foto").setInputFiles(photo);
   await page.getByRole("checkbox", { name: CONSENT }).check();
   await page.getByRole("button", { name: "Subir foto" }).click();
@@ -70,6 +79,7 @@ test.describe("T-062 fotos de cortes", () => {
     await loginAsBarber(page);
     await openBarberMore(page, "Mis fotos");
     await expect(page).toHaveURL(/\/app\/mis-fotos/);
+    await waitForContent(page);
     await page.getByLabel("Escoger foto").setInputFiles(photo);
     await expect(page.getByRole("button", { name: "Subir foto" })).toBeDisabled();
     expect(await countPhotos("Juan")).toBe(0);
@@ -120,6 +130,7 @@ test.describe("T-062 fotos de cortes", () => {
   test("REQ-039.4 un archivo que no es imagen se rechaza", async ({ page }) => {
     await loginAsBarber(page);
     await page.goto("/app/mis-fotos");
+    await waitForContent(page);
     await page.getByLabel("Escoger foto").setInputFiles({
       name: "lista.txt",
       mimeType: "text/plain",
@@ -150,6 +161,7 @@ test.describe("T-062 fotos de cortes", () => {
     await seedPhotos("Juan", 11);
     await loginAsBarber(page);
     await page.goto("/app/mis-fotos");
+    await waitForContent(page);
     await page.getByLabel("Escoger foto").setInputFiles(photo);
     await expect(page.getByRole("checkbox", { name: CONSENT })).toBeVisible();
     await seedPhotos("Juan", 1);
@@ -178,6 +190,7 @@ test.describe("T-062 fotos de cortes", () => {
   test("REQ-039.1 el dueño sube y borra las de cualquier barbero", async ({ page }) => {
     await loginAsOwner(page);
     await page.goto("/admin/barberos");
+    await waitForContent(page);
     const card = page.getByRole("article", { name: "Barbero Pedro" });
     await card.getByRole("button", { name: "Editar" }).click();
     await card.getByText("Fotos de cortes").click();

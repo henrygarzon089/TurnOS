@@ -369,8 +369,12 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - Medición: Henry eligió Speed Insights anónimo y el cambio de texto de NFR-005 (2026-11-06).
 - T-130 hecha (rama `claude/t-130-esqueletos-dd66c5`, 2026-11-06): `Skeleton.tsx` y `loading.tsx` en
   `/[slug]` y `/t/[token]`; prueba `tests/unit/skeleton.test.tsx` (REQ-075.1 y .2 con prueba escrita).
-- Siguiente: T-131 (esqueletos del personal). Pendiente de Henry: revisar la cuota de Speed Insights en el plan de Vercel
-  (T-132); confirmar la región de Supabase y de las funciones de Vercel (T-133).
+- T-131 hecha (rama `claude/t-131-esqueletos-personal`, 2026-11-06): `StaffGate` dentro de `Suspense`
+  en `(staff)/layout.tsx` y `admin/layout.tsx`, `loading.tsx` en `/app/fila`, `/admin/fila` y `/admin/caja`;
+  E2E `tests/e2e/loading.spec.ts`.
+- T-132 hecha (PR #113, 2026-11-06): Speed Insights con `redactVitalsUrl`. Pendiente de Henry: activarlo en
+  el proyecto de Vercel y revisar la cuota de su plan.
+- Siguiente: T-133. Pendiente de Henry: confirmar la región de Supabase y de las funciones de Vercel.
 - ADR-043 aceptada; la aprobación del hito terminado será ADR-044 (reservado).
 
 ### Hito 15 — inicio "Hoy" y menú del dueño (**spec aprobada**, ADR-046, 2026-11-06)

@@ -1824,7 +1824,13 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: prueba de `aria-busy`, "Cargando…", `motion-safe` y sin texto de datos; en el celular
   con "Slow 4G" se ve la forma de la página del QR y de "Mi turno" antes de los datos.
 
-### [ ] T-131 · Esqueletos del personal
+### [x] T-131 · Esqueletos del personal
+- Nota (2026-11-06): hecha. Desvíos menores: la forma de las tres pantallas vive en
+  `src/components/ui/StaffPageSkeleton.tsx` (la usan los tres `loading.tsx`) y el fallback de
+  `admin/layout.tsx` son tres bloques sin encabezado (el del personal ya está pintado). Sin sesión de
+  Supabase, `src/proxy.ts` sigue redirigiendo a `/entrar` antes del layout; sin membresía o sin rol,
+  el `redirect` ahora ocurre dentro del Suspense (Next lo resuelve en el cliente). La E2E corre en CI
+  (build de producción); no se corrió local porque el Supabase local compartido no respondía.
 - REQ: REQ-075.1
 - Archivos: `src/app/(staff)/layout.tsx` (`StaffGate` dentro de `Suspense` con
   `StaffShellSkeleton`), `src/app/(staff)/admin/layout.tsx`, `src/app/(staff)/app/fila/loading.tsx`,
