@@ -79,7 +79,7 @@ describe("PinField", () => {
   it("REQ-078.7 muestra un punto por dígito y nunca los dígitos", () => {
     const h = html(<PinField label="Tu PIN" value="123" onChange={() => {}} />);
     expect(visible(h)).not.toMatch(/\d/);
-    expect((visible(h).match(/•/g) ?? []).length).toBe(3);
+    expect((visible(h).match(/●/g) ?? []).length).toBe(3);
     expect(h).toContain('type="password"');
     expect(h).toContain('inputMode="numeric"');
   });
