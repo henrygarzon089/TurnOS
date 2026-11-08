@@ -488,6 +488,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   vitrina, filas que se parten en dos líneas, "Visto" de 48 px, prueba de acceso que cuenta envíos
   en los tres motores, y el job de E2E con límite de 45 minutos. Sin cambio de textos ni de flujos.
   T-168: `pnpm trace --hito=16` sin huecos.
+- Guía de prueba de los Hitos 8, 14, 15 y 16, con casillas: `docs/guia-de-prueba-hitos-8-14-15-16.md`.
 - Falta de Henry: desplegar `main` cuando el CI esté en verde, recorrer cliente, barbero y dueño en
   el celular y el computador, la prueba en la barbería (PA-H16-2), comparar Speed Insights con el
   Hito 14 y aprobar (ADR-050, reservado).
