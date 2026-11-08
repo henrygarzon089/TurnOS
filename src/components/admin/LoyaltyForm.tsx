@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { ErrorText } from "@/components/auth/LoginForm";
+import { SubmitButton } from "@/components/ui/Button";
 import { saveLoyaltyProgram, type FormState } from "@/lib/actions/admin";
 import { formatCOP } from "@/lib/domain/money";
 
@@ -22,16 +23,13 @@ export function LoyaltyForm({
   program: LoyaltyProgramRow;
   services: LoyaltyServiceRow[];
 }) {
-  const [state, action, pending] = useActionState<FormState, FormData>(
-    saveLoyaltyProgram,
-    undefined,
-  );
+  const [state, action] = useActionState<FormState, FormData>(saveLoyaltyProgram, undefined);
   const [enabled, setEnabled] = useState(program.enabled);
   const [rewardType, setRewardType] = useState(program.reward_type);
 
   return (
-    <form action={action} className="mt-4 flex flex-col gap-4">
-      <label className="border-line bg-card flex min-h-14 items-center gap-3 rounded-md border px-4">
+    <form action={action} className="flex flex-col gap-4 p-4">
+      <label className="border-line flex min-h-14 items-center gap-3 rounded-md border px-4">
         <input
           type="checkbox"
           name="enabled"
@@ -60,9 +58,9 @@ export function LoyaltyForm({
           />
         </label>
 
-        <fieldset className="border-line bg-card flex flex-col gap-2 rounded-md border p-4">
+        <fieldset className="border-line flex flex-col gap-1 rounded-md border p-4">
           <legend className="px-1 text-sm font-semibold">Premio</legend>
-          <label className="flex min-h-10 items-center gap-3">
+          <label className="flex min-h-12 items-center gap-3">
             <input
               type="radio"
               name="reward_type"
@@ -79,7 +77,7 @@ export function LoyaltyForm({
               <select
                 name="reward_service_id"
                 defaultValue={program.reward_service_id ?? ""}
-                className="input"
+                className="input h-12"
               >
                 <option value="">Elige un servicio</option>
                 {services.map((s) => (
@@ -90,7 +88,7 @@ export function LoyaltyForm({
               </select>
             </label>
           )}
-          <label className="flex min-h-10 items-center gap-3">
+          <label className="flex min-h-12 items-center gap-3">
             <input
               type="radio"
               name="reward_type"
@@ -117,10 +115,10 @@ export function LoyaltyForm({
           )}
         </fieldset>
 
-        <fieldset className="border-line bg-card flex flex-col gap-1 rounded-md border p-4">
+        <fieldset className="border-line flex flex-col gap-1 rounded-md border p-4">
           <legend className="px-1 text-sm font-semibold">Servicios que suman sello</legend>
           {services.map((s) => (
-            <label key={s.id} className="flex min-h-10 items-center gap-3">
+            <label key={s.id} className="flex min-h-12 items-center gap-3">
               <input
                 type="checkbox"
                 name="counts"
@@ -144,9 +142,7 @@ export function LoyaltyForm({
           Tarjeta guardada.
         </p>
       )}
-      <button type="submit" className="btn-primary" disabled={pending}>
-        {pending ? "Guardando…" : "Guardar tarjeta"}
-      </button>
+      <SubmitButton className="w-full sm:w-auto sm:self-start">Guardar tarjeta</SubmitButton>
     </form>
   );
 }

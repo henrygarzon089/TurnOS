@@ -87,11 +87,14 @@ test.describe("REQ-020 clientes para recordar", () => {
 
       await owner.goto("/admin/recordar");
       const name = await firstRowName(owner);
-      owner.once("dialog", (d) => d.accept());
       await list(owner)
         .getByRole("listitem")
         .filter({ hasText: name })
         .getByRole("button", { name: "No contactar" })
+        .click();
+      await owner
+        .getByRole("dialog", { name: /No volver a contactar/ })
+        .getByRole("button", { name: "Sí, no contactar" })
         .click();
       await expect(list(owner).getByRole("listitem").filter({ hasText: name })).toHaveCount(0);
       await owner.reload();

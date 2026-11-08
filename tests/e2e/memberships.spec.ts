@@ -39,6 +39,7 @@ test.describe("REQ-044 / REQ-045 / REQ-046 / REQ-048 Membresías del dueño", ()
 
     try {
       // REQ-046.2 nueva familia por celular
+      await page.getByRole("button", { name: "Nueva familia" }).click();
       const form = page.getByRole("form", { name: "Nueva familia" });
       await form.getByLabel("Nombre").fill(holder);
       await form.getByLabel("Celular").fill(phone);
