@@ -22,7 +22,7 @@ export default async function GiftCardPage({ params }: { params: Promise<{ token
       <p className="text-muted text-center text-sm">{card.businessName}</p>
       <section
         aria-label="Tarjeta de regalo"
-        className="bg-ink text-card flex flex-col gap-3 rounded-2xl p-6 text-center shadow"
+        className="bg-ink text-card flex flex-col gap-3 rounded-md p-6 text-center shadow"
       >
         <p className="text-sm tracking-wide uppercase">Tarjeta de regalo</p>
         {card.recipientName && <p className="text-xl font-semibold">Para {card.recipientName}</p>}

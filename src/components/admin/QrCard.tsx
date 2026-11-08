@@ -39,10 +39,10 @@ export function QrCard({
         <img
           src={png}
           alt={`Código QR de la fila de ${businessName}`}
-          className="bg-card border-line w-64 rounded-2xl border p-2"
+          className="bg-card border-line w-64 rounded-md border p-2"
         />
       ) : (
-        <div className="bg-card border-line h-64 w-64 animate-pulse rounded-2xl border" />
+        <div className="bg-card border-line h-64 w-64 animate-pulse rounded-md border" />
       )}
       <p className="text-muted text-center text-sm break-all">{url}</p>
       <div className="flex w-full flex-col gap-2">

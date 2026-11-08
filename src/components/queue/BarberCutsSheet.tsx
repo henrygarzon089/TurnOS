@@ -41,7 +41,7 @@ export function BarberCutsSheet({
       aria-label={`Cortes de ${barber.name}`}
       className="fixed inset-0 z-30 flex items-end bg-black/40"
     >
-      <div className="bg-card mx-auto flex max-h-[85dvh] w-full max-w-md flex-col gap-3 rounded-t-2xl p-5">
+      <div className="bg-card mx-auto flex max-h-[85dvh] w-full max-w-md flex-col gap-3 rounded-t-md p-5">
         <p className="text-lg font-bold">Cortes de {barber.name}</p>
         <div className="min-h-0 flex-1 overflow-y-auto">
           {failed && <ErrorText>No se pudieron cargar las fotos.</ErrorText>}
@@ -59,7 +59,7 @@ export function BarberCutsSheet({
                     width={400}
                     height={400}
                     unoptimized
-                    className="aspect-square w-full rounded-lg object-cover"
+                    className="aspect-square w-full rounded-sm object-cover"
                   />
                 </li>
               ))}

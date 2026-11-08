@@ -29,7 +29,7 @@ export function TodayAppointments({
         {appointments.map((a) => (
           <li
             key={a.id}
-            className={`bg-card rounded-xl border p-3 ${a.barberUnavailable ? "border-amber-400" : "border-line"}`}
+            className={`bg-card rounded-md border p-3 ${a.barberUnavailable ? "border-warn" : "border-line"}`}
           >
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
@@ -72,7 +72,7 @@ export function TodayAppointments({
 export function AppointmentBadge({ scheduledAt }: { scheduledAt: string | null }) {
   if (!scheduledAt) return null;
   return (
-    <span className="bg-accent text-accent-ink mt-0.5 mr-1 inline-block rounded-full px-2 py-0.5 text-xs font-semibold">
+    <span className="bg-brand text-brand-ink mt-0.5 mr-1 inline-block rounded-full px-2 py-0.5 text-xs font-semibold">
       {appointmentTag(scheduledAt)}
     </span>
   );

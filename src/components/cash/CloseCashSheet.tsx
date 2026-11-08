@@ -46,10 +46,7 @@ export function CloseCash({
   if (closure) {
     const totals = closure.totals as ClosureTotals;
     return (
-      <section
-        aria-label="Cierre de caja"
-        className="rounded-xl border-2 border-green-700 bg-green-50 p-4"
-      >
+      <section aria-label="Cierre de caja" className="border-ok bg-ok-soft rounded-md border-2 p-4">
         <p className="font-bold">
           Caja cerrada a las {formatTimeBogota(new Date(closure.closedAt))}
         </p>
@@ -107,7 +104,7 @@ export function CloseCash({
           aria-label="Cerrar caja"
           className="fixed inset-0 z-30 flex items-end bg-black/40"
         >
-          <div className="bg-card flex w-full flex-col gap-3 rounded-t-2xl p-5">
+          <div className="bg-card flex w-full flex-col gap-3 rounded-t-md p-5">
             <p className="text-lg font-bold">Cerrar caja</p>
             <p className="text-sm">
               Cuenta el efectivo de la caja. Al cerrar, no se pueden registrar ni anular ventas de

@@ -66,7 +66,7 @@ export function ServiceForm({
   return (
     <form
       action={action}
-      className={`border-line bg-card flex flex-col gap-2 rounded-xl border p-3 ${
+      className={`border-line bg-card flex flex-col gap-2 rounded-md border p-3 ${
         service && !service.is_active ? "opacity-60" : ""
       }`}
       aria-label={isNew ? "Nuevo servicio" : `Servicio ${service.name}`}
@@ -218,11 +218,11 @@ function ProductPhoto({
             width={64}
             height={64}
             unoptimized
-            className="h-16 w-16 rounded-lg object-cover"
+            className="h-16 w-16 rounded-sm object-cover"
           />
           <button
             type="button"
-            className="text-accent min-h-12 text-sm underline"
+            className="text-brand min-h-12 text-sm underline"
             onClick={() => onChange(null)}
           >
             Quitar foto
@@ -271,7 +271,7 @@ export function ProductForm({
   return (
     <form
       action={action}
-      className={`border-line bg-card flex flex-col gap-2 rounded-xl border p-3 ${
+      className={`border-line bg-card flex flex-col gap-2 rounded-md border p-3 ${
         product && !product.is_active ? "opacity-60" : ""
       }`}
       aria-label={isNew ? "Nuevo producto" : `Producto ${product.name}`}

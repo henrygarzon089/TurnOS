@@ -16,7 +16,9 @@ export default async function BarberQueuePage() {
     session?.barberId ? getMyQueue() : null,
     session ? getCleaningToday() : null,
   ]);
-  const banner = cleaning?.enabled ? <CleaningBanner openingPending={cleaning.openingPending} /> : null;
+  const banner = cleaning?.enabled ? (
+    <CleaningBanner openingPending={cleaning.openingPending} />
+  ) : null;
   if (!view) {
     return (
       <main className="py-6">
@@ -25,7 +27,7 @@ export default async function BarberQueuePage() {
         <p className="text-muted mt-2">
           Tu cuenta no tiene una silla asignada.{" "}
           {session?.role === "owner" ? (
-            <Link href="/admin/fila" className="text-accent underline">
+            <Link href="/admin/fila" className="text-brand underline">
               Ir a la fila del negocio
             </Link>
           ) : (

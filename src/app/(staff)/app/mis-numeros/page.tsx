@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Mis números" };
 
 function Card({ title, t, testId }: { title: string; t: Totals; testId: string }) {
   return (
-    <div className="border-line bg-card rounded-xl border p-4" data-testid={testId}>
+    <div className="border-line bg-card rounded-md border p-4" data-testid={testId}>
       <p className="text-muted text-xs font-semibold uppercase">{title}</p>
       <p className="mt-1 text-2xl font-bold">{formatCOP(t.total)}</p>
       <p className="text-muted text-sm">
@@ -70,7 +70,7 @@ export default async function MyNumbersPage() {
                 <li
                   key={s.id}
                   data-testid={`my-sale-${s.id}`}
-                  className={`border-line bg-card flex items-start justify-between gap-3 rounded-xl border p-3 text-sm`}
+                  className={`border-line bg-card flex items-start justify-between gap-3 rounded-md border p-3 text-sm`}
                 >
                   <div className={`min-w-0 ${voided ? "line-through" : ""}`}>
                     <p className="font-semibold">{s.items}</p>

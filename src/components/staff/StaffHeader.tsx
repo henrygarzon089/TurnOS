@@ -24,30 +24,30 @@ export function StaffHeader({ session }: { session: StaffSession }) {
           aria-label="Barbero"
           className="mx-auto flex w-full max-w-md flex-wrap gap-x-2 px-4 pb-2"
         >
-          <Link href="/app/fila" className="text-accent min-h-10 px-2 py-2 text-sm font-semibold">
+          <Link href="/app/fila" className="text-brand min-h-10 px-2 py-2 text-sm font-semibold">
             Mi fila
           </Link>
           <Link
             href="/app/clientes"
-            className="text-accent min-h-10 px-2 py-2 text-sm font-semibold"
+            className="text-brand min-h-10 px-2 py-2 text-sm font-semibold"
           >
             Clientes
           </Link>
           <Link
             href="/app/mis-numeros"
-            className="text-accent min-h-10 px-2 py-2 text-sm font-semibold"
+            className="text-brand min-h-10 px-2 py-2 text-sm font-semibold"
           >
             Mis números
           </Link>
           <Link
             href="/app/mis-fotos"
-            className="text-accent min-h-10 px-2 py-2 text-sm font-semibold"
+            className="text-brand min-h-10 px-2 py-2 text-sm font-semibold"
           >
             Mis fotos
           </Link>
           <Link
             href="/app/estacion"
-            className="text-accent min-h-10 px-2 py-2 text-sm font-semibold"
+            className="text-brand min-h-10 px-2 py-2 text-sm font-semibold"
           >
             Mi estación
           </Link>

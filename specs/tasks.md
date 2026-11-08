@@ -1929,7 +1929,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 > tarea es un PR; en el PR va la captura de cada ruta tocada junto a su tablero.
 > Orden (PA-H16-1): T-160 → T-161 → Hito 15 (T-150…T-154) → T-162…T-168.
 
-### [ ] T-160 · Tokens nuevos sin sorpresas
+### [x] T-160 · Tokens nuevos sin sorpresas
 - REQ: REQ-078.1, REQ-078.2, REQ-078.14
 - Archivos: `src/app/globals.css` (`@theme`, `.btn-*`, `.field`), todos los `src/**/*.tsx` que usan
   `accent` o colores de paleta, `scripts/lint-design.ts`, `package.json` (`lint:design`),
@@ -1938,6 +1938,19 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Pasos: los tres de `design.md` §22.2, en commits separados dentro del mismo PR.
 - Terminado: `pnpm lint:design` en verde y en CI; prueba de contraste en verde; ningún botón de
   acción quedó rojo (recorrido de las rutas de §22.4 con el seed); ninguna prueba E2E rota.
+- Hecho (2026-11-07): los tres pasos en commits separados. Notas:
+  - La lógica del lint está en `src/lib/design/lint-rules.ts` (pura, probada) y el contraste en
+    `src/lib/design/contrast.ts`; `scripts/lint-design.ts` solo recorre `src/`.
+    `ACCENT_FILL_ALLOWED` empieza vacía: hoy nada usa `bg-accent`.
+  - Equivalencias de paleta: `green-50` → `ok-soft`, `amber-50` → `warn-soft`, `amber-400` → `warn`,
+    `red-50` → `accent-soft`, `gray-100` → `surface`, `blue-50/100` → `brand-soft`, `blue-800` →
+    `brand`, `ring-blue-200` → `ring-brand-soft`, `green-700` → `ok`.
+  - `called` pasa de amarillo a rojo: "¡Es tu turno!" (`MyTicket`), el chip "llamado" de la fila del
+    dueño y el resaltado de la pantalla TV usan `bg-called text-accent-ink`.
+  - Esquinas: además de los tokens se renombraron las clases (`xl`/`2xl` → `md`, `lg`/`md` → `sm`,
+    `3xl` → `lg`); las píldoras `rounded-full` quedan para cada pantalla (T-162…T-167).
+  - Colores del manifiesto y `themeColor` salen de `PWA_THEME_COLOR`/`PWA_BACKGROUND_COLOR` en
+    `src/lib/pwa.ts`, con prueba de que igualan a `brand` y `surface`.
 
 ### [ ] T-161 · Componentes base
 - REQ: REQ-078.3, REQ-078.5, REQ-078.7, REQ-078.9, REQ-078.11, REQ-078.12, REQ-078.13

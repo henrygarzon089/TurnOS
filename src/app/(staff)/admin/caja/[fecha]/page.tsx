@@ -21,7 +21,7 @@ export default async function PastCashPage({ params }: { params: Promise<{ fecha
   return (
     <main className="pb-6">
       <AdminNav current="/admin/caja" />
-      <Link href="/admin/caja" className="text-accent min-h-10 text-sm font-medium">
+      <Link href="/admin/caja" className="text-brand min-h-10 text-sm font-medium">
         ← Caja de hoy
       </Link>
       <h1 className="text-2xl font-bold">Caja del {formatDayCO(fecha)}</h1>

@@ -75,10 +75,16 @@ export function CleaningToday({
         </p>
       )}
       {cards.map(({ kind, title, record }) => (
-        <section key={kind} aria-label={title} className="border-line bg-card rounded-xl border p-3">
+        <section
+          key={kind}
+          aria-label={title}
+          className="border-line bg-card rounded-md border p-3"
+        >
           <h2 className="font-semibold">{title}</h2>
           {record ? (
-            <p className={`text-sm ${record.isComplete && !record.isLate ? "text-muted" : "text-warn"}`}>
+            <p
+              className={`text-sm ${record.isComplete && !record.isLate ? "text-muted" : "text-warn"}`}
+            >
               {doneLine(record)}
             </p>
           ) : kind === "closing" && closingLocked ? (

@@ -103,14 +103,17 @@ export function OwnerQueue({
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Fila</h1>
         <span
-          className={`rounded-full px-3 py-1 text-sm font-semibold ${view.business.isOpen ? "text-ok bg-green-50" : "text-danger bg-red-50"}`}
+          className={`rounded-full px-3 py-1 text-sm font-semibold ${view.business.isOpen ? "text-ok bg-ok-soft" : "text-danger bg-accent-soft"}`}
         >
           {view.business.isOpen ? "Abierta" : "Cerrada"}
         </span>
       </div>
 
       {error && (
-        <p role="alert" className="text-danger mt-2 rounded-xl bg-red-50 p-3 text-sm font-medium">
+        <p
+          role="alert"
+          className="text-danger bg-accent-soft mt-2 rounded-md p-3 text-sm font-medium"
+        >
           {error}
         </p>
       )}
@@ -129,7 +132,7 @@ export function OwnerQueue({
                   ),
                 )
               }
-              className={`min-h-10 rounded-full border px-3 text-sm font-medium ${b.status === "off" ? "border-line text-muted" : b.status === "paused" ? "border-amber-400 bg-amber-50" : b.status === "busy" ? "border-accent bg-blue-50" : "border-ok bg-green-50"}`}
+              className={`min-h-10 rounded-full border px-3 text-sm font-medium ${b.status === "off" ? "border-line text-muted" : b.status === "paused" ? "border-warn bg-warn-soft" : b.status === "busy" ? "border-brand bg-brand-soft" : "border-ok bg-ok-soft"}`}
               title="Tocar para marcar presente / ausente"
             >
               {b.name} · {STATUS[b.status]}
@@ -159,7 +162,7 @@ export function OwnerQueue({
               );
               const open = openTicket === t.id;
               return (
-                <li key={t.id} className="border-line bg-card rounded-xl border p-3">
+                <li key={t.id} className="border-line bg-card rounded-md border p-3">
                   <button
                     type="button"
                     className="flex w-full items-start justify-between gap-2 text-left"
@@ -183,7 +186,7 @@ export function OwnerQueue({
                       </p>
                     </div>
                     <span
-                      className={`shrink-0 rounded-full px-2 py-1 text-xs font-semibold ${t.status === "waiting" ? "bg-gray-100" : t.status === "called" ? "bg-amber-100" : "bg-blue-100"}`}
+                      className={`shrink-0 rounded-full px-2 py-1 text-xs font-semibold ${t.status === "waiting" ? "bg-surface" : t.status === "called" ? "bg-called text-accent-ink" : "bg-brand-soft"}`}
                     >
                       {TSTATUS[t.status]}
                     </span>
@@ -221,7 +224,7 @@ export function OwnerQueue({
             {view.pendingPayments.map((t) => (
               <li
                 key={t.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-amber-400 bg-amber-50 p-3 text-sm"
+                className="border-warn bg-warn-soft flex items-center justify-between gap-3 rounded-md border p-3 text-sm"
               >
                 <span className="min-w-0 truncate font-semibold">
                   {t.customerName} · {t.serviceName}
@@ -482,7 +485,7 @@ function ManualTicketSheet({
       className="fixed inset-0 z-30 flex items-end bg-black/40"
     >
       <form
-        className="bg-card flex w-full flex-col gap-3 rounded-t-2xl p-5"
+        className="bg-card flex w-full flex-col gap-3 rounded-t-md p-5"
         onSubmit={(e) => {
           e.preventDefault();
           run(() =>

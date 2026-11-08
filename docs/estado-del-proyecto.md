@@ -387,6 +387,10 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   T-160…T-168, sin migraciones. PA-H16-1…3 con la recomendación. Sin código todavía.
 - Orden: T-160 (tokens, `accent` → `brand` antes de volver rojo a `accent`; `pnpm lint:design`) →
   T-161 (componentes base) → Hito 15 → T-162…T-168 (cliente, barbero, acceso, dueño, validación).
+- T-160 hecha (rama `claude/t-160-tokens`, 2026-11-07): tokens nuevos en `globals.css`, `accent` → `brand`
+  sin cambio visual y luego los valores del diseño; `pnpm lint:design` en CI; prueba de contraste;
+  esquinas 5/8/10/20. Revisado con Supabase local (`.claude/launch.json` → `turnos-local`, puerto
+  3001): ningún botón de acción quedó rojo. Siguiente: T-161 (componentes base).
 - La aprobación del hito terminado será un ADR nuevo.
 
 ### Hito 4 — servicios por barbero (2026-10-28)

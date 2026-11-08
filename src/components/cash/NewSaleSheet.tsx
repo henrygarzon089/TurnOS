@@ -22,7 +22,7 @@ export function NewSaleButton({ onSaved }: { onSaved?: () => void }) {
         + Nueva venta
       </button>
       {notice && (
-        <p role="status" className="text-ok mt-2 rounded-xl bg-green-50 p-3 text-sm font-medium">
+        <p role="status" className="text-ok bg-ok-soft mt-2 rounded-md p-3 text-sm font-medium">
           {notice}
         </p>
       )}

@@ -45,10 +45,12 @@ export default async function MyStationPage() {
             {s.items.map((i) => (
               <li
                 key={i.itemId}
-                className="border-line bg-card flex min-h-12 items-center justify-between gap-3 rounded-xl border px-4 py-2 text-sm"
+                className="border-line bg-card flex min-h-12 items-center justify-between gap-3 rounded-md border px-4 py-2 text-sm"
               >
                 <span className="font-semibold">{i.name}</span>
-                <span className={`shrink-0 tabular-nums ${i.stock < i.allowance ? "text-danger" : "text-muted"}`}>
+                <span
+                  className={`shrink-0 tabular-nums ${i.stock < i.allowance ? "text-danger" : "text-muted"}`}
+                >
                   {i.stock} de {i.allowance} {i.unitLabel}
                 </span>
               </li>
@@ -95,7 +97,7 @@ export default async function MyStationPage() {
               {s.lastCount.lines.map((l) => (
                 <li
                   key={l.itemId}
-                  className={`rounded-xl border p-3 text-sm ${l.alert ? "border-danger text-danger" : "border-line bg-card"}`}
+                  className={`rounded-md border p-3 text-sm ${l.alert ? "border-danger text-danger" : "border-line bg-card"}`}
                 >
                   <p className="font-semibold">
                     {l.name}: {l.countedQty}

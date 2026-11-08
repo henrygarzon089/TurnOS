@@ -31,7 +31,7 @@ export function CustomerForm({ view }: { view: CustomerView }) {
   return (
     <form
       onSubmit={submit}
-      className="border-line bg-card flex flex-col gap-3 rounded-xl border p-4"
+      className="border-line bg-card flex flex-col gap-3 rounded-md border p-4"
     >
       <input type="hidden" name="id" value={c.id} />
       {isOwner && (

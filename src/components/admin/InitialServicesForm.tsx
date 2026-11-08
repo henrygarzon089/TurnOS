@@ -22,7 +22,7 @@ export function InitialServicesForm() {
       {DEFAULTS.map((s, i) => (
         <div
           key={i}
-          className="border-line bg-card grid grid-cols-[1fr_72px_96px] gap-2 rounded-xl border p-3"
+          className="border-line bg-card grid grid-cols-[1fr_72px_96px] gap-2 rounded-md border p-3"
         >
           <label className="flex flex-col text-xs">
             Servicio

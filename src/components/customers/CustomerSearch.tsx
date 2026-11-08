@@ -81,7 +81,7 @@ export function CustomerSearch({
 
 function CustomerList({ items, label }: { items: CustomerListItem[]; label: string }) {
   return (
-    <ul aria-label={label} className="border-line bg-card divide-line divide-y rounded-xl border">
+    <ul aria-label={label} className="border-line bg-card divide-line divide-y rounded-md border">
       {items.map((c) => (
         <li key={c.id}>
           <Link

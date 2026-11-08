@@ -31,10 +31,7 @@ export default async function InventoryPage() {
     );
   }
   const stations = view.locations.filter((l) => l.kind === "station" && l.status !== "closed");
-  const places = [
-    ...view.locations.filter((l) => l.kind !== "station"),
-    ...stations,
-  ];
+  const places = [...view.locations.filter((l) => l.kind !== "station"), ...stations];
   const toFill = view.items.filter((i) => (i.shelfToFill ?? 0) > 0);
   const negative = view.items.filter((i) => i.negative);
   const active = view.items;
@@ -46,7 +43,7 @@ export default async function InventoryPage() {
       <InventoryNav current="/admin/inventario" />
 
       {active.length === 0 && (
-        <p className="border-line bg-card mt-4 rounded-xl border p-4 text-sm">
+        <p className="border-line bg-card mt-4 rounded-md border p-4 text-sm">
           Todavía no hay ítems. Empieza por el{" "}
           <Link href="/admin/inventario/catalogo" className="font-semibold underline">
             catálogo
@@ -55,10 +52,16 @@ export default async function InventoryPage() {
         </p>
       )}
 
-      {(view.alerts.length > 0 || toFill.length > 0 || negative.length > 0 || view.closingStations.length > 0) && (
+      {(view.alerts.length > 0 ||
+        toFill.length > 0 ||
+        negative.length > 0 ||
+        view.closingStations.length > 0) && (
         <section className="mt-4 flex flex-col gap-2" aria-label="Pendientes">
           {view.alerts.map((a) => (
-            <p key={`${a.locationId}-${a.itemId}`} className="border-danger text-danger rounded-xl border p-3 text-sm">
+            <p
+              key={`${a.locationId}-${a.itemId}`}
+              className="border-danger text-danger rounded-md border p-3 text-sm"
+            >
               <span className="font-semibold">
                 Revisar con {a.barberName}: {a.itemName}
               </span>{" "}
@@ -66,20 +69,24 @@ export default async function InventoryPage() {
             </p>
           ))}
           {negative.map((i) => (
-            <p key={`neg-${i.id}`} className="border-danger text-danger rounded-xl border p-3 text-sm">
-              <span className="font-semibold">{i.name}</span>: el stock quedó en negativo. Registra la entrada
-              o haz el conteo.
+            <p
+              key={`neg-${i.id}`}
+              className="border-danger text-danger rounded-md border p-3 text-sm"
+            >
+              <span className="font-semibold">{i.name}</span>: el stock quedó en negativo. Registra
+              la entrada o haz el conteo.
             </p>
           ))}
           {toFill.map((i) => (
-            <p key={`fill-${i.id}`} className="border-line bg-card rounded-xl border p-3 text-sm">
-              <span className="font-semibold">Surtir vitrina:</span> {i.name} · faltan {i.shelfToFill}.
+            <p key={`fill-${i.id}`} className="border-line bg-card rounded-md border p-3 text-sm">
+              <span className="font-semibold">Surtir vitrina:</span> {i.name} · faltan{" "}
+              {i.shelfToFill}.
             </p>
           ))}
           {view.closingStations.map((s) => (
-            <p key={s.locationId} className="border-line bg-card rounded-xl border p-3 text-sm">
-              <span className="font-semibold">Estación por cerrar:</span> {s.barberName}. Recibe lo que
-              tiene y transfiérelo a la bodega.
+            <p key={s.locationId} className="border-line bg-card rounded-md border p-3 text-sm">
+              <span className="font-semibold">Estación por cerrar:</span> {s.barberName}. Recibe lo
+              que tiene y transfiérelo a la bodega.
             </p>
           ))}
         </section>

@@ -60,7 +60,7 @@ export function CreateBusinessForm({ needsAccount }: { needsAccount: boolean }) 
       </Field>
 
       {needsAccount && (
-        <fieldset className="border-line mt-2 flex flex-col gap-4 rounded-xl border p-4">
+        <fieldset className="border-line mt-2 flex flex-col gap-4 rounded-md border p-4">
           <legend className="px-1 text-sm font-semibold">Tu cuenta de dueño</legend>
           <Field label="Correo" htmlFor="email">
             <input

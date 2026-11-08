@@ -18,7 +18,7 @@ export function AppointmentSettingsForm({ settings }: { settings: AppointmentSet
 
   return (
     <form action={action} className="mt-3 flex flex-col gap-4">
-      <label className="border-line bg-card flex min-h-14 items-center gap-3 rounded-xl border px-4">
+      <label className="border-line bg-card flex min-h-14 items-center gap-3 rounded-md border px-4">
         <input
           type="checkbox"
           name="enabled"
@@ -29,7 +29,7 @@ export function AppointmentSettingsForm({ settings }: { settings: AppointmentSet
         <span className="font-semibold">Recibir citas</span>
       </label>
 
-      <fieldset className="border-line bg-card flex flex-col gap-2 rounded-xl border p-4">
+      <fieldset className="border-line bg-card flex flex-col gap-2 rounded-md border p-4">
         <legend className="px-1 text-sm font-semibold">Barberos que reciben citas</legend>
         {settings.barbers.length === 0 && (
           <p className="text-muted text-sm">No hay barberos activos.</p>

@@ -225,7 +225,7 @@ export function JoinForm({ business, now }: Props) {
             return (
               <label
                 key={s.id}
-                className={`border-line bg-card flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2 ${nobody ? "text-muted cursor-not-allowed bg-gray-100" : "cursor-pointer"} ${serviceId === s.id ? "border-accent ring-2 ring-blue-200" : ""}`}
+                className={`border-line bg-card flex min-h-12 items-center justify-between gap-2 rounded-md border px-3 py-2 ${nobody ? "text-muted bg-surface cursor-not-allowed" : "cursor-pointer"} ${serviceId === s.id ? "border-brand ring-brand-soft ring-2" : ""}`}
               >
                 <span className="flex min-w-0 items-center gap-2 break-words">
                   <input
@@ -275,7 +275,7 @@ export function JoinForm({ business, now }: Props) {
                   <button
                     type="button"
                     aria-label={`Ver cortes de ${b.name}`}
-                    className="text-accent min-h-12 px-2 text-sm font-medium underline"
+                    className="text-brand min-h-12 px-2 text-sm font-medium underline"
                     onClick={() => setCutsOf(b)}
                   >
                     Ver cortes
@@ -338,7 +338,7 @@ export function JoinForm({ business, now }: Props) {
               (c) => (
                 <label
                   key={c.id ?? "ninguna"}
-                  className={`border-line bg-card flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 ${shownCourtesyId === c.id ? "border-accent ring-2 ring-blue-200" : ""}`}
+                  className={`border-line bg-card flex min-h-12 cursor-pointer items-center gap-2 rounded-md border px-3 py-2 ${shownCourtesyId === c.id ? "border-brand ring-brand-soft ring-2" : ""}`}
                 >
                   <input
                     type="radio"
@@ -354,7 +354,7 @@ export function JoinForm({ business, now }: Props) {
                       width={32}
                       height={32}
                       unoptimized
-                      className="h-8 w-8 shrink-0 rounded-md object-cover"
+                      className="h-8 w-8 shrink-0 rounded-sm object-cover"
                     />
                   )}
                   <span className="min-w-0 break-words">{c.name}</span>
@@ -367,7 +367,7 @@ export function JoinForm({ business, now }: Props) {
       )}
 
       {warning && (
-        <p role="status" className="text-warn rounded-xl bg-amber-50 p-3 text-sm font-medium">
+        <p role="status" className="text-warn bg-warn-soft rounded-md p-3 text-sm font-medium">
           {warning}
         </p>
       )}
@@ -391,7 +391,7 @@ export function JoinForm({ business, now }: Props) {
       {alreadyAccepted ? (
         <p className="text-muted text-sm">
           Ya aceptaste nuestra política de datos.{" "}
-          <Link href={`/${business.slug}/privacidad`} className="text-accent underline">
+          <Link href={`/${business.slug}/privacidad`} className="text-brand underline">
             Leerla
           </Link>
         </p>
@@ -409,7 +409,7 @@ export function JoinForm({ business, now }: Props) {
             turno y contactarme por WhatsApp (Ley 1581 de 2012).{" "}
             <Link
               href={`/${business.slug}/privacidad`}
-              className="text-accent underline"
+              className="text-brand underline"
               target="_blank"
             >
               Ver aviso completo
@@ -452,7 +452,7 @@ export function Chip({
       disabled={disabled}
       onClick={onClick}
       className={`min-h-12 rounded-full border px-4 text-base font-medium ${
-        selected ? "bg-accent text-accent-ink border-accent" : "border-line bg-card text-ink"
+        selected ? "bg-brand text-brand-ink border-brand" : "border-line bg-card text-ink"
       } disabled:opacity-50`}
     >
       {children}

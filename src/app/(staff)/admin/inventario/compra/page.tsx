@@ -28,7 +28,7 @@ export default async function PurchaseOrderPage() {
         Ítems en su mínimo o por debajo (bodega + vitrina), con lo que falta para llegar al máximo.
       </p>
       {rows.length === 0 ? (
-        <p className="border-line bg-card mt-3 rounded-xl border p-4 text-sm">
+        <p className="border-line bg-card mt-3 rounded-md border p-4 text-sm">
           No hay nada por pedir: todo está por encima del mínimo.
         </p>
       ) : (
@@ -40,7 +40,10 @@ export default async function PurchaseOrderPage() {
                 {rows
                   .filter((r) => r.supplier === s)
                   .map((r) => (
-                    <li key={r.item_id} className="border-line bg-card rounded-xl border p-3 text-sm">
+                    <li
+                      key={r.item_id}
+                      className="border-line bg-card rounded-md border p-3 text-sm"
+                    >
                       <p className="font-semibold">
                         {r.name} · pedir {r.qty} {r.unit_label}
                       </p>
@@ -54,7 +57,12 @@ export default async function PurchaseOrderPage() {
             </section>
           ))}
           <p className="mt-4 text-lg font-semibold">Total estimado: {formatCOP(total)}</p>
-          <a href={link} target="_blank" rel="noopener noreferrer" className="btn-primary mt-3 flex items-center justify-center">
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary mt-3 flex items-center justify-center"
+          >
             Compartir por WhatsApp
           </a>
         </>

@@ -12,6 +12,9 @@ export default async function OwnerQueuePage() {
   const [view, cleaning] = await Promise.all([getBusinessQueue(), getOwnerCleaningSummary()]);
   if (!view) return null;
   return (
-    <OwnerQueue initial={view} top={cleaning?.enabled ? <CleaningOwnerCard summary={cleaning} /> : null} />
+    <OwnerQueue
+      initial={view}
+      top={cleaning?.enabled ? <CleaningOwnerCard summary={cleaning} /> : null}
+    />
   );
 }
