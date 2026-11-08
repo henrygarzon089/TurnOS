@@ -323,10 +323,10 @@ export function CheckoutSheet({
       title={title}
       footer={
         <>
-          <p className="flex items-baseline justify-between gap-3">
+          <p className="flex flex-wrap items-baseline justify-between gap-x-3">
             <span className="text-muted">Total</span>
             <span
-              className="text-[40px] leading-tight font-bold tabular-nums"
+              className="text-[clamp(1.75rem,11vw,2.5rem)] leading-tight font-bold tabular-nums"
               aria-live="polite"
               data-testid="checkout-total"
             >
@@ -376,7 +376,7 @@ export function CheckoutSheet({
           className="flex flex-col gap-2"
         >
           <p className={SECTION}>{staffPurchase ? "¿Qué barbero compra?" : "¿Quién vendió?"}</p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] gap-2">
             {[
               ...view.barbers.map((b) => ({
                 key: b.id,
@@ -417,9 +417,9 @@ export function CheckoutSheet({
         <div className="flex flex-col gap-1">
           <label className="flex flex-col gap-1 text-sm font-medium">
             Celular del cliente (opcional)
-            <span className="flex gap-2">
+            <span className="flex flex-wrap gap-2">
               <input
-                className="input min-w-0 flex-1"
+                className="input min-w-0 flex-[1_1_10rem]"
                 inputMode="tel"
                 autoComplete="off"
                 placeholder="300 123 4567"
@@ -620,7 +620,11 @@ export function CheckoutSheet({
 
       {total > 0 && <h3 className={SECTION}>Medio de pago</h3>}
       {total > 0 && (
-        <div role="radiogroup" aria-label="Medio de pago" className="grid grid-cols-2 gap-2">
+        <div
+          role="radiogroup"
+          aria-label="Medio de pago"
+          className="grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] gap-2"
+        >
           {[...METHODS, { id: "gift_card" as const, label: "Tarjeta de regalo" }].map((m) => (
             <button
               key={m.id}
@@ -640,8 +644,8 @@ export function CheckoutSheet({
 
       {total > 0 && method === "gift_card" && (
         <section aria-label="Tarjeta de regalo" className="flex flex-col gap-2">
-          <div className="flex items-end gap-2">
-            <label className="flex flex-1 flex-col gap-1 text-sm font-medium">
+          <div className="flex flex-wrap items-end gap-2">
+            <label className="flex min-w-0 flex-[1_1_10rem] flex-col gap-1 text-sm font-medium">
               Código
               <input
                 className="input font-mono uppercase"
@@ -681,7 +685,7 @@ export function CheckoutSheet({
                   <div
                     role="radiogroup"
                     aria-label="Medio para lo que falta"
-                    className="grid grid-cols-2 gap-2"
+                    className="grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] gap-2"
                   >
                     {METHODS.map((m) => (
                       <button
@@ -740,7 +744,7 @@ export function CheckoutSheet({
             </button>
           </div>
         ) : (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button type="button" className="btn-secondary flex-1" onClick={onClose}>
               Cobrar después
             </button>

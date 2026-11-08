@@ -47,7 +47,7 @@ export function CleaningOwnerCard({
         <h2 className="font-semibold">Limpieza</h2>
         <Link
           href="/admin/limpieza"
-          className="text-brand min-h-10 px-2 py-2 text-sm font-semibold"
+          className="text-brand min-h-12 px-2 py-2 text-sm font-semibold"
         >
           Abrir
         </Link>
@@ -64,7 +64,7 @@ export function CleaningOwnerCard({
               {acking !== day && (
                 <button
                   type="button"
-                  className="btn-secondary min-h-10 px-3"
+                  className="btn-secondary min-h-12 px-3"
                   onClick={() => setAcking(day)}
                 >
                   Visto

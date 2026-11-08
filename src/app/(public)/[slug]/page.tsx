@@ -176,7 +176,7 @@ function LiveBlock({
       aria-live="polite"
       className="border-line bg-card rounded-md border p-4 lg:border-0 lg:bg-transparent lg:p-0"
     >
-      <div className="flex items-baseline gap-2">
+      <div className="flex flex-wrap items-baseline gap-x-2">
         <span aria-hidden="true" className="bg-called size-2.5 shrink-0 self-center rounded-full" />
         <span className="text-3xl font-bold tabular-nums lg:text-6xl">{waiting}</span>
         <span className="font-semibold lg:text-xl">
