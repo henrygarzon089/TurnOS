@@ -853,3 +853,36 @@
   la pantalla de "Semana".
 - Consecuencias: REQ-076.9 queda "cada barra es el total de la Caja de ese día y su suma es el
   Vendido de Semana". `design.md` §21.2 cambia la fuente del bloque Semana.
+
+## ADR-051 · El tablero manda en estructura; textos del barbero como el tablero
+- Fecha: 2026-11-08 · Estado: **aceptada** (Henry, 2026-11-08: "Sí, con esas").
+- Contexto: Henry revisó producción y las pantallas no se parecen al lienzo. Al comparar el barbero
+  pantalla por pantalla con `docs/diseno/tableros/Barbero-*.png`, T-163 cambió colores, encabezado y
+  menú pero dejó la estructura vieja: "Ahora: Nadie en la silla" en vez del bloque "Sigue", filas en
+  tarjetas con "📲 Avisar", diez cobros pendientes que tapan la fila, cobro en hoja con un
+  desplegable de todos los servicios y una cuadrícula de todos los productos, "Mis números" sin el
+  desglose, y en "Mis fotos" el selector de archivos del navegador en inglés. La causa fue leer en
+  ADR-047 "si el tablero muestra algo que la app no hace, manda la app" como permiso para no
+  seguir la disposición del tablero. Además REQ-078.5 ya nombraba los botones como el tablero
+  ("Llamar a …", "Empezar corte", "Terminar y cobrar") y la app no los cambió.
+- Decisión:
+  - La **estructura y la jerarquía** del tablero se siguen: orden de los bloques, encabezado, listas a
+    todo el ancho con divisores (no tarjetas sueltas), tamaños reservados y qué es principal. "Manda
+    la app" solo aplica a **datos o funciones** que la app no tiene (no se inventan) y a funciones
+    que la app tiene y el tablero no muestra (se conservan donde menos estorben). Cada caso se anota
+    en la tarea.
+  - **Textos del barbero como el tablero** (cambia ADR-047, que no dejaba tocar textos de negocio):
+    "Llamar a <número>", "Empezar corte", "No vino", "Terminar y cobrar", "Cobrar a <nombre>" y
+    "Cobrar $ …".
+  - **"Llamar a <número>" llama a ese turno o a nadie**: `call_next` recibe el turno esperado y, si
+    el primero ya no es ese (otro lo llamó, llegó una cita), no llama a nadie y la pantalla relee.
+    Es la migración `0069_call_expected` (un parámetro opcional; sin él, todo sigue igual).
+  - **Cobros pendientes** del barbero: una sola fila "N cobros pendientes" que abre la lista; no
+    empujan la fila.
+  - **Cobro en pantalla completa** en el celular, con secciones como el tablero.
+  - Cada PR del rediseño lleva la captura de cada estado junto a su tablero (design §22.5) y la
+    revisa Henry antes de fusionar.
+- Consecuencias: REQ-078.16…REQ-078.20, design §22.6, tareas T-169…T-171 (barbero). Después se
+  revisan igual cliente, acceso y dueño, una superficie a la vez. La 0069 la sube Henry con
+  `supabase db push`.
+
