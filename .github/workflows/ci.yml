@@ -71,6 +71,7 @@ jobs:
             echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY"
             echo "NEXT_PUBLIC_APP_URL=http://localhost:3000"
             echo "E2E_BASE_URL=http://localhost:3000"
+            echo "DESIGN_SHOWCASE=1" # /diseno en el build de producción del CI (ui-components.spec)
           } >> "$GITHUB_ENV"
       - run: pnpm build
       - name: Servidor de producción
