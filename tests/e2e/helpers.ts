@@ -20,13 +20,21 @@ export function appAlert(page: Page) {
   return page.locator('[role="alert"]:not(#__next-route-announcer__)');
 }
 
-export async function loginAsOwner(page: Page) {
+/** El dueño entra y queda en "Hoy" (`/admin`, REQ-076.1). */
+export async function loginOwnerToToday(page: Page) {
   await page.goto("/entrar?rol=dueno");
   await page.getByLabel("Correo").fill(SEED.owner.email);
   await page.getByLabel("Contraseña").fill(SEED.owner.password);
   await page.getByRole("button", { name: "Entrar" }).click();
-  // /admin redirige a /admin/fila: esperar la URL final evita navegaciones interrumpidas
-  await expect(page).toHaveURL(/\/admin\/fila/, { timeout: 15_000 });
+  // /app redirige a /admin: esperar la URL final evita navegaciones interrumpidas
+  await expect(page).toHaveURL(/\/admin$/, { timeout: 15_000 });
+}
+
+/** El dueño entra y abre la fila, donde empiezan casi todas las pruebas del dueño. */
+export async function loginAsOwner(page: Page) {
+  await loginOwnerToToday(page);
+  await page.goto("/admin/fila");
+  await expect(page.getByRole("heading", { name: "Fila", level: 1 })).toBeVisible();
 }
 
 /**

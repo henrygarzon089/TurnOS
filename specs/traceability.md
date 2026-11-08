@@ -126,7 +126,7 @@
 | REQ-025.5 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | my-numbers.spec.ts, my-numbers.test.ts, my-numbers.test.ts | cubierto |
 | REQ-026.1 | Anular una venta | T-040 (hecha), T-045 (hecha) | cash-day.spec.ts, 0021_cash.sql, 0022_register_sale.sql, 0025_cash_summary.sql, 0042_membership_checkout.sql, 0043_membership_reports.sql, 0055_merge_customers_sales.sql | cubierto |
 | REQ-026.2 | Anular una venta | T-040 (hecha), T-045 (hecha) | 0021_cash.sql, 0026_close_cash.sql, 0042_membership_sales.sql, 0051_gift_cards.sql, 0055_merge_customers_sales.sql | cubierto |
-| REQ-027.1 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha), T-140 (hecha) | cash-day.spec.ts, daviplata.test.ts, 0025_cash_summary.sql, 0068_daviplata.sql | cubierto |
+| REQ-027.1 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha), T-140 (hecha) | cash-day.spec.ts, today.spec.ts, daviplata.test.ts, 0025_cash_summary.sql, 0068_daviplata.sql | cubierto |
 | REQ-027.2 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha), T-140 (hecha) | close-cash.spec.ts, 0021_cash.sql, 0025_cash_summary.sql, 0026_close_cash.sql | cubierto |
 | REQ-027.3 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha), T-140 (hecha) | close-cash.spec.ts, 0021_cash.sql, 0026_close_cash.sql | cubierto |
 | REQ-027.4 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha), T-140 (hecha) | close-cash.spec.ts, cash-closure.test.ts | cubierto |
@@ -396,20 +396,20 @@
 | REQ-075.2 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (pendiente), T-132 (hecha), T-133 (pendiente) | skeleton.test.tsx | prueba escrita |
 | REQ-075.3 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (pendiente), T-132 (hecha), T-133 (pendiente) | vitals-reporter.test.tsx | prueba escrita |
 | REQ-075.4 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (pendiente), T-132 (hecha), T-133 (pendiente) | vitals-reporter.test.tsx, vitals.test.ts | prueba escrita |
-| REQ-076.1 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.2 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.3 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.4 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.5 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.6 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.7 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.8 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.9 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.10 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.11 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.1 | Inicio "Hoy" | T-151 (hecha), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | helpers.ts, today.spec.ts | prueba escrita |
+| REQ-076.2 | Inicio "Hoy" | T-151 (hecha), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | today.spec.ts, today.test.tsx | prueba escrita |
+| REQ-076.3 | Inicio "Hoy" | T-151 (hecha), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | today.spec.ts | prueba escrita |
+| REQ-076.4 | Inicio "Hoy" | T-151 (hecha), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | today.spec.ts, today.test.tsx | prueba escrita |
+| REQ-076.5 | Inicio "Hoy" | T-151 (hecha), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.6 | Inicio "Hoy" | T-151 (hecha), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.7 | Inicio "Hoy" | T-151 (hecha), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.8 | Inicio "Hoy" | T-151 (hecha), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.9 | Inicio "Hoy" | T-151 (hecha), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.10 | Inicio "Hoy" | T-151 (hecha), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | today.test.tsx | prueba escrita |
+| REQ-076.11 | Inicio "Hoy" | T-151 (hecha), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | today.spec.ts | prueba escrita |
 | REQ-077.1 | Menú del dueño por grupos | T-150 (hecha), T-152 (pendiente), T-154 (pendiente) | admin-nav.spec.ts, admin-nav.test.tsx | prueba escrita |
 | REQ-077.2 | Menú del dueño por grupos | T-150 (hecha), T-152 (pendiente), T-154 (pendiente) | admin-nav.spec.ts, admin-nav.test.tsx | prueba escrita |
-| REQ-077.3 | Menú del dueño por grupos | T-150 (hecha), T-152 (pendiente), T-154 (pendiente) | admin-nav.test.tsx | prueba escrita |
+| REQ-077.3 | Menú del dueño por grupos | T-150 (hecha), T-152 (pendiente), T-154 (pendiente) | cleaning-owner.spec.ts, admin-nav.test.tsx | prueba escrita |
 | REQ-077.4 | Menú del dueño por grupos | T-150 (hecha), T-152 (pendiente), T-154 (pendiente) | admin-nav.test.tsx | prueba escrita |
 | REQ-077.5 | Menú del dueño por grupos | T-150 (hecha), T-152 (pendiente), T-154 (pendiente) | admin-nav.spec.ts, admin-nav.test.tsx | prueba escrita |
 | REQ-077.6 | Menú del dueño por grupos | T-150 (hecha), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |

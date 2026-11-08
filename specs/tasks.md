@@ -1895,7 +1895,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   inferior y "Más" llevan a cada módulo y en escritorio el menú lateral; destinos ≥ 48 px con
   `aria-current`.
 
-### [ ] T-151 · "Hoy" con fila y caja en vivo
+### [x] T-151 · "Hoy" con fila y caja en vivo
+- Nota (2026-11-07): la página vive en `src/app/(staff)/admin/(hoy)/` (grupo de rutas, misma URL
+  `/admin`) para que su `loading.tsx` no se muestre al abrir los demás módulos. El tiempo real usa
+  el `LiveRefresh` que ya existía en vez de un `TodayLive` nuevo. Lógica pura en
+  `src/lib/domain/today.ts` (`buildTodayQueue`, `shortName`); el estimado es el de la portada
+  (`getPublicBusiness`). "Hoy" ensancha el contenido a 6xl desde 1024 px (`data-wide`); los demás
+  módulos siguen a ancho de celular. El E2E entra con `loginOwnerToToday`; `loginAsOwner` ahora
+  pasa por "Hoy" y abre la fila.
 - REQ: REQ-076.1, REQ-076.2, REQ-076.3, REQ-076.4, REQ-076.10, REQ-076.11
 - Archivos: `src/app/(staff)/admin/page.tsx`, `src/app/(staff)/admin/loading.tsx`,
   `src/components/admin/today/{TodayQueue,TodayCash,TodayLive,TodayBlockError}.tsx`,
