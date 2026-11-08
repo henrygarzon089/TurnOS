@@ -2563,7 +2563,7 @@ aparece.
 | Alertas: inventario | `getInventoryOverview()` (`inventory.ts`), ítems con `inventory_is_alert` | REQ-076.6 |
 | Alertas: membresías | `memberships_expiring` vía `memberships.ts`, ventana de 7 días | REQ-076.6 |
 | Recordar | `getBirthdaysThisWeek()` y `getInactiveCustomers()` (`customers.ts`), solo los conteos | REQ-076.7 |
-| Semana | `getWeekSummary()` (`cash.ts`, `weekly_summary.days`) | REQ-076.9 |
+| Semana | nueva lectura `getWeekDailyTotals()` en `cash.ts`: el `total` de `cash_day_summary` de cada día de lunes a hoy (la cifra de la Caja), con el cliente de la sesión. `weekly_summary.days` solo trae ocupación (ADR-048) | REQ-076.9 |
 
 - La lógica de qué alerta va y en qué orden es pura: `buildOwnerAlerts(input)` en
   `src/lib/domain/owner-alerts.ts` (entra lo que devolvieron las actions, sale una lista ordenada

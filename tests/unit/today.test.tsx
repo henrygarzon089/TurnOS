@@ -7,8 +7,16 @@ import { TodayAppointments } from "@/components/admin/today/TodayAppointments";
 import { TodayCash } from "@/components/admin/today/TodayCash";
 import { TodayQueue } from "@/components/admin/today/TodayQueue";
 import { TodayRemind } from "@/components/admin/today/TodayRemind";
+import { TodayShortcuts } from "@/components/admin/today/TodayShortcuts";
+import { TodayWeek } from "@/components/admin/today/TodayWeek";
 import type { CashDaySummary } from "@/lib/actions/cash";
-import { buildTodayQueue, shortName, type TodayQueueInput } from "@/lib/domain/today";
+import {
+  buildTodayQueue,
+  buildWeekBars,
+  barAmount,
+  shortName,
+  type TodayQueueInput,
+} from "@/lib/domain/today";
 import { lastWeekLabel, sameDayLastWeek, weekdayName } from "@/lib/domain/time";
 
 vi.mock("next/navigation", () => ({
@@ -17,7 +25,13 @@ vi.mock("next/navigation", () => ({
 }));
 // Las acciones reales no se llaman: cada bloque recibe su carga en la prueba
 vi.mock("@/lib/actions/queue", () => ({ getBusinessQueue: vi.fn() }));
-vi.mock("@/lib/actions/cash", () => ({ getCashDay: vi.fn(), getUnclosedDays: vi.fn() }));
+vi.mock("@/lib/actions/cash", () => ({
+  getCashDay: vi.fn(),
+  getUnclosedDays: vi.fn(),
+  getWeekDailyTotals: vi.fn(),
+}));
+// "Nueva venta" abre la hoja de cobro, que carga su propio catálogo: aquí basta el botón
+vi.mock("@/components/cash/CheckoutSheet", () => ({ CheckoutSheet: () => null }));
 vi.mock("@/lib/actions/public", () => ({ getPublicBusiness: vi.fn() }));
 vi.mock("@/lib/actions/cleaning", () => ({ getOwnerCleaningSummary: vi.fn() }));
 vi.mock("@/lib/actions/inventory", () => ({ getInventoryOverview: vi.fn() }));
@@ -269,5 +283,59 @@ describe("alertas, citas y recordar (T-152)", () => {
     );
     expect(h.match(/data-testid="today-badge"/g)).toHaveLength(2);
     expect(h).toMatch(/href="\/admin"[^>]*>Hoy<span[^>]*><span data-testid="today-badge"/);
+  });
+});
+
+describe("accesos directos y semana (T-153)", () => {
+  it("REQ-076.9 una barra por día de lunes a domingo; los días que no han llegado van vacíos", () => {
+    // jueves 2026-11-05; la semana empieza el lunes 2026-11-02
+    const w = buildWeekBars(
+      { "2026-11-02": 610000, "2026-11-04": 720000, "2026-11-05": 845000 },
+      "2026-11-02",
+      "2026-11-05",
+    );
+    expect(w.bars.map((b) => b.label)).toEqual(["lun", "mar", "mié", "hoy", "vie", "sáb", "dom"]);
+    expect(w.bars.map((b) => b.total)).toEqual([610000, 0, 720000, 845000, null, null, null]);
+    expect(w.bars.filter((b) => b.isToday).map((b) => b.day)).toEqual(["2026-11-05"]);
+    // la suma es el "Vendido" de Semana hasta hoy
+    expect(w.sum).toBe(2175000);
+    expect(w.max).toBe(845000);
+  });
+
+  it("REQ-076.9 cifras cortas para las barras, en miles", () => {
+    expect(barAmount(0)).toEqual({ value: "$ 0", mil: false });
+    expect(barAmount(610000)).toEqual({ value: "610", mil: true });
+    expect(barAmount(1250000)).toEqual({ value: "1.250", mil: true });
+    expect(barAmount(800)).toEqual({ value: "$ 800", mil: false });
+  });
+
+  it("REQ-076.9 la semana pinta barras con la suma y resalta hoy", async () => {
+    const h = renderToStaticMarkup(
+      (await TodayWeek({
+        load: async () => ({
+          weekStart: "2026-11-02",
+          today: "2026-11-05",
+          totals: { "2026-11-02": 610000, "2026-11-05": 845000 },
+        }),
+      }))!,
+    );
+    expect(h).toContain("Ingresos de la semana");
+    expect(h).toMatch(/data-testid="today-week-sum"[^>]*>\$ 1\.455\.000/);
+    expect(h).toMatch(/data-testid="today-week-2026-11-05"[^>]*data-total="845000"/);
+    expect(h).toMatch(/845<span[^>]*> mil<\/span>/);
+    expect(h).toContain("Cifras en miles");
+  });
+
+  it("REQ-076.10 la semana que falla dice 'No se pudo cargar'", async () => {
+    const h = renderToStaticMarkup((await TodayWeek({ load: async () => null }))!);
+    expect(h).toContain("No se pudo cargar");
+  });
+
+  it("REQ-076.8 accesos a Nueva venta, Fila y Cerrar caja; un solo botón relleno", () => {
+    const h = renderToStaticMarkup(<TodayShortcuts />);
+    expect(h).toMatch(/<button[^>]*>\+ Nueva venta<\/button>/);
+    expect(h).toMatch(/href="\/admin\/fila"[^>]*>Fila</);
+    expect(h).toMatch(/href="\/admin\/caja"[^>]*>Cerrar caja</);
+    expect(h.match(/btn-primary/g)).toHaveLength(1);
   });
 });

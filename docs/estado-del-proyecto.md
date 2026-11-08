@@ -392,7 +392,12 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   atención" (cajas sin cerrar, limpieza, insumos, membresías que vencen; cada una con su enlace, o
   "Todo en orden"), "Citas de hoy" (solo con citas encendidas) y "Para recordar" (solo conteos). El
   número de alertas sale en rojo junto a "Hoy" en la barra y en el menú lateral. `loginAsOwner` del
-  E2E entra directo a la fila. Siguiente: T-153 (accesos directos y semana en escritorio).
+  E2E entra directo a la fila.
+- T-153 hecha (rama `claude/t-153-accesos`, encima de T-152, 2026-11-07): "Hoy" tiene "Fila",
+  "Cerrar caja" y "Nueva venta" (abre la hoja ahí mismo); en el celular van en una barra fija
+  encima del menú. Desde 1024 px, "Ingresos de la semana" con una barra por día: cada una es la Caja
+  de ese día y la suma es el "Vendido" de Semana (ADR-048 corrigió REQ-076.9, sin migración).
+  Siguiente: T-154 (validación del Hito 15).
 - Ojo con el E2E local: con el servidor de desarrollo cargado (muchas corridas seguidas) los
   ingresos se cuelgan y fallan pruebas que no tienen que ver; reiniciar el servidor y usar
   `--workers=2` lo deja estable.

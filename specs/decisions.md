@@ -838,3 +838,18 @@
 - Consecuencias: Hito 16 con REQ-078, diseño en `design.md` §22. Tareas T-160…T-168 en `tasks.md`.
   El Hito 15 se construye ya con el sistema nuevo, después de T-160 y T-161 (PA-H16-1). Sin migraciones de base de datos.
   Número: ADR-044 sigue reservado para la aprobación del Hito 14; ADR-047 es el primero libre.
+
+## ADR-048 · Ingresos por día de "Hoy" desde las ventas
+- Fecha: 2026-11-07 · Estado: aprobada por Henry (2026-11-07).
+- Contexto: REQ-076.9 pedía las barras de ingresos por día "con las mismas cifras de Semana" y
+  `design.md` §21.2 las sacaba de `weekly_summary.days`. Pero `days` solo trae ocupación (minutos y
+  %), y "Semana" no muestra plata por día. Se descubrió al empezar T-153.
+- Opciones:
+  - (a) Lectura nueva `getWeekDailyTotals()`: el `total` de `cash_day_summary` de cada día de lunes a
+    hoy (hasta 7 llamadas en paralelo; un `select` de ventas cortaría en 1000 filas). Sin migración.
+  - (b) Migración que agrega el total por día a `weekly_summary` y lo muestra también en "Semana".
+- Decisión: (a). Son las mismas cifras que ya se ven: la Caja de cada día suma `total` de las ventas
+  activas de ese día y el "Vendido" de "Semana" suma lo mismo en la semana. No toca producción ni
+  la pantalla de "Semana".
+- Consecuencias: REQ-076.9 queda "cada barra es el total de la Caja de ese día y su suma es el
+  Vendido de Semana". `design.md` §21.2 cambia la fuente del bloque Semana.

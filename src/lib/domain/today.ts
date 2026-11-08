@@ -2,6 +2,7 @@
  * "Hoy" del dueño: resumen de la fila en vivo (REQ-076.2, design §21.2). Función pura: entra lo
  * que devuelven las server actions, sale lo que se pinta. Nunca deja pasar celulares.
  */
+import { formatCOP } from "./money";
 import { minutesBetween } from "./time";
 
 export type TodayQueueInput = {
@@ -71,4 +72,54 @@ export function buildTodayQueue(input: TodayQueueInput, now: Date): TodayQueue {
       return { id: b.id, name: b.name, state, text };
     });
   return { waiting: input.waitingCount, nextWaitMin: input.estimatedWaitMin, barbers };
+}
+
+const WEEK_LABELS = ["lun", "mar", "mié", "jue", "vie", "sáb", "dom"];
+
+export type WeekBar = {
+  day: string;
+  /** "lun"…"dom"; el día de hoy dice "hoy". */
+  label: string;
+  /** Total de la Caja de ese día; null si el día no ha llegado. */
+  total: number | null;
+  isToday: boolean;
+};
+
+/**
+ * REQ-076.9 ingresos de la semana por día (ADR-048): una barra de lunes a domingo con el total de la
+ * Caja de cada día. `sum` es el "Vendido" de Semana hasta hoy; `max` da la escala de las barras.
+ */
+export function buildWeekBars(
+  totals: Record<string, number>,
+  weekStart: string,
+  today: string,
+): { bars: WeekBar[]; sum: number; max: number } {
+  const start = new Date(`${weekStart}T00:00:00Z`);
+  const bars = WEEK_LABELS.map((label, i) => {
+    const d = new Date(start);
+    d.setUTCDate(d.getUTCDate() + i);
+    const day = d.toISOString().slice(0, 10);
+    const isToday = day === today;
+    return {
+      day,
+      label: isToday ? "hoy" : label,
+      total: day > today ? null : (totals[day] ?? 0),
+      isToday,
+    };
+  });
+  const amounts = bars.map((b) => b.total ?? 0);
+  return {
+    bars,
+    sum: amounts.reduce((a, b) => a + b, 0),
+    max: Math.max(0, ...amounts),
+  };
+}
+
+/**
+ * Cifra corta para encima de una barra: 610000 → { value: "610", mil: true } ("610 mil" cuando cabe,
+ * "610" con la nota "Cifras en miles" cuando la tarjeta es angosta); menos de mil va completa.
+ */
+export function barAmount(amount: number): { value: string; mil: boolean } {
+  if (Math.abs(amount) < 1000) return { value: formatCOP(amount), mil: false };
+  return { value: formatCOP(Math.round(amount / 1000)).replace("$ ", ""), mil: true };
 }
