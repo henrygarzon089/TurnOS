@@ -63,7 +63,7 @@ export default async function PublicBusinessPage({ params }: Props) {
           )
         }
       />
-      <main className="mx-auto grid w-full max-w-md flex-1 gap-4 px-4 pt-4 pb-44 lg:max-w-5xl lg:grid-cols-[1fr_400px] lg:items-start lg:gap-10 lg:pt-8 lg:pb-10">
+      <main className="mx-auto grid w-full max-w-md flex-1 grid-cols-[minmax(0,1fr)] gap-4 px-4 pt-4 pb-44 lg:max-w-5xl lg:grid-cols-[minmax(0,1fr)_400px] lg:items-start lg:gap-10 lg:pt-8 lg:pb-10">
         <div className="flex flex-col gap-4">
           {b.address && <p className="text-muted text-sm">{b.address}</p>}
           <LiveBlock
