@@ -26,7 +26,6 @@ export default async function InventoryCatalogPage() {
 
   return (
     <main className="pb-6">
-      <h1 className="text-2xl font-bold">Inventario</h1>
       <InventoryNav current="/admin/inventario/catalogo" />
 
       <details className="border-line bg-card mt-4 rounded-md border">
@@ -47,17 +46,17 @@ export default async function InventoryCatalogPage() {
             <h2 id={`group-${g}`} className="text-lg font-semibold">
               {INVENTORY_GROUP_LABELS[g]}
             </h2>
-            <ul className="mt-2 flex flex-col gap-2">
+            <ul className="border-line bg-card divide-line mt-2 flex flex-col divide-y rounded-md border">
               {items.map((i) => (
                 <li key={i.id}>
-                  <details className="border-line bg-card rounded-md border">
+                  <details>
                     <summary className="flex min-h-12 cursor-pointer flex-col justify-center px-4 py-2">
                       <span
                         className={`font-semibold ${i.is_active ? "" : "text-muted line-through"}`}
                       >
                         {i.name}
                       </span>
-                      <span className="text-muted text-xs">
+                      <span className="text-muted text-sm">
                         {INVENTORY_USE_LABELS[i.use]} · {i.presentation} · {formatCOP(i.unit_cost)}{" "}
                         / {i.unit_label}
                         {i.use === "internal" &&

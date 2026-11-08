@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/admin/PageHeader";
 import { HoursForm, type HoursRow } from "@/components/admin/HoursForm";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -16,10 +17,14 @@ export default async function HoursPage() {
 
   return (
     <main className="pb-6">
-      <h1 className="text-2xl font-bold">Horario</h1>
-      <p className="text-muted mt-1 text-sm">
-        La fila acepta turnos dentro de este horario. Fuera de él, el cliente ve cuándo abres.
-      </p>
+      <PageHeader
+        title="Horario"
+        subtitle={
+          <>
+            La fila acepta turnos dentro de este horario. Fuera de él, el cliente ve cuándo abres.
+          </>
+        }
+      />
       <HoursForm hours={(data ?? []) as HoursRow[]} />
     </main>
   );

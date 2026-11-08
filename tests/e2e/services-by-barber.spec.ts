@@ -147,7 +147,7 @@ test.describe("REQ-035 el dueño configura quién hace qué", () => {
     await loginAsOwner(page);
     await page.goto("/admin/barberos");
     const card = page.getByRole("article", { name: `Barbero ${ESTILISTA}` });
-    await expect(card).toContainText(`Hace: ${CEP}`);
+    await expect(card).toContainText(CEP);
     await card.getByRole("button", { name: "Editar" }).click();
     const list = card.getByRole("group", { name: "Servicios que hace" });
     for (const box of await list.getByRole("checkbox").all()) await box.uncheck();
@@ -158,7 +158,7 @@ test.describe("REQ-035 el dueño configura quién hace qué", () => {
     await list.getByRole("checkbox", { name: "Corte", exact: true }).check();
     await card.getByRole("button", { name: "Guardar" }).click();
     // la tarjeta se relee con router.refresh(); en WebKit tarda más
-    await expect(card).toContainText(/Hace: Corte, .*Cepillado dueño E2E/, { timeout: 15_000 });
+    await expect(card).toContainText(/Corte, .*Cepillado dueño E2E/, { timeout: 15_000 });
   });
 
   test("REQ-035.2 en Servicios se ve y se cambia quién lo hace; uno nuevo viene con todos", async ({
@@ -166,12 +166,18 @@ test.describe("REQ-035 el dueño configura quién hace qué", () => {
   }) => {
     await loginAsOwner(page);
     await page.goto("/admin/servicios");
+    await page
+      .getByRole("article", { name: `Servicio ${CEP}` })
+      .getByRole("button", { name: "Editar" })
+      .click();
     const form = page.getByRole("form", { name: `Servicio ${CEP}` });
     const who = form.getByRole("group", { name: "Quién lo hace" });
     await expect(who.getByRole("checkbox", { name: "Mateo" })).toBeChecked();
     await expect(who.getByRole("checkbox", { name: "Juan" })).not.toBeChecked();
     await expect(who.getByRole("checkbox", { name: ESTILISTA })).toBeChecked();
 
+    await page.keyboard.press("Escape");
+    await page.getByRole("button", { name: "Nuevo servicio" }).click();
     const nuevo = page
       .getByRole("form", { name: "Nuevo servicio" })
       .getByRole("group", { name: "Quién lo hace" });

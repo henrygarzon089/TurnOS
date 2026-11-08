@@ -227,6 +227,10 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
   }) => {
     await loginAsOwner(page);
     await page.goto("/admin/productos");
+    await page
+      .getByRole("article", { name: "Producto Agua" })
+      .getByRole("button", { name: "Editar" })
+      .click();
     const agua = page.getByRole("form", { name: "Producto Agua" });
     await agua.getByLabel("A la venta").uncheck();
     await agua.getByRole("button", { name: "Guardar" }).click();
@@ -273,6 +277,10 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
   }) => {
     await loginAsOwner(page);
     await page.goto("/admin/productos");
+    await page
+      .getByRole("article", { name: "Producto Agua" })
+      .getByRole("button", { name: "Editar" })
+      .click();
     const agua = page.getByRole("form", { name: "Producto Agua" });
     await agua.getByLabel("Foto (opcional)").setInputFiles({
       name: "agua.png",
@@ -305,6 +313,10 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
       .toBeGreaterThan(0);
     await ctx.close();
 
+    await page
+      .getByRole("article", { name: "Producto Agua" })
+      .getByRole("button", { name: "Editar" })
+      .click();
     await agua.getByRole("button", { name: "Quitar foto" }).click();
     await agua.getByRole("button", { name: "Guardar" }).click();
     await expect

@@ -17,14 +17,18 @@ export function PrivacyForm({ current, history }: { current?: Version; history: 
     <div className="mt-4 flex flex-col gap-4">
       {current && !editing && (
         <section className="border-line bg-card rounded-md border p-4">
-          <p className="text-muted text-xs">
+          <p className="text-muted text-sm">
             Versión {current.version} · publicada el{" "}
             {new Date(current.published_at).toLocaleDateString("es-CO", {
               timeZone: "America/Bogota",
             })}
           </p>
-          <article className="mt-2 text-sm whitespace-pre-wrap">{current.body}</article>
-          <button type="button" className="btn-secondary mt-3" onClick={() => setEditing(true)}>
+          <article className="mt-2 text-base whitespace-pre-wrap">{current.body}</article>
+          <button
+            type="button"
+            className="btn-secondary mt-3 sm:w-auto sm:px-5"
+            onClick={() => setEditing(true)}
+          >
             Publicar una versión nueva
           </button>
         </section>
@@ -58,13 +62,13 @@ export function PrivacyForm({ current, history }: { current?: Version; history: 
         </form>
       )}
       {history.length > 0 && (
-        <details className="text-sm">
-          <summary className="text-muted cursor-pointer">
+        <details className="text-base">
+          <summary className="text-muted flex min-h-12 cursor-pointer items-center font-semibold">
             Versiones anteriores ({history.length})
           </summary>
           {history.map((v) => (
             <article key={v.version} className="border-line mt-2 rounded-md border p-3">
-              <p className="text-muted text-xs">Versión {v.version}</p>
+              <p className="text-muted text-sm">Versión {v.version}</p>
               <p className="mt-1 whitespace-pre-wrap">{v.body}</p>
             </article>
           ))}

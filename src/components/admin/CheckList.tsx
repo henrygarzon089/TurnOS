@@ -19,17 +19,17 @@ export function CheckList({
   if (options.length === 0) return null;
   return (
     <fieldset className="min-w-0">
-      <legend className="mb-1 text-sm font-medium">{legend}</legend>
+      <legend className="mb-1 text-sm font-semibold">{legend}</legend>
       <input type="hidden" name={shown} value="1" />
       <div className="flex flex-wrap gap-x-4">
         {options.map((o) => (
-          <label key={o.id} className="flex min-h-12 items-center gap-2 text-sm">
+          <label key={o.id} className="flex min-h-12 items-center gap-2 text-base">
             <input
               type="checkbox"
               name={name}
               value={o.id}
               defaultChecked={checked === null || checked.includes(o.id)}
-              className="h-5 w-5"
+              className="accent-brand h-6 w-6"
             />
             {o.label}
           </label>
