@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-07.
+> Generada por `scripts/traceability.ts` el 2026-11-08.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -72,7 +72,7 @@
 | REQ-012.4 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | owner-queue.spec.ts, 0008_public_fns.sql | cubierto |
 | REQ-012.5 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-013.1 | Pantalla pública para el televisor | T-027 (hecha) | screen.spec.ts, 0002_core.sql, 0011_screen.sql | cubierto |
-| REQ-013.2 | Pantalla pública para el televisor | T-027 (hecha) | screen.spec.ts, phone.test.ts, public-view.test.ts, 0011_screen.sql | cubierto |
+| REQ-013.2 | Pantalla pública para el televisor | T-027 (hecha) | screen.spec.ts, public-view.test.ts, 0011_screen.sql | cubierto |
 | REQ-013.3 | Pantalla pública para el televisor | T-027 (hecha) | helpers.ts, screen.spec.ts | cubierto |
 | REQ-013.4 | Pantalla pública para el televisor | T-027 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-013.5 | Pantalla pública para el televisor | T-027 (hecha) | hito1-gaps.spec.ts | cubierto |
@@ -413,18 +413,18 @@
 | REQ-077.4 | Menú del dueño por grupos | T-150 (hecha), T-152 (hecha), T-154 (pendiente) | admin-nav.test.tsx | prueba escrita |
 | REQ-077.5 | Menú del dueño por grupos | T-150 (hecha), T-152 (hecha), T-154 (pendiente) | admin-nav.spec.ts, admin-nav.test.tsx | prueba escrita |
 | REQ-077.6 | Menú del dueño por grupos | T-150 (hecha), T-152 (hecha), T-154 (pendiente) | today.spec.ts, today.test.tsx | prueba escrita |
-| REQ-078.1 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | design-tokens.test.ts, lint-design.test.ts | prueba escrita |
-| REQ-078.2 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | design-tokens.test.ts | prueba escrita |
-| REQ-078.3 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | helpers.ts, ui-components.spec.ts, visual-cliente.spec.ts, lint-design.test.ts, ui-components.test.tsx | prueba escrita |
-| REQ-078.4 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | visual-barbero.spec.ts, visual-cliente.spec.ts, visual-helpers.ts | prueba escrita |
-| REQ-078.5 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | cleaning-barber.spec.ts, menu-courtesy.spec.ts, visual-barbero.spec.ts, visual-helpers.ts, barber-nav.test.tsx, ui-components.test.tsx | prueba escrita |
-| REQ-078.6 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | — | sin prueba |
-| REQ-078.7 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | ui-components.spec.ts, ui-components.test.tsx | prueba escrita |
-| REQ-078.8 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | visual-barbero.spec.ts, visual-cliente.spec.ts, visual-helpers.ts, queue-subscription.test.ts | prueba escrita |
-| REQ-078.9 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | ui-components.spec.ts, ui-components.test.tsx | prueba escrita |
-| REQ-078.10 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | visual-barbero.spec.ts, visual-cliente.spec.ts, ui-components.test.tsx | prueba escrita |
-| REQ-078.11 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | ui-components.test.tsx | prueba escrita |
-| REQ-078.12 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | visual-barbero.spec.ts, ui-components.test.tsx | prueba escrita |
-| REQ-078.13 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | ui-components.spec.ts, visual-cliente.spec.ts, ui-components.test.tsx | prueba escrita |
-| REQ-078.14 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | lint-design.test.ts, public-view.test.ts | prueba escrita |
-| REQ-078.15 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (pendiente), T-167 (pendiente), T-168 (pendiente) | visual-barbero.spec.ts, visual-cliente.spec.ts, visual-helpers.ts, public-view.test.ts | prueba escrita |
+| REQ-078.1 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | design-tokens.test.ts, lint-design.test.ts | prueba escrita |
+| REQ-078.2 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | design-tokens.test.ts | prueba escrita |
+| REQ-078.3 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | appointments-agenda.spec.ts, helpers.ts, ui-components.spec.ts, visual-cliente.spec.ts, visual-dueno-modulos.spec.ts, lint-design.test.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.4 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | visual-barbero.spec.ts, visual-cliente.spec.ts, visual-dueno-modulos.spec.ts, visual-helpers.ts | prueba escrita |
+| REQ-078.5 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | cleaning-barber.spec.ts, menu-courtesy.spec.ts, visual-barbero.spec.ts, visual-helpers.ts, barber-nav.test.tsx, ui-components.test.tsx | prueba escrita |
+| REQ-078.6 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | visual-dueno-modulos.spec.ts, phone.test.ts | prueba escrita |
+| REQ-078.7 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | ui-components.spec.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.8 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | visual-barbero.spec.ts, visual-cliente.spec.ts, visual-helpers.ts, queue-subscription.test.ts | prueba escrita |
+| REQ-078.9 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | ui-components.spec.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.10 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | visual-barbero.spec.ts, visual-cliente.spec.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.11 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | visual-dueno-modulos.spec.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.12 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | visual-barbero.spec.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.13 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | ui-components.spec.ts, visual-cliente.spec.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.14 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | lint-design.test.ts, public-view.test.ts | prueba escrita |
+| REQ-078.15 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (pendiente), T-165 (pendiente), T-166 (hecha), T-167 (pendiente), T-168 (pendiente) | visual-barbero.spec.ts, visual-cliente.spec.ts, visual-dueno-modulos.spec.ts, visual-helpers.ts, public-view.test.ts | prueba escrita |

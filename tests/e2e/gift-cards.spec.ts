@@ -31,6 +31,7 @@ test.describe("REQ-055 / REQ-056 / REQ-059 Tarjetas de regalo del dueño", () =>
     await page.goto("/admin/regalos");
     await expect(page.getByRole("heading", { name: "Tarjetas de regalo" })).toBeVisible();
 
+    await page.getByRole("button", { name: "Vender tarjeta" }).click();
     const form = page.getByRole("form", { name: "Vender tarjeta" });
     // REQ-055.1 en miles exactos
     await form.getByLabel("Valor").fill("25.500");

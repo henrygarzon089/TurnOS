@@ -450,6 +450,12 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   los botones sin cambio. Prueba desde el celular: entrar como barbero, llamar, "Ya está en la
   silla", "Terminado" y ver el cobro; con modo avión, "Llamar al siguiente" deshabilitado.
   Siguiente: T-164 (acceso).
+- T-166 hecha (rama `claude/t-166-dueno-modulos`, encima de T-163, 2026-11-07): citas, semana,
+  fidelidad, recordar, membresías y tarjetas de regalo con el sistema visual nuevo. Agenda de un
+  día con rejilla por barbero, hojas para cancelar cita, quitar de la familia, cobrar cuota y
+  vender tarjeta; celulares enmascarados `300 *** 0001` (REQ-078.6, ya con prueba). Prueba desde
+  el celular: entrar como dueño, abrir Citas (encenderlas si están apagadas), tocar una cita y
+  "Cancelar cita"; en Membresías, "Nueva familia" y ver el celular con asteriscos.
 - La aprobación del hito terminado será un ADR nuevo.
 
 ### Hito 4 — servicios por barbero (2026-10-28)

@@ -2,7 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Tag } from "@/components/admin/ModulePage";
 import { ErrorText } from "@/components/auth/LoginForm";
+import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
+import { OptionList } from "@/components/ui/OptionList";
+import { Sheet } from "@/components/ui/Sheet";
+import { EmptyState } from "@/components/ui/States";
 import type { PaymentMethod } from "@/lib/actions/cash";
 import {
   addFamilyMember,
@@ -15,7 +21,7 @@ import {
 } from "@/lib/actions/memberships";
 import type { FamilyRow } from "@/lib/domain/membership";
 import { formatCOP } from "@/lib/domain/money";
-import { formatPhoneCO } from "@/lib/domain/phone";
+import { maskPhone } from "@/lib/domain/phone";
 import { formatDayCO } from "@/lib/domain/time";
 import { buildRenewalLink } from "@/lib/notifications/reminder";
 
@@ -68,8 +74,8 @@ export function MembershipPlanForm({
   const [enabled, setEnabled] = useState(plan.enabled);
 
   return (
-    <form onSubmit={onSubmit} className="mt-3 flex flex-col gap-4">
-      <label className="border-line bg-card flex min-h-14 items-center gap-3 rounded-md border px-4">
+    <form onSubmit={onSubmit} className="flex flex-col gap-4 p-4">
+      <label className="border-line flex min-h-14 items-center gap-3 rounded-md border px-4">
         <input
           type="checkbox"
           name="enabled"
@@ -117,10 +123,10 @@ export function MembershipPlanForm({
         </label>
       </div>
 
-      <fieldset className="border-line bg-card flex flex-col gap-1 rounded-md border p-4">
+      <fieldset className="border-line flex flex-col gap-1 rounded-md border p-4">
         <legend className="px-1 text-sm font-semibold">Servicios que gastan cortes</legend>
         {services.map((s) => (
-          <label key={s.id} className="flex min-h-10 items-center gap-3">
+          <label key={s.id} className="flex min-h-12 items-center gap-3">
             <input
               type="checkbox"
               name="services"
@@ -143,9 +149,10 @@ export function MembershipPlanForm({
           Plan guardado.
         </p>
       )}
-      <button type="submit" className="btn-primary" disabled={pending}>
-        {pending ? "Guardando…" : "Guardar plan"}
-      </button>
+      {/* El principal de la pantalla es "Nueva familia" (REQ-078.4) */}
+      <Button type="submit" variant="secondary" pending={pending}>
+        Guardar plan
+      </Button>
     </form>
   );
 }
@@ -155,23 +162,28 @@ export function MembershipPlanForm({
 /** REQ-048.4: las que vencen en los próximos 7 días, con recordatorio por WhatsApp. */
 export function ExpiringList({ view }: { view: MembershipsView }) {
   if (view.expiring.length === 0) {
-    return <p className="text-muted mt-2">Ninguna membresía vence esta semana.</p>;
+    return (
+      <p className="text-muted px-4 py-4 text-sm">
+        Ninguna membresía vence esta semana. Cuando falten 7 días, sale aquí para recordarle a la
+        familia.
+      </p>
+    );
   }
   return (
-    <ul aria-label="Vencen esta semana" className="mt-2 flex flex-col gap-2">
+    <ul aria-label="Vencen esta semana" className="divide-line divide-y">
       {view.expiring.map((m) => (
         <li
           key={m.membershipId}
-          className="border-line bg-card flex flex-col gap-2 rounded-md border p-3"
+          className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
         >
-          <div>
-            <p className="font-semibold">{m.name}</p>
-            <p className="text-muted text-sm">
+          <div className="min-w-0">
+            <p className="font-bold">{m.name}</p>
+            <p className="text-warn text-sm font-semibold">
               {m.endsOn === view.today ? "Vence hoy" : `Vence el ${formatDayCO(m.endsOn)}`}
             </p>
           </div>
           <a
-            className="btn-primary"
+            className="btn-secondary w-full shrink-0 text-base sm:w-auto"
             href={buildRenewalLink({
               phoneE164: m.phone,
               template: view.template,
@@ -182,7 +194,7 @@ export function ExpiringList({ view }: { view: MembershipsView }) {
             target="_blank"
             rel="noopener"
           >
-            📲 Recordar por WhatsApp
+            Recordar por WhatsApp
           </a>
         </li>
       ))}
@@ -224,26 +236,41 @@ function PersonFields({ prefix }: { prefix: string }) {
   );
 }
 
-/** REQ-046.1 / REQ-046.2: nueva familia con su titular. */
+/**
+ * REQ-046.1 / REQ-046.2: nueva familia con su titular. Es el principal de la pantalla y abre la
+ * hoja con el formulario (tablero Dueno-Clientes, T-166).
+ */
 export function NewFamilyForm() {
-  const [state, onSubmit, pending] = useRefreshingAction(createFamily, { reset: true });
+  const [open, setOpen] = useState(false);
+  const [state, onSubmit, pending] = useRefreshingAction(createFamily, {
+    reset: true,
+    onOk: () => setOpen(false),
+  });
 
   return (
-    <form
-      onSubmit={onSubmit}
-      aria-label="Nueva familia"
-      className="border-line bg-card mt-3 flex flex-col gap-3 rounded-md border p-4"
-    >
-      <p className="font-semibold">Nueva familia</p>
-      <p className="text-muted -mt-2 text-xs">
-        El titular paga la cuota. Si el celular no tiene ficha, se crea con el nombre.
-      </p>
-      <PersonFields prefix="holder" />
-      {state?.error && <ErrorText>{state.error}</ErrorText>}
-      <button type="submit" className="btn-primary" disabled={pending}>
-        {pending ? "Creando…" : "Crear familia"}
-      </button>
-    </form>
+    <>
+      <Button className="text-base" onClick={() => setOpen(true)}>
+        <Icon name="plus" />
+        Nueva familia
+      </Button>
+      <Sheet
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Nueva familia"
+        description="El titular paga la cuota. Si el celular no tiene ficha, se crea con el nombre."
+      >
+        <form onSubmit={onSubmit} aria-label="Nueva familia" className="flex flex-col gap-3">
+          <PersonFields prefix="holder" />
+          {state?.error && <ErrorText>{state.error}</ErrorText>}
+          <Button type="submit" pending={pending}>
+            Crear familia
+          </Button>
+          <Button variant="text" className="mx-auto" onClick={() => setOpen(false)}>
+            Cerrar
+          </Button>
+        </form>
+      </Sheet>
+    </>
   );
 }
 
@@ -253,27 +280,25 @@ function AddMemberForm({ membershipId }: { membershipId: string }) {
     onOk: () => setOpen(false),
   });
 
-  if (!open) {
-    return (
-      <button type="button" className="btn-secondary" onClick={() => setOpen(true)}>
-        Agregar persona
-      </button>
-    );
-  }
   return (
-    <form onSubmit={onSubmit} aria-label="Agregar persona" className="flex flex-col gap-3">
-      <input type="hidden" name="membership_id" value={membershipId} />
-      <PersonFields prefix={`add-${membershipId}`} />
-      {state?.error && <ErrorText>{state.error}</ErrorText>}
-      <div className="flex gap-2">
-        <button type="submit" className="btn-primary flex-1" disabled={pending}>
-          {pending ? "Agregando…" : "Agregar"}
-        </button>
-        <button type="button" className="btn-secondary" onClick={() => setOpen(false)}>
-          Cancelar
-        </button>
-      </div>
-    </form>
+    <>
+      <Button variant="secondary" className="text-base" onClick={() => setOpen(true)}>
+        Agregar persona
+      </Button>
+      <Sheet open={open} onClose={() => setOpen(false)} title="Agregar persona">
+        <form onSubmit={onSubmit} aria-label="Agregar persona" className="flex flex-col gap-3">
+          <input type="hidden" name="membership_id" value={membershipId} />
+          <PersonFields prefix={`add-${membershipId}`} />
+          {state?.error && <ErrorText>{state.error}</ErrorText>}
+          <Button type="submit" pending={pending}>
+            Agregar
+          </Button>
+          <Button variant="text" className="mx-auto" onClick={() => setOpen(false)}>
+            Cancelar
+          </Button>
+        </form>
+      </Sheet>
+    </>
   );
 }
 
@@ -299,76 +324,65 @@ function PayFee({ family, price }: { family: FamilyRow; price: number }) {
     });
   }
 
-  if (!open) {
-    return (
-      <>
-        {done && (
-          <p role="status" className="text-ok text-sm font-medium">
-            Cuota cobrada. Quedó en la caja de hoy.
-          </p>
-        )}
-        <button
-          type="button"
-          className="btn-primary"
-          onClick={() => {
-            setDone(false);
-            setOpen(true);
-          }}
-        >
-          Cobrar cuota
-        </button>
-      </>
-    );
-  }
   return (
-    <div className="flex flex-col gap-3">
-      <fieldset className="flex flex-col gap-1">
-        <legend className="text-sm font-semibold">Medio de pago</legend>
-        <div className="grid grid-cols-2 gap-2">
-          {METHODS.map((m) => (
-            <label
-              key={m.id}
-              className={`flex min-h-12 items-center justify-center rounded-md border text-sm font-semibold ${
-                method === m.id ? "bg-ink text-card border-ink" : "border-line bg-card"
-              }`}
-            >
-              <input
-                type="radio"
-                name={`method-${family.id}`}
-                value={m.id}
-                checked={method === m.id}
-                onChange={() => setMethod(m.id)}
-                className="sr-only"
-              />
-              {m.label}
-            </label>
-          ))}
-        </div>
-      </fieldset>
-      {error && <ErrorText>{error}</ErrorText>}
-      <div className="flex gap-2">
-        <button type="button" className="btn-primary flex-1" disabled={pending} onClick={pay}>
-          {pending ? "Cobrando…" : `Cobrar ${formatCOP(price)}`}
-        </button>
-        <button type="button" className="btn-secondary" onClick={() => setOpen(false)}>
+    <>
+      {done && (
+        <p role="status" className="text-ok text-sm font-medium">
+          Cuota cobrada. Quedó en la caja de hoy.
+        </p>
+      )}
+      <Button
+        variant="secondary"
+        className="text-base"
+        onClick={() => {
+          setDone(false);
+          setOpen(true);
+        }}
+      >
+        Cobrar cuota
+      </Button>
+      <Sheet
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Cobrar cuota"
+        description={`Familia de ${family.holderName ?? "sin titular"} · ${formatCOP(price)}`}
+      >
+        <OptionList
+          name={`method-${family.id}`}
+          legend="Medio de pago"
+          layout="grid"
+          options={METHODS.map((m) => ({ value: m.id, label: m.label }))}
+          value={method}
+          onChange={(v) => setMethod(v as PaymentMethod)}
+        />
+        {error && <ErrorText>{error}</ErrorText>}
+        <Button pending={pending} onClick={pay}>
+          {`Cobrar ${formatCOP(price)}`}
+        </Button>
+        <Button variant="text" className="mx-auto" onClick={() => setOpen(false)}>
           Cancelar
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Sheet>
+    </>
   );
 }
 
-/** REQ-046.1, REQ-046.4, REQ-045.1: una familia con su periodo, sus miembros y la cuota. */
+/**
+ * REQ-046.1, REQ-046.4, REQ-045.1: una familia con su periodo, sus miembros (celular enmascarado,
+ * REQ-078.6) y la cuota. Quitar a alguien pide confirmación en una hoja (REQ-078.3).
+ */
 export function FamilyCard({ family, plan }: { family: FamilyRow; plan: MembershipsView["plan"] }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<{ id: string; name: string } | null>(null);
   const [pending, startTransition] = useTransition();
 
-  function remove(memberId: string, name: string) {
-    if (!window.confirm(`¿Quitar a ${name} de la familia? Los cortes no se devuelven.`)) return;
+  function remove() {
+    const target = removing!;
     setError(null);
     startTransition(async () => {
-      const r = await removeFamilyMember(memberId);
+      const r = await removeFamilyMember(target.id);
+      setRemoving(null);
       if (!r.ok) setError(r.error);
       else router.refresh();
     });
@@ -376,46 +390,42 @@ export function FamilyCard({ family, plan }: { family: FamilyRow; plan: Membersh
 
   const title = family.holderName ?? "Familia sin titular";
   return (
-    <li
-      aria-label={`Familia de ${title}`}
-      className="border-line bg-card flex flex-col gap-3 rounded-md border p-3"
-    >
-      <div>
-        <p className="font-semibold">Familia de {title}</p>
-        {family.current ? (
-          <p className="text-sm">
-            Quedan {family.current.cutsLeft} de {family.current.cutsTotal} cortes · vence el{" "}
-            {formatDayCO(family.current.endsOn)}
-          </p>
-        ) : (
-          <p className="text-muted text-sm">
-            {plan.enabled ? "Sin periodo vigente." : "La membresía está apagada."}
-          </p>
-        )}
-        {family.paidUntil && (
-          <p className="text-muted text-sm">Pagada hasta el {formatDayCO(family.paidUntil)}</p>
-        )}
+    <li aria-label={`Familia de ${title}`} className="flex flex-col gap-3 px-4 py-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-bold">Familia de {title}</p>
+          {family.current ? (
+            <p className="text-sm">
+              Quedan {family.current.cutsLeft} de {family.current.cutsTotal} cortes · vence el{" "}
+              {formatDayCO(family.current.endsOn)}
+            </p>
+          ) : (
+            <p className="text-muted text-sm">
+              {plan.enabled ? "Sin periodo vigente." : "La membresía está apagada."}
+            </p>
+          )}
+          {family.paidUntil && (
+            <p className="text-muted text-sm">Pagada hasta el {formatDayCO(family.paidUntil)}</p>
+          )}
+        </div>
+        {family.current ? <Tag tone="ok">Al día</Tag> : <Tag>Sin periodo</Tag>}
       </div>
 
-      <ul aria-label="Miembros" className="flex flex-col gap-1">
+      <ul aria-label="Miembros" className="border-line divide-line divide-y rounded-md border">
         {family.members.map((m) => (
-          <li key={m.id} className="flex min-h-12 items-center justify-between gap-2">
-            <div>
-              <p className="font-medium">
-                {m.name}
-                {m.isHolder && (
-                  <span className="bg-brand text-card ml-2 rounded-full px-2 py-0.5 text-xs">
-                    Titular
-                  </span>
-                )}
+          <li key={m.id} className="flex min-h-12 items-center justify-between gap-2 pl-3">
+            <div className="min-w-0">
+              <p className="flex items-center gap-2 font-medium">
+                <span className="truncate">{m.name}</span>
+                {m.isHolder && <Tag tone="outline">Titular</Tag>}
               </p>
-              <p className="text-muted text-xs">{formatPhoneCO(m.phone)}</p>
+              <p className="text-muted text-xs tabular-nums">{maskPhone(m.phone)}</p>
             </div>
             <button
               type="button"
-              className="text-danger min-h-12 px-2 text-sm font-semibold"
+              className="text-danger min-h-12 shrink-0 px-3 text-sm font-semibold underline underline-offset-4 disabled:opacity-50"
               disabled={pending}
-              onClick={() => remove(m.id, m.name)}
+              onClick={() => setRemoving({ id: m.id, name: m.name })}
               aria-label={`Quitar a ${m.name}`}
             >
               Quitar
@@ -425,12 +435,48 @@ export function FamilyCard({ family, plan }: { family: FamilyRow; plan: Membersh
       </ul>
       {error && <ErrorText>{error}</ErrorText>}
 
-      {family.members.length < 5 ? (
-        <AddMemberForm membershipId={family.id} />
-      ) : (
-        <p className="text-muted text-xs">La familia está completa: 5 personas.</p>
-      )}
-      {plan.enabled && plan.price ? <PayFee family={family} price={plan.price} /> : null}
+      <div className="flex flex-wrap items-center gap-2">
+        {family.members.length < 5 ? (
+          <AddMemberForm membershipId={family.id} />
+        ) : (
+          <p className="text-muted text-xs">La familia está completa: 5 personas.</p>
+        )}
+        {plan.enabled && plan.price ? <PayFee family={family} price={plan.price} /> : null}
+      </div>
+
+      <Sheet
+        open={removing !== null}
+        onClose={() => setRemoving(null)}
+        title={removing ? `¿Quitar a ${removing.name} de la familia?` : ""}
+        description="Los cortes no se devuelven."
+      >
+        <Button variant="danger" className="w-full" pending={pending} onClick={remove}>
+          Sí, quitar
+        </Button>
+        <Button variant="text" className="mx-auto" onClick={() => setRemoving(null)}>
+          No, dejarlo
+        </Button>
+      </Sheet>
     </li>
+  );
+}
+
+/** Lista de familias, o qué hacer si no hay ninguna (REQ-078.11). */
+export function FamilyList({ view }: { view: MembershipsView }) {
+  if (view.families.length === 0) {
+    return (
+      <EmptyState
+        icon="users"
+        title="Todavía no hay familias."
+        text='Toca "Nueva familia" y escribe el nombre y el celular de quien paga la cuota.'
+      />
+    );
+  }
+  return (
+    <ul aria-label="Familias" className="divide-line divide-y">
+      {view.families.map((f) => (
+        <FamilyCard key={f.id} family={f} plan={view.plan} />
+      ))}
+    </ul>
   );
 }

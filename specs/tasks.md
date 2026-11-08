@@ -2083,12 +2083,38 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: fila por carriles en escritorio y lista en el celular con celulares enmascarados; caja
   en 390, 768 y 1280 px; anular y cerrar caja con hoja de confirmación; venta nueva con resaltado.
 
-### [ ] T-166 · Dueño: operación y clientes
+### [x] T-166 · Dueño: operación y clientes
 - REQ: REQ-078.3, REQ-078.6, REQ-078.11
 - Archivos: `src/app/(staff)/admin/{citas,semana,fidelidad,recordar,membresias,regalos}/**` y sus
   componentes, `tests/e2e/visual-dueno-modulos.spec.ts`
 - Terminado: como los tableros Dueno-Operacion y Dueno-Clientes; listas con `maskPhone`; vacíos con
   qué hacer.
+- Hecho (2026-11-07). Notas y desvíos (ADR-047: la app manda donde el tablero muestra otra cosa):
+  - `maskPhone` pasa a `300 *** 0001` (REQ-078.6; antes `••• ••• 0001`, sin uso). Mismo cuerpo que
+    T-165 para que el merge no choque. Celular enmascarado en los miembros de las familias y en
+    quien compró la tarjeta de regalo; el enlace de WhatsApp sí lleva el número.
+  - Piezas comunes en `src/components/admin/ModulePage.tsx` (`ModuleHeader`, `Panel`, `Tag`,
+    `GroupLabel`); las seis pantallas usan `data-wide` (anchas desde 1024 px).
+  - Citas: un día a la vez con flechas y "Hoy"; rejilla barbero × hora desde 1024 px y agrupada por
+    barbero en el celular (`agendaGrid`, pura y probada). Tocar una cita abre su hoja con "Pasar",
+    "Cancelar cita" (contorno rojo y confirmación; antes `window.confirm`) y "Avisarle por
+    WhatsApp". Al crear una cita la agenda salta a su día. Con citas encendidas "Guardar" de
+    Ajustes va en contorno y los Ajustes quedan al final. Día sin citas con `EmptyState`.
+  - Semana: flechas con `aria-label` "Semana anterior"/"Semana siguiente" (antes "← Anterior" /
+    "Siguiente →"); cifras en franja; tabla por barbero desde 1024 px y "A pagar" en el celular.
+    "Marcar pagado" y "Descargar PDF" del tablero no existen en la app: no se construyen.
+  - Fidelidad: panel con la etiqueta Activa/Apagada y el resumen al lado en escritorio.
+  - Recordar: dos paneles; "Saludar/Recordar por WhatsApp" en contorno (antes varios rellenos);
+    "No contactar" con hoja de confirmación (antes `window.confirm`); vacíos que dicen qué hacer.
+  - Membresías: "Nueva familia" es el principal y abre la hoja con el formulario; "Agregar
+    persona" y "Cobrar cuota" abren hojas; "Quitar" en rojo con hoja de confirmación; "Guardar
+    plan" y "Recordar por WhatsApp" en contorno. Tarjetas de regalo: "Vender tarjeta" abre la hoja;
+    al vender queda el código con "Enviar por WhatsApp" relleno; en la lista va en contorno.
+    "Anular" del tablero no existe aquí (se anula la venta en la caja): no se construye.
+  - Medios de pago con `OptionList`; sin emojis en los botones; `select` con `h-12` (WebKit no
+    respeta `min-height`).
+  - E2E ajustadas a las hojas: appointments-agenda, memberships, gift-cards, reminders, week.
+    `birthdays` REQ-037.4 ("Mañana") falla en local por la fecha del seed: no es de este cambio.
 
 ### [ ] T-167 · Dueño: local y configuración
 - REQ: REQ-078.3, REQ-078.6, REQ-078.11

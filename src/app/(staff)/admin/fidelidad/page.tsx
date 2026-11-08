@@ -4,6 +4,7 @@ import {
   type LoyaltyProgramRow,
   type LoyaltyServiceRow,
 } from "@/components/admin/LoyaltyForm";
+import { ModuleHeader, Panel, Tag } from "@/components/admin/ModulePage";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -49,31 +50,45 @@ export default async function LoyaltyPage() {
   const rewards = cards.filter((c) => c.status === "completed").length;
 
   return (
-    <main className="pb-6">
-      <h1 className="text-2xl font-bold">Tarjeta de fidelidad</h1>
-      <p className="text-muted mt-1 text-sm">
+    <main data-wide className="pb-6">
+      <ModuleHeader title="Tarjeta de fidelidad" subtitle="Regla de cortes y premio" />
+      <p className="text-muted mt-3 text-sm">
         Cada servicio que suma es un sello. Al completar la tarjeta, el cliente gana el premio.
       </p>
-      <dl
-        aria-label="Resumen de la tarjeta"
-        className="border-line bg-card mt-4 grid grid-cols-3 gap-2 rounded-md border p-4 text-center"
-      >
-        <div>
-          <dt className="text-muted text-xs">Clientes con tarjeta</dt>
-          <dd className="text-xl font-bold">{cards.length}</dd>
-        </div>
-        <div>
-          <dt className="text-muted text-xs">Sellos acumulados</dt>
-          <dd className="text-xl font-bold" data-testid="stamps-total">
-            {stamps}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-muted text-xs">Premios por canjear</dt>
-          <dd className="text-xl font-bold">{rewards}</dd>
-        </div>
-      </dl>
-      <LoyaltyForm program={program} services={services} />
+      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+        <Panel
+          title={
+            <>
+              <h2 className="text-lg font-bold">Fidelidad</h2>
+              <Tag tone={program.enabled ? "ok" : "muted"}>
+                {program.enabled ? "Activa" : "Apagada"}
+              </Tag>
+            </>
+          }
+          label="Fidelidad"
+        >
+          <LoyaltyForm program={program} services={services} />
+        </Panel>
+        <dl
+          aria-label="Resumen de la tarjeta"
+          className="border-line bg-card divide-line grid grid-cols-3 divide-x rounded-md border text-center lg:grid-cols-1 lg:divide-x-0 lg:divide-y lg:text-left"
+        >
+          <div className="px-2 py-3 lg:flex lg:items-center lg:justify-between lg:px-4">
+            <dt className="text-muted text-xs lg:text-sm">Clientes con tarjeta</dt>
+            <dd className="text-xl font-bold tabular-nums">{cards.length}</dd>
+          </div>
+          <div className="px-2 py-3 lg:flex lg:items-center lg:justify-between lg:px-4">
+            <dt className="text-muted text-xs lg:text-sm">Sellos acumulados</dt>
+            <dd className="text-xl font-bold tabular-nums" data-testid="stamps-total">
+              {stamps}
+            </dd>
+          </div>
+          <div className="px-2 py-3 lg:flex lg:items-center lg:justify-between lg:px-4">
+            <dt className="text-muted text-xs lg:text-sm">Premios por canjear</dt>
+            <dd className="text-xl font-bold tabular-nums">{rewards}</dd>
+          </div>
+        </dl>
+      </div>
     </main>
   );
 }

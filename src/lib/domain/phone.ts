@@ -38,9 +38,10 @@ export function formatPhoneTyping(raw: string): string {
   return [d.slice(0, 3), d.slice(3, 6), d.slice(6)].filter(Boolean).join(" ");
 }
 
-/** Para pantallas públicas: nunca el número completo (P6). */
+/** Listas y tablas: nunca el número completo (P6, REQ-078.6): `300 *** 0001`. */
 export function maskPhone(e164: string): string {
-  return `••• ••• ${e164.slice(-4)}`;
+  const d = e164.replace(/\D/g, "").slice(-10);
+  return `${d.slice(0, 3)} *** ${d.slice(-4)}`;
 }
 
 /** Formato que exige wa.me: E.164 sin el signo +. */
