@@ -482,7 +482,12 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   los datos de un cliente usa la hoja nueva; un solo botón relleno por pantalla. Prueba desde el
   celular: Más → Barberos, "Editar" a uno, cambiar el % y ver la pregunta; Productos con el filtro
   por categoría; Más → Privacidad, "Ir a Clientes".
-- La aprobación del hito terminado será un ADR nuevo.
+- 2026-11-08: las 15 PR del hito (#112, #115–#128) fusionadas en `main`. El E2E de `main` quedó
+  en rojo (zoom 200 % con las fuentes de Linux, "Visto" pequeño, prueba de acceso en WebKit): PR
+  #129 lo arregla y sube el límite del job a 45 minutos. T-168: `pnpm trace --hito=16` sin huecos.
+- Falta de Henry: desplegar `main` cuando el CI esté en verde, recorrer cliente, barbero y dueño en
+  el celular y el computador, la prueba en la barbería (PA-H16-2), comparar Speed Insights con el
+  Hito 14 y aprobar (ADR-050, reservado).
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

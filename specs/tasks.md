@@ -2224,6 +2224,11 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   en la barbería (PA-H16-2); aprobación del hito (ADR nuevo).
 - Terminado: `pnpm trace --hito=16` sin huecos; CI verde; Speed Insights sin empeorar respecto al
   Hito 14 (REQ-075.3).
+- Nota (2026-11-08): `pnpm trace --hito=16` con 0 sin prueba (423 criterios en total) y el hito 16
+  en el loop de `tests/unit/traceability.test.ts`. Las 15 PR del hito están en `main`; el E2E de
+  `main` se arregló en la PR #129 (zoom 200 % con las fuentes de Linux, "Visto" de 48 px, prueba de
+  acceso en WebKit). Queda `[ ]` hasta que Henry recorra cliente, barbero y dueño, haga la prueba en
+  la barbería y compare Speed Insights; la aprobación será ADR-050 (reservado).
 
 ---
 
