@@ -96,7 +96,7 @@ export function MyTicket({
         {/* Alto fijo de una línea: el número no empuja lo de abajo al llegar (REQ-078.8) */}
         <p
           data-testid="ticket-number"
-          className="text-[clamp(6rem,30vw,7.5rem)] leading-none font-bold tabular-nums"
+          className="text-[clamp(3rem,30vw,7.5rem)] leading-none font-bold tabular-nums"
         >
           {ticket.displayNumber}
         </p>
