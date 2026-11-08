@@ -28,13 +28,26 @@ export async function loginOwnerToToday(page: Page) {
   await page.getByRole("button", { name: "Entrar" }).click();
   // /app redirige a /admin: esperar la URL final evita navegaciones interrumpidas
   await expect(page).toHaveURL(/\/admin$/, { timeout: 15_000 });
+  // La URL cambia antes de que termine la navegación; el título de "Hoy" marca que terminó.
+  await expect(page.getByRole("heading", { name: "Hoy", level: 1 })).toBeVisible({
+    timeout: 15_000,
+  });
 }
 
-/** El dueño entra y abre la fila, donde empiezan casi todas las pruebas del dueño. */
+/**
+ * El dueño entra directo a la fila, donde empiezan casi todas las pruebas del dueño. Va con
+ * `volver` y no pasa por "Hoy": allá LiveRefresh refresca con cada cambio de la fila (de las otras
+ * pruebas en paralelo) e interrumpe cualquier `goto`.
+ */
 export async function loginAsOwner(page: Page) {
-  await loginOwnerToToday(page);
-  await page.goto("/admin/fila");
-  await expect(page.getByRole("heading", { name: "Fila", level: 1 })).toBeVisible();
+  await page.goto("/entrar?rol=dueno&volver=/admin/fila");
+  await page.getByLabel("Correo").fill(SEED.owner.email);
+  await page.getByLabel("Contraseña").fill(SEED.owner.password);
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page).toHaveURL(/\/admin\/fila$/, { timeout: 15_000 });
+  await expect(page.getByRole("heading", { name: "Fila", level: 1 })).toBeVisible({
+    timeout: 15_000,
+  });
 }
 
 /**

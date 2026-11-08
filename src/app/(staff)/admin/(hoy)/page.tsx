@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { TodayAlerts } from "@/components/admin/today/TodayAlerts";
+import { TodayAppointments } from "@/components/admin/today/TodayAppointments";
 import { TodayCardSkeleton } from "@/components/admin/today/TodayCard";
 import { TodayCash } from "@/components/admin/today/TodayCash";
 import { TodayQueue } from "@/components/admin/today/TodayQueue";
+import { TodayRemind } from "@/components/admin/today/TodayRemind";
 import { LiveRefresh } from "@/components/queue/LiveRefresh";
 import { getStaffSession } from "@/lib/auth/session";
 import { businessDayBogota, formatDayCO, weekdayName } from "@/lib/domain/time";
@@ -28,15 +31,32 @@ export default async function TodayPage() {
           {weekdayName(day)} {formatDayCO(day)}
         </p>
       </div>
+      {/* Celular: el orden del DOM (REQ-076.11). Escritorio: fila y alertas arriba (design §21.1). */}
       <div className="mt-4 grid gap-4 lg:grid-cols-12 lg:items-start">
-        <div className="lg:col-span-8">
+        <div className="lg:order-2 lg:col-span-4">
+          <Suspense fallback={<TodayCardSkeleton rows={3} />}>
+            <TodayAlerts />
+          </Suspense>
+        </div>
+        <div className="lg:order-1 lg:col-span-8">
           <Suspense fallback={<TodayCardSkeleton rows={5} />}>
             <TodayQueue />
           </Suspense>
         </div>
-        <div className="lg:col-span-4">
+        <div className="lg:order-3 lg:col-span-4">
           <Suspense fallback={<TodayCardSkeleton rows={6} />}>
             <TodayCash />
+          </Suspense>
+        </div>
+        {/* Con citas apagadas el bloque no pinta nada y la celda se oculta (REQ-076.5) */}
+        <div className="empty:hidden lg:order-4 lg:col-span-4">
+          <Suspense fallback={<TodayCardSkeleton rows={3} />}>
+            <TodayAppointments />
+          </Suspense>
+        </div>
+        <div className="lg:order-5 lg:col-span-4">
+          <Suspense fallback={<TodayCardSkeleton rows={2} />}>
+            <TodayRemind />
           </Suspense>
         </div>
       </div>

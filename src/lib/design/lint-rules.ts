@@ -7,7 +7,10 @@
  * Archivos donde el rojo relleno (`bg-accent`) es "atención ahora" (REQ-078.3). Cada tarea que lo
  * use lo agrega aquí, y la revisión del PR confirma que el caso es de atención.
  */
-export const ACCENT_FILL_ALLOWED: string[] = [];
+export const ACCENT_FILL_ALLOWED: string[] = [
+  // T-152: insignias de conteo de "Hoy" y del menú del dueño (REQ-076.6, REQ-077.6)
+  "src/components/admin/today/CountBadge.tsx",
+];
 
 const PALETTE =
   /(?<![\w-])(?:[a-z0-9-]+:)*(?:bg|text|border(?:-[trblxy])?|ring|outline|from|via|to|fill|stroke|divide|placeholder|decoration|shadow|caret)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}(?:\/\d+)?(?![\w-])/g;

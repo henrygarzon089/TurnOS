@@ -387,7 +387,12 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   fila: muestra "Hoy" con la fila en vivo (esperando, estimado de la portada, estado de cada
   barbero con nombre corto y sin celulares) y la caja de hoy (total, medios, vitrina, servicios y
   el mismo día de la semana pasada). Cada bloque carga con su esqueleto y falla solo; se relee con
-  el canal de la fila. Siguiente: T-152 (citas, alertas y recordar).
+  el canal de la fila.
+- T-152 hecha (rama `claude/t-152-alertas`, encima de T-151, 2026-11-07): "Hoy" suma "Piden tu
+  atención" (cajas sin cerrar, limpieza, insumos, membresías que vencen; cada una con su enlace, o
+  "Todo en orden"), "Citas de hoy" (solo con citas encendidas) y "Para recordar" (solo conteos). El
+  número de alertas sale en rojo junto a "Hoy" en la barra y en el menú lateral. `loginAsOwner` del
+  E2E entra directo a la fila. Siguiente: T-153 (accesos directos y semana en escritorio).
 - Ojo con el E2E local: con el servidor de desarrollo cargado (muchas corridas seguidas) los
   ingresos se cuelgan y fallan pruebas que no tienen que ver; reiniciar el servidor y usar
   `--workers=2` lo deja estable.

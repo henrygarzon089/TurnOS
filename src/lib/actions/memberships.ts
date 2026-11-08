@@ -38,9 +38,38 @@ export type MembershipFormState = { ok?: boolean; error?: string } | undefined;
 export type MembershipResult = { ok: true } | { ok: false; error: string };
 
 const FORBIDDEN = "Solo el dueño puede manejar las membresías.";
-const METHODS = ["cash", "nequi", "daviplata", "transfer", "card"] as const satisfies readonly PaymentMethod[];
+const METHODS = [
+  "cash",
+  "nequi",
+  "daviplata",
+  "transfer",
+  "card",
+] as const satisfies readonly PaymentMethod[];
 
 // ---------------------------------------------------------------- lectura ----
+
+/**
+ * REQ-076.6 alerta de "Hoy": si el plan está encendido y qué familias vencen en 7 días. Solo los
+ * nombres (sin celulares). null si falla.
+ */
+export async function getExpiringMemberships(): Promise<{
+  enabled: boolean;
+  expiring: { name: string }[];
+} | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  const supabase = await createSupabaseServerClient();
+  const biz = session.business.id;
+  const [planRes, expiringRes] = await Promise.all([
+    supabase.from("membership_plans").select("enabled").eq("business_id", biz).maybeSingle(),
+    supabase.rpc("memberships_expiring", { p_business_id: biz }),
+  ]);
+  if (planRes.error || expiringRes.error) return null;
+  return {
+    enabled: Boolean(planRes.data?.enabled),
+    expiring: ((expiringRes.data ?? []) as { name: string }[]).map((e) => ({ name: e.name })),
+  };
+}
 
 /** /admin/membresias: plan, familias con su periodo vigente y "Vencen esta semana" (§13.5). */
 export async function getMembershipsView(): Promise<MembershipsView | null> {

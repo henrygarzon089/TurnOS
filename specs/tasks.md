@@ -1902,7 +1902,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `src/lib/domain/today.ts` (`buildTodayQueue`, `shortName`); el estimado es el de la portada
   (`getPublicBusiness`). "Hoy" ensancha el contenido a 6xl desde 1024 px (`data-wide`); los demás
   módulos siguen a ancho de celular. El E2E entra con `loginOwnerToToday`; `loginAsOwner` ahora
-  pasa por "Hoy" y abre la fila.
+  pasa por "Hoy" y abre la fila (T-152 lo cambió: entra directo con `volver=/admin/fila`).
 - REQ: REQ-076.1, REQ-076.2, REQ-076.3, REQ-076.4, REQ-076.10, REQ-076.11
 - Archivos: `src/app/(staff)/admin/page.tsx`, `src/app/(staff)/admin/loading.tsx`,
   `src/components/admin/today/{TodayQueue,TodayCash,TodayLive,TodayBlockError}.tsx`,
@@ -1911,7 +1911,18 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   navegador y una venta se ven en < 3 s; un bloque que falla muestra "No se pudo cargar" y los demás
   siguen; en el celular, con "Slow 4G", se ve la forma antes de los datos.
 
-### [ ] T-152 · Citas, alertas y recordar
+### [x] T-152 · Citas, alertas y recordar
+- Nota (2026-11-07): las alertas se arman en `loadOwnerAlerts`
+  (`src/components/admin/today/load-owner-alerts.ts`) con `cache()` de React: una sola carga por
+  pedido para el bloque y las dos insignias. Si una fuente falla, sus alertas no salen y las demás sí;
+  "No se pudo cargar" solo si fallan todas. Lecturas nuevas livianas: `getUnclosedDays` (últimos 7
+  días con ventas y sin cierre, sin hoy) y `getExpiringMemberships` (`memberships_expiring`). La
+  insignia es `CountBadge` (rojo relleno, REQ-078.3), único archivo de "Hoy" en
+  `ACCENT_FILL_ALLOWED`. La insignia del menú es `TodayBadge`, que el layout del personal le pasa a
+  `AdminNav` como `todayBadge` (en su propio Suspense, el menú no la espera). Con citas apagadas el
+  bloque devuelve `null` y su contenedor se oculta (`empty:hidden`). E2E: `loginAsOwner` entra con
+  `volver=/admin/fila` sin pasar por "Hoy", porque el `LiveRefresh` de "Hoy" interrumpía el `goto`
+  cuando otra prueba en paralelo movía la fila.
 - REQ: REQ-076.5, REQ-076.6, REQ-076.7, REQ-077.6
 - Archivos: `src/lib/domain/owner-alerts.ts` (`buildOwnerAlerts`), `src/lib/actions/cash.ts`
   (`getUnclosedDays`), `src/components/admin/today/{TodayAlerts,TodayAppointments,TodayRemind}.tsx`,

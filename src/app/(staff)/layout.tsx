@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { TodayBadge } from "@/components/admin/today/TodayBadge";
 import { StaffHeader } from "@/components/staff/StaffHeader";
 import { getStaffSession } from "@/lib/auth/session";
 
@@ -23,7 +25,15 @@ export default async function StaffLayout({ children }: { children: React.ReactN
       >
         {children}
       </div>
-      {owner && <AdminNav />}
+      {owner && (
+        <AdminNav
+          todayBadge={
+            <Suspense fallback={null}>
+              <TodayBadge />
+            </Suspense>
+          }
+        />
+      )}
     </div>
   );
 }
