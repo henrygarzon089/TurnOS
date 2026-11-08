@@ -397,7 +397,19 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   "Cerrar caja" y "Nueva venta" (abre la hoja ahí mismo); en el celular van en una barra fija
   encima del menú. Desde 1024 px, "Ingresos de la semana" con una barra por día: cada una es la Caja
   de ese día y la suma es el "Vendido" de Semana (ADR-048 corrigió REQ-076.9, sin migración).
-  Siguiente: T-154 (validación del Hito 15).
+- T-154 en curso (rama `claude/t-154-validacion-h15`, encima de T-153, 2026-11-07): matriz del
+  hito 15 sin huecos (`pnpm trace --hito=15`) y el hito en el loop de la prueba de trazabilidad.
+  `getUnclosedDays` ya no se corta en 1000 ventas. Falta lo de Henry:
+  1. Fusionar la cadena en orden: #115 → #116 → #117 → #118 → #119 → #120 → #121 → T-154.
+     Sin migraciones: basta el despliegue de `main`.
+  2. En el celular, entrar como dueño: ver "Hoy" (alertas, fila, caja, citas si están encendidas,
+     recordar), la insignia roja en "Hoy" y la barra con "Fila", "Cerrar caja" y "Nueva venta".
+  3. Con otro celular tomar un turno por el QR y hacer una venta: "Hoy" debe cambiar en menos de
+     3 s (REQ-076.3). En local tarda 1,8–4,2 s por el servidor de desarrollo; en producción se mide
+     de verdad.
+  4. En el computador (1024 px o más): menú lateral y "Ingresos de la semana", con las mismas
+     cifras de la Caja de cada día y del "Vendido" de Semana.
+  5. Si todo está bien, aprobar el Hito 15 (será ADR-049).
 - Ojo con el E2E local: con el servidor de desarrollo cargado (muchas corridas seguidas) los
   ingresos se cuelgan y fallan pruebas que no tienen que ver; reiniciar el servidor y usar
   `--workers=2` lo deja estable.

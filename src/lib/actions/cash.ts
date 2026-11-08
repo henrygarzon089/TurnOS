@@ -439,6 +439,7 @@ export async function getCashDay(day?: string): Promise<CashDaySummary | null> {
 /**
  * REQ-076.6 alerta de caja: días de los últimos 7 (sin hoy) con ventas activas y sin cierre activo
  * (un cierre reabierto queda anulado). Con la sesión del dueño: lo filtra RLS. null si falla.
+ * Una consulta de una fila por día: un `select` de todas las ventas cortaría en 1000 filas.
  */
 export async function getUnclosedDays(): Promise<string[] | null> {
   const session = await getStaffSession();
@@ -446,29 +447,32 @@ export async function getUnclosedDays(): Promise<string[] | null> {
   const supabase = await createSupabaseServerClient();
   const biz = session.business.id;
   const today = businessDayBogota();
-  const from = new Date(`${today}T00:00:00Z`);
-  from.setUTCDate(from.getUTCDate() - 7);
-  const since = from.toISOString().slice(0, 10);
-  const [salesRes, closuresRes] = await Promise.all([
-    supabase
-      .from("sales")
-      .select("business_day")
-      .eq("business_id", biz)
-      .eq("status", "active")
-      .gte("business_day", since)
-      .lt("business_day", today),
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(`${today}T00:00:00Z`);
+    d.setUTCDate(d.getUTCDate() - 7 + i);
+    return d.toISOString().slice(0, 10);
+  });
+  const [closuresRes, ...salesRes] = await Promise.all([
     supabase
       .from("cash_closures")
       .select("business_day")
       .eq("business_id", biz)
       .eq("status", "active")
-      .gte("business_day", since)
+      .gte("business_day", days[0])
       .lt("business_day", today),
+    ...days.map((day) =>
+      supabase
+        .from("sales")
+        .select("id")
+        .eq("business_id", biz)
+        .eq("status", "active")
+        .eq("business_day", day)
+        .limit(1),
+    ),
   ]);
-  if (salesRes.error || closuresRes.error) return null;
+  if (closuresRes.error || salesRes.some((r) => r.error)) return null;
   const closed = new Set((closuresRes.data ?? []).map((c) => c.business_day as string));
-  const days = new Set((salesRes.data ?? []).map((s) => s.business_day as string));
-  return [...days].filter((d) => !closed.has(d)).sort();
+  return days.filter((day, i) => (salesRes[i].data ?? []).length > 0 && !closed.has(day));
 }
 
 /** REQ-026.1 anular una venta del día con motivo (solo dueño). */
