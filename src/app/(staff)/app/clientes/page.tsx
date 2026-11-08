@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { CustomerSearch } from "@/components/customers/CustomerSearch";
 import { searchCustomers } from "@/lib/actions/customers";
 import { getStaffSession } from "@/lib/auth/session";
@@ -18,7 +17,6 @@ export default async function CustomersPage({
   const initial = await searchCustomers("");
   return (
     <main className="pb-6">
-      {session.role === "owner" && <AdminNav current="/app/clientes" />}
       <h1 className={`text-2xl font-bold ${session.role === "owner" ? "" : "pt-6"}`}>Clientes</h1>
       <p className="text-muted mt-1 text-sm">
         {session.role === "owner"

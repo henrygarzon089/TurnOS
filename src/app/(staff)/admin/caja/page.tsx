@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { CashDay } from "@/components/cash/CashDay";
 import { getCashDay, getClosures } from "@/lib/actions/cash";
 import { getStaffSession } from "@/lib/auth/session";
@@ -17,7 +16,6 @@ export default async function CashPage() {
   const past = closures.filter((c) => c.day !== summary!.day);
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/caja" />
       <h1 className="text-2xl font-bold">Caja de hoy</h1>
       <p className="text-muted text-sm">{formatDayCO(summary!.day)}</p>
       <CashDay

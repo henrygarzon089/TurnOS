@@ -29,6 +29,26 @@ export async function loginAsOwner(page: Page) {
   await expect(page).toHaveURL(/\/admin\/fila/, { timeout: 15_000 });
 }
 
+/**
+ * Abre un módulo desde el menú del dueño (REQ-077): en el celular por "Más", en escritorio por el
+ * menú lateral.
+ */
+export async function openOwnerModule(page: Page, label: string) {
+  const bar = page.getByRole("navigation", { name: "Accesos rápidos" });
+  if (await bar.isVisible()) {
+    await bar.getByRole("button", { name: "Más" }).click();
+    await page
+      .getByRole("dialog", { name: "Todo el menú" })
+      .getByRole("link", { name: label, exact: true })
+      .click();
+  } else {
+    await page
+      .getByRole("navigation", { name: "Menú del dueño" })
+      .getByRole("link", { name: label, exact: true })
+      .click();
+  }
+}
+
 export async function loginAsBarber(page: Page, index = 0) {
   const b = SEED.barbers[index];
   await page.goto("/entrar");

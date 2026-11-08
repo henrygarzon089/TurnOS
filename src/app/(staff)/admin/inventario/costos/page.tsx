@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { InventoryNav } from "@/components/admin/InventoryNav";
 import { getSupplyCosts } from "@/lib/actions/inventory";
 import { formatCOP } from "@/lib/domain/money";
@@ -12,7 +11,6 @@ export default async function SupplyCostPage() {
   const rows = (await getSupplyCosts()) ?? [];
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/inventario" />
       <h1 className="text-2xl font-bold">Inventario</h1>
       <InventoryNav current="/admin/inventario/costos" />
 

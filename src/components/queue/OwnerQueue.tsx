@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useState, useTransition } from "react";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { CheckoutSheet } from "@/components/cash/CheckoutSheet";
 import { CourtesyLine } from "@/components/queue/CourtesyLine";
 import { MemberBadge } from "@/components/queue/MemberBadge";
@@ -98,7 +97,6 @@ export function OwnerQueue({
   return (
     <main className="pb-24">
       <ConnectionBanner online={online} />
-      <AdminNav current="/admin/fila" />
       {top}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Fila</h1>
@@ -260,7 +258,8 @@ export function OwnerQueue({
         <ManualTicketSheet view={view} busy={busy} onClose={() => setManual(false)} run={run} />
       )}
 
-      <div className="bg-surface fixed inset-x-0 bottom-0 p-4">
+      {/* Encima de la barra del menú en el celular (REQ-077.1); en escritorio, a la derecha del lateral */}
+      <div className="bg-surface fixed inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] z-10 p-4 lg:bottom-0 lg:left-60">
         <div className="mx-auto flex max-w-md gap-2">
           <button
             type="button"

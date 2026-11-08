@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import {
   ExpiringList,
   FamilyCard,
@@ -19,7 +18,6 @@ export default async function MembershipsPage() {
   const view = (await getMembershipsView())!;
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/membresias" />
       <h1 className="text-2xl font-bold">Membresía familiar</h1>
       <p className="text-muted mt-1 text-sm">
         Una familia paga una cuota y comparte los cortes durante 30 días. Al gastarlos, tiene

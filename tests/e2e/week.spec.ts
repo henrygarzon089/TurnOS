@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test } from "@playwright/test";
 import { variation } from "../../src/lib/domain/week";
-import { loginAsOwner, SEED } from "./helpers";
+import { loginAsOwner, SEED, openOwnerModule } from "./helpers";
 
 /** T-048 · REQ-028.1–28.4: selector de semana y comparación con la anterior. */
 function db() {
@@ -29,7 +29,7 @@ test("REQ-028.1 selector de semana y REQ-028.3 comparación con la semana anteri
   page,
 }) => {
   await loginAsOwner(page);
-  await page.getByRole("link", { name: "Semana" }).click();
+  await openOwnerModule(page, "Semana");
   await expect(page.getByRole("heading", { name: "Semana" })).toBeVisible();
   const cur = await week(null);
   const prevStart = new Date(`${cur.weekStart}T00:00:00Z`);

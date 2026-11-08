@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import {
   LoyaltyForm,
   type LoyaltyProgramRow,
@@ -51,7 +50,6 @@ export default async function LoyaltyPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/fidelidad" />
       <h1 className="text-2xl font-bold">Tarjeta de fidelidad</h1>
       <p className="text-muted mt-1 text-sm">
         Cada servicio que suma es un sello. Al completar la tarjeta, el cliente gana el premio.

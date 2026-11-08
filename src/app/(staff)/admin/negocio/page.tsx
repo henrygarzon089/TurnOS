@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { AlertPctForm } from "@/components/admin/InventoryForms";
 import {
   BusinessForm,
@@ -26,7 +25,6 @@ export default async function BusinessPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/negocio" />
       <h1 className="text-2xl font-bold">Mi negocio</h1>
       <BusinessForm business={data as BusinessSettings} />
       <GoogleReviewForm url={data?.google_review_url ?? null} />

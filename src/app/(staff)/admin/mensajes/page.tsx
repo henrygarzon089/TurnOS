@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { AutoMessages, type MonthStats } from "@/components/admin/AutoMessages";
 import { TemplatesForm, type TemplateKey } from "@/components/admin/SettingsForms";
 import { getStaffSession } from "@/lib/auth/session";
@@ -32,7 +31,6 @@ export default async function TemplatesPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/mensajes" />
       <h1 className="text-2xl font-bold">Mensajes de WhatsApp</h1>
       {autoOn && (
         <AutoMessages

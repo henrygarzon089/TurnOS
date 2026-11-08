@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { BirthdaysList } from "@/components/customers/BirthdaysList";
 import { RemindersList } from "@/components/customers/RemindersList";
 import { getBirthdaysThisWeek, getInactiveCustomers } from "@/lib/actions/customers";
@@ -12,7 +11,6 @@ export default async function RemindersPage() {
   const [view, birthdays] = await Promise.all([getInactiveCustomers(), getBirthdaysThisWeek()]);
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/recordar" />
       <h1 className="text-2xl font-bold">Clientes para recordar</h1>
 
       <section className="mt-4">

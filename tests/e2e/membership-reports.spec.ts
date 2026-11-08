@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { expect, test } from "@playwright/test";
 import { formatCOP } from "../../src/lib/domain/money";
-import { adminDb, loginAsOwner, SEED } from "./helpers";
+import { adminDb, loginAsOwner, SEED, openOwnerModule } from "./helpers";
 
 /**
  * T-076 · REQ-048.3. La cuota (ejemplo G) y un corte de membresía (ejemplo E) salen aparte en la
@@ -121,7 +121,7 @@ test.describe("REQ-048.3 membresía en la caja y la semana", () => {
       const afterWeek = await week();
       expect(afterWeek.membershipFees - beforeWeek.membershipFees).toBe(80000);
       expect(afterWeek.membershipCuts.count - beforeWeek.membershipCuts.count).toBe(1);
-      await page.getByRole("link", { name: "Semana" }).click();
+      await openOwnerModule(page, "Semana");
       await expect(page.getByRole("heading", { name: "Semana" })).toBeVisible();
       await expect(page.getByTestId("membership-fees")).toHaveText(
         `Cuotas de membresía${formatCOP(afterWeek.membershipFees)}`,
