@@ -37,7 +37,7 @@ export function ProductShowcase({
 
   return (
     <section aria-label="Productos" className="flex flex-col gap-2">
-      <p className="text-sm font-semibold">Productos</p>
+      <h3 className="text-muted text-xs font-semibold tracking-wide uppercase">Productos</h3>
       {categories.length > 0 && (
         <div role="tablist" aria-label="Categorías" className="flex gap-2 overflow-x-auto pb-1">
           {[null, ...categories].map((c) => (
@@ -47,8 +47,10 @@ export function ProductShowcase({
               role="tab"
               aria-selected={tab === c}
               onClick={() => setTab(c)}
-              className={`min-h-12 shrink-0 rounded-full border px-4 text-sm font-semibold ${
-                tab === c ? "bg-accent text-accent-ink border-accent" : "border-line bg-card"
+              className={`min-h-12 shrink-0 rounded-md border px-4 text-sm font-semibold ${
+                tab === c
+                  ? "border-brand bg-brand-soft text-ink border-2"
+                  : "border-line-strong bg-card"
               }`}
             >
               {c ?? "Todos"}
@@ -62,8 +64,8 @@ export function ProductShowcase({
           return (
             <div
               key={p.id}
-              className={`flex flex-col gap-1 rounded-xl border p-2 ${
-                n > 0 ? "border-accent" : "border-line"
+              className={`flex flex-col gap-1 rounded-md border p-2 ${
+                n > 0 ? "border-brand" : "border-line"
               }`}
             >
               {p.photoPath ? (
@@ -73,12 +75,12 @@ export function ProductShowcase({
                   width={160}
                   height={96}
                   unoptimized
-                  className="h-24 w-full rounded-lg object-cover"
+                  className="h-24 w-full rounded-sm object-cover"
                 />
               ) : (
                 <span
                   aria-hidden="true"
-                  className="bg-line/40 text-muted flex h-24 w-full items-center justify-center rounded-lg text-3xl font-bold"
+                  className="bg-line/40 text-muted flex h-24 w-full items-center justify-center rounded-sm text-3xl font-bold"
                 >
                   {p.name.slice(0, 1).toUpperCase()}
                 </span>

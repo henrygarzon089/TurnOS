@@ -436,6 +436,45 @@ export async function getCashDay(day?: string): Promise<CashDaySummary | null> {
   return error ? null : (data as CashDaySummary);
 }
 
+/**
+ * REQ-076.6 alerta de caja: días de los últimos 7 (sin hoy) con ventas activas y sin cierre activo
+ * (un cierre reabierto queda anulado). Con la sesión del dueño: lo filtra RLS. null si falla.
+ * Una consulta de una fila por día: un `select` de todas las ventas cortaría en 1000 filas.
+ */
+export async function getUnclosedDays(): Promise<string[] | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  const supabase = await createSupabaseServerClient();
+  const biz = session.business.id;
+  const today = businessDayBogota();
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(`${today}T00:00:00Z`);
+    d.setUTCDate(d.getUTCDate() - 7 + i);
+    return d.toISOString().slice(0, 10);
+  });
+  const [closuresRes, ...salesRes] = await Promise.all([
+    supabase
+      .from("cash_closures")
+      .select("business_day")
+      .eq("business_id", biz)
+      .eq("status", "active")
+      .gte("business_day", days[0])
+      .lt("business_day", today),
+    ...days.map((day) =>
+      supabase
+        .from("sales")
+        .select("id")
+        .eq("business_id", biz)
+        .eq("status", "active")
+        .eq("business_day", day)
+        .limit(1),
+    ),
+  ]);
+  if (closuresRes.error || salesRes.some((r) => r.error)) return null;
+  const closed = new Set((closuresRes.data ?? []).map((c) => c.business_day as string));
+  return days.filter((day, i) => (salesRes[i].data ?? []).length > 0 && !closed.has(day));
+}
+
 /** REQ-026.1 anular una venta del día con motivo (solo dueño). */
 export async function voidSale(saleId: string, reason: string): Promise<CashResult> {
   const session = await getStaffSession();
@@ -595,6 +634,40 @@ export type WeekSummary = {
   productCommission: number;
   staffPurchases: { count: number; total: number; discount: number };
 };
+
+/**
+ * REQ-076.9 / ADR-048 total por día de esta semana (lunes a hoy) para las barras de "Hoy": el
+ * `total` de `cash_day_summary` de cada día, la misma cifra de la Caja; su suma es el "Vendido" de
+ * Semana. Por día con la función y no con un `select` de ventas, que corta en 1000 filas.
+ */
+export async function getWeekDailyTotals(): Promise<{
+  weekStart: string;
+  today: string;
+  totals: Record<string, number>;
+} | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  const supabase = await createSupabaseServerClient();
+  const weekStart = bogotaWeekStart();
+  const today = businessDayBogota();
+  const days: string[] = [];
+  for (const d = new Date(`${weekStart}T00:00:00Z`); ; d.setUTCDate(d.getUTCDate() + 1)) {
+    const day = d.toISOString().slice(0, 10);
+    if (day > today) break;
+    days.push(day);
+  }
+  const results = await Promise.all(
+    days.map((day) =>
+      supabase.rpc("cash_day_summary", { p_business_id: session.business.id, p_day: day }),
+    ),
+  );
+  if (results.some((r) => r.error || !r.data)) return null;
+  const totals: Record<string, number> = {};
+  days.forEach((day, i) => {
+    totals[day] = (results[i].data as CashDaySummary).total;
+  });
+  return { weekStart, today, totals };
+}
 
 /** REQ-028.1–28.4 resumen de la semana (lunes a domingo) y la anterior para comparar. */
 export async function getWeekSummary(

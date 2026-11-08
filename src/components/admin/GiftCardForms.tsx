@@ -2,7 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Tag } from "@/components/admin/ModulePage";
 import { ErrorText } from "@/components/auth/LoginForm";
+import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
+import { OptionList } from "@/components/ui/OptionList";
+import { Sheet } from "@/components/ui/Sheet";
+import { EmptyState } from "@/components/ui/States";
 import {
   sellGiftCard,
   type GiftCardRow,
@@ -18,7 +24,7 @@ import {
   type GiftCardSaleMethod,
 } from "@/lib/domain/giftCard";
 import { formatCOP } from "@/lib/domain/money";
-import { formatPhoneCO } from "@/lib/domain/phone";
+import { maskPhone } from "@/lib/domain/phone";
 import { buildGiftCardLink } from "@/lib/notifications/reminder";
 
 const METHODS: { id: GiftCardSaleMethod; label: string }[] = [
@@ -31,11 +37,22 @@ const METHODS: { id: GiftCardSaleMethod; label: string }[] = [
 
 type SendProps = Pick<GiftCardsView, "template" | "businessName" | "appUrl">;
 
-/** REQ-056.1 / REQ-056.4: enviar (o reenviar) la tarjeta a quien la compró. */
-function SendButton({ card, view }: { card: GiftCardRow; view: SendProps }) {
+/**
+ * REQ-056.1 / REQ-056.4: enviar (o reenviar) la tarjeta a quien la compró. Relleno solo recién
+ * vendida; en la lista va en contorno (REQ-078.4).
+ */
+function SendButton({
+  card,
+  view,
+  primary = false,
+}: {
+  card: GiftCardRow;
+  view: SendProps;
+  primary?: boolean;
+}) {
   return (
     <a
-      className="btn-primary"
+      className={`${primary ? "btn-primary" : "btn-secondary"} w-full text-base sm:w-auto`}
       href={buildGiftCardLink({
         phoneE164: card.buyerPhone,
         template: view.template,
@@ -48,17 +65,23 @@ function SendButton({ card, view }: { card: GiftCardRow; view: SendProps }) {
       target="_blank"
       rel="noopener"
     >
-      📲 Enviar por WhatsApp
+      Enviar por WhatsApp
     </a>
   );
 }
 
-/** REQ-055.1–055.3: vender una tarjeta; al terminar, el código y el botón para enviarla. */
+/**
+ * REQ-055.1–055.3: vender una tarjeta. "Vender tarjeta" es el principal de la pantalla y abre la
+ * hoja con el formulario; al terminar, la hoja se cierra y queda el código con "Enviar por
+ * WhatsApp" como principal (tablero Dueno-Clientes, T-166).
+ */
 export function SellGiftCardForm({ view }: { view: SendProps }) {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
   const [state, setState] = useState<SellGiftCardState>(undefined);
   const [method, setMethod] = useState<GiftCardSaleMethod>("cash");
   const [pending, startTransition] = useTransition();
+  const sold = state?.ok ? state.card : null;
 
   // onSubmit y no `action`: React limpia el formulario al terminar una `action`, aunque falle.
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -70,143 +93,160 @@ export function SellGiftCardForm({ view }: { view: SendProps }) {
       if (r?.ok) {
         form.reset();
         setMethod("cash");
+        setOpen(false);
         router.refresh();
       }
     });
   }
 
   return (
-    <>
-      {state?.ok && (
+    <div className="mt-4 flex flex-col gap-3">
+      <Button
+        variant={sold ? "secondary" : "primary"}
+        className="w-full sm:w-auto sm:self-start"
+        onClick={() => {
+          setState(undefined);
+          setOpen(true);
+        }}
+      >
+        <Icon name="plus" />
+        Vender tarjeta
+      </Button>
+      {sold && (
         <div
           role="status"
           aria-label="Tarjeta vendida"
-          className="border-ok bg-card mt-3 flex flex-col gap-2 rounded-xl border-2 p-4"
+          className="border-ok bg-card flex flex-col gap-2 rounded-md border-2 p-4"
         >
           <p className="text-ok text-sm font-medium">Tarjeta vendida. Quedó en la caja de hoy.</p>
-          <p className="text-2xl font-bold tracking-widest">
-            {formatGiftCardCode(state.card.code)}
-          </p>
+          <p className="text-2xl font-bold tracking-widest">{formatGiftCardCode(sold.code)}</p>
           <p className="text-sm">
-            {formatCOP(state.card.amount)}
-            {state.card.recipientName ? ` · Para ${state.card.recipientName}` : ""} · vence el{" "}
-            {giftCardDayLabel(state.card.expiresOn)}
+            {formatCOP(sold.amount)}
+            {sold.recipientName ? ` · Para ${sold.recipientName}` : ""} · vence el{" "}
+            {giftCardDayLabel(sold.expiresOn)}
           </p>
-          <SendButton card={state.card} view={view} />
+          <SendButton card={sold} view={view} primary />
         </div>
       )}
-      <form
-        onSubmit={onSubmit}
-        aria-label="Vender tarjeta"
-        className="border-line bg-card mt-3 flex flex-col gap-3 rounded-xl border p-4"
-      >
-        <p className="font-semibold">Vender tarjeta</p>
-        <label className="flex flex-col gap-1 text-sm font-medium">
-          Valor
-          <input
-            name="amount"
-            inputMode="numeric"
-            required
-            placeholder="50.000"
-            autoComplete="off"
-            className="input"
+      <Sheet open={open} onClose={() => setOpen(false)} title="Vender tarjeta">
+        <form onSubmit={onSubmit} aria-label="Vender tarjeta" className="flex flex-col gap-3">
+          <label className="flex flex-col gap-1 text-sm font-semibold">
+            Valor
+            <input
+              name="amount"
+              inputMode="numeric"
+              required
+              placeholder="50.000"
+              autoComplete="off"
+              className="input"
+            />
+            <span className="text-muted text-xs font-normal">
+              En miles, de $ 10.000 a $ 500.000. Vence en un año.
+            </span>
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-semibold">
+            Nombre de quien compra
+            <input
+              name="name"
+              required
+              minLength={2}
+              maxLength={60}
+              autoComplete="off"
+              className="input"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-semibold">
+            Celular de quien compra
+            <input
+              name="phone"
+              type="tel"
+              inputMode="tel"
+              required
+              placeholder="300 123 4567"
+              autoComplete="off"
+              className="input"
+            />
+            <span className="text-muted text-xs font-normal">
+              Ahí le llega la tarjeta por WhatsApp.
+            </span>
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-semibold">
+            Para (opcional)
+            <input
+              name="recipient"
+              maxLength={40}
+              placeholder="Mateo"
+              autoComplete="off"
+              className="input"
+            />
+          </label>
+          <OptionList
+            name="method"
+            legend="Medio de pago"
+            layout="grid"
+            options={METHODS.map((m) => ({ value: m.id, label: m.label }))}
+            value={method}
+            onChange={(v) => setMethod(v as GiftCardSaleMethod)}
           />
-          <span className="text-muted text-xs font-normal">
-            En miles, de $ 10.000 a $ 500.000. Vence en un año.
-          </span>
-        </label>
-        <label className="flex flex-col gap-1 text-sm font-medium">
-          Nombre de quien compra
-          <input
-            name="name"
-            required
-            minLength={2}
-            maxLength={60}
-            autoComplete="off"
-            className="input"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-sm font-medium">
-          Celular de quien compra
-          <input
-            name="phone"
-            type="tel"
-            inputMode="tel"
-            required
-            placeholder="300 123 4567"
-            autoComplete="off"
-            className="input"
-          />
-          <span className="text-muted text-xs font-normal">
-            Ahí le llega la tarjeta por WhatsApp.
-          </span>
-        </label>
-        <label className="flex flex-col gap-1 text-sm font-medium">
-          Para (opcional)
-          <input
-            name="recipient"
-            maxLength={40}
-            placeholder="Mateo"
-            autoComplete="off"
-            className="input"
-          />
-        </label>
-        <fieldset className="flex flex-col gap-1">
-          <legend className="text-sm font-semibold">Medio de pago</legend>
-          <div className="grid grid-cols-2 gap-2">
-            {METHODS.map((m) => (
-              <label
-                key={m.id}
-                className={`flex min-h-12 items-center justify-center rounded-xl border text-sm font-semibold ${
-                  method === m.id ? "bg-ink text-card border-ink" : "border-line bg-card"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="method"
-                  value={m.id}
-                  checked={method === m.id}
-                  onChange={() => setMethod(m.id)}
-                  className="sr-only"
-                />
-                {m.label}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-        {state && !state.ok && state.error && <ErrorText>{state.error}</ErrorText>}
-        <button type="submit" className="btn-primary" disabled={pending}>
-          {pending ? "Vendiendo…" : "Vender tarjeta"}
-        </button>
-      </form>
-    </>
+          {state && !state.ok && state.error && <ErrorText>{state.error}</ErrorText>}
+          <Button type="submit" pending={pending}>
+            Vender tarjeta
+          </Button>
+          <Button variant="text" className="mx-auto" onClick={() => setOpen(false)}>
+            Cerrar
+          </Button>
+        </form>
+      </Sheet>
+    </div>
   );
 }
 
-/** REQ-059.3: tarjetas con saldo y estado, y "Saldo por usar" de las vigentes. */
+const STATUS_TONE: Record<GiftCardRow["status"], "ok" | "warn" | "muted"> = {
+  active: "ok",
+  exhausted: "muted",
+  expired: "warn",
+  voided: "muted",
+};
+
+/**
+ * REQ-059.3: tarjetas con saldo y estado, y "Saldo por usar" de las vigentes. Quien compra sale
+ * con el celular enmascarado (REQ-078.6); el enlace de WhatsApp sí lleva el número.
+ */
 export function GiftCardList({ view }: { view: GiftCardsView }) {
   if (view.cards.length === 0) {
-    return <p className="text-muted mt-2">Todavía no hay tarjetas.</p>;
+    return (
+      <EmptyState
+        icon="cash"
+        title="Todavía no hay tarjetas."
+        text='Toca "Vender tarjeta": se cobra hoy y quien la recibe la usa como medio de pago.'
+      />
+    );
   }
   return (
     <>
-      <p className="mt-2 text-lg" aria-label="Saldo por usar">
-        Saldo por usar: <span className="font-bold">{formatCOP(balanceToUse(view.cards))}</span>
+      <p className="border-line border-b px-4 py-3 text-lg" aria-label="Saldo por usar">
+        Saldo por usar:{" "}
+        <span className="font-bold tabular-nums">{formatCOP(balanceToUse(view.cards))}</span>
       </p>
-      <ul aria-label="Tarjetas de regalo" className="mt-2 flex flex-col gap-2">
+      <ul aria-label="Tarjetas de regalo" className="divide-line divide-y">
         {view.cards.map((c) => (
-          <li key={c.id} className="border-line bg-card flex flex-col gap-2 rounded-xl border p-3">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <p className="font-semibold tracking-widest">{formatGiftCardCode(c.code)}</p>
+          <li
+            key={c.id}
+            className={`flex flex-col gap-2 px-4 py-3 lg:flex-row lg:items-center lg:gap-4 ${
+              c.status === "active" ? "" : "text-muted"
+            }`}
+          >
+            <div className="flex min-w-0 flex-1 items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="font-bold tracking-widest">{formatGiftCardCode(c.code)}</p>
                 <p className="text-muted text-sm">
                   {c.recipientName ? `Para ${c.recipientName} · ` : ""}
-                  {c.buyerName} · {formatPhoneCO(c.buyerPhone)}
+                  {c.buyerName} · <span className="tabular-nums">{maskPhone(c.buyerPhone)}</span>
                 </p>
               </div>
-              <span className="text-sm font-medium">{giftCardStatusLabel(c.status)}</span>
+              <Tag tone={STATUS_TONE[c.status]}>{giftCardStatusLabel(c.status)}</Tag>
             </div>
-            <p className="text-sm">
+            <p className="text-sm tabular-nums lg:w-64 lg:text-right">
               Saldo {formatCOP(c.balance)} de {formatCOP(c.amount)} · vence el{" "}
               {giftCardDayLabel(c.expiresOn)}
             </p>

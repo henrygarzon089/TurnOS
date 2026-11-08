@@ -30,6 +30,8 @@
 | H11 | Limpieza y bioseguridad (ADR-037) | T-100…T-109 | REQ-060…REQ-064 |
 | H13 | Inventario de insumos y vitrina (ADR-039) | T-120…T-129 | REQ-070…REQ-074 |
 | H14 | Rendimiento percibido y medición (ADR-043) | T-130…T-133 | REQ-075 |
+| H15 | Inicio "Hoy" y menú del dueño (ADR-046) | T-150…T-154 | REQ-076, REQ-077 |
+| H16 | Sistema visual nuevo (ADR-047) | T-160…T-168 | REQ-078 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -1882,8 +1884,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 > REQ-076, REQ-077 y ADR-046 aprobados por Henry (2026-11-06). Diseño en `design.md` §21. Sin
 > migraciones. PA-H15-1: la caja se compara con el día completo de la semana pasada.
+> Se construye después de T-160 y T-161, ya con el sistema visual nuevo (PA-H16-1, ADR-047).
 
-### [ ] T-150 · Menú del dueño por grupos
+### [x] T-150 · Menú del dueño por grupos
+- Nota (2026-11-07): el menú se monta en `src/app/(staff)/layout.tsx` (solo para el dueño) y no en
+  `admin/layout.tsx`, porque "Clientes" vive en `/app/clientes`; `admin/layout.tsx` no cambia. La
+  prueba unitaria es `tests/unit/admin-nav.test.tsx` (renderiza el componente). "Hoy" apunta a
+  `/admin`, que sigue redirigiendo a la fila hasta T-151. La barra de acciones de `OwnerQueue` sube
+  encima del menú en el celular.
 - REQ: REQ-077.1, REQ-077.2, REQ-077.3, REQ-077.4, REQ-077.5
 - Archivos: `src/lib/domain/admin-nav.ts` (`ADMIN_GROUPS`), `src/components/admin/AdminNav.tsx`
   (barra inferior + "Más" + menú lateral), `src/app/(staff)/admin/layout.tsx`,
@@ -1893,7 +1901,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   inferior y "Más" llevan a cada módulo y en escritorio el menú lateral; destinos ≥ 48 px con
   `aria-current`.
 
-### [ ] T-151 · "Hoy" con fila y caja en vivo
+### [x] T-151 · "Hoy" con fila y caja en vivo
+- Nota (2026-11-07): la página vive en `src/app/(staff)/admin/(hoy)/` (grupo de rutas, misma URL
+  `/admin`) para que su `loading.tsx` no se muestre al abrir los demás módulos. El tiempo real usa
+  el `LiveRefresh` que ya existía en vez de un `TodayLive` nuevo. Lógica pura en
+  `src/lib/domain/today.ts` (`buildTodayQueue`, `shortName`); el estimado es el de la portada
+  (`getPublicBusiness`). "Hoy" ensancha el contenido a 6xl desde 1024 px (`data-wide`); los demás
+  módulos siguen a ancho de celular. El E2E entra con `loginOwnerToToday`; `loginAsOwner` ahora
+  pasa por "Hoy" y abre la fila (T-152 lo cambió: entra directo con `volver=/admin/fila`).
 - REQ: REQ-076.1, REQ-076.2, REQ-076.3, REQ-076.4, REQ-076.10, REQ-076.11
 - Archivos: `src/app/(staff)/admin/page.tsx`, `src/app/(staff)/admin/loading.tsx`,
   `src/components/admin/today/{TodayQueue,TodayCash,TodayLive,TodayBlockError}.tsx`,
@@ -1902,7 +1917,18 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   navegador y una venta se ven en < 3 s; un bloque que falla muestra "No se pudo cargar" y los demás
   siguen; en el celular, con "Slow 4G", se ve la forma antes de los datos.
 
-### [ ] T-152 · Citas, alertas y recordar
+### [x] T-152 · Citas, alertas y recordar
+- Nota (2026-11-07): las alertas se arman en `loadOwnerAlerts`
+  (`src/components/admin/today/load-owner-alerts.ts`) con `cache()` de React: una sola carga por
+  pedido para el bloque y las dos insignias. Si una fuente falla, sus alertas no salen y las demás sí;
+  "No se pudo cargar" solo si fallan todas. Lecturas nuevas livianas: `getUnclosedDays` (últimos 7
+  días con ventas y sin cierre, sin hoy) y `getExpiringMemberships` (`memberships_expiring`). La
+  insignia es `CountBadge` (rojo relleno, REQ-078.3), único archivo de "Hoy" en
+  `ACCENT_FILL_ALLOWED`. La insignia del menú es `TodayBadge`, que el layout del personal le pasa a
+  `AdminNav` como `todayBadge` (en su propio Suspense, el menú no la espera). Con citas apagadas el
+  bloque devuelve `null` y su contenedor se oculta (`empty:hidden`). E2E: `loginAsOwner` entra con
+  `volver=/admin/fila` sin pasar por "Hoy", porque el `LiveRefresh` de "Hoy" interrumpía el `goto`
+  cuando otra prueba en paralelo movía la fila.
 - REQ: REQ-076.5, REQ-076.6, REQ-076.7, REQ-077.6
 - Archivos: `src/lib/domain/owner-alerts.ts` (`buildOwnerAlerts`), `src/lib/actions/cash.ts`
   (`getUnclosedDays`), `src/components/admin/today/{TodayAlerts,TodayAppointments,TodayRemind}.tsx`,
@@ -1910,7 +1936,16 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: pruebas del orden de alertas, de módulo apagado sin alertas y de "Todo en orden"; con el
   seed se ven las alertas reales y la insignia cuenta lo mismo; ningún bloque muestra celulares.
 
-### [ ] T-153 · Accesos directos y semana en escritorio
+### [x] T-153 · Accesos directos y semana en escritorio
+- Nota (2026-11-07): REQ-076.9 se corrigió al empezar (ADR-048): `weekly_summary.days` solo trae
+  ocupación, así que las barras salen de `getWeekDailyTotals()` (`cash_day_summary` de cada día,
+  lunes a hoy, en paralelo; sin migración). La barra de hoy es la Caja de hoy y la suma es el
+  "Vendido" de Semana. Lógica pura en `today.ts` (`buildWeekBars`, `barAmount`). En escritorio la
+  semana ocupa 8 columnas si citas está apagado (`peer-empty`); angosta, las cifras van en miles con
+  la nota "Cifras en miles" (container query). "Nueva venta" reusa `NewSaleButton` (nuevas props
+  `className` y `toast`) y abre la hoja ahí mismo; "Fila" y "Cerrar caja" son enlaces. En el celular
+  los tres van en una barra fija encima del menú. La rejilla de escritorio quedó como dice §21.1
+  (recordar bajo las alertas). El proyecto E2E `escritorio` ahora también corre `today.spec.ts`.
 - REQ: REQ-076.8, REQ-076.9
 - Archivos: `src/components/admin/today/{TodayShortcuts,TodayWeek}.tsx`, E2E en `today.spec.ts`
 - Terminado: "Nueva venta", "Fila" y "Cerrar caja" llevan a su lugar; en 1280 px se ven las barras de
@@ -1922,6 +1957,273 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `tests/unit/traceability.test.ts` (agregar "15" al loop), `docs/estado-del-proyecto.md`
 - Depende de Henry: probar "Hoy" en su celular y en el computador; aprobación del hito (ADR nuevo).
 - Terminado: `pnpm trace --hito=15` sin huecos; CI verde.
+- Nota (2026-11-07): `pnpm trace --hito=15` con 0 sin prueba y el hito 15 en el loop de
+  `tests/unit/traceability.test.ts`. De paso, `getUnclosedDays` (T-152) ya no lee todas las ventas
+  de 7 días (cortaba en 1000 filas): una consulta de una fila por día. Latencia de "Hoy" medida en
+  local (servidor de desarrollo, carga 11): de una venta hecha afuera al total cambiado, 1,4–2,3 s
+  con solo fila y caja y 1,8–4,2 s con todos los bloques; la base responde en decenas de ms, el
+  tiempo es el render de desarrollo. Las pruebas de < 3 s (REQ-076.3) fallan a veces en local por
+  eso. El < 3 s se confirma en producción, en el celular de Henry. Queda `[ ]` hasta que Henry
+  pruebe y apruebe; la aprobación será ADR-049 (reservado).
+
+---
+
+## Hito 16 — Sistema visual nuevo (ADR-047)
+
+> REQ-078 y ADR-047 aprobados por Henry (2026-11-07). Diseño en `design.md` §22; fuente visual en el
+> lienzo "TurnOS — Rediseño" y en `docs/diseno/tableros/`. Sin migraciones. Cada
+> tarea es un PR; en el PR va la captura de cada ruta tocada junto a su tablero.
+> Orden (PA-H16-1): T-160 → T-161 → Hito 15 (T-150…T-154) → T-162…T-168.
+
+### [x] T-160 · Tokens nuevos sin sorpresas
+- REQ: REQ-078.1, REQ-078.2, REQ-078.14
+- Archivos: `src/app/globals.css` (`@theme`, `.btn-*`, `.field`), todos los `src/**/*.tsx` que usan
+  `accent` o colores de paleta, `scripts/lint-design.ts`, `package.json` (`lint:design`),
+  `.github/workflows/*` (correrlo en CI), `tests/unit/design-tokens.test.ts`,
+  `tests/unit/lint-design.test.ts`
+- Pasos: los tres de `design.md` §22.2, en commits separados dentro del mismo PR.
+- Terminado: `pnpm lint:design` en verde y en CI; prueba de contraste en verde; ningún botón de
+  acción quedó rojo (recorrido de las rutas de §22.4 con el seed); ninguna prueba E2E rota.
+- Hecho (2026-11-07): los tres pasos en commits separados. Notas:
+  - La lógica del lint está en `src/lib/design/lint-rules.ts` (pura, probada) y el contraste en
+    `src/lib/design/contrast.ts`; `scripts/lint-design.ts` solo recorre `src/`.
+    `ACCENT_FILL_ALLOWED` empieza vacía: hoy nada usa `bg-accent`.
+  - Equivalencias de paleta: `green-50` → `ok-soft`, `amber-50` → `warn-soft`, `amber-400` → `warn`,
+    `red-50` → `accent-soft`, `gray-100` → `surface`, `blue-50/100` → `brand-soft`, `blue-800` →
+    `brand`, `ring-blue-200` → `ring-brand-soft`, `green-700` → `ok`.
+  - `called` pasa de amarillo a rojo: "¡Es tu turno!" (`MyTicket`), el chip "llamado" de la fila del
+    dueño y el resaltado de la pantalla TV usan `bg-called text-accent-ink`.
+  - Esquinas: además de los tokens se renombraron las clases (`xl`/`2xl` → `md`, `lg`/`md` → `sm`,
+    `3xl` → `lg`); las píldoras `rounded-full` quedan para cada pantalla (T-162…T-167).
+  - Colores del manifiesto y `themeColor` salen de `PWA_THEME_COLOR`/`PWA_BACKGROUND_COLOR` en
+    `src/lib/pwa.ts`, con prueba de que igualan a `brand` y `surface`.
+
+### [x] T-161 · Componentes base
+- REQ: REQ-078.3, REQ-078.5, REQ-078.7, REQ-078.9, REQ-078.11, REQ-078.12, REQ-078.13
+- Archivos: `src/components/ui/{Button,Field,PhoneField,MoneyField,PinField,OptionList,StatusChip,Sheet,Dialog,EmptyState,ErrorState,Toast,FlashRow,Icon}.tsx`,
+  `src/components/ui/{Skeleton,ConnectionBanner}.tsx` (reescritos), utilidades de movimiento en
+  `globals.css`, pruebas unitarias de cada uno
+- Terminado: pruebas de `PinField` (solo puntos), `Button` guardando (un solo envío), `Sheet` y
+  `Dialog` (foco y cierre), movimiento reducido; se ven igual que el tablero Componentes.
+- Hecho (2026-11-07). Desvíos de la lista de archivos:
+  - `Sheet` y `Dialog` viven juntos en `Sheet.tsx` (comparten el `<dialog>` nativo: foco, Esc,
+    fondo inerte); `EmptyState` y `ErrorState` en `States.tsx`; `SubmitButton` (con
+    `useFormStatus`) en `Button.tsx`. La franja sin conexión es `ConnectionBanner` con `lastSeen`.
+  - `formatPhoneTyping` nuevo en `src/lib/domain/phone.ts` para `PhoneField`.
+  - Página de muestra `/diseno` (solo en desarrollo, `notFound()` en producción) para revisar
+    contra el tablero y para `tests/e2e/ui-components.spec.ts` (foco, Esc, doble toque, PIN,
+    movimiento reducido); las unitarias están en `tests/unit/ui-components.test.tsx`.
+  - Las pantallas todavía no usan estos componentes: cada una los adopta en T-162…T-167.
+
+### [x] T-162 · Pantallas del cliente
+- REQ: REQ-078.3, REQ-078.4, REQ-078.8, REQ-078.10, REQ-078.11, REQ-078.15
+- Archivos: `src/app/(public)/**`, `src/components/queue/*` usados por el cliente,
+  `tests/e2e/visual-cliente.spec.ts`
+- Terminado: página del negocio, tomar turno, "Mi turno" (espera, llamado, en servicio, terminado),
+  cita, tarjeta de regalo, privacidad y pantalla TV como sus tableros; E2E de §22.5 en verde; prueba
+  desde el celular con el QR de La 33.
+- Hecho (2026-11-07). Notas y desvíos (ADR-047: la app manda donde el tablero muestra otra cosa):
+  - Portada: encabezado con la marca del negocio (`businessMark`, número o iniciales; sin logo),
+    "Abierto hasta …", fila en vivo con una línea por barbero (`publicBarberLines`: "En pausa",
+    "Libre" solo si quien llega pasa de una, o "n en fila · ~ espera") y "Tomar turno" fijo abajo;
+    desde 1024 px, fila a la izquierda y servicios con "Tomar turno" a la derecha. Se queda el flujo
+    de dos pantallas (portada → `/turno`); "Ver menú" del tablero no se construye (no existe).
+  - Tomar turno: servicios en tarjetas de 2 columnas, barberos en fichas (la ficha elegida ya no es
+    azul rellena: borde y fondo suave, también en reservar cita y la agenda), `Field`/`PhoneField`
+    de T-161, "Confirmar turno" fijo abajo, "Guardando…" al enviar y, sin red, deshabilitado con
+    "Necesitas señal para tomar turno. Lo que escribiste no se borra.". El error general dice "Tus
+    datos siguen ahí.". `formatPhoneTyping` quita el 57 si se pega `+57…`.
+  - "Mi turno": número grande (96–120 px), "Cancelar mi turno" en contorno rojo con hoja de
+    confirmación (antes `window.confirm`), sin red deshabilitado con "Para cancelar necesitas
+    señal…"; franja con la hora de lo último que vimos. "Mi cita" igual (hoja en vez de
+    `window.confirm`). Las E2E que aceptaban el `confirm` usan `cancelMyTicket` (helpers).
+  - Reservar cita y privacidad con el encabezado de volver; tarjeta de regalo y pantalla TV en
+    azul marino; el resaltado de la TV respeta movimiento reducido. Esqueletos de portada y
+    "Mi turno" con la forma nueva.
+  - CLS: en red lenta el primer intento del canal vence y la franja "Sin conexión" salía un
+    instante y movía todo (0,24). `subscribeToQueue` ya no avisa caída antes de haber conectado una
+    vez; la falta de red del navegador la sigue avisando el hook, también al abrir sin red.
+  - Los errores de `Field` ahora tienen `role="alert"` (antes los decía `ErrorText`).
+
+### [x] T-163 · Pantallas del barbero
+- REQ: REQ-078.4, REQ-078.5, REQ-078.8, REQ-078.10, REQ-078.12
+- Archivos: `src/app/(staff)/app/**`, `src/components/{queue,cash,staff,customers}/*` del barbero,
+  `tests/e2e/visual-barbero.spec.ts`
+- Terminado: botón gigante ≥ 80 px; cobro con total y botón fijos abajo; turno nuevo entra al final
+  con resaltado sin mover lo que está bajo el dedo; sin conexión deshabilita "Llamar" con el motivo.
+- Hecho (2026-11-07). Notas y desvíos (ADR-047: la app manda donde el tablero muestra otra cosa):
+  - Menú del barbero abajo (`BarberNav`): Mi fila, Clientes, Números ("Mis números"), Limpieza y
+    "Más" (Mis fotos, Mi estación); reemplaza los enlaces bajo el encabezado. Encabezado en azul
+    marino con el nombre del barbero. "Pausar" sigue en la pantalla de la fila, no en el
+    encabezado (el encabezado es del layout y no conoce el estado de la fila).
+  - Mi fila: el turno en la silla con el número grande, "Llamado" en rojo y "En servicio"; el
+    botón de lo que sigue (80 px) fijo sobre el menú. Se quedan los textos de la app ("Llamar al
+    siguiente", "Ya está en la silla", "No llegó", "Terminado"), no los del tablero ("Llamar a
+    A14", "Empezar corte", "No vino", "Terminar y cobrar"): cambiarlos es texto de negocio.
+    Con turno abierto ya no hay botón de llamar (antes deshabilitado): `barber-flow` lo revisa así.
+    Los botones del turno van en la barra fija, fuera de la tarjeta (`menu-courtesy` los busca en
+    la página); la etiqueta de estado va arriba del número y la frase "Llamado hace…"/"En servicio
+    hace…" queda entera. "Limpieza" queda en la franja y en el menú (`cleaning-barber` revisa ambos).
+  - Sin red: franja con la hora y el botón deshabilitado con "Sin señal no podemos avisarle.
+    Reintentamos solos." (o "…guardar…" con turno abierto); Pausar/Volver también.
+  - Turno nuevo por tiempo real: entra al final con `FlashRow` (1,2 s), sin mover lo de arriba.
+  - Pausar con clientes propios: hoja `Sheet` (antes un diálogo propio); "Cobrar" de los cobros
+    pendientes y "Aplicar premio" pasan a contorno (un solo principal).
+  - Cobro (`CheckoutSheet`, también del dueño): el total y "Registrar $ …" fijos abajo, "Guardando…"
+    al enviar (antes "Registrando…"); medios de pago, quién vendió y categorías elegidos con borde
+    y fondo suave en vez de azul relleno. El resto del cobro del tablero (secciones, interruptores)
+    queda para T-165 con la caja del dueño.
+  - Esqueleto de Mi fila con el botón reservado; píldoras fuera (cortesía, membresía, cita,
+    categorías). `primaryButtons` de las pruebas visuales cuenta solo la hoja si hay una abierta.
+
+### [x] T-164 · Acceso
+- REQ: REQ-078.7, REQ-078.9, REQ-078.15
+- Archivos: `src/app/(auth)/**`, `src/components/auth/*`, `tests/e2e/visual-acceso.spec.ts`
+- Terminado: PIN con 6 casillas y teclado numérico, nunca dígitos; error "Ese PIN no es" con
+  intentos; invitación y crear negocio como su tablero; tarjeta centrada en escritorio.
+- Nota (2026-11-07):
+  - `AuthCard`: marca "TurnOS" en texto con punto azul marino (el tablero lo pone rojo, pero el
+    rojo es solo para "atención ahora" y `lint:design` lo prohíbe), y en escritorio una tarjeta
+    centrada sobre el fondo.
+  - Pestañas con subrayado, sin relleno: "Entrar" es el único principal.
+  - Entrar del barbero: `PhoneField` con +57 y `PinField` de 6 casillas con "●" (el "•" se veía
+    diminuto con `system-ui`). `PinField` recibe `name` para ir en el formulario y su error tiene
+    `role="alert"`.
+  - Invitación: dos `PinField`. Al guardar, "Guardando…" (antes "Creando acceso…"), sin doble envío.
+  - Crear negocio: pasos 1 y 3 con `Field` y `Button` ("Guardando…", antes "Creando…"). El paso 2
+    usa `HoursForm`, que es de T-167 (horario del dueño), y queda como está.
+  - Se quedan los textos de la app, no los del tablero ("Soy barbero" primero, "Celular", "PIN (6
+    números)", "Repite el PIN", "Crear mi acceso", "¿Nuevo negocio? Crear mi cuenta").
+  - No se hizo (necesita cambios de flujo o servidor, fuera de ADR-047): el teclado numérico
+    propio, entrar solo al completar los 6, "Te quedan N intentos" (el servidor no cuenta
+    intentos), "Mostrar" la contraseña, "Olvidé mi contraseña" y la revisión del enlace libre.
+    El error sigue siendo "Celular o PIN incorrectos.", ahora bajo las casillas en rojo.
+
+### [x] T-165 · Dueño: fila y caja
+- REQ: REQ-078.3, REQ-078.6, REQ-078.12, REQ-078.15
+- Archivos: `src/app/(staff)/admin/{fila,caja}/**`, `src/components/{queue,cash}/*` del dueño,
+  `tests/e2e/visual-dueno-fila-caja.spec.ts`
+- Terminado: fila por carriles en escritorio y lista en el celular con celulares enmascarados; caja
+  en 390, 768 y 1280 px; anular y cerrar caja con hoja de confirmación; venta nueva con resaltado.
+- Hecho (2026-11-07). Notas y desvíos (ADR-047: la app manda donde el tablero muestra otra cosa):
+  - Fila: desde 1024 px un carril por barbero presente (o con turnos) y "El primero libre"
+    (`region` "Carril de …"); en el celular una sola lista en el orden de la fila. Es el mismo
+    DOM: los carriles usan `display: contents` y cada turno su `order`, así no hay dos copias.
+    No se construyen las pestañas por barbero del celular, arrastrar para reordenar ni el menú
+    flotante "⋯": las acciones siguen abriéndose debajo del turno (Subir/Bajar, Llamar con,
+    reasignar), como antes. La fila de presentes ("Juan · Disponible") se queda, sin píldoras.
+  - Celular en la fila con `maskPhone` (`300 *** 0001`); `maskPhone` cambia de `••• ••• 4567` a
+    ese formato (mismo cuerpo que T-166, prueba unitaria REQ-078.6).
+  - Estado del turno con `StatusChip` ("En espera" en vez de "Esperando"; `owner-queue` ajustado).
+  - "Cancelar turno" y "Cerrar fila por hoy" con hoja (`Sheet`) en vez de `window.confirm`
+    ("Sí, cancelar turno" / "No, dejarlo"; "Sí, cerrar la fila" / "No, dejarla abierta"); las E2E
+    que aceptaban el `confirm` tocan el botón de la hoja. "Agregar cliente" también es `Sheet`.
+  - Un solo principal: "Agregar cliente" en la fila; "Cobrar" de cobros pendientes y "Llegó" de
+    las citas (también en la fila del barbero) pasan a contorno.
+  - Caja: celular en una columna con "Cerrar caja" y "+ Nueva venta" fijos sobre el menú; 768 px
+    con resumen y barberos a la izquierda y ventas a la derecha (`data-tablet` en el layout del
+    personal ensancha a `max-w-3xl`); desde 1024 px franja de totales arriba, ventas a la
+    izquierda, barberos a la derecha y acciones junto al título. Ventas como lista (no tabla) en
+    todos los tamaños; no se construyen buscador ni filtros (no existen). "Liquidación semanal"
+    enlaza a `/admin/semana`; "Cierres anteriores" baja a la lista de cierres.
+  - Cerrar caja: hoja con "Efectivo que debería haber", el campo `MoneyField`, la diferencia
+    siempre presente ("Cuadra" / "Faltan $ …" / "Sobran $ …") y lo que no es efectivo; se quedan
+    "Confirmar cierre" y el título "Cerrar caja" (`close-cash` ajustado a la diferencia en
+    palabras). Reabrir en contorno rojo con el motivo en una hoja. Anular venta con `Sheet`.
+  - Venta nueva por tiempo real entra arriba con `FlashRow` (1,2 s); el aviso de "Venta
+    registrada" flota sobre la barra fija (`Toast`, también en "Hoy").
+  - Resto del cobro (`CheckoutSheet`): encabezados de sección (Servicio, Productos, Medio de
+    pago), "Compra de un barbero" y "Usar membresía" como interruptores (siguen siendo casillas
+    para el lector y las pruebas), un solo total de 40 px abajo (se quitó el total repetido del
+    medio) y sin emojis en el premio ("Aplicar premio").
+
+### [x] T-166 · Dueño: operación y clientes
+- REQ: REQ-078.3, REQ-078.6, REQ-078.11
+- Archivos: `src/app/(staff)/admin/{citas,semana,fidelidad,recordar,membresias,regalos}/**` y sus
+  componentes, `tests/e2e/visual-dueno-modulos.spec.ts`
+- Terminado: como los tableros Dueno-Operacion y Dueno-Clientes; listas con `maskPhone`; vacíos con
+  qué hacer.
+- Hecho (2026-11-07). Notas y desvíos (ADR-047: la app manda donde el tablero muestra otra cosa):
+  - `maskPhone` pasa a `300 *** 0001` (REQ-078.6; antes `••• ••• 0001`, sin uso). Mismo cuerpo que
+    T-165 para que el merge no choque. Celular enmascarado en los miembros de las familias y en
+    quien compró la tarjeta de regalo; el enlace de WhatsApp sí lleva el número.
+  - Piezas comunes en `src/components/admin/ModulePage.tsx` (`ModuleHeader`, `Panel`, `Tag`,
+    `GroupLabel`); las seis pantallas usan `data-wide` (anchas desde 1024 px).
+  - Citas: un día a la vez con flechas y "Hoy"; rejilla barbero × hora desde 1024 px y agrupada por
+    barbero en el celular (`agendaGrid`, pura y probada). Tocar una cita abre su hoja con "Pasar",
+    "Cancelar cita" (contorno rojo y confirmación; antes `window.confirm`) y "Avisarle por
+    WhatsApp". Al crear una cita la agenda salta a su día. Con citas encendidas "Guardar" de
+    Ajustes va en contorno y los Ajustes quedan al final. Día sin citas con `EmptyState`.
+  - Semana: flechas con `aria-label` "Semana anterior"/"Semana siguiente" (antes "← Anterior" /
+    "Siguiente →"); cifras en franja; tabla por barbero desde 1024 px y "A pagar" en el celular.
+    "Marcar pagado" y "Descargar PDF" del tablero no existen en la app: no se construyen.
+  - Fidelidad: panel con la etiqueta Activa/Apagada y el resumen al lado en escritorio.
+  - Recordar: dos paneles; "Saludar/Recordar por WhatsApp" en contorno (antes varios rellenos);
+    "No contactar" con hoja de confirmación (antes `window.confirm`); vacíos que dicen qué hacer.
+  - Membresías: "Nueva familia" es el principal y abre la hoja con el formulario; "Agregar
+    persona" y "Cobrar cuota" abren hojas; "Quitar" en rojo con hoja de confirmación; "Guardar
+    plan" y "Recordar por WhatsApp" en contorno. Tarjetas de regalo: "Vender tarjeta" abre la hoja;
+    al vender queda el código con "Enviar por WhatsApp" relleno; en la lista va en contorno.
+    "Anular" del tablero no existe aquí (se anula la venta en la caja): no se construye.
+  - Medios de pago con `OptionList`; sin emojis en los botones; `select` con `h-12` (WebKit no
+    respeta `min-height`).
+  - E2E ajustadas a las hojas: appointments-agenda, memberships, gift-cards, reminders, week.
+    `birthdays` REQ-037.4 ("Mañana") falla en local por la fecha del seed: no es de este cambio.
+
+### [x] T-167 · Dueño: local y configuración
+- REQ: REQ-078.3, REQ-078.6, REQ-078.11
+- Archivos: `src/app/(staff)/admin/{limpieza,productos,inventario,barberos,servicios,horario,qr,mensajes,negocio,privacidad}/**`
+  y sus componentes, E2E en `visual-dueno-modulos.spec.ts`
+- Terminado: como los tableros Dueno-Local y Dueno-Config; cambiar el % de un barbero y borrar datos
+  de un cliente piden confirmación; celulares de barberos enmascarados en la tabla.
+- Hecho (2026-11-07). Notas y desvíos (ADR-047: la app manda donde el tablero muestra otra cosa):
+  - E2E en `tests/e2e/visual-dueno-config.spec.ts` y no en `visual-dueno-modulos.spec.ts`: T-166
+    usa ese archivo al mismo tiempo. Mide en 390 y 1280 px un solo botón principal, botones ≥ 48 px
+    y ninguna píldora ni acción en rojo relleno en las 14 rutas.
+  - Piezas nuevas: `admin/PageHeader.tsx` (`PageHeader`, `Panel`), `admin/SectionTabs.tsx`
+    (pestañas con raya, reemplazan las píldoras de Limpieza e Inventario), `admin/RetryError.tsx`
+    (error con "Intentar de nuevo") y `admin/CatalogLists.tsx` (filas de servicios y tarjetas de
+    productos con "Editar" en una hoja `Sheet`).
+  - Servicios, Productos y Barberos: la edición pasa de formularios en línea a una hoja con
+    "Editar"; "Nuevo servicio", "Nuevo producto" y "Nuevo barbero" abren su hoja y son el único
+    botón principal. Mismos campos, textos y acciones. Las E2E que llenaban esos formularios
+    (`admin-config`, `pos-settings`, `menu-courtesy`, `services-by-barber`, `barber-photos`) ahora
+    tocan "Editar" o "Nuevo …" primero; la lista de servicios de un barbero ya no dice "Hace:" (la
+    columna se llama "Servicios que hace").
+    "Activar"/"Desactivar" cierra la hoja: la fila cambia de puesto (activos primero) y un
+    `<dialog>` abierto que el navegador mueve de lugar se pierde.
+  - Barberos: celular con `maskPhone` en la fila (el número completo solo en el campo de editar).
+    Un % distinto pregunta "¿Cambiar la parte de X de 60 % a 55 %?" con "Sí, cambiar a 55 %" / "No,
+    dejar 60 %"; el texto dice que lo ya cobrado se queda al % anterior (la venta guarda su %).
+    "Retirar…" en contorno rojo pregunta en la misma hoja (antes `window.confirm`). Las fotos de
+    cortes y "Nuevo PIN" quedan dentro de la hoja; "Hoy" sigue en la fila.
+  - Borrar los datos de un cliente vive en su ficha (`DeleteCustomer`, REQ-018.6), no en
+    Privacidad: pasa a la hoja `Sheet` con "Sí, eliminar sus datos" en contorno rojo. La tabla de
+    solicitudes del tablero no existe en la app y no se construye; Privacidad dice dónde se hace y
+    lleva a Clientes.
+  - Productos: filtro por categoría (`?categoria=`) con vacío que dice qué hacer y "Comisión de
+    productos: N % · Cambiar" (lleva a Negocio). No se construyen: existencias de vitrina en la
+    tarjeta ("quedan 2"), logo del negocio, estado de plantillas de Meta en Mensajes ni el
+    interruptor "Visible al público" (sigue "Activar/Desactivar" en la hoja).
+  - Limpieza: la pestaña "Revisión" sigue siendo la revisión del dueño con su lista (no la lista
+    de fotos por aprobar del tablero) y no se cuentan pendientes en la pestaña.
+  - Negocio: cada bloque en su tarjeta; solo "Guardar" de los datos del negocio va relleno; reseña,
+    avisos y alerta de inventario en contorno. Inventario: "Reponer", "Entrada a bodega" y
+    "Transferir" van rellenos (uno a la vez); rendimiento sugerido y edición de ítems en contorno.
+  - `HoursForm` también lo usa crear negocio (T-164): solo cambió el diseño de las filas.
+  - `CleaningToday` (también en /app/limpieza del barbero): solo la primera limpieza que falta va
+    rellena, las demás en contorno (con apertura, cierre y profunda pendientes había tres).
+  - Los `<select>` del inventario llevan `h-12`: WebKit ignora `min-height` en un select y en el
+    iPhone medían menos de 48 px.
+
+### [ ] T-168 · Validación Hito 16
+- REQ: REQ-078
+- Archivos: `scripts/traceability.ts` (`HITOS["16"] = [[78, 78]]`, ya desde el PR de la spec),
+  `tests/unit/traceability.test.ts` (agregar "16" al loop), `docs/estado-del-proyecto.md`
+- Depende de Henry: recorrer cliente, barbero y dueño en su celular y en el computador, y una prueba
+  en la barbería (PA-H16-2); aprobación del hito (ADR nuevo).
+- Terminado: `pnpm trace --hito=16` sin huecos; CI verde; Speed Insights sin empeorar respecto al
+  Hito 14 (REQ-075.3).
 
 ---
 
@@ -1946,5 +2248,6 @@ flowchart LR
   T097 --> T110 --> T111 --> T112 --> T113 --> T114 --> T115 --> T116 --> T117 --> T118 --> T119
   T129 --> T130 --> T131 --> T132 --> T133
   T119 --> T140
-  T133 --> T150 --> T151 --> T152 --> T153 --> T154
+  T133 --> T160 --> T161 --> T150 --> T151 --> T152 --> T153 --> T154
+  T154 --> T162 --> T163 --> T164 --> T165 --> T166 --> T167 --> T168
 ```

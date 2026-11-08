@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { ErrorText } from "@/components/auth/LoginForm";
 import {
   findCheckoutCustomer,
@@ -18,6 +19,15 @@ import { giftCardSplit, normalizeGiftCardCode } from "@/lib/domain/giftCard";
 import { membershipCheckoutLine, membershipLineKey } from "@/lib/domain/membership";
 import { formatCOP, parseCOP } from "@/lib/domain/money";
 import { saleParties, type Seller } from "@/lib/domain/showcase";
+
+/**
+ * Interruptor del cobro (tablero Barbero-Cobro): sigue siendo una casilla para el lector de
+ * pantalla y las pruebas; se ve como interruptor y se mueve en 150 ms (REQ-078.13).
+ */
+const SWITCH =
+  "relative h-7 w-12 shrink-0 cursor-pointer appearance-none rounded-full bg-line-strong transition-colors duration-150 checked:bg-brand before:absolute before:top-0.5 before:left-0.5 before:size-6 before:rounded-full before:bg-card before:transition-transform before:duration-150 checked:before:translate-x-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand motion-reduce:before:transition-none";
+/** Encabezado de sección del cobro: "SERVICIO", "MEDIO DE PAGO". */
+const SECTION = "text-muted text-xs font-semibold tracking-wide uppercase";
 
 const METHODS: { id: PaymentMethod; label: string }[] = [
   { id: "cash", label: "Efectivo" },
@@ -308,7 +318,32 @@ export function CheckoutSheet({
   }
 
   return (
-    <Sheet onClose={onClose} title={title}>
+    <Sheet
+      onClose={onClose}
+      title={title}
+      footer={
+        <>
+          <p className="flex items-baseline justify-between gap-3">
+            <span className="text-muted">Total</span>
+            <span
+              className="text-[40px] leading-tight font-bold tabular-nums"
+              aria-live="polite"
+              data-testid="checkout-total"
+            >
+              {formatCOP(total)}
+            </span>
+          </p>
+          <button
+            type="button"
+            className="btn-primary mt-2"
+            disabled={pending || !hasLines || !parties.ok || !amounts}
+            onClick={submit}
+          >
+            {pending ? "Guardando…" : `Registrar ${formatCOP(total)}`}
+          </button>
+        </>
+      }
+    >
       <p className="text-lg font-bold">{title}</p>
       {view.ticket && (
         <p className="text-muted -mt-2 text-sm">
@@ -317,10 +352,11 @@ export function CheckoutSheet({
       )}
 
       {!view.ticket && view.isOwner && view.staffDiscountPct > 0 && (
-        <label className="flex min-h-12 items-center gap-2 text-sm font-semibold">
+        <label className="flex min-h-12 items-center justify-between gap-3 text-base font-semibold">
+          Compra de un barbero (−{view.staffDiscountPct} %)
           <input
             type="checkbox"
-            className="h-5 w-5"
+            className={SWITCH}
             checked={staffPurchase}
             onChange={(e) => {
               setStaffPurchase(e.target.checked);
@@ -330,7 +366,6 @@ export function CheckoutSheet({
               setPhone("");
             }}
           />
-          Compra de un barbero (−{view.staffDiscountPct} %)
         </label>
       )}
 
@@ -340,9 +375,7 @@ export function CheckoutSheet({
           aria-label={staffPurchase ? "¿Qué barbero compra?" : "¿Quién vendió?"}
           className="flex flex-col gap-2"
         >
-          <p className="text-sm font-semibold">
-            {staffPurchase ? "¿Qué barbero compra?" : "¿Quién vendió?"}
-          </p>
+          <p className={SECTION}>{staffPurchase ? "¿Qué barbero compra?" : "¿Quién vendió?"}</p>
           <div className="grid grid-cols-2 gap-2">
             {[
               ...view.barbers.map((b) => ({
@@ -365,8 +398,8 @@ export function CheckoutSheet({
                   role="radio"
                   aria-checked={on}
                   onClick={() => setSeller(o.value)}
-                  className={`min-h-12 rounded-xl border px-2 font-semibold ${
-                    on ? "bg-accent text-accent-ink border-accent" : "border-line bg-card"
+                  className={`min-h-12 rounded-md border px-2 font-semibold ${
+                    on ? "border-brand bg-brand-soft text-ink border-2" : "border-line bg-card"
                   }`}
                 >
                   {o.label}
@@ -417,8 +450,9 @@ export function CheckoutSheet({
 
       {!staffPurchase && (
         <section aria-label="Servicios" className="flex flex-col gap-2">
+          <h3 className={SECTION}>{services.length > 1 ? "Servicios" : "Servicio"}</h3>
           {services.map((l) => (
-            <div key={l.key} className="border-line rounded-xl border p-3">
+            <div key={l.key} className="border-line rounded-md border p-3">
               <div className="flex items-center justify-between gap-2">
                 <select
                   aria-label="Servicio"
@@ -460,30 +494,27 @@ export function CheckoutSheet({
                 )}
               </div>
               {membership && countsFor(l) && (memberKey === null || memberKey === l.key) && (
-                <label className="mt-2 flex min-h-12 items-center gap-2 text-sm font-semibold">
+                <label className="mt-2 flex min-h-12 items-center justify-between gap-3 text-base font-semibold">
+                  Usar membresía
                   <input
                     type="checkbox"
-                    className="h-5 w-5"
+                    className={SWITCH}
                     checked={memberKey === l.key}
                     onChange={(e) => {
                       setMemberChoice(e.target.checked ? l.key : null);
                       if (e.target.checked) update(l.key, { discount: 0, reason: "" });
                     }}
                   />
-                  Usar membresía
                 </label>
               )}
               {memberLine(l) && (
-                <p
-                  className="mt-1 text-sm font-semibold text-blue-800"
-                  data-testid="membership-line"
-                >
+                <p className="text-brand mt-1 text-sm font-semibold" data-testid="membership-line">
                   {memberLine(l)!.label}: −{formatCOP(memberLine(l)!.discount)}
                 </p>
               )}
               {rewardOn(l) && (
                 <p className="text-ok mt-1 text-sm font-semibold">
-                  🎁 Premio aplicado: −{formatCOP(rewardValue(l))}
+                  Premio aplicado: −{formatCOP(rewardValue(l))}
                 </p>
               )}
               {view.isOwner && !rewardOn(l) && !memberLine(l) && (
@@ -543,7 +574,7 @@ export function CheckoutSheet({
       )}
 
       {rewardAvailable && (
-        <div className="rounded-xl bg-green-50 p-3">
+        <div className="bg-ok-soft rounded-md p-3">
           {rewardApplied ? (
             <button
               type="button"
@@ -555,10 +586,10 @@ export function CheckoutSheet({
           ) : rewardLine ? (
             <button
               type="button"
-              className="btn-primary"
+              className="btn-secondary"
               onClick={() => update(rewardLine.key, { isReward: true, discount: 0, reason: "" })}
             >
-              🎁 Aplicar premio
+              Aplicar premio
             </button>
           ) : (
             <p className="text-sm">
@@ -587,10 +618,7 @@ export function CheckoutSheet({
         </p>
       )}
 
-      <p className="text-center text-3xl font-bold" aria-live="polite" data-testid="checkout-total">
-        {formatCOP(total)}
-      </p>
-
+      {total > 0 && <h3 className={SECTION}>Medio de pago</h3>}
       {total > 0 && (
         <div role="radiogroup" aria-label="Medio de pago" className="grid grid-cols-2 gap-2">
           {[...METHODS, { id: "gift_card" as const, label: "Tarjeta de regalo" }].map((m) => (
@@ -600,9 +628,9 @@ export function CheckoutSheet({
               role="radio"
               aria-checked={method === m.id}
               onClick={() => setMethod(m.id)}
-              className={`min-h-12 rounded-xl border font-semibold ${
+              className={`min-h-12 rounded-md border font-semibold ${
                 m.id === "gift_card" ? "col-span-2" : ""
-              } ${method === m.id ? "bg-accent text-accent-ink border-accent" : "border-line bg-card"}`}
+              } ${method === m.id ? "border-brand bg-brand-soft text-ink border-2" : "border-line bg-card"}`}
             >
               {m.label}
             </button>
@@ -662,9 +690,9 @@ export function CheckoutSheet({
                         role="radio"
                         aria-checked={restMethod === m.id}
                         onClick={() => setRestMethod(m.id)}
-                        className={`min-h-12 rounded-xl border font-semibold ${
+                        className={`min-h-12 rounded-md border font-semibold ${
                           restMethod === m.id
-                            ? "bg-accent text-accent-ink border-accent"
+                            ? "border-brand bg-brand-soft text-ink border-2"
                             : "border-line bg-card"
                         }`}
                       >
@@ -694,15 +722,6 @@ export function CheckoutSheet({
       )}
 
       {error && <ErrorText>{error}</ErrorText>}
-
-      <button
-        type="button"
-        className="btn-primary"
-        disabled={pending || !hasLines || !parties.ok || !amounts}
-        onClick={submit}
-      >
-        {pending ? "Registrando…" : `Registrar ${formatCOP(total)}`}
-      </button>
 
       {view.ticket &&
         (unpaidOpen ? (
@@ -743,26 +762,39 @@ export function CheckoutSheet({
   );
 }
 
+/**
+ * Hoja del cobro (tablero Barbero-Cobro): el contenido se desplaza y el total con "Registrar"
+ * quedan fijos abajo (`footer`), siempre a la vista del pulgar.
+ */
 function Sheet({
   children,
   onClose,
   title,
+  footer,
 }: {
   children: React.ReactNode;
   onClose: () => void;
   title: string;
+  footer?: React.ReactNode;
 }) {
-  return (
+  // En `body`: abierta desde una barra fija (caja, "Hoy") quedaría bajo el menú del dueño
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="fixed inset-0 z-30 flex items-end bg-black/40"
+      className="bg-ink/60 fixed inset-0 z-30 flex items-end"
       onKeyDown={(e) => e.key === "Escape" && onClose()}
     >
-      <div className="bg-card flex max-h-[92dvh] w-full flex-col gap-3 overflow-y-auto rounded-t-2xl p-5">
-        {children}
+      <div className="bg-card flex max-h-[92dvh] w-full flex-col rounded-t-lg sm:mx-auto sm:max-w-lg">
+        <div className="flex flex-col gap-3 overflow-y-auto p-5">{children}</div>
+        {footer && (
+          <div className="border-line border-t px-5 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+            {footer}
+          </div>
+        )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

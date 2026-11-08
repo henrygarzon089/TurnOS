@@ -6,7 +6,7 @@ const STATUS_STYLE: Record<string, string> = {
   Terminado: "text-ok",
   "No llegó": "text-danger",
   Cancelado: "text-muted",
-  "En la fila": "text-accent",
+  "En la fila": "text-brand",
 };
 
 /** REQ-018.2 historial: fecha, servicio, barbero, valor, medio de pago (H3) y estado. */
@@ -17,7 +17,7 @@ export function CustomerHistory({ rows }: { rows: HistoryRow[] }) {
   return (
     <ul
       aria-label="Historial"
-      className="border-line bg-card divide-line divide-y rounded-xl border"
+      className="border-line bg-card divide-line divide-y rounded-md border"
     >
       {rows.map((r) => (
         <li key={r.id} className="flex items-start justify-between gap-3 px-4 py-3">

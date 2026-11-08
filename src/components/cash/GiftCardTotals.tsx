@@ -5,7 +5,7 @@ export function GiftCardTotals({ totals }: { totals: Totals }) {
   const lines = giftCardReportLines(totals);
   if (!lines.length) return null;
   return (
-    <section aria-label="Tarjetas de regalo" className="border-line bg-card rounded-xl border p-3">
+    <section aria-label="Tarjetas de regalo" className="border-line bg-card rounded-md border p-3">
       <ul className="flex flex-col gap-1 text-sm">
         {lines.map((l) => (
           <li key={l.key} className="flex justify-between gap-2" data-testid={`gift-card-${l.key}`}>

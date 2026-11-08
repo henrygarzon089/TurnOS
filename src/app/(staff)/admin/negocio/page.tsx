@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
+import { PageHeader } from "@/components/admin/PageHeader";
 import { AlertPctForm } from "@/components/admin/InventoryForms";
 import {
   BusinessForm,
@@ -26,19 +26,23 @@ export default async function BusinessPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/negocio" />
-      <h1 className="text-2xl font-bold">Mi negocio</h1>
-      <BusinessForm business={data as BusinessSettings} />
-      <GoogleReviewForm url={data?.google_review_url ?? null} />
-      {/* REQ-073.4 porcentaje de la alerta de consumo del inventario. */}
-      <AlertPctForm pct={data?.inventory_alert_pct ?? 10} />
-      {/* REQ-043.3: sin credenciales no hay nada que activar. REQ-043.6: ni sin habilitación. */}
-      {whatsappChannelReady() && data?.whatsapp_allowed && (
-        <WhatsAppForm
-          enabled={data?.whatsapp_auto_enabled ?? false}
-          contactPhone={data?.whatsapp_contact_phone ?? null}
-        />
-      )}
+      <PageHeader
+        title="Mi negocio"
+        subtitle="Datos del local, comisiones, reseñas y avisos. Cada bloque se guarda por aparte."
+      />
+      <div className="mt-4 flex flex-col gap-4">
+        <BusinessForm business={data as BusinessSettings} />
+        <GoogleReviewForm url={data?.google_review_url ?? null} />
+        {/* REQ-073.4 porcentaje de la alerta de consumo del inventario. */}
+        <AlertPctForm pct={data?.inventory_alert_pct ?? 10} />
+        {/* REQ-043.3: sin credenciales no hay nada que activar. REQ-043.6: ni sin habilitación. */}
+        {whatsappChannelReady() && data?.whatsapp_allowed && (
+          <WhatsAppForm
+            enabled={data?.whatsapp_auto_enabled ?? false}
+            contactPhone={data?.whatsapp_contact_phone ?? null}
+          />
+        )}
+      </div>
     </main>
   );
 }

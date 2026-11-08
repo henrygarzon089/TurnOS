@@ -27,9 +27,21 @@ export function formatPhoneCO(e164: string): string {
   return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}`;
 }
 
-/** Para pantallas públicas: nunca el número completo (P6). */
+/**
+ * Mientras se escribe: solo dígitos, máximo 10, en grupos `300 100 0001` (design §22.3). Si se pega
+ * con el indicativo ("+57 300…", 12 dígitos que empiezan por 57), se le quita: el "+57" ya va fijo.
+ */
+export function formatPhoneTyping(raw: string): string {
+  let all = raw.replace(/\D/g, "");
+  if (all.length === 12 && all.startsWith("57")) all = all.slice(2);
+  const d = all.slice(0, 10);
+  return [d.slice(0, 3), d.slice(3, 6), d.slice(6)].filter(Boolean).join(" ");
+}
+
+/** Listas y tablas: nunca el número completo (P6, REQ-078.6): `300 *** 0001`. */
 export function maskPhone(e164: string): string {
-  return `••• ••• ${e164.slice(-4)}`;
+  const d = e164.replace(/\D/g, "").slice(-10);
+  return `${d.slice(0, 3)} *** ${d.slice(-4)}`;
 }
 
 /** Formato que exige wa.me: E.164 sin el signo +. */

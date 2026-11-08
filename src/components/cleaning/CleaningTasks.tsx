@@ -8,7 +8,13 @@ import {
   saveCleaningTask,
   type CleaningTask,
 } from "@/lib/actions/cleaning";
-import { checkAttachment, pendingSuggestions, PHOTO_UPLOAD_FAILED, taskAttachmentPath, taskStatusLabel } from "@/lib/domain/cleaning";
+import {
+  checkAttachment,
+  pendingSuggestions,
+  PHOTO_UPLOAD_FAILED,
+  taskAttachmentPath,
+  taskStatusLabel,
+} from "@/lib/domain/cleaning";
 import { businessDayBogota, formatDayCO } from "@/lib/domain/time";
 import { resizePhoto } from "@/lib/media/resize";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -34,7 +40,12 @@ function TaskForm({
 
   async function save() {
     setError(null);
-    const res = await saveCleaningTask({ id: initial.id, name: name.trim(), everyDays: Number(days), isActive });
+    const res = await saveCleaningTask({
+      id: initial.id,
+      name: name.trim(),
+      everyDays: Number(days),
+      isActive,
+    });
     if (!res.ok) setError(res.error);
     else onSaved();
   }
@@ -49,7 +60,12 @@ function TaskForm({
     >
       <label className="block text-sm">
         Nombre
-        <input className="input mt-1 w-full" maxLength={80} value={name} onChange={(e) => setName(e.target.value)} />
+        <input
+          className="input mt-1 w-full"
+          maxLength={80}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
       </label>
       <label className="block text-sm">
         Cada cuántos días
@@ -62,7 +78,12 @@ function TaskForm({
       </label>
       {initial.id && (
         <label className="flex min-h-12 items-center gap-3 text-sm">
-          <input type="checkbox" className="h-6 w-6" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
+          <input
+            type="checkbox"
+            className="h-6 w-6"
+            checked={isActive}
+            onChange={(e) => setIsActive(e.target.checked)}
+          />
           Activa
         </label>
       )}
@@ -133,7 +154,12 @@ function RunForm({
         setError(PHOTO_UPLOAD_FAILED);
         return;
       }
-      const res = await recordCleaningTaskRun({ taskId: task.id, doneOn, note, attachmentPath: attachment });
+      const res = await recordCleaningTaskRun({
+        taskId: task.id,
+        doneOn,
+        note,
+        attachmentPath: attachment,
+      });
       if (!res.ok) setError(res.error);
       else onSaved();
     } finally {
@@ -162,7 +188,13 @@ function RunForm({
       </label>
       <label className="block text-sm">
         Nota (opcional)
-        <textarea className="input mt-1 w-full" rows={2} maxLength={200} value={note} onChange={(e) => setNote(e.target.value)} />
+        <textarea
+          className="input mt-1 w-full"
+          rows={2}
+          maxLength={200}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
       </label>
       <label className="btn-secondary inline-flex min-h-12 items-center">
         {file ? "Cambiar adjunto" : "Adjuntar foto o PDF"}
@@ -219,10 +251,12 @@ function TaskCard({ task, businessId }: { task: CleaningTask; businessId: string
   }
 
   return (
-    <section aria-label={task.name} className="border-line bg-card mt-3 rounded-xl border p-3">
+    <section aria-label={task.name} className="border-line bg-card mt-3 rounded-md border p-3">
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-semibold">{task.name}</h2>
-        <span className={`text-sm font-semibold ${task.isActive ? STATUS_CLASS[task.status] : "text-muted"}`}>
+        <span
+          className={`text-sm font-semibold ${task.isActive ? STATUS_CLASS[task.status] : "text-muted"}`}
+        >
           {task.isActive ? taskStatusLabel(task.status) : "Inactiva"}
         </span>
       </div>
@@ -241,8 +275,22 @@ function TaskCard({ task, businessId }: { task: CleaningTask; businessId: string
           </button>
         </div>
       )}
-      {mode === "run" && <RunForm task={task} businessId={businessId} onSaved={done} onCancel={() => setMode("view")} />}
-      {mode === "edit" && <TaskForm initial={task} submitLabel="Guardar" onSaved={done} onCancel={() => setMode("view")} />}
+      {mode === "run" && (
+        <RunForm
+          task={task}
+          businessId={businessId}
+          onSaved={done}
+          onCancel={() => setMode("view")}
+        />
+      )}
+      {mode === "edit" && (
+        <TaskForm
+          initial={task}
+          submitLabel="Guardar"
+          onSaved={done}
+          onCancel={() => setMode("view")}
+        />
+      )}
       {task.runs.length > 0 && (
         <ul aria-label={`Historial de ${task.name}`} className="mt-3 space-y-1 text-sm">
           {task.runs.map((r) => (
@@ -252,7 +300,11 @@ function TaskCard({ task, businessId }: { task: CleaningTask; businessId: string
                 {r.note && <span className="text-muted"> · {r.note}</span>}
               </span>
               {r.attachmentPath && (
-                <button type="button" className="text-accent min-h-10 px-2 font-semibold" onClick={() => void openAttachment(r.attachmentPath!)}>
+                <button
+                  type="button"
+                  className="text-brand min-h-12 px-2 font-semibold underline underline-offset-4"
+                  onClick={() => void openAttachment(r.attachmentPath!)}
+                >
                   Ver adjunto
                 </button>
               )}
@@ -265,7 +317,13 @@ function TaskCard({ task, businessId }: { task: CleaningTask; businessId: string
 }
 
 /** REQ-064.1–064.4: la pestaña Tareas de /admin/limpieza. Solo el dueño. */
-export function CleaningTasks({ tasks, businessId }: { tasks: CleaningTask[]; businessId: string }) {
+export function CleaningTasks({
+  tasks,
+  businessId,
+}: {
+  tasks: CleaningTask[];
+  businessId: string;
+}) {
   const router = useRouter();
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -281,7 +339,7 @@ export function CleaningTasks({ tasks, businessId }: { tasks: CleaningTask[]; bu
   return (
     <div className="mt-3">
       {suggestions.length > 0 && (
-        <div className="border-line bg-card rounded-xl border p-3">
+        <div className="border-line bg-card rounded-md border p-3">
           <h2 className="font-semibold">Sugeridas</h2>
           <div className="mt-2 flex flex-wrap gap-2">
             {suggestions.map((s) => (
@@ -302,11 +360,13 @@ export function CleaningTasks({ tasks, businessId }: { tasks: CleaningTask[]; bu
           {error}
         </p>
       )}
-      {tasks.length === 0 && <p className="text-muted mt-3 text-sm">Todavía no hay tareas periódicas.</p>}
+      {tasks.length === 0 && (
+        <p className="text-muted mt-3 text-sm">Todavía no hay tareas periódicas.</p>
+      )}
       {tasks.map((t) => (
         <TaskCard key={t.id} task={t} businessId={businessId} />
       ))}
-      <div className="border-line bg-card mt-3 rounded-xl border p-3">
+      <div className="border-line bg-card mt-3 rounded-md border p-3">
         {adding ? (
           <TaskForm
             initial={{ id: null, name: "", everyDays: 0, isActive: true }}

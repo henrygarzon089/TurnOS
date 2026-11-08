@@ -33,11 +33,16 @@ export function useQueueSubscription(
       // Un SUBSCRIBED tardío llega por el socket ya abierto: no apaga la franja si no hay red
       onConnection: (up) => setOnline(up && navigator.onLine),
     });
+    // Abierta sin red (desde la caché del service worker): el evento "offline" no llega
+    const first = requestAnimationFrame(() => {
+      if (!navigator.onLine) setOnline(false);
+    });
     const onBrowserOffline = () => setOnline(false);
     const onBrowserOnline = () => setOnline(true);
     window.addEventListener("offline", onBrowserOffline);
     window.addEventListener("online", onBrowserOnline);
     return () => {
+      cancelAnimationFrame(first);
       unsubscribe();
       window.removeEventListener("offline", onBrowserOffline);
       window.removeEventListener("online", onBrowserOnline);

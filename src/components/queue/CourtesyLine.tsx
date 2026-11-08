@@ -18,7 +18,7 @@ export function CourtesyLine({
       ) : (
         <button
           type="button"
-          className="border-line flex min-h-12 shrink-0 items-center rounded-full border px-4 text-sm font-semibold disabled:opacity-50"
+          className="border-line-strong flex min-h-12 shrink-0 items-center rounded-md border px-4 text-sm font-semibold disabled:opacity-50"
           disabled={disabled}
           onClick={onServe}
         >

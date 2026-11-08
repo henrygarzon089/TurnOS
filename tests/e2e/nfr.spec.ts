@@ -34,9 +34,9 @@ test.describe("NFR del MVP", () => {
         .getByRole("region", { name: "Turnos activos" })
         .getByRole("listitem")
         .filter({ hasText: name });
-      owner.once("dialog", (d) => d.accept());
       await row.getByRole("button", { name: new RegExp(name) }).click();
       await row.getByRole("button", { name: "Cancelar turno" }).click();
+      await owner.getByRole("button", { name: "Sí, cancelar turno" }).click();
     } finally {
       await o.close();
       await b.close();

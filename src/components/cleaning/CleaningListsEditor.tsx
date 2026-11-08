@@ -20,7 +20,7 @@ export function CleaningSwitch({ enabled }: { enabled: boolean }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   return (
-    <div className="border-line bg-card mt-3 rounded-xl border p-3">
+    <div className="border-line bg-card mt-3 rounded-md border p-3">
       <label className="flex min-h-12 items-center justify-between gap-3">
         <span className="font-semibold">Limpieza activada</span>
         <input
@@ -48,7 +48,8 @@ export function CleaningSwitch({ enabled }: { enabled: boolean }) {
         />
       </label>
       <p className="text-muted text-sm">
-        Apagada, nadie ve avisos ni botones de limpieza. Al encenderla por primera vez se crean las listas.
+        Apagada, nadie ve avisos ni botones de limpieza. Al encenderla por primera vez se crean las
+        listas.
       </p>
       {error && (
         <p role="alert" className="text-danger text-sm">
@@ -93,7 +94,7 @@ function ListEditor({ kind, initial }: { kind: ListKind; initial: ListItem[] }) 
   }
 
   return (
-    <section aria-label={TITLES[kind]} className="border-line bg-card mt-3 rounded-xl border p-3">
+    <section aria-label={TITLES[kind]} className="border-line bg-card mt-3 rounded-md border p-3">
       <h2 className="font-semibold">{TITLES[kind]}</h2>
       <ol className="mt-2 space-y-2">
         {items.map((it, i) => (
@@ -104,10 +105,18 @@ function ListEditor({ kind, initial }: { kind: ListKind; initial: ListItem[] }) 
               maxLength={80}
               value={it.label}
               onChange={(e) =>
-                setItems((prev) => prev.map((x) => (x.key === it.key ? { ...x, label: e.target.value } : x)))
+                setItems((prev) =>
+                  prev.map((x) => (x.key === it.key ? { ...x, label: e.target.value } : x)),
+                )
               }
             />
-            <button type="button" className="min-h-12 px-2" aria-label="Subir" disabled={i === 0} onClick={() => move(i, -1)}>
+            <button
+              type="button"
+              className="min-h-12 px-2"
+              aria-label="Subir"
+              disabled={i === 0}
+              onClick={() => move(i, -1)}
+            >
               ↑
             </button>
             <button
@@ -134,7 +143,10 @@ function ListEditor({ kind, initial }: { kind: ListKind; initial: ListItem[] }) 
         onSubmit={(e) => {
           e.preventDefault();
           if (!added.trim()) return;
-          setItems((prev) => [...prev, { id: null, label: added.trim(), key: crypto.randomUUID() }]);
+          setItems((prev) => [
+            ...prev,
+            { id: null, label: added.trim(), key: crypto.randomUUID() },
+          ]);
           setAdded("");
         }}
       >
@@ -154,7 +166,10 @@ function ListEditor({ kind, initial }: { kind: ListKind; initial: ListItem[] }) 
         Guardar lista
       </button>
       {status && (
-        <p role={status.ok ? "status" : "alert"} className={`mt-1 text-sm ${status.ok ? "text-ok" : "text-danger"}`}>
+        <p
+          role={status.ok ? "status" : "alert"}
+          className={`mt-1 text-sm ${status.ok ? "text-ok" : "text-danger"}`}
+        >
           {status.text}
         </p>
       )}

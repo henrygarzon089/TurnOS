@@ -88,7 +88,7 @@ function MergeDialog({ view, onClose }: { view: CustomerView; onClose: () => voi
       aria-label="Fusionar fichas"
       className="fixed inset-0 z-30 flex items-end bg-black/40"
     >
-      <div className="bg-card flex max-h-[90dvh] w-full flex-col gap-3 overflow-y-auto rounded-t-2xl p-5">
+      <div className="bg-card flex max-h-[90dvh] w-full flex-col gap-3 overflow-y-auto rounded-t-md p-5">
         <p className="text-lg font-bold">Fusionar fichas</p>
         <p className="text-muted text-sm">
           Úsalo cuando un cliente cambió de celular. Se junta el historial, las visitas y los sellos
@@ -116,7 +116,7 @@ function MergeDialog({ view, onClose }: { view: CustomerView; onClose: () => voi
                 <li key={c.id}>
                   <button
                     type="button"
-                    className="border-line flex min-h-12 w-full items-center justify-between rounded-xl border px-4 text-left"
+                    className="border-line flex min-h-12 w-full items-center justify-between rounded-md border px-4 text-left"
                     onClick={() => pick(c)}
                   >
                     <span className="font-medium">{c.name}</span>
@@ -134,7 +134,7 @@ function MergeDialog({ view, onClose }: { view: CustomerView; onClose: () => voi
             {options.map((o) => (
               <label
                 key={o.id}
-                className="border-line flex min-h-12 items-center gap-3 rounded-xl border px-4"
+                className="border-line flex min-h-12 items-center gap-3 rounded-md border px-4"
               >
                 <input
                   type="radio"

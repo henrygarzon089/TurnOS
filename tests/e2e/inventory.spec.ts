@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { loginAsBarber, loginAsOwner } from "./helpers";
+import { loginAsBarber, loginAsOwner, openBarberMore } from "./helpers";
 
 /**
  * Hito 13 de punta a punta (design.md §18.7): el dueño crea un ítem, registra una entrada, repone
@@ -112,7 +112,7 @@ test.describe("REQ-070 / REQ-071 / REQ-073 / REQ-074 Inventario", () => {
     // REQ-074.4 el barbero ve su dotación, la reposición y el conteo, sin precios
     await page.context().clearCookies();
     await loginAsBarber(page, 0);
-    await page.getByRole("link", { name: "Mi estación" }).click();
+    await openBarberMore(page, "Mi estación");
     await expect(page.getByRole("heading", { name: "Mi estación" })).toBeVisible();
     const mine = page.getByRole("listitem").filter({ hasText: name });
     await expect(mine.first()).toContainText("1 de 1 frasco");

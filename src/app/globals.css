@@ -1,25 +1,81 @@
 @import "tailwindcss";
 
 /*
-  Paleta de TurnOS (constitution.md P2, NFR-008):
-  - fondo claro, un color de acento, estados con color + icono + texto.
-  - contraste >= 4.5:1 en texto normal.
+  Sistema visual de TurnOS (REQ-078, ADR-047, design §22.1; tableros en docs/diseno/tableros/).
+  - La acción es azul marino (`brand`). El rojo relleno (`accent`, `called`) es solo "atención
+    ahora"; lo destructivo va en contorno o texto `danger` (REQ-078.3).
+  - Contraste >= 4.5:1 en texto: lo prueba tests/unit/design-tokens.test.ts (REQ-078.2).
+  - Nada de colores de la paleta de Tailwind ni hex sueltos: pnpm lint:design (REQ-078.1).
 */
 @theme {
-  --color-surface: #f8fafc; /* fondo de página */
-  --color-card: #ffffff; /* tarjetas */
-  --color-ink: #111827; /* texto principal (contraste 16:1 sobre surface) */
-  --color-muted: #4b5563; /* texto secundario (7.5:1) */
-  --color-line: #e5e7eb; /* bordes */
-  --color-accent: #1d4ed8; /* acción principal (6.3:1 con blanco) */
+  --color-surface: #f5f7fa; /* fondo de página */
+  --color-card: #ffffff; /* tarjetas, hojas, filas */
+  --color-ink: #14213a; /* texto principal (14,96:1 sobre surface) */
+  --color-muted: #4a5872; /* texto secundario (7,17:1 sobre card) */
+  --color-line: #dce2ea; /* divisores */
+  --color-line-strong: #8593a8; /* borde de campos (3,12:1, no es texto) */
+  --color-brand: #0e1e3d; /* acción principal y cabecera */
+  --color-brand-ink: #ffffff;
+  --color-brand-soft: #e8ecf4; /* opción elegida, destino activo */
+  --color-accent: #c21e2f; /* solo atención ahora (5,96:1 con blanco) */
   --color-accent-ink: #ffffff;
-  --color-ok: #166534; /* estados positivos */
-  --color-warn: #92400e; /* advertencias */
-  --color-danger: #991b1b; /* cancelar, errores */
-  --color-called: #fef3c7; /* fondo "es tu turno" */
+  --color-accent-soft: #fbeaec; /* fondo de alerta */
+  --color-accent-on-brand: #ff5a68; /* punto "en vivo" sobre azul marino */
+  --color-called: #c21e2f; /* "¡Es tu turno!" y turno llamado */
+  --color-danger: #a8182a; /* texto y contorno destructivo, errores */
+  --color-ok: #1e6b3a; /* terminado, cuadra */
+  --color-ok-soft: #e6f2ea;
+  --color-warn: #8a4b00; /* sin conexión, por vencer */
+  --color-warn-soft: #fbf0dc;
+  --color-skeleton: #e3e8ef; /* esqueletos */
+  --color-flash: #fff6d6; /* fila nueva por tiempo real */
 
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Esquinas: xs chips, sm opciones, md botones/campos/paneles, lg hojas. Sin píldoras. */
+  --radius-xs: 5px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 20px;
+
+  --shadow-overlay: 0 -2px 12px rgb(14 30 61 / 0.14); /* solo hojas y diálogos */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Movimiento (REQ-078.13): solo transform y opacity, 150–250 ms. El resaltado de tiempo real
+     (REQ-078.12) es la única excepción: cambia el fondo durante 1,2 s, sin mover nada. */
+  --animate-enter: enter 200ms var(--ease-out);
+  --animate-sheet-in: sheet-in 250ms var(--ease-out);
+  --animate-dialog-in: dialog-in 200ms var(--ease-out);
+  --animate-fade-in: fade-in 150ms ease-out;
+  --animate-flash: flash-fade 1200ms ease-out;
+
+  @keyframes enter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+  @keyframes sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+  }
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes flash-fade {
+    from {
+      background-color: var(--color-flash);
+    }
+  }
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 html {
@@ -38,17 +94,26 @@ body {
 */
 @layer components {
   .btn-primary {
-    @apply bg-accent text-accent-ink flex min-h-12 w-full items-center justify-center rounded-xl px-4 text-lg font-semibold active:opacity-90 disabled:opacity-50;
+    @apply bg-brand text-brand-ink flex min-h-12 w-full items-center justify-center rounded-md px-4 text-lg font-semibold active:opacity-90 disabled:opacity-50;
   }
   .btn-secondary {
-    @apply border-line bg-card text-ink active:bg-surface flex min-h-12 w-full items-center justify-center rounded-xl border px-4 text-lg font-semibold disabled:opacity-50;
+    @apply border-line-strong bg-card text-ink active:bg-surface flex min-h-12 w-full items-center justify-center rounded-md border px-4 text-lg font-semibold disabled:opacity-50;
   }
   .btn-danger {
-    @apply border-danger text-danger flex min-h-12 w-full items-center justify-center rounded-xl border px-4 text-lg font-semibold active:bg-red-50 disabled:opacity-50;
+    @apply border-danger text-danger active:bg-accent-soft flex min-h-12 w-full items-center justify-center rounded-md border px-4 text-lg font-semibold disabled:opacity-50;
   }
 }
 
 /* Campos de formulario: altos, legibles con una mano (NFR-008) */
 .input {
-  @apply border-line bg-card text-ink focus:border-accent min-h-12 w-full rounded-xl border px-3 text-base outline-none focus:ring-2 focus:ring-blue-200;
+  @apply border-line-strong bg-card text-ink focus:border-brand focus:ring-brand-soft min-h-12 w-full rounded-md border px-3 text-base outline-none focus:ring-2;
+}
+
+/* Movimiento reducido (REQ-078.13): las entradas dejan de desplazarse y solo aparecen. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-enter,
+  .animate-sheet-in,
+  .animate-dialog-in {
+    animation-name: fade-in;
+  }
 }

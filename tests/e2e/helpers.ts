@@ -29,13 +29,54 @@ export function appAlert(page: Page) {
   return page.locator('[role="alert"]:not(#__next-route-announcer__)');
 }
 
-export async function loginAsOwner(page: Page) {
+/** El dueño entra y queda en "Hoy" (`/admin`, REQ-076.1). */
+export async function loginOwnerToToday(page: Page) {
   await page.goto("/entrar?rol=dueno");
   await page.getByLabel("Correo").fill(SEED.owner.email);
   await page.getByLabel("Contraseña").fill(SEED.owner.password);
   await page.getByRole("button", { name: "Entrar" }).click();
-  // /admin redirige a /admin/fila: esperar la URL final evita navegaciones interrumpidas
-  await expect(page).toHaveURL(/\/admin\/fila/, { timeout: 15_000 });
+  // /app redirige a /admin: esperar la URL final evita navegaciones interrumpidas
+  await expect(page).toHaveURL(/\/admin$/, { timeout: 15_000 });
+  // La URL cambia antes de que termine la navegación; el título de "Hoy" marca que terminó.
+  await expect(page.getByRole("heading", { name: "Hoy", level: 1 })).toBeVisible({
+    timeout: 15_000,
+  });
+}
+
+/**
+ * El dueño entra directo a la fila, donde empiezan casi todas las pruebas del dueño. Va con
+ * `volver` y no pasa por "Hoy": allá LiveRefresh refresca con cada cambio de la fila (de las otras
+ * pruebas en paralelo) e interrumpe cualquier `goto`.
+ */
+export async function loginAsOwner(page: Page) {
+  await page.goto("/entrar?rol=dueno&volver=/admin/fila");
+  await page.getByLabel("Correo").fill(SEED.owner.email);
+  await page.getByLabel("Contraseña").fill(SEED.owner.password);
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page).toHaveURL(/\/admin\/fila$/, { timeout: 15_000 });
+  await expect(page.getByRole("heading", { name: "Fila", level: 1 })).toBeVisible({
+    timeout: 15_000,
+  });
+}
+
+/**
+ * Abre un módulo desde el menú del dueño (REQ-077): en el celular por "Más", en escritorio por el
+ * menú lateral.
+ */
+export async function openOwnerModule(page: Page, label: string) {
+  const bar = page.getByRole("navigation", { name: "Accesos rápidos" });
+  if (await bar.isVisible()) {
+    await bar.getByRole("button", { name: "Más" }).click();
+    await page
+      .getByRole("dialog", { name: "Todo el menú" })
+      .getByRole("link", { name: label, exact: true })
+      .click();
+  } else {
+    await page
+      .getByRole("navigation", { name: "Menú del dueño" })
+      .getByRole("link", { name: label, exact: true })
+      .click();
+  }
 }
 
 export async function loginAsBarber(page: Page, index = 0) {
@@ -119,4 +160,22 @@ export async function resetQueue() {
     .eq("business_id", biz.id)
     .eq("is_active", true);
   if (error) throw new Error(error.message);
+}
+
+/** "Cancelar mi turno" y confirmar en la hoja (REQ-005.2, REQ-078.3). */
+export async function cancelMyTicket(page: Page) {
+  await page.getByRole("button", { name: "Cancelar mi turno", exact: true }).click();
+  await page
+    .getByRole("dialog", { name: /cancelar tu turno/ })
+    .getByRole("button", { name: "Sí, cancelar mi turno" })
+    .click();
+}
+
+/** Abre un destino del barbero que vive en "Más" (Mis fotos, Mi estación; T-163). */
+export async function openBarberMore(page: Page, label: string) {
+  await page
+    .getByRole("navigation", { name: "Menú del barbero" })
+    .getByRole("button", { name: "Más" })
+    .click();
+  await page.getByRole("dialog", { name: "Más" }).getByRole("link", { name: label }).click();
 }

@@ -1,4 +1,4 @@
-# Estado del proyecto — traspaso (2026-11-04)
+# Estado del proyecto — traspaso (2026-11-07)
 
 Este documento resume la conversación en la que se construyó todo hasta aquí, para que cualquier
 persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `specs/`.
@@ -376,6 +376,113 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   el proyecto de Vercel y revisar la cuota de su plan.
 - Siguiente: T-133. Pendiente de Henry: confirmar la región de Supabase y de las funciones de Vercel.
 - ADR-043 aceptada; la aprobación del hito terminado será ADR-044 (reservado).
+
+### Hito 15 — inicio "Hoy" y menú del dueño (**spec aprobada**, ADR-046, 2026-11-06)
+
+- Spec en `main` (PR #114): REQ-076, REQ-077, design §21, T-150…T-154, sin migraciones. Sin código.
+- Se construye después de T-160 y T-161, ya con el sistema visual nuevo (PA-H16-1).
+- T-150 hecha (rama `claude/t-150-menu-dueno`, encima de T-161, 2026-11-07): `ADMIN_GROUPS` en
+  `src/lib/domain/admin-nav.ts`; el dueño tiene barra inferior (Hoy, Fila, Caja, Clientes, Más) en
+  el celular y menú lateral de 240 px desde 1024 px, montados una vez en el layout del personal (también
+  en `/app/clientes`); las 23 pantallas ya no pintan la fila de chips. La barra de acciones de la
+  fila del dueño sube encima del menú. "Hoy" (`/admin`) sigue llevando a la fila hasta T-151.
+  E2E con proyecto `escritorio` (1280 px).
+- T-151 hecha (rama `claude/t-151-hoy`, encima de T-150, 2026-11-07): `/admin` ya no lleva a la
+  fila: muestra "Hoy" con la fila en vivo (esperando, estimado de la portada, estado de cada
+  barbero con nombre corto y sin celulares) y la caja de hoy (total, medios, vitrina, servicios y
+  el mismo día de la semana pasada). Cada bloque carga con su esqueleto y falla solo; se relee con
+  el canal de la fila.
+- T-152 hecha (rama `claude/t-152-alertas`, encima de T-151, 2026-11-07): "Hoy" suma "Piden tu
+  atención" (cajas sin cerrar, limpieza, insumos, membresías que vencen; cada una con su enlace, o
+  "Todo en orden"), "Citas de hoy" (solo con citas encendidas) y "Para recordar" (solo conteos). El
+  número de alertas sale en rojo junto a "Hoy" en la barra y en el menú lateral. `loginAsOwner` del
+  E2E entra directo a la fila.
+- T-153 hecha (rama `claude/t-153-accesos`, encima de T-152, 2026-11-07): "Hoy" tiene "Fila",
+  "Cerrar caja" y "Nueva venta" (abre la hoja ahí mismo); en el celular van en una barra fija
+  encima del menú. Desde 1024 px, "Ingresos de la semana" con una barra por día: cada una es la Caja
+  de ese día y la suma es el "Vendido" de Semana (ADR-048 corrigió REQ-076.9, sin migración).
+- T-154 en curso (rama `claude/t-154-validacion-h15`, encima de T-153, 2026-11-07): matriz del
+  hito 15 sin huecos (`pnpm trace --hito=15`) y el hito en el loop de la prueba de trazabilidad.
+  `getUnclosedDays` ya no se corta en 1000 ventas. Falta lo de Henry:
+  1. Fusionar la cadena en orden: #115 → #116 → #117 → #118 → #119 → #120 → #121 → T-154.
+     Sin migraciones: basta el despliegue de `main`.
+  2. En el celular, entrar como dueño: ver "Hoy" (alertas, fila, caja, citas si están encendidas,
+     recordar), la insignia roja en "Hoy" y la barra con "Fila", "Cerrar caja" y "Nueva venta".
+  3. Con otro celular tomar un turno por el QR y hacer una venta: "Hoy" debe cambiar en menos de
+     3 s (REQ-076.3). En local tarda 1,8–4,2 s por el servidor de desarrollo; en producción se mide
+     de verdad.
+  4. En el computador (1024 px o más): menú lateral y "Ingresos de la semana", con las mismas
+     cifras de la Caja de cada día y del "Vendido" de Semana.
+  5. Si todo está bien, aprobar el Hito 15 (será ADR-049).
+- Ojo con el E2E local: con el servidor de desarrollo cargado (muchas corridas seguidas) los
+  ingresos se cuelgan y fallan pruebas que no tienen que ver; reiniciar el servidor y usar
+  `--workers=2` lo deja estable.
+
+### Hito 16 — sistema visual nuevo (**spec aprobada**, ADR-047, 2026-11-07)
+
+- Diseño: lienzo "TurnOS — Rediseño" (https://claude.ai/artifact/VK8TXA9Aw9tnZMnrXZ4kPU, 20
+  tableros, versión 22 tras la revisión visual) hecho con `docs/diseno/prompt-diseno.md`; capturas en
+  `docs/diseno/tableros/`.
+- Spec aprobada por Henry (rama `claude/h16-spec-rediseno`): REQ-078 (15 criterios), design §22,
+  T-160…T-168, sin migraciones. PA-H16-1…3 con la recomendación. Sin código todavía.
+- Orden: T-160 (tokens, `accent` → `brand` antes de volver rojo a `accent`; `pnpm lint:design`) →
+  T-161 (componentes base) → Hito 15 → T-162…T-168 (cliente, barbero, acceso, dueño, validación).
+- T-160 hecha (rama `claude/t-160-tokens`, 2026-11-07): tokens nuevos en `globals.css`, `accent` → `brand`
+  sin cambio visual y luego los valores del diseño; `pnpm lint:design` en CI; prueba de contraste;
+  esquinas 5/8/10/20. Revisado con Supabase local (`.claude/launch.json` → `turnos-local`, puerto
+  3001): ningún botón de acción quedó rojo.
+- T-161 hecha (rama `claude/t-161-componentes`, encima de T-160, 2026-11-07): `Button`
+  (`onAction` con candado contra doble envío, `SubmitButton`), `Field`, `PhoneField`,
+  `MoneyField`, `PinField`, `OptionList`, `StatusChip`, `Sheet`/`Dialog`, `Toast`, `FlashRow`,
+  `EmptyState`/`ErrorState`, `Icon`; `Skeleton` y `ConnectionBanner` reescritos; movimiento en
+  `globals.css`. Muestra en `/diseno` (solo desarrollo). Siguiente: Hito 15 (T-150, menú del
+  dueño) ya con estos componentes (PA-H16-1).
+- T-162 hecha (rama `claude/t-162-cliente`, encima de T-154, 2026-11-07): pantallas del cliente con
+  el sistema nuevo. Portada con la marca del negocio, fila en vivo por barbero y "Tomar turno" fijo
+  abajo (en escritorio, dos columnas); tomar turno con tarjetas de servicio y "Confirmar turno"
+  fijo; "Mi turno" con el número grande y cancelar con hoja de confirmación; "Mi cita" igual;
+  reservar cita, privacidad, tarjeta de regalo y pantalla TV restilizadas; sin red, la franja con
+  la hora y las acciones deshabilitadas con el motivo. Arreglo: en red lenta la franja "Sin
+  conexión" ya no parpadea al cargar (movía la página). Detalle y desvíos en `tasks.md`.
+  Prueba desde el celular: abrir el QR de La 33 (o `/la-33`), tomar turno, ver el número grande,
+  tocar "Cancelar mi turno" y elegir "No, seguir en la fila"; con el modo avión, ver la franja y
+  el botón deshabilitado. Siguiente: T-163 (barbero).
+- T-163 hecha (rama `claude/t-163-barbero`, encima de T-162, 2026-11-07): pantallas del barbero.
+  Menú abajo (Mi fila, Clientes, Números, Limpieza, Más), encabezado azul marino, Mi fila con el
+  número grande y el botón de lo que sigue de 80 px fijo sobre el menú, sin red deshabilitado con
+  el motivo, turno nuevo resaltado al final; cobro con total y "Registrar" fijos abajo. Textos de
+  los botones sin cambio. Prueba desde el celular: entrar como barbero, llamar, "Ya está en la
+  silla", "Terminado" y ver el cobro; con modo avión, "Llamar al siguiente" deshabilitado.
+  Siguiente: T-164 (acceso).
+- T-164 hecha (rama `claude/t-164-acceso`, encima de T-163, 2026-11-07): acceso con el sistema
+  visual. Entrar, invitación y crear negocio en una tarjeta centrada en escritorio; PIN en 6
+  casillas con puntos y teclado numérico; "Guardando…" sin doble envío. Textos sin cambio.
+  Prueba desde el celular: abrir /entrar, escribir el celular y un PIN equivocado: se ven seis
+  puntos y el error en rojo debajo; en el computador, /entrar?rol=dueno sale centrado.
+  T-165, T-166 y T-167 van en sesiones paralelas, cada una con su PR sobre T-163.
+- T-165 hecha (rama `claude/t-165-dueno-fila-caja`, encima de T-163, 2026-11-07): fila y caja del
+  dueño. Fila por carriles (uno por barbero y "El primero libre") en escritorio y lista en el
+  celular, con el celular enmascarado (`300 *** 0001`); cancelar turno y cerrar la fila con hoja de
+  confirmación. Caja en 390, 768 y 1280 px con "Cerrar caja" y "Nueva venta" a mano, hoja de
+  cierre con la diferencia en palabras ("Cuadra", "Faltan $ …"), anular y reabrir con hoja, y la
+  venta nueva resaltada. El resto del cobro con secciones e interruptores. Detalle en `tasks.md`.
+  Prueba desde el celular: entrar como dueño, abrir **Fila**, tocar un turno → "Cancelar turno"
+  → "No, dejarlo"; abrir **Caja**, "Cerrar caja", escribir el efectivo y ver "Cuadra" o "Faltan",
+  "Todavía no"; con otro celular registrar una venta y verla entrar resaltada.
+- T-166 hecha (rama `claude/t-166-dueno-modulos`, encima de T-163, 2026-11-07): citas, semana,
+  fidelidad, recordar, membresías y tarjetas de regalo con el sistema visual nuevo. Agenda de un
+  día con rejilla por barbero, hojas para cancelar cita, quitar de la familia, cobrar cuota y
+  vender tarjeta; celulares enmascarados `300 *** 0001` (REQ-078.6, ya con prueba). Prueba desde
+  el celular: entrar como dueño, abrir Citas (encenderlas si están apagadas), tocar una cita y
+  "Cancelar cita"; en Membresías, "Nueva familia" y ver el celular con asteriscos.
+- T-167 hecha (rama `claude/t-167-local-config`, encima de T-163, 2026-11-07): local y
+  configuración del dueño. Encabezado y pestañas nuevos en Limpieza e Inventario; Servicios,
+  Productos y Barberos como tabla (escritorio) o lista (celular) con "Editar" que abre una hoja;
+  celulares de barberos enmascarados; cambiar el % y retirar a un barbero piden confirmación; borrar
+  los datos de un cliente usa la hoja nueva; un solo botón relleno por pantalla. Prueba desde el
+  celular: Más → Barberos, "Editar" a uno, cambiar el % y ver la pregunta; Productos con el filtro
+  por categoría; Más → Privacidad, "Ir a Clientes".
+- La aprobación del hito terminado será un ADR nuevo.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 

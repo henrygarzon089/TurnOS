@@ -12,6 +12,7 @@ import {
   parseAppointmentSettingsForm,
   appointmentErrorMessage,
   appointmentVars,
+  agendaGrid,
   groupAgendaByDay,
   tomorrowReminders,
 } from "@/lib/domain/appointments";
@@ -288,5 +289,48 @@ describe("REQ-054 agenda del dueño", () => {
       hora: "9:15 a. m.",
       enlace: "https://x.test/c/a",
     });
+  });
+});
+
+describe("REQ-054.1 rejilla de la agenda de un día (T-166, tablero Dueno-Operacion)", () => {
+  const a = (id: string, barberId: string, barberName: string, hhmm: string) => ({
+    id,
+    barberId,
+    barberName,
+    startsAt: `2026-11-08T${hhmm}:00Z`,
+  });
+  const barbers = [
+    { id: "s", name: "Sebas" },
+    { id: "j", name: "Juli" },
+  ];
+
+  it("una columna por barbero que recibe citas, más los que tienen cita ese día", () => {
+    const g = agendaGrid([a("1", "x", "Andrés", "15:00")], barbers);
+    expect(g.columns.map((c) => c.name)).toEqual(["Sebas", "Juli", "Andrés"]);
+  });
+
+  it("una fila por hora de inicio, en orden, con las citas de cada barbero en su celda", () => {
+    const items = [
+      a("2", "j", "Juli", "16:00"),
+      a("1", "s", "Sebas", "14:00"),
+      a("3", "s", "Sebas", "16:00"),
+    ];
+    const g = agendaGrid(items, barbers);
+    expect(g.rows.map((r) => r.startsAt)).toEqual(["2026-11-08T14:00:00Z", "2026-11-08T16:00:00Z"]);
+    expect(g.rows[1].cells.map((c) => c.map((i) => i.id))).toEqual([["3"], ["2"]]);
+    expect(g.rows[0].cells.map((c) => c.map((i) => i.id))).toEqual([["1"], []]);
+  });
+
+  it("por barbero (celular): solo los que tienen citas, cada uno con las suyas en orden", () => {
+    const items = [
+      a("2", "j", "Juli", "16:00"),
+      a("3", "s", "Sebas", "16:00"),
+      a("1", "s", "Sebas", "14:00"),
+    ];
+    const g = agendaGrid(items, barbers);
+    expect(g.byBarber.map((b) => [b.name, b.items.map((i) => i.id)])).toEqual([
+      ["Sebas", ["1", "3"]],
+      ["Juli", ["2"]],
+    ]);
   });
 });

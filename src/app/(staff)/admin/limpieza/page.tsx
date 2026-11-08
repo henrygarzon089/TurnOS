@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AdminNav } from "@/components/admin/AdminNav";
+import { PageHeader } from "@/components/admin/PageHeader";
+import { SectionTabs } from "@/components/admin/SectionTabs";
 import { CleaningHistory } from "@/components/cleaning/CleaningHistory";
 import { CleaningInspection } from "@/components/cleaning/CleaningInspection";
 import { CleaningListsEditor, CleaningSwitch } from "@/components/cleaning/CleaningListsEditor";
 import { CleaningTasks } from "@/components/cleaning/CleaningTasks";
 import { CleaningToday } from "@/components/cleaning/CleaningToday";
-import { getCleaningHistory, getCleaningLists, getCleaningTasks, getCleaningToday } from "@/lib/actions/cleaning";
+import {
+  getCleaningHistory,
+  getCleaningLists,
+  getCleaningTasks,
+  getCleaningToday,
+} from "@/lib/actions/cleaning";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -33,29 +39,28 @@ export default async function OwnerCleaningPage({
   const today = await getCleaningToday();
   const enabled = Boolean(today?.enabled);
   // Apagada solo se muestran el interruptor y las listas
-  const tab: Tab = !enabled ? "listas" : TABS.some((t) => t.key === pestana) ? (pestana as Tab) : "hoy";
+  const tab: Tab = !enabled
+    ? "listas"
+    : TABS.some((t) => t.key === pestana)
+      ? (pestana as Tab)
+      : "hoy";
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/limpieza" />
-      <h1 className="text-2xl font-bold">Limpieza</h1>
+      <PageHeader
+        title="Limpieza"
+        subtitle="Revisión de fotos, fallas por barbero, tareas periódicas y PDF."
+      />
       {enabled && (
-        <nav aria-label="Pestañas de limpieza" className="mt-3 flex gap-2 overflow-x-auto">
-          {TABS.map((t) => (
-            <Link
-              key={t.key}
-              href={`/admin/limpieza?pestana=${t.key}`}
-              aria-current={tab === t.key ? "page" : undefined}
-              className={`inline-flex min-h-10 items-center rounded-full border px-4 text-sm font-semibold ${
-                tab === t.key ? "bg-ink text-card border-ink" : "border-line bg-card text-ink"
-              }`}
-            >
-              {t.label}
-            </Link>
-          ))}
-        </nav>
+        <SectionTabs
+          label="Pestañas de limpieza"
+          current={`/admin/limpieza?pestana=${tab}`}
+          tabs={TABS.map((t) => ({ href: `/admin/limpieza?pestana=${t.key}`, label: t.label }))}
+        />
       )}
-      {tab === "hoy" && today?.enabled && <CleaningToday today={today} businessId={session.business.id} />}
+      {tab === "hoy" && today?.enabled && (
+        <CleaningToday today={today} businessId={session.business.id} />
+      )}
       {tab === "revision" && (await inspectionTab(session.business.id))}
       {tab === "tareas" && (
         <CleaningTasks tasks={(await getCleaningTasks()) ?? []} businessId={session.business.id} />
@@ -106,14 +111,16 @@ async function historyTab(businessId: string, semanas: string | undefined) {
   ]);
   return (
     <>
-      <nav aria-label="Semanas del historial" className="mt-3 flex gap-2">
+      <nav aria-label="Semanas del historial" className="mt-4 flex gap-2">
         {WEEK_OPTIONS.map((n) => (
           <Link
             key={n}
             href={`/admin/limpieza?pestana=historial&semanas=${n}`}
             aria-current={n === weeks ? "page" : undefined}
-            className={`inline-flex min-h-10 items-center rounded-full border px-3 text-sm ${
-              n === weeks ? "bg-ink text-card border-ink" : "border-line bg-card text-ink"
+            className={`inline-flex min-h-12 items-center rounded-sm px-3 text-base ${
+              n === weeks
+                ? "border-brand bg-brand-soft text-ink border-2 font-bold"
+                : "border-line-strong bg-card text-ink border"
             }`}
           >
             {n} semanas
@@ -122,7 +129,9 @@ async function historyTab(businessId: string, semanas: string | undefined) {
       </nav>
       <CleaningHistory
         weeks={history ?? []}
-        barberNames={Object.fromEntries((barbers ?? []).map((b) => [b.id as string, b.display_name as string]))}
+        barberNames={Object.fromEntries(
+          (barbers ?? []).map((b) => [b.id as string, b.display_name as string]),
+        )}
       />
     </>
   );

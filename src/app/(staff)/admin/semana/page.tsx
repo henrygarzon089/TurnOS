@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AdminNav } from "@/components/admin/AdminNav";
+import { ModuleHeader } from "@/components/admin/ModulePage";
 import { WeekSummary } from "@/components/cash/WeekSummary";
+import { Icon } from "@/components/ui/Icon";
 import { getWeekSummary } from "@/lib/actions/cash";
 import { bogotaWeekStart, formatDayCO } from "@/lib/domain/time";
 import { shiftWeek } from "@/lib/domain/week";
@@ -21,29 +22,35 @@ export default async function WeekPage({
   if (!data) notFound();
   const w = data.current;
   const thisWeek = bogotaWeekStart();
+  const arrow =
+    "border-line-strong text-ink inline-flex size-12 shrink-0 items-center justify-center rounded-md border";
   return (
-    <main className="pb-6">
-      <AdminNav current="/admin/semana" />
-      <h1 className="text-2xl font-bold">Semana</h1>
-      <nav aria-label="Elegir semana" className="mt-2 flex items-center justify-between gap-2">
+    <main data-wide className="pb-6">
+      <ModuleHeader title="Semana" subtitle="Resumen y liquidación de comisiones" />
+      <nav
+        aria-label="Elegir semana"
+        className="border-line bg-card mt-4 flex items-center justify-between gap-2 rounded-md border p-2 sm:justify-start"
+      >
         <Link
           href={`/admin/semana?semana=${shiftWeek(w.weekStart, -1)}`}
-          className="btn-secondary w-auto shrink-0 px-3 text-base"
+          aria-label="Semana anterior"
+          className={arrow}
         >
-          ← Anterior
+          <Icon name="back" />
         </Link>
-        <p className="text-center text-sm font-semibold" data-testid="week-label">
+        <p className="text-center font-bold" data-testid="week-label">
           {formatDayCO(w.weekStart)} – {formatDayCO(w.weekEnd)}
         </p>
         {w.weekStart < thisWeek ? (
           <Link
             href={`/admin/semana?semana=${shiftWeek(w.weekStart, 1)}`}
-            className="btn-secondary w-auto shrink-0 px-3 text-base"
+            aria-label="Semana siguiente"
+            className={arrow}
           >
-            Siguiente →
+            <Icon name="next" />
           </Link>
         ) : (
-          <span className="w-24" aria-hidden />
+          <span className="size-12 shrink-0" aria-hidden />
         )}
       </nav>
       <WeekSummary current={w} previous={data.previous} />

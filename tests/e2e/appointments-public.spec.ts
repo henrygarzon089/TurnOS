@@ -52,8 +52,11 @@ test.describe("REQ-050 y REQ-051 Reservar cita y Mi cita", () => {
       expect(body).toContain("BEGIN:VEVENT");
       expect(body.replace(/\r\n /g, "")).toContain(page.url().split("?")[0].split("/c/")[1]);
 
-      page.once("dialog", (d) => d.accept());
-      await page.getByRole("button", { name: "Cancelar mi cita" }).click();
+      await page.getByRole("button", { name: "Cancelar mi cita", exact: true }).click();
+      await page
+        .getByRole("dialog", { name: /cancelar tu cita/ })
+        .getByRole("button", { name: "Sí, cancelar mi cita" })
+        .click();
       await expect(page.getByTestId("appointment-status")).toHaveText("Cita cancelada", {
         timeout: 15_000,
       });

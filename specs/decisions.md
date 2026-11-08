@@ -802,3 +802,54 @@
   rediseño visual con los colores nuevos no entra aquí: tendrá su propio requisito cuando estén los
   diseños. Número: ADR-044 sigue reservado para la aprobación del Hito 14; ADR-046 es el primero
   libre después de ADR-045.
+
+## ADR-047 · Sistema visual nuevo (Hito 16)
+- Estado: **aceptada** (Henry, 2026-11-07). PA-H16-1…PA-H16-3 resueltas con la recomendación.
+- Contexto: las pantallas usan un azul de Tailwind (#1d4ed8) como color de acción, esquinas muy
+  redondeadas y estados de carga y error distintos en cada módulo. El brief de
+  `docs/diseno/prompt-diseno.md` produjo un diseño completo en el lienzo "TurnOS — Rediseño"
+  (https://claude.ai/artifact/VK8TXA9Aw9tnZMnrXZ4kPU, 20 tableros: fundamentos, componentes,
+  cliente, barbero, dueño y acceso, cada uno con esqueleto, guardando, sin conexión, vacío, error y
+  tiempo real). Henry pidió que se viera "lo menos IA posible". ADR-046 dejó el rediseño por fuera
+  del Hito 15 hasta tener los diseños.
+- Opciones:
+  - (a) Hito propio que cambia primero los tokens y los componentes base y luego pasa cada
+    superficie (cliente, barbero, dueño, acceso) en su propio PR, sin tocar flujos ni datos.
+  - (b) Una sola tarea que cambia todo de una vez.
+  - (c) Cambiar solo los tokens de color y dejar la estructura de las pantallas como está.
+- Decisión: (a).
+  - (b) sería un PR imposible de revisar y de probar en el celular.
+  - (c) deja los estados de carga, error y sin conexión como están y no corrige la jerarquía, que
+    era lo que el diseño buscaba.
+  - El diseño es visual: no cambia flujos, textos de negocio, funciones SQL ni migraciones. Si una
+    pantalla del lienzo muestra algo que la app no hace, manda la app y se anota en `tasks.md`.
+- Reglas que quedan fijas:
+  - **Acción = azul marino** (`brand` #0E1E3D). **Rojo** (`accent` #C21E2F) **relleno solo para
+    "atención ahora"**: "¡Es tu turno!", turno llamado, alertas que piden acción e insignias. Lo
+    destructivo va en contorno o texto rojo y siempre con confirmación.
+  - Un solo botón principal relleno por pantalla.
+  - Esquinas 5/8/10/20 px, sin píldoras; listas con divisores finos; sin degradados, sin desenfoque
+    de fondo, sin fuentes externas (`system-ui`), íconos SVG de trazo en línea.
+  - Movimiento solo con `transform` y `opacity`, 150–250 ms, reducido si el celular lo pide.
+- Migración de tokens: hoy `accent` es el azul de acción. Primero se cambia cada uso de `accent`
+  (`bg-accent`, `text-accent`, `border-accent`, `ring-accent`) a `brand` con el mismo valor azul
+  actual, se verifica que nada cambió a la vista, y solo después se redefinen los valores y `accent`
+  pasa a ser el rojo. Así ningún botón queda rojo por error.
+- Consecuencias: Hito 16 con REQ-078, diseño en `design.md` §22. Tareas T-160…T-168 en `tasks.md`.
+  El Hito 15 se construye ya con el sistema nuevo, después de T-160 y T-161 (PA-H16-1). Sin migraciones de base de datos.
+  Número: ADR-044 sigue reservado para la aprobación del Hito 14; ADR-047 es el primero libre.
+
+## ADR-048 · Ingresos por día de "Hoy" desde las ventas
+- Fecha: 2026-11-07 · Estado: aprobada por Henry (2026-11-07).
+- Contexto: REQ-076.9 pedía las barras de ingresos por día "con las mismas cifras de Semana" y
+  `design.md` §21.2 las sacaba de `weekly_summary.days`. Pero `days` solo trae ocupación (minutos y
+  %), y "Semana" no muestra plata por día. Se descubrió al empezar T-153.
+- Opciones:
+  - (a) Lectura nueva `getWeekDailyTotals()`: el `total` de `cash_day_summary` de cada día de lunes a
+    hoy (hasta 7 llamadas en paralelo; un `select` de ventas cortaría en 1000 filas). Sin migración.
+  - (b) Migración que agrega el total por día a `weekly_summary` y lo muestra también en "Semana".
+- Decisión: (a). Son las mismas cifras que ya se ven: la Caja de cada día suma `total` de las ventas
+  activas de ese día y el "Vendido" de "Semana" suma lo mismo en la semana. No toca producción ni
+  la pantalla de "Semana".
+- Consecuencias: REQ-076.9 queda "cada barra es el total de la Caja de ese día y su suma es el
+  Vendido de Semana". `design.md` §21.2 cambia la fuente del bloque Semana.

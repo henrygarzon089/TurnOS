@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { StampCard } from "@/components/loyalty/StampCard";
+import { Button } from "@/components/ui/Button";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
+import { Sheet } from "@/components/ui/Sheet";
 import {
   cancelTicketByToken,
   getPublicBusiness,
@@ -14,6 +16,7 @@ import {
 import { appointmentTag } from "@/lib/domain/appointments";
 import { membershipTicketLine } from "@/lib/domain/membership";
 import { formatMinutes } from "@/lib/domain/time";
+import { useBrowserOnline } from "@/lib/realtime/use-browser-online";
 import { useQueueSubscription } from "@/lib/realtime/use-queue-subscription";
 import type { CourtesyOption, MyTicket as Ticket } from "@/lib/queue/public-queue";
 import { writePrefs } from "@/lib/storage/customer-prefs";
@@ -22,6 +25,9 @@ const CACHE_KEY = (token: string) => `turnos:ticket:${token}`;
 
 /**
  * REQ-004: "Mi turno" en vivo. REQ-005: cancelar. REQ-011.6: último estado conocido sin conexión.
+ * Sistema visual de T-162 (tablero Mi turno): el número grande, cancelar en contorno rojo con
+ * hoja de confirmación (REQ-078.3) y, sin señal, la franja con la hora de lo último que vimos y
+ * cancelar deshabilitado con el motivo (REQ-078.10).
  */
 export function MyTicket({
   token,
@@ -44,7 +50,11 @@ export function MyTicket({
     if (t) setTicket(t);
   }, [token]);
 
-  const { online, lastUpdated } = useQueueSubscription(ticket.business.id, reload);
+  const { online: live, lastUpdated } = useQueueSubscription(ticket.business.id, reload);
+  const browser = useBrowserOnline();
+  const online = live && browser.online;
+  const [loadedAt] = useState(() => new Date());
+  const [confirming, setConfirming] = useState(false);
 
   // Caché local del último estado (REQ-011.6) y recuerdo del turno (REQ-003.7)
   useEffect(() => {
@@ -67,7 +77,7 @@ export function MyTicket({
   const active = ticket.status === "waiting" || ticket.status === "called";
 
   function cancel() {
-    if (!window.confirm("¿Seguro que quieres cancelar tu turno?")) return;
+    setConfirming(false);
     setError(null);
     startTransition(async () => {
       const r = await cancelTicketByToken(token);
@@ -78,21 +88,27 @@ export function MyTicket({
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pb-28">
-      <ConnectionBanner online={online} />
-      <header className="py-5">
-        <p className="text-muted text-sm">
-          {ticket.business.name} · Turno {ticket.displayNumber}
-        </p>
+      <ConnectionBanner online={online} lastSeen={lastUpdated ?? loadedAt} />
+      <header className="pt-5 pb-4">
+        <p className="text-muted text-sm">{ticket.business.name}</p>
         <h1 className="text-2xl font-bold">Hola, {ticket.customerName.split(" ")[0]}</h1>
+        <p className="mt-3 text-sm font-semibold">Turno</p>
+        {/* Alto fijo de una línea: el número no empuja lo de abajo al llegar (REQ-078.8) */}
+        <p
+          data-testid="ticket-number"
+          className="text-[clamp(3rem,30vw,7.5rem)] leading-none font-bold tabular-nums"
+        >
+          {ticket.displayNumber}
+        </p>
         {ticket.scheduledAt && ticket.status === "waiting" && (
-          <p className="bg-accent text-accent-ink mt-2 inline-block rounded-full px-3 py-1 text-sm font-semibold">
+          <p className="bg-brand-soft text-brand mt-3 inline-block rounded-sm px-3 py-1 text-sm font-semibold">
             {appointmentTag(ticket.scheduledAt)}
           </p>
         )}
         {alreadyHad && ticket.status === "waiting" && (
           <p
             role="status"
-            className="text-warn mt-2 rounded-xl bg-amber-50 p-3 text-sm font-medium"
+            className="text-warn bg-warn-soft mt-2 rounded-md p-3 text-sm font-medium"
           >
             Ya tienes un turno en la fila. Este es.
           </p>
@@ -117,7 +133,7 @@ export function MyTicket({
 
       {ticket.membership && (
         <p
-          className="mt-4 rounded-xl bg-blue-50 p-3 text-sm font-semibold text-blue-800"
+          className="bg-brand-soft text-brand mt-4 rounded-md p-3 text-sm font-semibold"
           data-testid="my-membership"
         >
           {membershipTicketLine(ticket.membership)}
@@ -138,12 +154,26 @@ export function MyTicket({
         </p>
       )}
 
-      <div className="bg-surface fixed inset-x-0 bottom-0 p-4">
+      <div className="border-line bg-card fixed inset-x-0 bottom-0 border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
         <div className="mx-auto flex max-w-md flex-col gap-2">
           {active ? (
-            <button type="button" className="btn-danger" onClick={cancel} disabled={pending}>
-              {pending ? "Cancelando…" : "Cancelar mi turno"}
-            </button>
+            <>
+              <Button
+                variant="danger"
+                className="w-full"
+                onClick={() => setConfirming(true)}
+                disabled={!online}
+                pending={pending}
+                pendingText="Cancelando…"
+              >
+                Cancelar mi turno
+              </Button>
+              {!online && (
+                <p className="text-muted text-center text-sm">
+                  Para cancelar necesitas señal. Tu turno sigue en la fila.
+                </p>
+              )}
+            </>
           ) : (
             <Link
               href={`/${ticket.business.slug}`}
@@ -154,6 +184,20 @@ export function MyTicket({
           )}
         </div>
       </div>
+
+      <Sheet
+        open={confirming}
+        onClose={() => setConfirming(false)}
+        title="¿Seguro que quieres cancelar tu turno?"
+        description={`Turno ${ticket.displayNumber}. Si vuelves, tomas un turno nuevo al final de la fila.`}
+      >
+        <Button variant="danger" className="w-full" onClick={cancel}>
+          Sí, cancelar mi turno
+        </Button>
+        <Button variant="text" className="mx-auto" onClick={() => setConfirming(false)}>
+          No, seguir en la fila
+        </Button>
+      </Sheet>
     </main>
   );
 }
@@ -220,11 +264,7 @@ function Courtesy({
           {courtesy?.served && <span className="text-ok font-semibold"> · Servida ✓</span>}
         </p>
         {canChange && (
-          <button
-            type="button"
-            className="text-accent min-h-12 shrink-0 underline"
-            onClick={toggle}
-          >
+          <button type="button" className="text-brand min-h-12 shrink-0 underline" onClick={toggle}>
             {courtesy ? "Cambiar bebida" : "Escoger bebida"}
           </button>
         )}
@@ -235,7 +275,7 @@ function Courtesy({
           {[{ id: null, name: "No, gracias" }, ...options].map((o) => (
             <label
               key={o.id ?? "ninguna"}
-              className="border-line bg-card flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3"
+              className="border-line bg-card flex min-h-12 cursor-pointer items-center gap-2 rounded-md border px-3"
             >
               <input
                 type="radio"
@@ -300,7 +340,7 @@ function WhatsappOptOut({
     <div className="mt-2 text-sm">
       <button
         type="button"
-        className="text-accent min-h-12 underline"
+        className="text-brand min-h-12 underline"
         onClick={optOut}
         disabled={saving}
       >
@@ -322,7 +362,7 @@ function StatusCard({ ticket }: { ticket: Ticket }) {
       return (
         <section
           aria-live="polite"
-          className="bg-card border-line rounded-2xl border p-5 text-center"
+          className="bg-card border-line rounded-md border p-5 text-center"
         >
           {e ? (
             <>
@@ -359,27 +399,25 @@ function StatusCard({ ticket }: { ticket: Ticket }) {
       return (
         <section
           aria-live="assertive"
-          className="bg-called rounded-2xl border-2 border-amber-400 p-6 text-center"
+          className="bg-called text-accent-ink rounded-md p-6 text-center"
         >
           <p className="text-3xl font-bold">¡Es tu turno!</p>
           <p className="mt-2 text-lg">
             Pasa a la silla de <strong>{ticket.assignedBarberName ?? "tu barbero"}</strong>
           </p>
-          <p className="text-muted mt-2 text-sm">
-            Tienes {ticket.business.graceMinutes} minutos para llegar.
-          </p>
+          <p className="mt-2 text-sm">Tienes {ticket.business.graceMinutes} minutos para llegar.</p>
         </section>
       );
     case "in_service":
       return (
-        <section className="rounded-2xl bg-green-50 p-6 text-center">
+        <section className="bg-ok-soft rounded-md p-6 text-center">
           <p className="text-2xl font-bold">Te están atendiendo</p>
           <p className="text-muted mt-1">con {ticket.assignedBarberName}</p>
         </section>
       );
     case "done":
       return (
-        <section className="rounded-2xl bg-green-50 p-6 text-center">
+        <section className="bg-ok-soft rounded-md p-6 text-center">
           <p className="text-2xl font-bold">¡Gracias por venir!</p>
           <p className="text-muted mt-1">Te esperamos la próxima.</p>
           {ticket.googleReviewUrl && (
@@ -396,14 +434,14 @@ function StatusCard({ ticket }: { ticket: Ticket }) {
       );
     case "no_show":
       return (
-        <section className="rounded-2xl bg-amber-50 p-6 text-center">
+        <section className="bg-warn-soft rounded-md p-6 text-center">
           <p className="text-2xl font-bold">Te llamamos y no estabas</p>
           <p className="text-muted mt-1">Puedes tomar un turno nuevo cuando llegues.</p>
         </section>
       );
     case "cancelled":
       return (
-        <section className="rounded-2xl bg-gray-100 p-6 text-center">
+        <section className="bg-surface rounded-md p-6 text-center">
           <p className="text-2xl font-bold">Turno cancelado</p>
           <p className="text-muted mt-1">
             {ticket.cancelReason === "closing"

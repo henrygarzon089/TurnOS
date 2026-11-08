@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
-import { ServiceForm, type BarberOption, type ServiceRow } from "@/components/admin/ItemForms";
+import { PageHeader } from "@/components/admin/PageHeader";
+import { NewServiceButton, ServiceList } from "@/components/admin/CatalogLists";
+import { type BarberOption, type ServiceRow } from "@/components/admin/ItemForms";
+import { EmptyState } from "@/components/ui/States";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -38,19 +40,22 @@ export default async function ServicesPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/servicios" />
-      <h1 className="text-2xl font-bold">Servicios</h1>
-      <p className="text-muted mt-1 text-sm">
-        La duración define el tiempo estimado de la fila; el precio, el cobro. Un servicio
-        desactivado deja de ofrecerse pero se conserva en el historial.
-      </p>
-      <div className="mt-4 flex flex-col gap-3">
-        {services.map((s) => (
-          <ServiceForm key={s.id} service={s} barbers={barbers} />
-        ))}
-        <h2 className="mt-2 font-semibold">Nuevo servicio</h2>
-        <ServiceForm barbers={barbers} />
-      </div>
+      <PageHeader
+        title="Servicios"
+        subtitle="La duración define el tiempo estimado de la fila; el precio, el cobro. Un servicio desactivado deja de ofrecerse pero se conserva en el historial."
+        action={<NewServiceButton barbers={barbers} />}
+      />
+      {services.length > 0 ? (
+        <ServiceList services={services} barbers={barbers} />
+      ) : (
+        <div className="border-line bg-card mt-4 rounded-md border">
+          <EmptyState
+            icon="scissors"
+            title="Todavía no hay servicios"
+            text="Agrega el primero con el botón Nuevo servicio: sin servicios no se puede tomar turno."
+          />
+        </div>
+      )}
     </main>
   );
 }

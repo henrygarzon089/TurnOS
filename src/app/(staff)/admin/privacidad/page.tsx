@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
+import Link from "next/link";
+import { PageHeader, Panel } from "@/components/admin/PageHeader";
 import { PrivacyForm } from "@/components/admin/PrivacyForm";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -18,13 +19,27 @@ export default async function PrivacyAdminPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/privacidad" />
-      <h1 className="text-2xl font-bold">Aviso de privacidad</h1>
-      <p className="text-muted mt-1 text-sm">
-        Ley 1581 de 2012. Al publicar una versión nueva, todos los clientes la vuelven a aceptar en
-        su siguiente turno. La plantilla inicial debe revisarla un abogado.
-      </p>
+      <PageHeader
+        title="Aviso de privacidad"
+        subtitle={
+          <>
+            Ley 1581 de 2012. Al publicar una versión nueva, todos los clientes la vuelven a aceptar
+            en su siguiente turno. La plantilla inicial debe revisarla un abogado.
+          </>
+        }
+      />
       <PrivacyForm current={versions[0]} history={versions.slice(1)} />
+      <Panel title="Si un cliente pide borrar sus datos" className="mt-6">
+        <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-base">
+            Búscalo y abre su ficha en Clientes; abajo está &ldquo;Eliminar datos del
+            cliente&rdquo;. Te pedimos confirmar antes de borrar y no se puede deshacer.
+          </p>
+          <Link href="/app/clientes" className="btn-secondary shrink-0 sm:w-auto sm:px-5">
+            Ir a Clientes
+          </Link>
+        </div>
+      </Panel>
     </main>
   );
 }

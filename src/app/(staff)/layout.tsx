@@ -1,5 +1,8 @@
-import { Suspense } from "react";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { AdminNav } from "@/components/admin/AdminNav";
+import { TodayBadge } from "@/components/admin/today/TodayBadge";
+import { BarberNav } from "@/components/staff/BarberNav";
 import { StaffHeader } from "@/components/staff/StaffHeader";
 import { SkeletonBlock, SkeletonScreen } from "@/components/ui/Skeleton";
 import { getStaffSession } from "@/lib/auth/session";
@@ -9,6 +12,10 @@ import { getStaffSession } from "@/lib/auth/session";
  * Sin membresía (dueño recién registrado) → asistente de creación (REQ-030.1).
  * REQ-075.1 (design §19.1): la espera de la sesión va dentro de un Suspense para que al abrir el
  * link directo se vea el esqueleto y no una pantalla en blanco.
+ * El dueño tiene su menú (REQ-077) en todas sus pantallas, también en /app/clientes: barra
+ * inferior en el celular (el contenido deja 56 px más abajo) y menú lateral desde 1024 px. El
+ * barbero, su barra inferior (T-163) en todos los tamaños. `data-wide` ensancha la página desde
+ * 1024 px y `data-tablet` desde 768 px (la caja en tablet, REQ-078.15).
  */
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -23,11 +30,26 @@ async function StaffGate({ children }: { children: React.ReactNode }) {
   if (!session) {
     redirect("/crear-negocio");
   }
+  const owner = session.role === "owner";
   return (
-    <>
+    <div className={`flex flex-1 flex-col ${owner ? "lg:pl-60" : ""}`}>
       <StaffHeader session={session} />
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pb-24">{children}</div>
-    </>
+      <div
+        className={`mx-auto flex w-full max-w-md flex-1 flex-col px-4 ${owner ? "pt-6 pb-40 md:has-[[data-tablet]]:max-w-3xl lg:pb-24 lg:has-[[data-wide]]:max-w-6xl" : "pb-28"}`}
+      >
+        {children}
+      </div>
+      {session.role === "barber" && <BarberNav />}
+      {owner && (
+        <AdminNav
+          todayBadge={
+            <Suspense fallback={null}>
+              <TodayBadge />
+            </Suspense>
+          }
+        />
+      )}
+    </div>
   );
 }
 
@@ -43,8 +65,8 @@ function StaffShellSkeleton() {
       </div>
       <div className="mx-auto w-full max-w-md space-y-3 px-4 py-6">
         <SkeletonBlock className="h-8 w-2/3" />
-        <SkeletonBlock className="h-24 w-full rounded-2xl" />
-        <SkeletonBlock className="h-24 w-full rounded-2xl" />
+        <SkeletonBlock className="h-24 w-full rounded-md" />
+        <SkeletonBlock className="h-24 w-full rounded-md" />
       </div>
     </SkeletonScreen>
   );

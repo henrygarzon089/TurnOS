@@ -102,7 +102,7 @@ export function CleaningChecklist({
   return (
     <form
       aria-label={KIND_LABEL[kind]}
-      className="border-line bg-card mt-3 space-y-3 rounded-xl border p-4"
+      className="border-line bg-card mt-3 space-y-3 rounded-md border p-4"
       onSubmit={(e) => {
         e.preventDefault();
         void send();
@@ -161,7 +161,10 @@ export function CleaningChecklist({
             onChange={(e) => {
               const file = e.target.files?.[0];
               e.target.value = "";
-              if (file) setFiles((prev) => (prev.length >= maxPhotos ? [...prev.slice(1), file] : [...prev, file]));
+              if (file)
+                setFiles((prev) =>
+                  prev.length >= maxPhotos ? [...prev.slice(1), file] : [...prev, file],
+                );
             }}
           />
         </label>

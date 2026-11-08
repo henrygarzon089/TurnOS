@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { loginAsOwner, SEED } from "./helpers";
+import { loginAsOwner, SEED, cancelMyTicket } from "./helpers";
 
 test("REQ-002.5 una versión nueva del aviso hace que el cliente vuelva a ver la casilla", async ({
   page,
@@ -18,8 +18,7 @@ test("REQ-002.5 una versión nueva del aviso hace que el cliente vuelva a ver la
   await customer.getByRole("checkbox", { name: /Acepto que/ }).check();
   await customer.getByRole("button", { name: "Confirmar turno" }).click();
   await expect(customer).toHaveURL(/\/t\//);
-  customer.once("dialog", (d) => d.accept());
-  await customer.getByRole("button", { name: "Cancelar mi turno" }).click();
+  await cancelMyTicket(customer);
   await customer.goto(`/${SEED.slug}/turno`);
   await expect(customer.getByText("Ya aceptaste nuestra política de datos.")).toBeVisible();
 

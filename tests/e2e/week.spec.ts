@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test } from "@playwright/test";
 import { variation } from "../../src/lib/domain/week";
-import { loginAsOwner, SEED } from "./helpers";
+import { loginAsOwner, SEED, openOwnerModule } from "./helpers";
 
 /** T-048 · REQ-028.1–28.4: selector de semana y comparación con la anterior. */
 function db() {
@@ -29,7 +29,7 @@ test("REQ-028.1 selector de semana y REQ-028.3 comparación con la semana anteri
   page,
 }) => {
   await loginAsOwner(page);
-  await page.getByRole("link", { name: "Semana" }).click();
+  await openOwnerModule(page, "Semana");
   await expect(page.getByRole("heading", { name: "Semana" })).toBeVisible();
   const cur = await week(null);
   const prevStart = new Date(`${cur.weekStart}T00:00:00Z`);
@@ -47,13 +47,13 @@ test("REQ-028.1 selector de semana y REQ-028.3 comparación con la semana anteri
   );
   await expect(page.getByTestId("lost")).toContainText(`${cur.lostTickets} turno`);
   // Semana actual: no se puede ir al futuro
-  await expect(page.getByRole("link", { name: "Siguiente →" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Semana siguiente" })).toHaveCount(0);
 
   const label0 = await page.getByTestId("week-label").textContent();
-  await page.getByRole("link", { name: "← Anterior" }).click();
+  await page.getByRole("link", { name: "Semana anterior" }).click();
   await expect(page).toHaveURL(new RegExp(`semana=${prev.weekStart}`));
   await expect(page.getByTestId("week-label")).not.toHaveText(label0!);
   await expect(page.getByTestId("services")).toContainText(String(prev.services));
-  await page.getByRole("link", { name: "Siguiente →" }).click();
+  await page.getByRole("link", { name: "Semana siguiente" }).click();
   await expect(page.getByTestId("week-label")).toHaveText(label0!);
 });

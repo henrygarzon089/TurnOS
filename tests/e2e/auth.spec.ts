@@ -1,17 +1,19 @@
 import { expect, test } from "@playwright/test";
-import { appAlert, loginAsBarber, loginAsOwner, SEED } from "./helpers";
+import { appAlert, loginAsBarber, loginOwnerToToday, SEED } from "./helpers";
 
 test.describe("REQ-030 acceso del personal", () => {
   test("REQ-030.1 dueño entra con correo y contraseña y llega a /admin", async ({ page }) => {
-    await loginAsOwner(page);
-    await expect(page.getByRole("heading", { name: "Fila" })).toBeVisible();
+    await loginOwnerToToday(page); // espera /admin y el título "Hoy" (REQ-076.1)
     await expect(page.getByText("Dueño")).toBeVisible();
   });
 
   test("ADR-010 barbero entra con celular y PIN y llega a su fila", async ({ page }) => {
     await loginAsBarber(page, 0);
     await expect(page.getByRole("heading", { name: "Mi fila" })).toBeVisible();
-    await expect(page.getByText(`Barbero · ${SEED.barbers[0].name}`)).toBeVisible();
+    // T-163: el encabezado del barbero lleva su nombre adelante
+    await expect(
+      page.getByRole("banner").getByText(SEED.barbers[0].name, { exact: true }),
+    ).toBeVisible();
   });
 
   test("REQ-030.1 credenciales malas muestran error en español sin salir de /entrar", async ({

@@ -40,12 +40,13 @@ export type ProductRow = {
   category: string | null;
 };
 
-function useRefreshOnOk(state: FormState) {
+function useRefreshOnOk(state: FormState, onDone?: () => void) {
   const router = useRouter();
   const [seen, setSeen] = useState<FormState>(undefined);
   if (state?.ok && state !== seen) {
     setSeen(state);
     router.refresh();
+    onDone?.();
   }
 }
 
@@ -53,27 +54,28 @@ function useRefreshOnOk(state: FormState) {
 export function ServiceForm({
   service,
   barbers = [],
+  onDone,
 }: {
   service?: ServiceRow;
   barbers?: BarberOption[];
+  /** Al guardar bien (cierra la hoja). */
+  onDone?: () => void;
 }) {
   const [state, action, pending] = useActionState<FormState, FormData>(upsertService, undefined);
   const [busy, startTransition] = useTransition();
   const router = useRouter();
-  useRefreshOnOk(state);
+  useRefreshOnOk(state, onDone);
   const isNew = !service;
 
   return (
     <form
       action={action}
-      className={`border-line bg-card flex flex-col gap-2 rounded-xl border p-3 ${
-        service && !service.is_active ? "opacity-60" : ""
-      }`}
+      className="flex flex-col gap-3"
       aria-label={isNew ? "Nuevo servicio" : `Servicio ${service.name}`}
     >
       {service && <input type="hidden" name="id" value={service.id} />}
-      <div className="grid grid-cols-[1fr_72px_96px] gap-2">
-        <label className="flex flex-col text-xs">
+      <div className="grid grid-cols-[1fr_5rem_7rem] gap-2">
+        <label className="flex flex-col gap-1 text-sm font-semibold">
           Servicio
           <input
             name="name"
@@ -83,7 +85,7 @@ export function ServiceForm({
             className="input"
           />
         </label>
-        <label className="flex flex-col text-xs">
+        <label className="flex flex-col gap-1 text-sm font-semibold">
           Minutos
           <input
             name="duration_min"
@@ -96,7 +98,7 @@ export function ServiceForm({
             className="input"
           />
         </label>
-        <label className="flex flex-col text-xs">
+        <label className="flex flex-col gap-1 text-sm font-semibold">
           Precio
           <input
             name="price"
@@ -108,12 +110,12 @@ export function ServiceForm({
           />
         </label>
       </div>
-      <label className="flex min-h-10 items-center gap-2 text-sm">
+      <label className="flex min-h-12 items-center gap-3 text-base">
         <input
           type="checkbox"
           name="counts_for_loyalty"
           defaultChecked={service?.counts_for_loyalty ?? true}
-          className="h-5 w-5"
+          className="accent-brand h-6 w-6"
         />
         Suma para la tarjeta de fidelidad
       </label>
@@ -126,7 +128,7 @@ export function ServiceForm({
       />
       {state?.error && <ErrorText>{state.error}</ErrorText>}
       <div className="flex gap-2">
-        <button type="submit" className="btn-secondary" disabled={pending}>
+        <button type="submit" className="btn-primary" disabled={pending}>
           {pending ? "Guardando…" : isNew ? "Agregar servicio" : "Guardar"}
         </button>
         {service && (
@@ -137,6 +139,8 @@ export function ServiceForm({
             onClick={() =>
               startTransition(async () => {
                 await toggleService(service.id, !service.is_active);
+                // La fila cambia de puesto (activos primero): la hoja se cierra antes
+                onDone?.();
                 router.refresh();
               })
             }
@@ -195,7 +199,7 @@ function ProductPhoto({
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="flex flex-col text-xs">
+      <label className="flex flex-col gap-1 text-sm font-semibold">
         Foto (opcional)
         <input
           type="file"
@@ -218,11 +222,11 @@ function ProductPhoto({
             width={64}
             height={64}
             unoptimized
-            className="h-16 w-16 rounded-lg object-cover"
+            className="h-16 w-16 rounded-sm object-cover"
           />
           <button
             type="button"
-            className="text-accent min-h-12 text-sm underline"
+            className="text-brand min-h-12 text-sm underline"
             onClick={() => onChange(null)}
           >
             Quitar foto
@@ -239,15 +243,18 @@ export function ProductForm({
   product,
   businessId,
   categories = [],
+  onDone,
 }: {
   product?: ProductRow;
   businessId: string;
   categories?: string[];
+  /** Al guardar bien (cierra la hoja). */
+  onDone?: () => void;
 }) {
   const [state, action, pending] = useActionState<FormState, FormData>(saveProduct, undefined);
   const [busy, startTransition] = useTransition();
   const router = useRouter();
-  useRefreshOnOk(state);
+  useRefreshOnOk(state, onDone);
   const isNew = !product;
   // Controlados: React limpia el formulario al terminar la acción, también con error
   const [forSale, setForSale] = useState(product?.for_sale ?? true);
@@ -271,15 +278,13 @@ export function ProductForm({
   return (
     <form
       action={action}
-      className={`border-line bg-card flex flex-col gap-2 rounded-xl border p-3 ${
-        product && !product.is_active ? "opacity-60" : ""
-      }`}
+      className="flex flex-col gap-3"
       aria-label={isNew ? "Nuevo producto" : `Producto ${product.name}`}
     >
       {product && <input type="hidden" name="id" value={product.id} />}
       <input type="hidden" name="photo_path" value={photoPath ?? ""} />
-      <div className="grid grid-cols-[1fr_110px] gap-2">
-        <label className="flex flex-col text-xs">
+      <div className="grid grid-cols-[1fr_7rem] gap-2">
+        <label className="flex flex-col gap-1 text-sm font-semibold">
           Producto
           <input
             name="name"
@@ -289,7 +294,7 @@ export function ProductForm({
             className="input"
           />
         </label>
-        <label className="flex flex-col text-xs">
+        <label className="flex flex-col gap-1 text-sm font-semibold">
           Precio
           <input
             name="price"
@@ -300,37 +305,37 @@ export function ProductForm({
           />
         </label>
       </div>
-      <label className="flex min-h-10 items-center gap-2 text-sm">
+      <label className="flex min-h-12 items-center gap-3 text-base">
         <input
           type="checkbox"
           name="for_sale"
           checked={forSale}
           onChange={(e) => setForSale(e.target.checked)}
-          className="h-5 w-5"
+          className="accent-brand h-6 w-6"
         />
         A la venta
       </label>
-      <label className="flex min-h-10 items-center gap-2 text-sm">
+      <label className="flex min-h-12 items-center gap-3 text-base">
         <input
           type="checkbox"
           name="is_courtesy"
           checked={isCourtesy}
           onChange={(e) => setIsCourtesy(e.target.checked)}
-          className="h-5 w-5"
+          className="accent-brand h-6 w-6"
         />
         De cortesía
       </label>
-      <label className="flex min-h-10 items-center gap-2 text-sm">
+      <label className="flex min-h-12 items-center gap-3 text-base">
         <input
           type="checkbox"
           name="commissionable"
           checked={commissionable}
           onChange={(e) => setCommissionable(e.target.checked)}
-          className="h-5 w-5"
+          className="accent-brand h-6 w-6"
         />
         Da comisión al que vende
       </label>
-      <label className="flex flex-col text-xs">
+      <label className="flex flex-col gap-1 text-sm font-semibold">
         Categoría (opcional)
         <input
           name="category"
@@ -356,7 +361,7 @@ export function ProductForm({
       />
       {state?.error && <ErrorText>{state.error}</ErrorText>}
       <div className="flex gap-2">
-        <button type="submit" className="btn-secondary" disabled={pending || uploading}>
+        <button type="submit" className="btn-primary" disabled={pending || uploading}>
           {pending ? "Guardando…" : isNew ? "Agregar producto" : "Guardar"}
         </button>
         {product && (
@@ -367,6 +372,7 @@ export function ProductForm({
             onClick={() =>
               startTransition(async () => {
                 await toggleProduct(product.id, !product.is_active);
+                onDone?.();
                 router.refresh();
               })
             }

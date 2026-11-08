@@ -33,19 +33,29 @@ export function QrCard({
   const wa = `https://wa.me/?text=${encodeURIComponent(waText)}`;
 
   return (
-    <div className="mt-4 flex flex-col items-center gap-4">
-      {png ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={png}
-          alt={`Código QR de la fila de ${businessName}`}
-          className="bg-card border-line w-64 rounded-2xl border p-2"
-        />
-      ) : (
-        <div className="bg-card border-line h-64 w-64 animate-pulse rounded-2xl border" />
-      )}
-      <p className="text-muted text-center text-sm break-all">{url}</p>
-      <div className="flex w-full flex-col gap-2">
+    <div className="border-line bg-card mt-4 flex flex-col gap-4 rounded-md border p-4 sm:flex-row sm:items-start">
+      <figure className="border-line mx-auto flex w-64 shrink-0 flex-col items-center gap-2 rounded-md border p-3 text-center">
+        <figcaption className="font-bold">{businessName}</figcaption>
+        {png ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={png}
+            alt={`Código QR de la fila de ${businessName}`}
+            width={224}
+            height={224}
+            className="size-56"
+          />
+        ) : (
+          <div className="bg-skeleton size-56 rounded-sm" />
+        )}
+        <p className="text-muted text-sm">Escanea y toma turno. Espera en tu casa.</p>
+      </figure>
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
+        <p className="text-muted text-base">
+          Lleva a la página <span className="text-ink font-bold">/{slug}.</span> Imprímelo y pégalo
+          en la entrada y en cada espejo.
+        </p>
+        <p className="text-muted text-sm break-all">{url}</p>
         <a
           href={png ?? "#"}
           download={`qr-${slug}.png`}

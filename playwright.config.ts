@@ -24,6 +24,12 @@ export default defineConfig({
   projects: [
     { name: "android", use: { ...devices["Pixel 7"] } },
     { name: "iphone", use: { ...devices["iPhone 13"] } },
+    // Menú lateral del dueño (REQ-077.2) y "Hoy" en 1280 px (REQ-076.9): las pruebas que piden escritorio
+    {
+      name: "escritorio",
+      use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 800 } },
+      testMatch: /(admin-nav|today)\.spec\.ts/,
+    },
   ],
   webServer: process.env.E2E_BASE_URL
     ? undefined

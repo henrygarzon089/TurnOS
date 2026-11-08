@@ -19,10 +19,10 @@ export default async function GiftCardPage({ params }: { params: Promise<{ token
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 py-8">
-      <p className="text-muted text-center text-sm">{card.businessName}</p>
+      <p className="text-center text-lg font-bold">{card.businessName}</p>
       <section
         aria-label="Tarjeta de regalo"
-        className="bg-ink text-card flex flex-col gap-3 rounded-2xl p-6 text-center shadow"
+        className="bg-brand text-brand-ink flex flex-col gap-3 rounded-lg p-6 text-center"
       >
         <p className="text-sm tracking-wide uppercase">Tarjeta de regalo</p>
         {card.recipientName && <p className="text-xl font-semibold">Para {card.recipientName}</p>}

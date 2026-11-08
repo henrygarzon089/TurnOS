@@ -1,5 +1,12 @@
 import { expect, test, type Page } from "@playwright/test";
-import { appAlert, loginAsBarber, resetQueue, SEED, waitForContent } from "./helpers";
+import {
+  appAlert,
+  cancelMyTicket,
+  loginAsBarber,
+  resetQueue,
+  SEED,
+  waitForContent,
+} from "./helpers";
 
 const phone = () => `300 9${Math.floor(100000 + Math.random() * 899999)}`;
 
@@ -74,8 +81,7 @@ test.describe("Hito 1 · flujo del cliente", () => {
   }) => {
     const cel = phone();
     await takeTicket(page, "Memoria", cel);
-    await page.getByRole("button", { name: "Cancelar mi turno" }).click();
-    page.once("dialog", (d) => d.accept());
+    await cancelMyTicket(page);
     await page.goto(`/${SEED.slug}/turno`);
     await expect(page.getByLabel("Tu nombre")).toHaveValue("Memoria");
     await expect(page.getByText("Ya aceptaste nuestra política de datos.")).toBeVisible();
@@ -83,8 +89,7 @@ test.describe("Hito 1 · flujo del cliente", () => {
 
   test("REQ-005.2 cancelar desde Mi turno", async ({ page }) => {
     await takeTicket(page, "Cancela", phone());
-    page.once("dialog", (d) => d.accept());
-    await page.getByRole("button", { name: "Cancelar mi turno" }).click();
+    await cancelMyTicket(page);
     await expect(page.getByText("Turno cancelado")).toBeVisible();
     await expect(page.getByText("Lo cancelaste tú.")).toBeVisible();
   });

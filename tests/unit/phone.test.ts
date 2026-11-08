@@ -28,8 +28,8 @@ describe("REQ-003.2 normalización de celular colombiano", () => {
     expect(formatPhoneCO("+573001234567")).toBe("300 123 4567");
   });
 
-  it("REQ-013.2 / P6 maskPhone oculta el número salvo los últimos 4", () => {
-    expect(maskPhone("+573001234567")).toBe("••• ••• 4567");
+  it("REQ-078.6 maskPhone deja ver solo los 3 primeros y los últimos 4 (300 *** 4567)", () => {
+    expect(maskPhone("+573001234567")).toBe("300 *** 4567");
   });
 
   it("REQ-009.2 waMeNumber devuelve E.164 sin el signo +", () => {

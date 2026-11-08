@@ -1,12 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { CheckoutSheet } from "@/components/cash/CheckoutSheet";
 import { NewSaleButton } from "@/components/cash/NewSaleSheet";
 import { CourtesyLine } from "@/components/queue/CourtesyLine";
 import { MemberBadge } from "@/components/queue/MemberBadge";
 import { AppointmentBadge, TodayAppointments } from "@/components/queue/TodayAppointments";
+import { Button } from "@/components/ui/Button";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
+import { FlashRow } from "@/components/ui/FlashRow";
+import { Icon } from "@/components/ui/Icon";
+import { Sheet } from "@/components/ui/Sheet";
+import { StatusChip } from "@/components/ui/StatusChip";
 import {
   callNext,
   finishService,
@@ -24,6 +29,7 @@ import {
 import { minutesBetween } from "@/lib/domain/time";
 import { withRetry } from "@/lib/net/retry";
 import { getChannel } from "@/lib/notifications/channel";
+import { useBrowserOnline } from "@/lib/realtime/use-browser-online";
 import { useQueueSubscription } from "@/lib/realtime/use-queue-subscription";
 
 const STATUS_LABEL = {
@@ -33,6 +39,12 @@ const STATUS_LABEL = {
   off: "No estás hoy",
 } as const;
 
+/**
+ * REQ-006…REQ-010: la fila del barbero con el sistema visual de T-163 (tablero Barbero-Fila).
+ * El botón de lo que sigue (llamar, ya está en la silla, terminado) mide 80 px y queda fijo sobre
+ * el menú (REQ-078.5); sin red se deshabilita diciendo por qué (REQ-078.10); el turno que llega
+ * por tiempo real entra al final con fondo resaltado, sin mover lo de arriba (REQ-078.12).
+ */
 export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; appUrl: string }) {
   const [view, setView] = useState(initial);
   const [error, setError] = useState<string | null>(null);
@@ -43,18 +55,31 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
   const [notice, setNotice] = useState<string | null>(null);
   const [, startTransition] = useTransition();
   const [tick, setTick] = useState(0);
+  const [loadedAt] = useState(() => new Date());
+  /** REQ-078.12: turnos en espera que ya estaban en pantalla; los demás entran resaltados. */
+  const known = useRef(new Set(initial.waiting.map((t) => t.id)));
+  const [fresh, setFresh] = useState<ReadonlySet<string>>(new Set());
 
   // Sin red, la relectura también falla: se conserva el último estado (REQ-011.6) en vez de
   // dejar que el error tumbe la página justo después de mostrar "Revisa tu conexión" (REQ-011.3).
   const reload = useCallback(async () => {
     try {
       const v = await getMyQueue();
-      if (v) setView(v);
+      if (!v) return;
+      const arrived = v.waiting.filter((t) => !known.current.has(t.id)).map((t) => t.id);
+      for (const id of arrived) known.current.add(id);
+      setView(v);
+      if (arrived.length > 0) {
+        setFresh(new Set(arrived));
+        setTimeout(() => setFresh(new Set()), 1300); // el resaltado dura 1,2 s
+      }
     } catch {
       // la franja de conexión (ConnectionBanner) ya avisa; el canal vuelve a leer al reconectar
     }
   }, []);
-  const { online, lastUpdated } = useQueueSubscription(view.business.id, reload);
+  const { online: live, lastUpdated } = useQueueSubscription(view.business.id, reload);
+  const browser = useBrowserOnline();
+  const online = live && browser.online;
 
   // Reloj para "hace N min" y el resaltado de gracia (REQ-008.1)
   useEffect(() => {
@@ -84,74 +109,83 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
   const current = view.current;
   const canCall = b.status === "available" && !current;
   const now = new Date();
+  const sinceCalled = current?.calledAt ? minutesBetween(new Date(current.calledAt), now) : 0;
+  const overGrace = current?.status === "called" && sinceCalled >= view.business.graceMinutes;
 
   return (
-    <main className="pb-28">
-      <ConnectionBanner online={online} />
+    <main className="pb-56">
+      <ConnectionBanner online={online} lastSeen={lastUpdated ?? loadedAt} />
 
-      <section className="flex items-center justify-between py-3">
-        <div>
+      <section className="flex items-center justify-between gap-3 py-3">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold">Mi fila</h1>
           <p className="text-muted text-sm">
             {b.name} · <span className="font-medium">{STATUS_LABEL[b.status]}</span>
           </p>
         </div>
         {b.status === "off" ? (
-          <button
-            type="button"
-            className="btn-secondary w-auto px-4"
-            disabled={busyAction !== null}
+          <Button
+            variant="secondary"
+            className="shrink-0"
+            disabled={busyAction !== null || !online}
             onClick={() => run("present", () => setMyStatus("available"))}
           >
             Estoy aquí
-          </button>
+          </Button>
         ) : b.status === "paused" ? (
-          <button
-            type="button"
-            className="btn-secondary w-auto px-4"
-            disabled={busyAction !== null}
+          <Button
+            variant="secondary"
+            className="shrink-0"
+            disabled={busyAction !== null || !online}
             onClick={() => run("resume", () => setMyStatus("available"))}
           >
             Volver
-          </button>
+          </Button>
         ) : (
-          <button
-            type="button"
-            className="btn-secondary w-auto px-4"
-            disabled={busyAction !== null || !!current}
+          <Button
+            variant="secondary"
+            className="shrink-0"
+            disabled={busyAction !== null || !!current || !online}
             onClick={() =>
               view.mineWaiting > 0 ? setPauseSheet(true) : run("pause", () => setMyStatus("paused"))
             }
           >
             Pausar
-          </button>
+          </Button>
         )}
       </section>
 
       {error && (
-        <p role="alert" className="text-danger mb-3 rounded-xl bg-red-50 p-3 text-sm font-medium">
-          {error}
-        </p>
+        <div
+          role="alert"
+          className="border-danger mb-3 flex gap-2 rounded-md border-2 p-3 text-sm font-medium"
+        >
+          <Icon name="error" className="text-danger mt-0.5 size-5 shrink-0" />
+          <p className="text-danger">{error}</p>
+        </div>
       )}
       {notice && (
-        <p role="status" className="text-ok mb-3 rounded-xl bg-green-50 p-3 text-sm font-medium">
+        <p role="status" className="text-ok bg-ok-soft mb-3 rounded-md p-3 text-sm font-medium">
           {notice}
         </p>
       )}
 
       <section aria-label="Ahora" className="mb-4">
-        <h2 className="text-muted text-xs font-semibold uppercase">Ahora</h2>
+        <h2 className="text-muted text-xs font-bold tracking-wider uppercase">
+          {current?.status === "called"
+            ? "Llamaste a"
+            : current?.status === "in_service"
+              ? "Atendiendo"
+              : "Ahora"}
+        </h2>
         {current ? (
           <CurrentCard
             ticket={current}
-            graceMinutes={view.business.graceMinutes}
+            overGrace={overGrace}
+            sinceCalled={sinceCalled}
             busy={busyAction}
             run={run}
             now={now}
-            onFinished={(id) => {
-              setNotice(null);
-              setCheckout(id);
-            }}
           />
         ) : (
           <p className="text-muted mt-1">Nadie en la silla.</p>
@@ -160,28 +194,28 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
 
       {view.pendingPayments.length > 0 && (
         <section aria-label="Cobros pendientes" className="mb-4">
-          <h2 className="text-warn text-xs font-semibold uppercase">
+          <h2 className="text-warn text-xs font-bold tracking-wider uppercase">
             Cobro pendiente ({view.pendingPayments.length})
           </h2>
           <ul className="mt-2 flex flex-col gap-2">
             {view.pendingPayments.map((t) => (
               <li
                 key={t.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-amber-400 bg-amber-50 p-3"
+                className="border-warn bg-warn-soft flex items-center justify-between gap-3 rounded-md border p-3"
               >
                 <span className="min-w-0 truncate font-semibold">
                   {t.customerName} · {t.serviceName}
                 </span>
-                <button
-                  type="button"
-                  className="btn-primary w-auto shrink-0 px-4"
+                <Button
+                  variant="secondary"
+                  className="shrink-0"
                   onClick={() => {
                     setNotice(null);
                     setCheckout(t.id);
                   }}
                 >
                   Cobrar
-                </button>
+                </Button>
               </li>
             ))}
           </ul>
@@ -201,13 +235,18 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
       />
 
       <section aria-label="Siguen">
-        <h2 className="text-muted text-xs font-semibold uppercase">
+        <h2 className="text-muted text-xs font-bold tracking-wider uppercase">
           Siguen ({view.waiting.length})
         </h2>
         {view.waiting.length === 0 ? (
-          <p className="text-muted mt-1">No hay nadie en la fila.</p>
+          <div className="mt-1">
+            <p className="text-muted">No hay nadie en la fila.</p>
+            <p className="text-muted mt-1 text-sm">
+              ¿Hay alguien en el local sin turno? Que escanee el QR de la entrada.
+            </p>
+          </div>
         ) : (
-          <ol className="mt-2 flex flex-col gap-2">
+          <ol className="divide-line border-line bg-card mt-2 divide-y rounded-md border">
             {view.waiting.map((t, i) => (
               <WaitingRow
                 key={t.id}
@@ -219,23 +258,74 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
                 appUrl={appUrl}
                 busy={busyAction}
                 run={run}
+                flash={fresh.has(t.id)}
               />
             ))}
           </ol>
         )}
       </section>
 
-      <div className="bg-surface fixed inset-x-0 bottom-0 p-4">
-        <div className="mx-auto max-w-md">
-          <button
-            type="button"
-            className="btn-primary"
-            disabled={!canCall || busyAction !== null}
-            onClick={() => run("call", callNext)}
-          >
-            {busyAction === "call" ? "Llamando…" : "Llamar al siguiente"}
-          </button>
-          <LastUpdated at={lastUpdated} />
+      {/* Fijo sobre el menú del barbero (56 px + borde) */}
+      <div className="border-line bg-card fixed inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] z-10 border-t px-4 pt-3 pb-2">
+        <div className="mx-auto flex max-w-md flex-col gap-2">
+          {current?.status === "called" ? (
+            <>
+              <Button
+                size="giant"
+                disabled={busyAction !== null || !online}
+                pending={busyAction === "start"}
+                onClick={() => run("start", () => startService(current.id))}
+              >
+                Ya está en la silla
+              </Button>
+              <Button
+                variant="secondary"
+                className={`w-full ${overGrace ? "border-warn bg-warn-soft border-2" : ""}`}
+                disabled={busyAction !== null || !online}
+                pending={busyAction === "noshow"}
+                onClick={() => run("noshow", () => markNoShow(current.id))}
+              >
+                No llegó
+              </Button>
+            </>
+          ) : current ? (
+            <Button
+              size="giant"
+              disabled={busyAction !== null || !online}
+              pending={busyAction === "finish"}
+              onClick={() =>
+                run("finish", async () => {
+                  const r = await finishService(current.id);
+                  if (r.ok) {
+                    setNotice(null);
+                    setCheckout(current.id); // REQ-023.1: al terminar se abre "Registrar cobro"
+                  }
+                  return r;
+                })
+              }
+            >
+              Terminado
+            </Button>
+          ) : (
+            <Button
+              size="giant"
+              disabled={!canCall || busyAction !== null || !online}
+              pending={busyAction === "call"}
+              pendingText="Llamando…"
+              onClick={() => run("call", callNext)}
+            >
+              Llamar al siguiente
+            </Button>
+          )}
+          {!online ? (
+            <p className="text-muted text-center text-sm">
+              {current
+                ? "Sin señal no podemos guardar. Reintentamos solos."
+                : "Sin señal no podemos avisarle. Reintentamos solos."}
+            </p>
+          ) : (
+            <LastUpdated at={lastUpdated} />
+          )}
         </div>
       </div>
 
@@ -254,53 +344,69 @@ export function BarberQueue({ initial, appUrl }: { initial: BarberQueueView; app
         />
       )}
 
-      {pauseSheet && (
-        <PauseSheet
-          count={view.mineWaiting}
-          onClose={() => setPauseSheet(false)}
-          onKeep={() => {
-            setPauseSheet(false);
-            run("pause", () => setMyStatus("paused", false));
-          }}
-          onReassign={() => {
+      <Sheet
+        open={pauseSheet}
+        onClose={() => setPauseSheet(false)}
+        title="Pausar"
+        description={`Tienes ${view.mineWaiting} ${view.mineWaiting === 1 ? "cliente esperándote" : "clientes esperándote"}. ¿Qué hacemos?`}
+      >
+        <Button
+          className="w-full"
+          onClick={() => {
             setPauseSheet(false);
             run("pause", () => setMyStatus("paused", true));
           }}
-        />
-      )}
+        >
+          Que los atienda el que esté libre
+        </Button>
+        <Button
+          variant="secondary"
+          className="w-full"
+          onClick={() => {
+            setPauseSheet(false);
+            run("pause", () => setMyStatus("paused", false));
+          }}
+        >
+          Los dejo esperando
+        </Button>
+        <Button variant="text" className="mx-auto" onClick={() => setPauseSheet(false)}>
+          Cancelar
+        </Button>
+      </Sheet>
     </main>
   );
 }
 
+/** El turno en la silla: número grande y nombre (tablero Barbero-Fila); los botones van abajo. */
 function CurrentCard({
   ticket,
-  graceMinutes,
+  overGrace,
+  sinceCalled,
   busy,
   run,
   now,
-  onFinished,
 }: {
   ticket: QueueTicket;
-  graceMinutes: number;
+  overGrace: boolean;
+  sinceCalled: number;
   busy: string | null;
   run: (key: string, a: () => Promise<ActionResult>) => void;
   now: Date;
-  /** REQ-023.1: al terminar se abre "Registrar cobro". */
-  onFinished: (ticketId: string) => void;
 }) {
-  const sinceCalled = ticket.calledAt ? minutesBetween(new Date(ticket.calledAt), now) : 0;
-  const overGrace = ticket.status === "called" && sinceCalled >= graceMinutes;
   const sinceStarted = ticket.startedAt ? minutesBetween(new Date(ticket.startedAt), now) : 0;
+  const called = ticket.status === "called";
 
   return (
     <article
-      className={`mt-1 rounded-2xl border-2 p-4 ${overGrace ? "border-amber-400 bg-amber-50" : "border-accent bg-card"}`}
+      className={`bg-card mt-1 rounded-md border p-4 ${called ? "border-l-called border-line border-l-4" : "border-line"} ${overGrace ? "bg-warn-soft" : ""}`}
       aria-label={`Turno actual ${ticket.customerName}`}
     >
-      <p className="text-lg font-bold">
-        {ticket.customerName}{" "}
-        <span className="text-muted text-sm font-normal">· {ticket.serviceName}</span>
+      <StatusChip status={called ? "called" : "in_service"} />
+      <p className="mt-2 flex items-baseline gap-3">
+        <span className="text-5xl leading-none font-bold tabular-nums">{ticket.displayNumber}</span>
+        <span className="min-w-0 text-xl font-bold break-words">{ticket.customerName}</span>
       </p>
+      <p className="text-muted mt-1 text-sm">{ticket.serviceName}</p>
       <AppointmentBadge scheduledAt={ticket.scheduledAt} />
       {ticket.rewardAvailable && <RewardBadge />}
       {ticket.isMember && <MemberBadge />}
@@ -312,51 +418,11 @@ function CurrentCard({
           onServe={() => run(`courtesy-${ticket.id}`, () => markCourtesyServed(ticket.id))}
         />
       )}
-      {ticket.status === "called" ? (
-        <>
-          <p className="text-sm">
-            Llamado hace {sinceCalled} min{overGrace ? " · se pasó el tiempo de gracia" : ""}
-          </p>
-          <div className="mt-3 flex gap-2">
-            <button
-              type="button"
-              className="btn-primary"
-              disabled={busy !== null}
-              onClick={() => run("start", () => startService(ticket.id))}
-            >
-              Ya está en la silla
-            </button>
-            <button
-              type="button"
-              className={overGrace ? "btn-primary bg-warn" : "btn-secondary"}
-              disabled={busy !== null}
-              onClick={() => run("noshow", () => markNoShow(ticket.id))}
-            >
-              No llegó
-            </button>
-          </div>
-        </>
-      ) : (
-        <>
-          <p className="text-sm">
-            En servicio hace {sinceStarted} min · estimado {ticket.serviceDurationMin} min
-          </p>
-          <button
-            type="button"
-            className="btn-primary mt-3"
-            disabled={busy !== null}
-            onClick={() =>
-              run("finish", async () => {
-                const r = await finishService(ticket.id);
-                if (r.ok) onFinished(ticket.id);
-                return r;
-              })
-            }
-          >
-            {busy === "finish" ? "Guardando…" : "Terminado"}
-          </button>
-        </>
-      )}
+      <p className="mt-2 text-sm">
+        {called
+          ? `Llamado hace ${sinceCalled} min${overGrace ? " · se pasó el tiempo de gracia" : ""}`
+          : `En servicio hace ${sinceStarted} min · estimado ${ticket.serviceDurationMin} min`}
+      </p>
     </article>
   );
 }
@@ -370,6 +436,7 @@ function WaitingRow({
   appUrl,
   busy,
   run,
+  flash,
 }: {
   ticket: QueueTicket;
   index: number;
@@ -379,6 +446,8 @@ function WaitingRow({
   appUrl: string;
   busy: string | null;
   run: (key: string, a: () => Promise<ActionResult>) => void;
+  /** REQ-078.12: llegó por tiempo real y entra resaltado. */
+  flash: boolean;
 }) {
   const waitedMin = minutesBetween(new Date(ticket.createdAt), now);
   const shouldNotify = ticket.ahead === 2 && !ticket.notifiedAt;
@@ -401,96 +470,64 @@ function WaitingRow({
     : null;
 
   return (
-    <li
-      className={`border-line bg-card rounded-xl border p-3 ${shouldNotify ? "border-amber-400" : ""}`}
-    >
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate font-semibold">
-            {index + 1}. {ticket.customerName}
-          </p>
-          <AppointmentBadge scheduledAt={ticket.scheduledAt} />
-          {ticket.rewardAvailable && <RewardBadge />}
-          {ticket.isMember && <MemberBadge />}
-          <p className="text-muted text-sm">
-            {ticket.serviceName} {ticket.serviceDurationMin}&apos; · hace {waitedMin}&apos; ·{" "}
-            {ticket.preferredBarberId === me ? "te eligió" : "cualquiera"}
-          </p>
+    <li data-testid="waiting-row">
+      <FlashRow
+        flash={flash}
+        className={`p-3 ${shouldNotify ? "shadow-[inset_3px_0_0_var(--color-warn)]" : ""}`}
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="flex items-baseline gap-3">
+              <span className="w-10 shrink-0 font-bold tabular-nums">{ticket.displayNumber}</span>
+              <span className="min-w-0 truncate font-semibold">
+                <span className="sr-only">{index + 1}. </span>
+                {ticket.customerName}
+              </span>
+            </p>
+            <AppointmentBadge scheduledAt={ticket.scheduledAt} />
+            {ticket.rewardAvailable && <RewardBadge />}
+            {ticket.isMember && <MemberBadge />}
+            <p className="text-muted text-sm">
+              {ticket.serviceName} {ticket.serviceDurationMin}&apos; · hace {waitedMin}&apos; ·{" "}
+              {ticket.preferredBarberId === me ? "te eligió" : "cualquiera"}
+            </p>
+          </div>
+          {canNotify && link && (
+            <a
+              href={link}
+              target="_blank"
+              rel="noopener"
+              onClick={() => run(`notify-${ticket.id}`, () => markNotified(ticket.id))}
+              aria-disabled={busy !== null}
+              className={`flex min-h-12 shrink-0 items-center rounded-md px-3 text-sm font-semibold ${
+                ticket.notifiedAt
+                  ? "text-ok bg-ok-soft"
+                  : shouldNotify
+                    ? "border-brand text-brand border-2"
+                    : "border-line-strong border"
+              }`}
+            >
+              {ticket.notifiedAt ? "Avisado ✓" : "📲 Avisar"}
+            </a>
+          )}
         </div>
-        {canNotify && link && (
-          <a
-            href={link}
-            target="_blank"
-            rel="noopener"
-            onClick={() => run(`notify-${ticket.id}`, () => markNotified(ticket.id))}
-            aria-disabled={busy !== null}
-            className={`flex min-h-12 shrink-0 items-center rounded-full px-3 text-sm font-semibold ${
-              ticket.notifiedAt
-                ? "text-ok bg-green-50"
-                : shouldNotify
-                  ? "bg-accent text-accent-ink"
-                  : "border-line border"
-            }`}
-          >
-            {ticket.notifiedAt ? "Avisado ✓" : "📲 Avisar"}
-          </a>
+        {ticket.courtesyName && (
+          <CourtesyLine
+            name={ticket.courtesyName}
+            served={ticket.courtesyServed}
+            disabled={busy !== null}
+            onServe={() => run(`courtesy-${ticket.id}`, () => markCourtesyServed(ticket.id))}
+          />
         )}
-      </div>
-      {ticket.courtesyName && (
-        <CourtesyLine
-          name={ticket.courtesyName}
-          served={ticket.courtesyServed}
-          disabled={busy !== null}
-          onServe={() => run(`courtesy-${ticket.id}`, () => markCourtesyServed(ticket.id))}
-        />
-      )}
+      </FlashRow>
     </li>
-  );
-}
-
-function PauseSheet({
-  count,
-  onClose,
-  onKeep,
-  onReassign,
-}: {
-  count: number;
-  onClose: () => void;
-  onKeep: () => void;
-  onReassign: () => void;
-}) {
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Pausar"
-      className="fixed inset-0 z-30 flex items-end bg-black/40"
-    >
-      <div className="bg-card w-full rounded-t-2xl p-5">
-        <p className="text-lg font-bold">
-          Tienes {count} {count === 1 ? "cliente esperándote" : "clientes esperándote"}. ¿Qué
-          hacemos?
-        </p>
-        <div className="mt-4 flex flex-col gap-2">
-          <button type="button" className="btn-secondary" onClick={onKeep}>
-            Los dejo esperando
-          </button>
-          <button type="button" className="btn-primary" onClick={onReassign}>
-            Que los atienda el que esté libre
-          </button>
-          <button type="button" className="text-muted min-h-12 text-sm" onClick={onClose}>
-            Cancelar
-          </button>
-        </div>
-      </div>
-    </div>
   );
 }
 
 /** REQ-019.3: el cliente tiene el premio de fidelidad disponible. */
 function RewardBadge() {
   return (
-    <span className="text-ok mt-0.5 inline-block rounded-full bg-green-50 px-2 py-0.5 text-xs font-semibold">
+    <span className="text-ok bg-ok-soft mt-0.5 inline-block rounded-sm px-2 py-0.5 text-xs font-semibold">
       🎁 Premio disponible
     </span>
   );

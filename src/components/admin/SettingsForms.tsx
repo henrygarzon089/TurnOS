@@ -93,13 +93,13 @@ export function TemplatesForm({
   const sample = useMemo(() => ({ ...SAMPLE, negocio: businessName }), [businessName]);
 
   return (
-    <form action={action} className="mt-4 flex flex-col gap-5">
+    <form action={action} className="mt-4 flex flex-col gap-4">
       {(Object.keys(TEMPLATE_META) as TemplateKey[]).map((key) => (
-        <div key={key} className="border-line bg-card flex flex-col gap-2 rounded-xl border p-3">
+        <div key={key} className="border-line bg-card flex flex-col gap-2 rounded-md border p-4">
           <label htmlFor={key} className="font-semibold">
             {TEMPLATE_META[key].title}
           </label>
-          <p className="text-muted text-xs">{TEMPLATE_META[key].help}</p>
+          <p className="text-muted text-sm">{TEMPLATE_META[key].help}</p>
           <textarea
             id={key}
             name={key}
@@ -110,17 +110,24 @@ export function TemplatesForm({
             onChange={(e) => setValues({ ...values, [key]: e.target.value })}
             className="input min-h-24 py-2"
           />
-          <p className="text-muted text-xs">
+          <p className="text-muted text-sm">
             Variables: {TEMPLATE_META[key].vars ?? "{nombre} {negocio} {tiempo} {enlace}"}
           </p>
-          <div className="rounded-lg bg-green-50 p-2 text-sm" aria-label="Vista previa">
+          <div
+            className="bg-surface border-line rounded-sm border p-2 text-base"
+            aria-label="Vista previa"
+          >
             {renderTemplate(values[key], sample)}
           </div>
         </div>
       ))}
       {state?.error && <ErrorText>{state.error}</ErrorText>}
       {state?.ok && <p className="text-ok text-sm font-medium">Plantillas guardadas.</p>}
-      <button type="submit" className="btn-primary" disabled={pending}>
+      <button
+        type="submit"
+        className="btn-primary lg:w-auto lg:self-end lg:px-8"
+        disabled={pending}
+      >
         {pending ? "Guardando…" : "Guardar plantillas"}
       </button>
     </form>
@@ -159,7 +166,12 @@ export function BusinessForm({ business }: { business: BusinessSettings }) {
     </Field>
   );
   return (
-    <form action={action} className="mt-4 flex flex-col gap-4">
+    <form
+      action={action}
+      aria-label="Datos del negocio"
+      className="border-line bg-card flex flex-col gap-4 rounded-md border p-4"
+    >
+      <h2 className="text-lg font-bold">Negocio</h2>
       <Field label="Nombre del negocio" htmlFor="name">
         <input
           id="name"
@@ -171,7 +183,7 @@ export function BusinessForm({ business }: { business: BusinessSettings }) {
           className="input"
         />
       </Field>
-      <p className="text-muted -mt-2 text-xs">
+      <p className="text-muted -mt-2 text-sm">
         Enlace de la fila: /{business.slug} (no se puede cambiar).
       </p>
       <Field label="Dirección" htmlFor="address">
@@ -193,7 +205,7 @@ export function BusinessForm({ business }: { business: BusinessSettings }) {
           className="input"
         />
       </Field>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         {num("chairs_count", "Sillas", 1, 50)}
         {num("default_commission_pct", "Comisión por defecto (%)", 0, 100)}
         {num("grace_minutes", "Minutos de gracia al llamar", 1, 60)}
@@ -202,7 +214,7 @@ export function BusinessForm({ business }: { business: BusinessSettings }) {
         {num("product_commission_pct", "Comisión por productos (%)", 0, 100)}
         {num("staff_discount_pct", "Descuento de empleado (%)", 0, 100)}
       </div>
-      <p className="text-muted -mt-2 text-xs">
+      <p className="text-muted -mt-2 text-sm">
         Los % de productos y de descuento se aplican a las ventas desde hoy. Con descuento en 0 no
         sale &quot;Compra de un barbero&quot;.
       </p>
@@ -222,7 +234,12 @@ export function GoogleReviewForm({ url }: { url: string | null }) {
     undefined,
   );
   return (
-    <form action={action} aria-label="Reseñas de Google" className="mt-8 flex flex-col gap-4">
+    <form
+      action={action}
+      aria-label="Reseñas de Google"
+      className="border-line bg-card flex flex-col gap-4 rounded-md border p-4"
+    >
+      <h2 className="text-lg font-bold">Reseñas de Google</h2>
       <Field label="Enlace de reseñas de Google" htmlFor="google_review_url">
         <input
           id="google_review_url"
@@ -235,12 +252,12 @@ export function GoogleReviewForm({ url }: { url: string | null }) {
           className="input"
         />
       </Field>
-      <p className="text-muted -mt-2 text-xs">
+      <p className="text-muted -mt-2 text-sm">
         El cliente lo ve en &quot;Mi turno&quot; al terminar. Déjalo vacío para no pedir reseñas.
       </p>
       {state?.error && <ErrorText>{state.error}</ErrorText>}
       {state?.ok && <p className="text-ok text-sm font-medium">Enlace guardado.</p>}
-      <button type="submit" className="btn-primary" disabled={pending}>
+      <button type="submit" className="btn-secondary" disabled={pending}>
         {pending ? "Guardando…" : "Guardar enlace"}
       </button>
     </form>
@@ -263,18 +280,23 @@ export function WhatsAppForm({
   const [on, setOn] = useState(enabled);
   const [phone, setPhone] = useState(contactPhone ? formatPhoneCO(contactPhone) : "");
   return (
-    <form action={action} aria-label="Avisos por WhatsApp" className="mt-8 flex flex-col gap-4">
+    <form
+      action={action}
+      aria-label="Avisos por WhatsApp"
+      className="border-line bg-card flex flex-col gap-4 rounded-md border p-4"
+    >
+      <h2 className="text-lg font-bold">Avisos por WhatsApp</h2>
       <label className="flex min-h-12 items-center gap-3 font-medium">
         <input
           type="checkbox"
           name="whatsapp_auto_enabled"
           checked={on}
           onChange={(e) => setOn(e.target.checked)}
-          className="h-6 w-6 shrink-0"
+          className="accent-brand h-6 w-6 shrink-0"
         />
         Avisos automáticos activos
       </label>
-      <p className="text-muted -mt-2 text-xs">
+      <p className="text-muted -mt-2 text-sm">
         Le avisa por WhatsApp al cliente que dio permiso cuando faltan 2 turnos y cuando lo llaman.
       </p>
       <Field label="Número de contacto" htmlFor="whatsapp_contact_phone">
@@ -289,12 +311,12 @@ export function WhatsAppForm({
           className="input"
         />
       </Field>
-      <p className="text-muted -mt-2 text-xs">
+      <p className="text-muted -mt-2 text-sm">
         Se lo damos a quien responda a los avisos. Déjalo vacío si no quieres darlo.
       </p>
       {state?.error && <ErrorText>{state.error}</ErrorText>}
       {state?.ok && <p className="text-ok text-sm font-medium">Avisos guardados.</p>}
-      <button type="submit" className="btn-primary" disabled={pending}>
+      <button type="submit" className="btn-secondary" disabled={pending}>
         {pending ? "Guardando…" : "Guardar avisos"}
       </button>
     </form>

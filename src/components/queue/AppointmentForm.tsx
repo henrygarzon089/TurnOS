@@ -106,7 +106,9 @@ export function AppointmentForm({ business, info, today }: Props) {
   }
 
   if (services.length === 0) {
-    return <p className="mt-4 rounded-xl bg-amber-50 p-4">Por ahora no hay horas para reservar.</p>;
+    return (
+      <p className="bg-warn-soft mt-4 rounded-md p-4">Por ahora no hay horas para reservar.</p>
+    );
   }
 
   return (
@@ -117,8 +119,8 @@ export function AppointmentForm({ business, info, today }: Props) {
           {services.map((s) => (
             <label
               key={s.id}
-              className={`flex min-h-12 items-center justify-between gap-3 rounded-xl border px-4 ${
-                s.id === serviceId ? "border-accent bg-card" : "border-line bg-card"
+              className={`flex min-h-12 items-center justify-between gap-3 rounded-md border px-4 ${
+                s.id === serviceId ? "border-brand bg-card" : "border-line bg-card"
               }`}
             >
               <span className="flex items-center gap-3">
@@ -215,7 +217,7 @@ export function AppointmentForm({ business, info, today }: Props) {
       {alreadyAccepted ? (
         <p className="text-muted text-sm">
           Ya aceptaste nuestra política de datos.{" "}
-          <Link href={`/${business.slug}/privacidad`} className="text-accent underline">
+          <Link href={`/${business.slug}/privacidad`} className="text-brand underline">
             Leerla
           </Link>
         </p>
@@ -233,7 +235,7 @@ export function AppointmentForm({ business, info, today }: Props) {
             cita y contactarme por WhatsApp (Ley 1581 de 2012).{" "}
             <Link
               href={`/${business.slug}/privacidad`}
-              className="text-accent underline"
+              className="text-brand underline"
               target="_blank"
             >
               Ver aviso completo

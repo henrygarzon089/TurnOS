@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { CashDay } from "@/components/cash/CashDay";
 import { getCashDay } from "@/lib/actions/cash";
 import { getStaffSession } from "@/lib/auth/session";
@@ -19,17 +18,23 @@ export default async function PastCashPage({ params }: { params: Promise<{ fecha
   const summary = await getCashDay(fecha);
   if (!summary) notFound();
   return (
-    <main className="pb-6">
-      <AdminNav current="/admin/caja" />
-      <Link href="/admin/caja" className="text-accent min-h-10 text-sm font-medium">
-        ← Caja de hoy
-      </Link>
-      <h1 className="text-2xl font-bold">Caja del {formatDayCO(fecha)}</h1>
+    <main data-wide data-tablet className="pb-6">
       <CashDay
         businessId={session.business.id}
         businessName={session.business.name}
         initial={summary}
         isToday={false}
+        heading={
+          <>
+            <Link
+              href="/admin/caja"
+              className="text-brand flex min-h-12 items-center text-base font-semibold"
+            >
+              ← Caja de hoy
+            </Link>
+            <h1 className="text-[28px] leading-tight font-bold">Caja del {formatDayCO(fecha)}</h1>
+          </>
+        }
       />
     </main>
   );

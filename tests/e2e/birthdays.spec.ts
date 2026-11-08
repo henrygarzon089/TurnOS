@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { businessDayBogota } from "../../src/lib/domain/time";
-import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED } from "./helpers";
+import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED, cancelMyTicket } from "./helpers";
 
 /** Cliente del seed sin cumpleaños (el seed se lo pone a los tres primeros). */
 const CUSTOMER = { name: "Valentina", phone: "+573002000004" };
@@ -50,8 +50,7 @@ test.describe("REQ-037 cumpleaños", () => {
     await confirm(page);
     await expect(page).toHaveURL(/\/t\//, { timeout: 15_000 });
 
-    page.once("dialog", (d) => d.accept());
-    await page.getByRole("button", { name: "Cancelar mi turno" }).click();
+    await cancelMyTicket(page);
     await expect(page.getByText("Turno cancelado")).toBeVisible();
 
     // Mismo navegador: el celular se prellena y el campo ya no está

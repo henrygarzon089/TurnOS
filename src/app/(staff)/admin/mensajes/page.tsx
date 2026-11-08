@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
+import { PageHeader } from "@/components/admin/PageHeader";
 import { AutoMessages, type MonthStats } from "@/components/admin/AutoMessages";
 import { TemplatesForm, type TemplateKey } from "@/components/admin/SettingsForms";
 import { getStaffSession } from "@/lib/auth/session";
@@ -32,17 +32,17 @@ export default async function TemplatesPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/mensajes" />
-      <h1 className="text-2xl font-bold">Mensajes de WhatsApp</h1>
+      <PageHeader
+        title="Mensajes de WhatsApp"
+        subtitle="Se abren en WhatsApp ya escritos; solo hay que tocar enviar."
+      />
       {autoOn && (
         <AutoMessages
           stats={(stats?.data as MonthStats | null) ?? { sent: 0, failed: 0, capReached: false }}
           businessName={session.business.name}
         />
       )}
-      <p className="text-muted mt-1 text-sm">
-        Se abren en WhatsApp ya escritos; solo hay que tocar enviar.
-      </p>
+      {autoOn && <h2 className="mt-6 text-lg font-bold">Plantillas para enviar a mano</h2>}
       <TemplatesForm templates={templates} businessName={session.business.name} />
     </main>
   );

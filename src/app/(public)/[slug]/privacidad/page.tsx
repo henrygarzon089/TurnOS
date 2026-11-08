@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { PublicHeader } from "@/components/public/PublicHeader";
 import { getPrivacyPolicy } from "@/lib/actions/public";
 
 export const metadata: Metadata = { title: "Aviso de privacidad" };
@@ -10,12 +11,15 @@ export default async function PrivacyPage({ params }: { params: Promise<{ slug: 
   const p = await getPrivacyPolicy(slug);
   if (!p) notFound();
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-6">
-      <h1 className="text-2xl font-bold">Aviso de privacidad</h1>
-      <p className="text-muted mt-1 text-sm">
-        {p.businessName} · versión {p.version}
-      </p>
-      <article className="mt-4 leading-relaxed whitespace-pre-wrap">{p.body}</article>
-    </main>
+    <div className="flex flex-1 flex-col">
+      <PublicHeader
+        name="Aviso de privacidad"
+        subtitle={`${p.businessName} · versión ${p.version}`}
+        back={{ href: `/${slug}`, label: `Volver a ${p.businessName}` }}
+      />
+      <main className="mx-auto w-full max-w-prose flex-1 px-4 py-6">
+        <article className="text-base leading-relaxed whitespace-pre-wrap">{p.body}</article>
+      </main>
+    </div>
   );
 }

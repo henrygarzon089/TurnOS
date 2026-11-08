@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED } from "./helpers";
+import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED, cancelMyTicket } from "./helpers";
 
 /**
  * T-059 · REQ-036. El turno lo agrega el dueño (REQ-012.3, sin validar horario) y el token de
@@ -144,8 +144,7 @@ test.describe("REQ-036 reseña en Google", () => {
 
       const cancelled = await ownerAdds(owner, `Cancela ${suffix}`);
       await customer.goto(`/t/${cancelled}`);
-      customer.once("dialog", (d) => d.accept());
-      await customer.getByRole("button", { name: "Cancelar mi turno" }).click();
+      await cancelMyTicket(customer);
       await expect(customer.getByText("Turno cancelado")).toBeVisible({ timeout: 15_000 });
       await expect(customer.getByRole("link", { name: BUTTON })).toHaveCount(0);
 

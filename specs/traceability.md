@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-06.
+> Generada por `scripts/traceability.ts` el 2026-11-08.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -8,7 +8,7 @@
 | REQ-001.1 | Acceso a la fila por QR o enlace | T-014 (hecha), T-017 (hecha), T-018 (hecha), T-026 (hecha), T-030 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0008_public_fns.sql | cubierto |
 | REQ-001.2 | Acceso a la fila por QR o enlace | T-014 (hecha), T-017 (hecha), T-018 (hecha), T-026 (hecha), T-030 (hecha) | qr.spec.ts | cubierto |
 | REQ-001.3 | Acceso a la fila por QR o enlace | T-014 (hecha), T-017 (hecha), T-018 (hecha), T-026 (hecha), T-030 (hecha) | qr.spec.ts | cubierto |
-| REQ-001.4 | Acceso a la fila por QR o enlace | T-014 (hecha), T-017 (hecha), T-018 (hecha), T-026 (hecha), T-030 (hecha) | public-queue.test.ts, 0008_public_fns.sql | cubierto |
+| REQ-001.4 | Acceso a la fila por QR o enlace | T-014 (hecha), T-017 (hecha), T-018 (hecha), T-026 (hecha), T-030 (hecha) | public-queue.test.ts, public-view.test.ts, 0008_public_fns.sql | cubierto |
 | REQ-001.5 | Acceso a la fila por QR o enlace | T-014 (hecha), T-017 (hecha), T-018 (hecha), T-026 (hecha), T-030 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0008_public_fns.sql | cubierto |
 | REQ-002.1 | Aviso de privacidad y aceptación (Ley 1581) | T-019 (hecha), T-028 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-002.2 | Aviso de privacidad y aceptación (Ley 1581) | T-019 (hecha), T-028 (hecha) | customer-flow.spec.ts, public-queue.test.ts | cubierto |
@@ -16,7 +16,7 @@
 | REQ-002.4 | Aviso de privacidad y aceptación (Ley 1581) | T-019 (hecha), T-028 (hecha) | customer-flow.spec.ts | cubierto |
 | REQ-002.5 | Aviso de privacidad y aceptación (Ley 1581) | T-019 (hecha), T-028 (hecha) | privacy.spec.ts, 0002_core.sql | cubierto |
 | REQ-003.1 | Tomar turno | T-003 (hecha), T-011 (hecha), T-014 (hecha), T-017 (hecha), T-019 (hecha) | 0005_queue.sql, 0008_public_fns.sql | cubierto |
-| REQ-003.2 | Tomar turno | T-003 (hecha), T-011 (hecha), T-014 (hecha), T-017 (hecha), T-019 (hecha) | customer-flow.spec.ts, public-queue.test.ts, phone.test.ts | cubierto |
+| REQ-003.2 | Tomar turno | T-003 (hecha), T-011 (hecha), T-014 (hecha), T-017 (hecha), T-019 (hecha) | customer-flow.spec.ts, public-queue.test.ts, phone.test.ts, ui-components.test.tsx | cubierto |
 | REQ-003.3 | Tomar turno | T-003 (hecha), T-011 (hecha), T-014 (hecha), T-017 (hecha), T-019 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0005_queue.sql, 0008_public_fns.sql | cubierto |
 | REQ-003.4 | Tomar turno | T-003 (hecha), T-011 (hecha), T-014 (hecha), T-017 (hecha), T-019 (hecha) | 0013_customers_loyalty.sql | cubierto |
 | REQ-003.5 | Tomar turno | T-003 (hecha), T-011 (hecha), T-014 (hecha), T-017 (hecha), T-019 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0005_queue.sql, 0008_public_fns.sql | cubierto |
@@ -30,7 +30,7 @@
 | REQ-004.6 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha) | customer-flow.spec.ts | cubierto |
 | REQ-004.7 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0008_public_fns.sql, 0033_customer_experience.sql | cubierto |
 | REQ-005.1 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | hito1-gaps.spec.ts | cubierto |
-| REQ-005.2 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0006_transitions.sql, 0008_public_fns.sql | cubierto |
+| REQ-005.2 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts, helpers.ts, public-queue.test.ts, 0006_transitions.sql, 0008_public_fns.sql | cubierto |
 | REQ-005.3 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | hito1-gaps.spec.ts, public-queue.test.ts | cubierto |
 | REQ-006.1 | Vista de fila del barbero | T-015 (hecha), T-016 (hecha), T-021 (hecha) | barber-flow.spec.ts, 0007_queue_ops.sql | cubierto |
 | REQ-006.2 | Vista de fila del barbero | T-015 (hecha), T-016 (hecha), T-021 (hecha) | hito1-gaps.spec.ts | cubierto |
@@ -72,7 +72,7 @@
 | REQ-012.4 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | owner-queue.spec.ts, 0008_public_fns.sql | cubierto |
 | REQ-012.5 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-013.1 | Pantalla pública para el televisor | T-027 (hecha) | screen.spec.ts, 0002_core.sql, 0011_screen.sql | cubierto |
-| REQ-013.2 | Pantalla pública para el televisor | T-027 (hecha) | screen.spec.ts, phone.test.ts, 0011_screen.sql | cubierto |
+| REQ-013.2 | Pantalla pública para el televisor | T-027 (hecha) | screen.spec.ts, public-view.test.ts, 0011_screen.sql | cubierto |
 | REQ-013.3 | Pantalla pública para el televisor | T-027 (hecha) | helpers.ts, screen.spec.ts | cubierto |
 | REQ-013.4 | Pantalla pública para el televisor | T-027 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-013.5 | Pantalla pública para el televisor | T-027 (hecha) | hito1-gaps.spec.ts | cubierto |
@@ -126,7 +126,7 @@
 | REQ-025.5 | Comisión configurable por barbero | T-008 (hecha), T-040 (hecha), T-041 (hecha), T-047 (hecha) | my-numbers.spec.ts, my-numbers.test.ts, my-numbers.test.ts | cubierto |
 | REQ-026.1 | Anular una venta | T-040 (hecha), T-045 (hecha) | cash-day.spec.ts, 0021_cash.sql, 0022_register_sale.sql, 0025_cash_summary.sql, 0042_membership_checkout.sql, 0043_membership_reports.sql, 0055_merge_customers_sales.sql | cubierto |
 | REQ-026.2 | Anular una venta | T-040 (hecha), T-045 (hecha) | 0021_cash.sql, 0026_close_cash.sql, 0042_membership_sales.sql, 0051_gift_cards.sql, 0055_merge_customers_sales.sql | cubierto |
-| REQ-027.1 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha), T-140 (hecha) | cash-day.spec.ts, daviplata.test.ts, 0025_cash_summary.sql, 0068_daviplata.sql | cubierto |
+| REQ-027.1 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha), T-140 (hecha) | cash-day.spec.ts, today.spec.ts, daviplata.test.ts, 0025_cash_summary.sql, 0068_daviplata.sql | cubierto |
 | REQ-027.2 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha), T-140 (hecha) | close-cash.spec.ts, 0021_cash.sql, 0025_cash_summary.sql, 0026_close_cash.sql | cubierto |
 | REQ-027.3 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha), T-140 (hecha) | close-cash.spec.ts, 0021_cash.sql, 0026_close_cash.sql | cubierto |
 | REQ-027.4 | Cierre de caja diario | T-040 (hecha), T-045 (hecha), T-046 (hecha), T-140 (hecha) | close-cash.spec.ts, cash-closure.test.ts | cubierto |
@@ -396,20 +396,35 @@
 | REQ-075.2 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | skeleton.test.tsx | prueba escrita |
 | REQ-075.3 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | vitals-reporter.test.tsx | prueba escrita |
 | REQ-075.4 | Pantallas de carga y velocidad real | T-130 (hecha), T-131 (hecha), T-132 (hecha), T-133 (pendiente) | vitals-reporter.test.tsx, vitals.test.ts | prueba escrita |
-| REQ-076.1 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.2 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.3 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.4 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.5 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.6 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.7 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.8 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.9 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.10 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-076.11 | Inicio "Hoy" | T-151 (pendiente), T-152 (pendiente), T-153 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-077.1 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-077.2 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-077.3 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-077.4 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-077.5 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
-| REQ-077.6 | Menú del dueño por grupos | T-150 (pendiente), T-152 (pendiente), T-154 (pendiente) | — | sin prueba |
+| REQ-076.1 | Inicio "Hoy" | T-151 (hecha), T-152 (hecha), T-153 (hecha), T-154 (pendiente) | auth.spec.ts, helpers.ts, today.spec.ts | prueba escrita |
+| REQ-076.2 | Inicio "Hoy" | T-151 (hecha), T-152 (hecha), T-153 (hecha), T-154 (pendiente) | today.spec.ts, today.test.tsx | prueba escrita |
+| REQ-076.3 | Inicio "Hoy" | T-151 (hecha), T-152 (hecha), T-153 (hecha), T-154 (pendiente) | today.spec.ts | prueba escrita |
+| REQ-076.4 | Inicio "Hoy" | T-151 (hecha), T-152 (hecha), T-153 (hecha), T-154 (pendiente) | today.spec.ts, today.test.tsx | prueba escrita |
+| REQ-076.5 | Inicio "Hoy" | T-151 (hecha), T-152 (hecha), T-153 (hecha), T-154 (pendiente) | today.spec.ts, owner-alerts.test.ts, today.test.tsx | prueba escrita |
+| REQ-076.6 | Inicio "Hoy" | T-151 (hecha), T-152 (hecha), T-153 (hecha), T-154 (pendiente) | today.spec.ts, owner-alerts.test.ts, today.test.tsx | prueba escrita |
+| REQ-076.7 | Inicio "Hoy" | T-151 (hecha), T-152 (hecha), T-153 (hecha), T-154 (pendiente) | today.spec.ts, today.test.tsx | prueba escrita |
+| REQ-076.8 | Inicio "Hoy" | T-151 (hecha), T-152 (hecha), T-153 (hecha), T-154 (pendiente) | today.spec.ts, today.test.tsx | prueba escrita |
+| REQ-076.9 | Inicio "Hoy" | T-151 (hecha), T-152 (hecha), T-153 (hecha), T-154 (pendiente) | today.spec.ts, today.test.tsx | prueba escrita |
+| REQ-076.10 | Inicio "Hoy" | T-151 (hecha), T-152 (hecha), T-153 (hecha), T-154 (pendiente) | today.test.tsx | prueba escrita |
+| REQ-076.11 | Inicio "Hoy" | T-151 (hecha), T-152 (hecha), T-153 (hecha), T-154 (pendiente) | today.spec.ts | prueba escrita |
+| REQ-077.1 | Menú del dueño por grupos | T-150 (hecha), T-152 (hecha), T-154 (pendiente) | admin-nav.spec.ts, admin-nav.test.tsx | prueba escrita |
+| REQ-077.2 | Menú del dueño por grupos | T-150 (hecha), T-152 (hecha), T-154 (pendiente) | admin-nav.spec.ts, admin-nav.test.tsx | prueba escrita |
+| REQ-077.3 | Menú del dueño por grupos | T-150 (hecha), T-152 (hecha), T-154 (pendiente) | cleaning-owner.spec.ts, admin-nav.test.tsx | prueba escrita |
+| REQ-077.4 | Menú del dueño por grupos | T-150 (hecha), T-152 (hecha), T-154 (pendiente) | admin-nav.test.tsx | prueba escrita |
+| REQ-077.5 | Menú del dueño por grupos | T-150 (hecha), T-152 (hecha), T-154 (pendiente) | admin-nav.spec.ts, admin-nav.test.tsx | prueba escrita |
+| REQ-077.6 | Menú del dueño por grupos | T-150 (hecha), T-152 (hecha), T-154 (pendiente) | today.spec.ts, today.test.tsx | prueba escrita |
+| REQ-078.1 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | design-tokens.test.ts, lint-design.test.ts | prueba escrita |
+| REQ-078.2 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | design-tokens.test.ts | prueba escrita |
+| REQ-078.3 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | appointments-agenda.spec.ts, helpers.ts, ui-components.spec.ts, visual-cliente.spec.ts, visual-dueno-config.spec.ts, visual-dueno-fila-caja.spec.ts, visual-dueno-modulos.spec.ts, lint-design.test.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.4 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | visual-acceso.spec.ts, visual-barbero.spec.ts, visual-cliente.spec.ts, visual-dueno-config.spec.ts, visual-dueno-fila-caja.spec.ts, visual-dueno-modulos.spec.ts, visual-helpers.ts | prueba escrita |
+| REQ-078.5 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | cleaning-barber.spec.ts, menu-courtesy.spec.ts, visual-barbero.spec.ts, visual-helpers.ts, barber-nav.test.tsx, ui-components.test.tsx | prueba escrita |
+| REQ-078.6 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | visual-dueno-config.spec.ts, visual-dueno-fila-caja.spec.ts, visual-dueno-modulos.spec.ts, phone.test.ts | prueba escrita |
+| REQ-078.7 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | ui-components.spec.ts, visual-acceso.spec.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.8 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | visual-barbero.spec.ts, visual-cliente.spec.ts, visual-helpers.ts, queue-subscription.test.ts | prueba escrita |
+| REQ-078.9 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | ui-components.spec.ts, visual-acceso.spec.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.10 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | visual-barbero.spec.ts, visual-cliente.spec.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.11 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | visual-dueno-config.spec.ts, visual-dueno-modulos.spec.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.12 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | visual-barbero.spec.ts, visual-dueno-fila-caja.spec.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.13 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | ui-components.spec.ts, visual-cliente.spec.ts, ui-components.test.tsx | prueba escrita |
+| REQ-078.14 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | lint-design.test.ts, public-view.test.ts | prueba escrita |
+| REQ-078.15 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-168 (pendiente) | visual-acceso.spec.ts, visual-barbero.spec.ts, visual-cliente.spec.ts, visual-dueno-config.spec.ts, visual-dueno-fila-caja.spec.ts, visual-dueno-modulos.spec.ts, visual-helpers.ts, public-view.test.ts | prueba escrita |

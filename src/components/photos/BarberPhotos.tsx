@@ -99,7 +99,7 @@ export function BarberPhotos({
       </p>
 
       {full ? (
-        <p role="alert" className="text-warn rounded-xl bg-amber-50 p-3 text-sm font-medium">
+        <p role="alert" className="text-warn bg-warn-soft rounded-md p-3 text-sm font-medium">
           {PHOTO_LIMIT_ERROR}
         </p>
       ) : (
@@ -127,7 +127,7 @@ export function BarberPhotos({
                 width={96}
                 height={96}
                 unoptimized
-                className="h-24 w-24 rounded-lg object-cover"
+                className="h-24 w-24 rounded-sm object-cover"
               />
               {/* REQ-039.3: se confirma foto por foto */}
               <label className="flex items-start gap-3 text-sm">
@@ -163,7 +163,7 @@ export function BarberPhotos({
                 width={320}
                 height={320}
                 unoptimized
-                className="aspect-square w-full rounded-lg object-cover"
+                className="aspect-square w-full rounded-sm object-cover"
               />
               <button
                 type="button"

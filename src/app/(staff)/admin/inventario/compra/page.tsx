@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { AdminNav } from "@/components/admin/AdminNav";
 import { InventoryNav } from "@/components/admin/InventoryNav";
+import { EmptyState } from "@/components/ui/States";
 import { getPurchaseOrder } from "@/lib/actions/inventory";
 import { getStaffSession } from "@/lib/auth/session";
 import { purchaseOrderLink } from "@/lib/domain/inventory";
@@ -20,31 +20,33 @@ export default async function PurchaseOrderPage() {
 
   return (
     <main className="pb-6">
-      <AdminNav current="/admin/inventario" />
-      <h1 className="text-2xl font-bold">Inventario</h1>
       <InventoryNav current="/admin/inventario/compra" />
 
       <p className="text-muted mt-4 text-sm">
         Ítems en su mínimo o por debajo (bodega + vitrina), con lo que falta para llegar al máximo.
       </p>
       {rows.length === 0 ? (
-        <p className="border-line bg-card mt-3 rounded-xl border p-4 text-sm">
-          No hay nada por pedir: todo está por encima del mínimo.
-        </p>
+        <div className="border-line bg-card mt-3 rounded-md border">
+          <EmptyState
+            icon="check"
+            title="No hay nada por pedir"
+            text="Todo está por encima del mínimo. Vuelve después del próximo conteo."
+          />
+        </div>
       ) : (
         <>
           {suppliers.map((s) => (
             <section key={s ?? "none"} className="mt-4" aria-label={s ?? "Sin proveedor"}>
               <h2 className="text-lg font-semibold">{s ?? "Sin proveedor"}</h2>
-              <ul className="mt-2 flex flex-col gap-2">
+              <ul className="border-line bg-card divide-line mt-2 flex flex-col divide-y rounded-md border">
                 {rows
                   .filter((r) => r.supplier === s)
                   .map((r) => (
-                    <li key={r.item_id} className="border-line bg-card rounded-xl border p-3 text-sm">
+                    <li key={r.item_id} className="px-4 py-3 text-base">
                       <p className="font-semibold">
                         {r.name} · pedir {r.qty} {r.unit_label}
                       </p>
-                      <p className="text-muted">
+                      <p className="text-muted text-sm">
                         {r.presentation} · hay {r.on_hand} (mín. {r.min_qty}, máx. {r.max_qty}) ·{" "}
                         {formatCOP(r.amount)}
                       </p>
@@ -53,8 +55,13 @@ export default async function PurchaseOrderPage() {
               </ul>
             </section>
           ))}
-          <p className="mt-4 text-lg font-semibold">Total estimado: {formatCOP(total)}</p>
-          <a href={link} target="_blank" rel="noopener noreferrer" className="btn-primary mt-3 flex items-center justify-center">
+          <p className="mt-4 text-lg font-bold tabular-nums">Total estimado: {formatCOP(total)}</p>
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary mt-3 lg:w-auto lg:px-6"
+          >
             Compartir por WhatsApp
           </a>
         </>

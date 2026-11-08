@@ -88,11 +88,14 @@ test.describe("REQ-020 clientes para recordar", () => {
 
       await owner.goto("/admin/recordar");
       const name = await firstRowName(owner);
-      owner.once("dialog", (d) => d.accept());
       await list(owner)
         .getByRole("listitem")
         .filter({ hasText: name })
         .getByRole("button", { name: "No contactar" })
+        .click();
+      await owner
+        .getByRole("dialog", { name: /No volver a contactar/ })
+        .getByRole("button", { name: "Sí, no contactar" })
         .click();
       await expect(list(owner).getByRole("listitem").filter({ hasText: name })).toHaveCount(0);
       await owner.reload();
@@ -128,9 +131,9 @@ test.describe("REQ-020 clientes para recordar", () => {
       await expect(row.getByRole("link", { name: /Avisar/ })).toHaveCount(0);
 
       // Limpieza: cancelar el turno y volver a permitir el contacto
-      owner.once("dialog", (d) => d.accept());
       await active.getByRole("button", { name: new RegExp(name) }).click();
       await active.getByRole("button", { name: "Cancelar turno" }).click();
+      await owner.getByRole("button", { name: "Sí, cancelar turno" }).click();
       await expect(active).toBeHidden({ timeout: 15_000 });
       await owner.goto("/app/clientes");
       await owner.getByLabel("Buscar cliente").fill(name);
