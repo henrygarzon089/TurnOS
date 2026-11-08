@@ -100,7 +100,7 @@ export function CashDay({
         {open && (
           // Encima de la barra del menú en el celular (REQ-077.1); junto al título en escritorio
           <div className="bg-surface border-line fixed inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] z-10 border-t p-4 lg:static lg:ml-auto lg:border-0 lg:bg-transparent lg:p-0">
-            <div className="mx-auto flex max-w-md gap-2 md:max-w-3xl md:justify-end lg:max-w-none">
+            <div className="mx-auto flex max-w-md flex-wrap gap-2 md:max-w-3xl md:justify-end lg:max-w-none">
               <CloseCashButton summary={summary} onChanged={reload} />
               <NewSaleButton
                 className="btn-primary lg:w-auto"
@@ -122,7 +122,7 @@ export function CashDay({
               Total del día · {activeSales} {activeSales === 1 ? "venta" : "ventas"}
             </p>
             <p
-              className="text-[40px] leading-tight font-bold tabular-nums"
+              className="text-[clamp(1.75rem,11vw,2.5rem)] leading-tight font-bold tabular-nums"
               data-testid="cash-total"
             >
               {formatCOP(summary.total)}
@@ -226,7 +226,7 @@ export function CashDay({
           aria-label="Por barbero"
           className="border-line bg-card overflow-hidden rounded-md border md:[grid-area:bar]"
         >
-          <h2 className="border-line flex items-center justify-between gap-3 border-b px-4 py-2">
+          <h2 className="border-line flex flex-wrap items-center justify-between gap-x-3 border-b px-4 py-2">
             <span className="font-bold">Por barbero</span>
             <Link
               href="/admin/semana"
