@@ -16,7 +16,10 @@ async function bizId(): Promise<string> {
 async function resetCleaning(enabled: boolean) {
   const db = adminDb();
   const biz = await bizId();
-  const { data: rows } = await db.from("cleaning_records").select("photo_paths").eq("business_id", biz);
+  const { data: rows } = await db
+    .from("cleaning_records")
+    .select("photo_paths")
+    .eq("business_id", biz);
   const paths = (rows ?? []).flatMap((r) => r.photo_paths as string[]);
   if (paths.length) await db.storage.from("cleaning").remove(paths);
   await db.from("cleaning_records").delete().eq("business_id", biz);
@@ -35,8 +38,12 @@ test.describe("REQ-061 / REQ-062 Limpieza del barbero", () => {
     // REQ-062.1 y REQ-062.2: el aviso está arriba y la fila sigue ahí
     await expect(page.getByRole("status", { name: "Apertura pendiente" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Mi fila" })).toBeVisible();
-    // REQ-062.6 botón Limpieza
-    await expect(page.getByRole("link", { name: "Limpieza", exact: true })).toBeVisible();
+    // REQ-062.6 botón Limpieza (en la fila; también está en el menú de abajo, REQ-078.5)
+    const menu = page.getByRole("navigation", { name: "Menú del barbero" });
+    await expect(
+      page.getByRole("link", { name: "Limpieza", exact: true }).and(page.locator(":not(nav *)")),
+    ).toBeVisible();
+    await expect(menu.getByRole("link", { name: "Limpieza", exact: true })).toBeVisible();
 
     await page.getByRole("link", { name: "Registrar apertura" }).click();
     const form = page.getByRole("form", { name: "Apertura" });
@@ -51,9 +58,12 @@ test.describe("REQ-061 / REQ-062 Limpieza del barbero", () => {
     await form.getByRole("button", { name: "Enviar" }).click();
 
     // Abre a las 00:00 (global-setup): siempre queda "tarde" (REQ-061.8)
-    await expect(page.getByRole("status")).toHaveText("Apertura registrada como incompleta (tarde).", {
-      timeout: 15_000,
-    });
+    await expect(page.getByRole("status")).toHaveText(
+      "Apertura registrada como incompleta (tarde).",
+      {
+        timeout: 15_000,
+      },
+    );
     // REQ-061.11 quién y a qué hora, e "Incompleta"
     const card = page.getByRole("region", { name: "Apertura de hoy" });
     await expect(card).toContainText("Hecha por Juan");
@@ -73,10 +83,14 @@ test.describe("REQ-061 / REQ-062 Limpieza del barbero", () => {
     await form.getByRole("button", { name: "Enviar" }).click();
     await expect(appAlert(page)).toHaveText("Falta la foto del local");
 
-    await form.locator('input[type="file"]').setInputFiles({ name: "local.png", mimeType: "image/png", buffer: PNG });
+    await form
+      .locator('input[type="file"]')
+      .setInputFiles({ name: "local.png", mimeType: "image/png", buffer: PNG });
     await form.getByRole("button", { name: "Enviar" }).click();
     await expect(page.getByRole("status")).toHaveText("Cierre registrado.", { timeout: 15_000 });
-    await expect(page.getByRole("region", { name: "Cierre de hoy" })).toContainText("Hecha por Dueño");
+    await expect(page.getByRole("region", { name: "Cierre de hoy" })).toContainText(
+      "Hecha por Dueño",
+    );
 
     const { data } = await adminDb()
       .from("cleaning_records")
@@ -89,7 +103,11 @@ test.describe("REQ-061 / REQ-062 Limpieza del barbero", () => {
 
   test("REQ-061.7 el barbero ve desde qué hora se registra el cierre", async ({ page }) => {
     test.skip(
-      new Intl.DateTimeFormat("en-GB", { timeZone: "America/Bogota", hour: "2-digit", hour12: false }).format(new Date()) >= "22",
+      new Intl.DateTimeFormat("en-GB", {
+        timeZone: "America/Bogota",
+        hour: "2-digit",
+        hour12: false,
+      }).format(new Date()) >= "22",
       "Después de las 10:59 p. m. el cierre ya está habilitado",
     );
     await loginAsBarber(page, 0);

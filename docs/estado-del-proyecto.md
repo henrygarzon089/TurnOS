@@ -443,6 +443,13 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   Prueba desde el celular: abrir el QR de La 33 (o `/la-33`), tomar turno, ver el número grande,
   tocar "Cancelar mi turno" y elegir "No, seguir en la fila"; con el modo avión, ver la franja y
   el botón deshabilitado. Siguiente: T-163 (barbero).
+- T-163 hecha (rama `claude/t-163-barbero`, encima de T-162, 2026-11-07): pantallas del barbero.
+  Menú abajo (Mi fila, Clientes, Números, Limpieza, Más), encabezado azul marino, Mi fila con el
+  número grande y el botón de lo que sigue de 80 px fijo sobre el menú, sin red deshabilitado con
+  el motivo, turno nuevo resaltado al final; cobro con total y "Registrar" fijos abajo. Textos de
+  los botones sin cambio. Prueba desde el celular: entrar como barbero, llamar, "Ya está en la
+  silla", "Terminado" y ver el cobro; con modo avión, "Llamar al siguiente" deshabilitado.
+  Siguiente: T-164 (acceso).
 - La aprobación del hito terminado será un ADR nuevo.
 
 ### Hito 4 — servicios por barbero (2026-10-28)

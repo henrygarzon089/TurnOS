@@ -2039,12 +2039,36 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
     vez; la falta de red del navegador la sigue avisando el hook, también al abrir sin red.
   - Los errores de `Field` ahora tienen `role="alert"` (antes los decía `ErrorText`).
 
-### [ ] T-163 · Pantallas del barbero
+### [x] T-163 · Pantallas del barbero
 - REQ: REQ-078.4, REQ-078.5, REQ-078.8, REQ-078.10, REQ-078.12
 - Archivos: `src/app/(staff)/app/**`, `src/components/{queue,cash,staff,customers}/*` del barbero,
   `tests/e2e/visual-barbero.spec.ts`
 - Terminado: botón gigante ≥ 80 px; cobro con total y botón fijos abajo; turno nuevo entra al final
   con resaltado sin mover lo que está bajo el dedo; sin conexión deshabilita "Llamar" con el motivo.
+- Hecho (2026-11-07). Notas y desvíos (ADR-047: la app manda donde el tablero muestra otra cosa):
+  - Menú del barbero abajo (`BarberNav`): Mi fila, Clientes, Números ("Mis números"), Limpieza y
+    "Más" (Mis fotos, Mi estación); reemplaza los enlaces bajo el encabezado. Encabezado en azul
+    marino con el nombre del barbero. "Pausar" sigue en la pantalla de la fila, no en el
+    encabezado (el encabezado es del layout y no conoce el estado de la fila).
+  - Mi fila: el turno en la silla con el número grande, "Llamado" en rojo y "En servicio"; el
+    botón de lo que sigue (80 px) fijo sobre el menú. Se quedan los textos de la app ("Llamar al
+    siguiente", "Ya está en la silla", "No llegó", "Terminado"), no los del tablero ("Llamar a
+    A14", "Empezar corte", "No vino", "Terminar y cobrar"): cambiarlos es texto de negocio.
+    Con turno abierto ya no hay botón de llamar (antes deshabilitado): `barber-flow` lo revisa así.
+    Los botones del turno van en la barra fija, fuera de la tarjeta (`menu-courtesy` los busca en
+    la página); la etiqueta de estado va arriba del número y la frase "Llamado hace…"/"En servicio
+    hace…" queda entera. "Limpieza" queda en la franja y en el menú (`cleaning-barber` revisa ambos).
+  - Sin red: franja con la hora y el botón deshabilitado con "Sin señal no podemos avisarle.
+    Reintentamos solos." (o "…guardar…" con turno abierto); Pausar/Volver también.
+  - Turno nuevo por tiempo real: entra al final con `FlashRow` (1,2 s), sin mover lo de arriba.
+  - Pausar con clientes propios: hoja `Sheet` (antes un diálogo propio); "Cobrar" de los cobros
+    pendientes y "Aplicar premio" pasan a contorno (un solo principal).
+  - Cobro (`CheckoutSheet`, también del dueño): el total y "Registrar $ …" fijos abajo, "Guardando…"
+    al enviar (antes "Registrando…"); medios de pago, quién vendió y categorías elegidos con borde
+    y fondo suave en vez de azul relleno. El resto del cobro del tablero (secciones, interruptores)
+    queda para T-165 con la caja del dueño.
+  - Esqueleto de Mi fila con el botón reservado; píldoras fuera (cortesía, membresía, cita,
+    categorías). `primaryButtons` de las pruebas visuales cuenta solo la hoja si hay una abierta.
 
 ### [ ] T-164 · Acceso
 - REQ: REQ-078.7, REQ-078.9, REQ-078.15

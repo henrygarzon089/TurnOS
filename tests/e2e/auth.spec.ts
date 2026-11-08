@@ -10,7 +10,10 @@ test.describe("REQ-030 acceso del personal", () => {
   test("ADR-010 barbero entra con celular y PIN y llega a su fila", async ({ page }) => {
     await loginAsBarber(page, 0);
     await expect(page.getByRole("heading", { name: "Mi fila" })).toBeVisible();
-    await expect(page.getByText(`Barbero · ${SEED.barbers[0].name}`)).toBeVisible();
+    // T-163: el encabezado del barbero lleva su nombre adelante
+    await expect(
+      page.getByRole("banner").getByText(SEED.barbers[0].name, { exact: true }),
+    ).toBeVisible();
   });
 
   test("REQ-030.1 credenciales malas muestran error en español sin salir de /entrar", async ({

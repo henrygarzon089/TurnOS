@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { expect, test, type Page } from "@playwright/test";
-import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED } from "./helpers";
+import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED, openBarberMore } from "./helpers";
 
 /** T-062 · REQ-039. Juan es el barbero 0 del seed; Mateo, el 4. */
 const CONSENT = "El cliente me dio permiso de publicar esta foto";
@@ -68,7 +68,7 @@ test.describe("T-062 fotos de cortes", () => {
     browser,
   }) => {
     await loginAsBarber(page);
-    await page.getByRole("link", { name: "Mis fotos" }).click();
+    await openBarberMore(page, "Mis fotos");
     await expect(page).toHaveURL(/\/app\/mis-fotos/);
     await page.getByLabel("Escoger foto").setInputFiles(photo);
     await expect(page.getByRole("button", { name: "Subir foto" })).toBeDisabled();

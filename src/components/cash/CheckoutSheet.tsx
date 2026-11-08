@@ -308,7 +308,26 @@ export function CheckoutSheet({
   }
 
   return (
-    <Sheet onClose={onClose} title={title}>
+    <Sheet
+      onClose={onClose}
+      title={title}
+      footer={
+        <>
+          <p className="flex items-baseline justify-between gap-3">
+            <span className="text-muted">Total</span>
+            <span className="text-3xl font-bold tabular-nums">{formatCOP(total)}</span>
+          </p>
+          <button
+            type="button"
+            className="btn-primary mt-2"
+            disabled={pending || !hasLines || !parties.ok || !amounts}
+            onClick={submit}
+          >
+            {pending ? "Guardando…" : `Registrar ${formatCOP(total)}`}
+          </button>
+        </>
+      }
+    >
       <p className="text-lg font-bold">{title}</p>
       {view.ticket && (
         <p className="text-muted -mt-2 text-sm">
@@ -366,7 +385,7 @@ export function CheckoutSheet({
                   aria-checked={on}
                   onClick={() => setSeller(o.value)}
                   className={`min-h-12 rounded-md border px-2 font-semibold ${
-                    on ? "bg-brand text-brand-ink border-brand" : "border-line bg-card"
+                    on ? "border-brand bg-brand-soft text-ink border-2" : "border-line bg-card"
                   }`}
                 >
                   {o.label}
@@ -552,7 +571,7 @@ export function CheckoutSheet({
           ) : rewardLine ? (
             <button
               type="button"
-              className="btn-primary"
+              className="btn-secondary"
               onClick={() => update(rewardLine.key, { isReward: true, discount: 0, reason: "" })}
             >
               🎁 Aplicar premio
@@ -599,7 +618,7 @@ export function CheckoutSheet({
               onClick={() => setMethod(m.id)}
               className={`min-h-12 rounded-md border font-semibold ${
                 m.id === "gift_card" ? "col-span-2" : ""
-              } ${method === m.id ? "bg-brand text-brand-ink border-brand" : "border-line bg-card"}`}
+              } ${method === m.id ? "border-brand bg-brand-soft text-ink border-2" : "border-line bg-card"}`}
             >
               {m.label}
             </button>
@@ -661,7 +680,7 @@ export function CheckoutSheet({
                         onClick={() => setRestMethod(m.id)}
                         className={`min-h-12 rounded-md border font-semibold ${
                           restMethod === m.id
-                            ? "bg-brand text-brand-ink border-brand"
+                            ? "border-brand bg-brand-soft text-ink border-2"
                             : "border-line bg-card"
                         }`}
                       >
@@ -691,15 +710,6 @@ export function CheckoutSheet({
       )}
 
       {error && <ErrorText>{error}</ErrorText>}
-
-      <button
-        type="button"
-        className="btn-primary"
-        disabled={pending || !hasLines || !parties.ok || !amounts}
-        onClick={submit}
-      >
-        {pending ? "Registrando…" : `Registrar ${formatCOP(total)}`}
-      </button>
 
       {view.ticket &&
         (unpaidOpen ? (
@@ -740,25 +750,36 @@ export function CheckoutSheet({
   );
 }
 
+/**
+ * Hoja del cobro (tablero Barbero-Cobro): el contenido se desplaza y el total con "Registrar"
+ * quedan fijos abajo (`footer`), siempre a la vista del pulgar.
+ */
 function Sheet({
   children,
   onClose,
   title,
+  footer,
 }: {
   children: React.ReactNode;
   onClose: () => void;
   title: string;
+  footer?: React.ReactNode;
 }) {
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="fixed inset-0 z-30 flex items-end bg-black/40"
+      className="bg-ink/60 fixed inset-0 z-30 flex items-end"
       onKeyDown={(e) => e.key === "Escape" && onClose()}
     >
-      <div className="bg-card flex max-h-[92dvh] w-full flex-col gap-3 overflow-y-auto rounded-t-md p-5">
-        {children}
+      <div className="bg-card flex max-h-[92dvh] w-full flex-col rounded-t-lg sm:mx-auto sm:max-w-lg">
+        <div className="flex flex-col gap-3 overflow-y-auto p-5">{children}</div>
+        {footer && (
+          <div className="border-line border-t px-5 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ export function CleaningBanner({ openingPending }: { openingPending: boolean }) 
           <p className="text-sm">Nadie ha registrado la limpieza de apertura de hoy.</p>
           <Link
             href="/app/limpieza?abrir=apertura"
-            className="btn-primary mt-2 inline-flex w-full justify-center"
+            className="btn-secondary mt-2 inline-flex w-full justify-center"
           >
             Registrar apertura
           </Link>

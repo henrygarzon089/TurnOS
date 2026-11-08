@@ -1,58 +1,39 @@
-import Link from "next/link";
 import { signOut } from "@/lib/actions/auth";
 import type { StaffSession } from "@/lib/auth/session";
 
+/**
+ * Encabezado del personal. El barbero lo ve en azul marino con su nombre adelante (tablero
+ * Barbero-Fila); su menú es la barra inferior (`BarberNav`). El dueño, en blanco con su menú aparte.
+ */
 export function StaffHeader({ session }: { session: StaffSession }) {
+  const barber = session.role === "barber";
   return (
-    <header className="border-line bg-card sticky top-0 z-10 border-b">
+    <header
+      className={`sticky top-0 z-10 ${barber ? "bg-brand text-brand-ink" : "border-line bg-card border-b"}`}
+    >
       <div className="mx-auto flex w-full max-w-md items-center justify-between px-4 py-3">
-        <div className="min-w-0">
-          <p className="truncate font-semibold">{session.business.name}</p>
-          <p className="text-muted truncate text-sm">
-            {session.role === "owner" ? "Dueño" : "Barbero"}
-            {session.barberName ? ` · ${session.barberName}` : ""}
-          </p>
-        </div>
+        {barber ? (
+          <div className="min-w-0">
+            <p className="truncate font-bold">{session.barberName ?? "Barbero"}</p>
+            <p className="truncate text-sm opacity-80">{session.business.name}</p>
+          </div>
+        ) : (
+          <div className="min-w-0">
+            <p className="truncate font-semibold">{session.business.name}</p>
+            <p className="text-muted truncate text-sm">
+              Dueño{session.barberName ? ` · ${session.barberName}` : ""}
+            </p>
+          </div>
+        )}
         <form action={signOut}>
-          <button type="submit" className="text-muted min-h-12 px-2 text-sm font-medium">
+          <button
+            type="submit"
+            className={`min-h-12 px-2 text-sm font-medium ${barber ? "opacity-80" : "text-muted"}`}
+          >
             Salir
           </button>
         </form>
       </div>
-      {session.role === "barber" && (
-        <nav
-          aria-label="Barbero"
-          className="mx-auto flex w-full max-w-md flex-wrap gap-x-2 px-4 pb-2"
-        >
-          <Link href="/app/fila" className="text-brand min-h-10 px-2 py-2 text-sm font-semibold">
-            Mi fila
-          </Link>
-          <Link
-            href="/app/clientes"
-            className="text-brand min-h-10 px-2 py-2 text-sm font-semibold"
-          >
-            Clientes
-          </Link>
-          <Link
-            href="/app/mis-numeros"
-            className="text-brand min-h-10 px-2 py-2 text-sm font-semibold"
-          >
-            Mis números
-          </Link>
-          <Link
-            href="/app/mis-fotos"
-            className="text-brand min-h-10 px-2 py-2 text-sm font-semibold"
-          >
-            Mis fotos
-          </Link>
-          <Link
-            href="/app/estacion"
-            className="text-brand min-h-10 px-2 py-2 text-sm font-semibold"
-          >
-            Mi estación
-          </Link>
-        </nav>
-      )}
     </header>
   );
 }

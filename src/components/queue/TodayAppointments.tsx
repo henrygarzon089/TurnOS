@@ -53,7 +53,7 @@ export function TodayAppointments({
               </div>
               <button
                 type="button"
-                className="btn-primary w-auto shrink-0 px-4"
+                className="btn-secondary w-auto shrink-0 px-4"
                 disabled={disabled}
                 onClick={() => onArrived(a.id)}
                 aria-label={`Llegó ${a.customerName}`}
@@ -72,7 +72,7 @@ export function TodayAppointments({
 export function AppointmentBadge({ scheduledAt }: { scheduledAt: string | null }) {
   if (!scheduledAt) return null;
   return (
-    <span className="bg-brand text-brand-ink mt-0.5 mr-1 inline-block rounded-full px-2 py-0.5 text-xs font-semibold">
+    <span className="border-ink bg-card text-ink mt-0.5 mr-1 inline-block rounded-xs border px-2 py-0.5 text-xs font-semibold">
       {appointmentTag(scheduledAt)}
     </span>
   );
