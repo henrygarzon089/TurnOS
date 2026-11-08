@@ -2688,3 +2688,83 @@ aparece.
   medido con `PerformanceObserver` sobre "Slow 4G", estado sin conexión con `context.setOffline`, y
   con `reducedMotion: 'reduce'` las transiciones no usan `transform`.
 - Revisión visual: captura de cada ruta junto al tablero en el PR (no bloquea CI).
+
+### 22.6 Barbero fiel al tablero (ADR-051, REQ-078.16…20)
+
+Comparación del 2026-11-08 contra Barbero-Fila, Barbero-Cobro y Barbero-Otros. "No se construye" =
+el tablero lo muestra y la app no tiene el dato o la función.
+
+**Marco del barbero (T-169).** Sin franja azul en el layout: cada pantalla empieza con su título
+(como el tablero). Solo Mi fila tiene franja azul marino de 56 px: nombre del barbero en negrita y su
+estado ("Disponible", "En pausa") en texto suave; a la derecha "Pausar"/"Volver" en contorno claro.
+"Salir" pasa a "Más". Menú de abajo con ícono SVG de trazo encima de cada texto (Mi fila, Clientes,
+Números, Limpieza, Más) y punto rojo en Limpieza si falta la de apertura. "Más" abre una hoja con
+Mis fotos, Mi estación, "Nueva venta" y "Salir". No se construye: "Silla N" (la app no tiene sillas).
+
+**Mi fila (T-169).** De arriba abajo:
+1. Aviso de limpieza (44 px, ámbar, solo si falta): "Falta la limpieza de apertura" · "Hacerla".
+2. Bloque del turno (110 px reservados), según el estado:
+   - Silla libre con gente: rótulo "SIGUE"; número (48 px, negrita) y nombre (20 px); debajo
+     "<servicio> · esperando hace N min". Botón principal "Llamar a <número>".
+   - Llamado: rótulo "LLAMASTE A"; borde izquierdo rojo de 4 px; número y nombre; insignia roja
+     "Llamado" y "hace N min". Botones "Empezar corte" (principal) y "No vino" (contorno).
+   - En servicio: rótulo "ATENDIENDO"; número y nombre; insignia azul marino "En servicio" y
+     "desde <hora> · N min". Botón "Terminar y cobrar" (abre el cobro).
+   - Vacío: "Nadie en tu fila por ahora" y el texto del tablero sobre "el primero libre" y el QR;
+     botón "Llamar al siguiente" deshabilitado.
+3. Cobros pendientes (si hay): una fila de 60 px "N cobros pendientes" con flecha; abre una hoja
+   con la lista y "Cobrar" en cada uno (REQ-078.18).
+4. "DESPUÉS · N MÁS": filas de 60 px a todo el ancho con divisores: número en negrita, nombre, y a
+   la derecha "Cita <hora>" en recuadro si es cita o el servicio en texto suave. Turno nuevo entra
+   al final con fondo ámbar que se desvanece (REQ-078.12). Sin el primero (ya está en "Sigue").
+   Tocar una fila abre una hoja con el turno y "Avisar por WhatsApp" (antes "📲 Avisar" en cada
+   fila; la función se queda, sin emoji).
+5. Zona del botón fija sobre el menú: 80 px (+56 px si hay "No vino"). Sin red, el botón queda
+   deshabilitado con "Sin señal no podemos avisarle. Reintentamos solos." debajo; con red, la línea
+   pequeña "Actualizado hace N s" (REQ-011.6) en el mismo lugar.
+- "Llamar a <número>" manda el id del turno: `call_next(p_barber_id, p_expected uuid default null)`
+  (migración `0069_call_expected`). Si `p_expected` no es null y el turno que tocaría es otro,
+  levanta `NOT_NEXT` sin cambiar nada; la acción muestra "Ese turno ya no es el siguiente." y relee.
+- No se construye: "7 de 10 cortes" en "Sigue" ni "le llegó el WhatsApp" (la fila no trae ese
+  dato), la nota del cliente en "Atendiendo" (no hay notas de cliente).
+
+**Cobro (T-170).** `CheckoutSheet` en pantalla completa por debajo de 640 px (hoja centrada desde
+640 px), para el barbero y para "Nueva venta" del dueño:
+- Encabezado: flecha "Volver", "Cobrar a <nombre>" y "<número> · terminó <hora>" (sin turno:
+  "Nueva venta").
+- SERVICIO: una fila "<servicio> $ <precio>" por línea (tocarla cambia el servicio en una hoja);
+  fila "Descuento" con el campo de plata a la derecha (y su motivo debajo si es > 0); interruptor
+  "Corte gratis · lleva X de 10" cuando hay premio, "Usar membresía · <familia>" cuando aplica;
+  "+ Agregar servicio" como enlace.
+- PAGO CON: fila "Tarjeta de regalo" con "Agregar" (abre el código y saldo).
+- DE LA VITRINA: solo los productos elegidos, filas de 56 px con miniatura 40×40, nombre, − n + y
+  precio; "+ Agregar producto" abre una hoja con la vitrina (categorías y lista); "¿Quién vendió?
+  <nombre>" a la derecha (tocar cambia).
+- MEDIO DE PAGO: rejilla de 3 columnas: Efectivo, Nequi, Daviplata, Transf., Tarjeta (elegido con
+  borde y fondo suave).
+- "Cobrar después" y "No se cobró" como enlaces de texto al final del contenido.
+- Pie fijo de 128 px: "Total" y la cifra (40 px), botón "Cobrar $ …" ("Guardando…" al enviar).
+- Error: recuadro con borde rojo "No quedó cobrado." y la explicación; el botón vuelve a "Cobrar".
+- No se construye: "Dividido" general (la app solo divide lo que falta de una tarjeta de regalo).
+
+**Las demás del barbero (T-171).**
+- Clientes: buscador con lupa ("Buscar por nombre o celular"); una lista a todo el ancho: nombre en
+  negrita, celular enmascarado · "hace N semanas", a la derecha "X/10" de fidelidad e insignia
+  "Familia" si tiene membresía. Los de hoy en la fila primero, sin tarjetas.
+- Detalle del cliente: "‹ Clientes", nombre y celular completo; filas Fidelidad ("X de 10 · faltan
+  N"), Cumpleaños y Membresía; "ÚLTIMOS CORTES" con fecha · servicio · barbero y precio. No se
+  construye: "Nota para el próximo".
+- Mis números: pestañas "Hoy" y "Semana" (control segmentado); "Tu comisión hoy/de la semana" en
+  grande (54 px) y "de $ X en servicios · N %"; filas Servicios, Cortes gratis dados, Productos
+  vendidos ("n · $ X") y Compras tuyas con descuento (en rojo, negativo); "POR SERVICIO" con nombre,
+  cantidad y plata; "VENTAS" (lo que hoy son tarjetas) como filas. No se construye: "Mes".
+- Mis fotos: rejilla de 3 columnas con casillas cuadradas numeradas (`aspect-ratio`), botón
+  principal fijo "Subir foto" (un `<label>` sobre un `input type=file` oculto, REQ-078.20), "N de 12"
+  y la ayuda para ordenar y borrar.
+- Limpieza: control segmentado Apertura / Cierre / Profunda; lista con casillas de 48 px; "FOTO DE LA
+  ESTACIÓN" con recuadro punteado de 150 px "Tomar foto" que se vuelve la vista previa; botón fijo
+  "Enviar (faltan N y la foto)" deshabilitado hasta completar.
+- Mi estación: filas a todo el ancho con el insumo y "1 envase · 500 ml"; la fila en ámbar "En
+  camino · Pediste reposición <hora>" cuando aplica; la ayuda "Entrega el envase vacío en la caja".
+  Reposiciones y último conteo como filas. No se construye: botón "Se acabó" (la reposición la
+  registra el dueño, REQ-071.4).

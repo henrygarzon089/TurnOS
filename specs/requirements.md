@@ -1565,6 +1565,22 @@ también al sol y con una mano.
   `system-ui`. Los íconos DEBEN ser SVG de trazo dentro del código.
 - REQ-078.15 Cada pantalla DEBE verse sin desplazamiento horizontal en 360 px, 390 px y 1280 px; "Hoy"
   y "Caja" además en 768 px con su disposición de tablet.
+- REQ-078.16 Cada pantalla DEBE seguir la estructura de su tablero: orden de los bloques, encabezado,
+  listas a todo el ancho con divisores finos y lo que es principal (ADR-051). Lo que el tablero
+  muestra y la app no hace no se construye; lo que la app hace y el tablero no muestra se conserva
+  sin quitar el lugar de lo que el tablero sí muestra.
+- REQ-078.17 CUANDO la silla del barbero está libre y hay alguien esperando, Mi fila DEBE mostrar el
+  bloque "Sigue" con el número y el nombre del próximo en grande, y el botón DEBE decir "Llamar a
+  <número>". SI al tocarlo el primero ya no es ese turno, ENTONCES EL SISTEMA NO DEBE llamar a nadie
+  y DEBE releer la fila. Llamado: "Empezar corte" y "No vino"; en servicio: "Terminar y cobrar".
+- REQ-078.18 Los cobros pendientes del barbero DEBEN verse en una sola fila "N cobros pendientes"
+  que abre la lista con "Cobrar" en cada uno; NO DEBEN mover la fila de turnos.
+- REQ-078.19 CUANDO el barbero termina un turno, el cobro DEBE abrirse en pantalla completa en el
+  celular con "Cobrar a <nombre>" y flecha para volver, el servicio en una fila con su descuento, la
+  vitrina como lista con "+ Agregar producto", los medios de pago en una rejilla de 3 columnas, y
+  el total con "Cobrar $ …" fijos abajo.
+- REQ-078.20 Ningún control DEBE mostrar texto propio del navegador (por ejemplo "Choose File"):
+  subir una foto DEBE ser un botón en español ("Subir foto", "Tomar foto").
 
 Se mantienen sin cambio: la casilla del aviso de privacidad antes de guardar datos (REQ-002), las
 pantallas públicas sin celulares (REQ-013.2) y los textos en español colombiano (NFR-006).
@@ -1578,7 +1594,7 @@ Preguntas abiertas del Hito 16:
 - **PA-H16-3**: ¿se guardan en el repo (`docs/diseno/tableros/`) capturas PNG de los 20 tableros para
   que el diseño no dependa del enlace del lienzo? **Resuelta (Henry, 2026-11-07): sí.**
 
-Fuera de alcance del Hito 16: cambiar flujos, textos de negocio o funciones; modo oscuro; logo o
+Fuera de alcance del Hito 16: cambiar flujos, textos de negocio (salvo los del barbero, ADR-051) o funciones; modo oscuro; logo o
 marca propia de TurnOS más allá del punto rojo y el nombre; ilustraciones; animaciones de celebración.
 
 ---

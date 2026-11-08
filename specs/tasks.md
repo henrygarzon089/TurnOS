@@ -2225,12 +2225,38 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   - Los `<select>` del inventario llevan `h-12`: WebKit ignora `min-height` en un select y en el
     iPhone medían menos de 48 px.
 
+### [ ] T-169 · Barbero: marco y Mi fila fieles al tablero
+- REQ: REQ-078.16, REQ-078.17, REQ-078.18 (ADR-051, design §22.6)
+- Archivos: `supabase/migrations/0069_call_expected.sql`, `supabase/tests/0069_call_expected.sql`,
+  `src/lib/actions/queue.ts` (`callNext(expectedId)`), `src/app/(staff)/layout.tsx` y
+  `src/components/staff/BarberNav.tsx` (sin franja; íconos; "Más" con Salir y Nueva venta),
+  `src/components/queue/BarberQueue.tsx`, E2E del barbero que usan los textos viejos.
+- Terminado: estados silla libre, llamado, en servicio, vacío, sin conexión y esqueleto como
+  Barbero-Fila (captura junto al tablero en el PR); "Llamar a <número>" no llama a otro; cobros
+  pendientes en una fila; textos nuevos en pruebas y en `docs/`.
+
+### [ ] T-170 · Cobro en pantalla completa como el tablero
+- REQ: REQ-078.16, REQ-078.19
+- Archivos: `src/components/cash/CheckoutSheet.tsx`, `src/components/cash/ProductShowcase.tsx`,
+  `src/components/ui/Sheet.tsx` (variante de pantalla completa), E2E de cobro y caja.
+- Terminado: cobro, corte gratis y error al guardar como Barbero-Cobro (captura en el PR); "Nueva
+  venta" del dueño con las mismas secciones; "Cobrar $ …".
+
+### [ ] T-171 · Barbero: Clientes, Mis números, Mis fotos, Limpieza y Mi estación
+- REQ: REQ-078.16, REQ-078.20
+- Archivos: `src/app/(staff)/app/{clientes,clientes/[id],mis-numeros,mis-fotos,limpieza,estacion}/*`
+  y sus componentes, E2E del barbero.
+- Terminado: cada pantalla como Barbero-Otros (captura en el PR); ningún texto del navegador en
+  inglés; `pnpm trace --hito=16` sin huecos y el hito 16 de vuelta en el loop de
+  `tests/unit/traceability.test.ts`.
+
 ### [ ] T-168 · Validación Hito 16
 - REQ: REQ-078
 - Archivos: `scripts/traceability.ts` (`HITOS["16"] = [[78, 78]]`, ya desde el PR de la spec),
   `tests/unit/traceability.test.ts` (agregar "16" al loop), `docs/estado-del-proyecto.md`
 - Depende de Henry: recorrer cliente, barbero y dueño en su celular y en el computador, y una prueba
   en la barbería (PA-H16-2); aprobación del hito (ADR nuevo).
+- Depende también de T-169…T-171 (ADR-051) y de la revisión igual de cliente, acceso y dueño.
 - Terminado: `pnpm trace --hito=16` sin huecos; CI verde; Speed Insights sin empeorar respecto al
   Hito 14 (REQ-075.3).
 - Nota (2026-11-08): `pnpm trace --hito=16` con 0 sin prueba (423 criterios en total) y el hito 16
