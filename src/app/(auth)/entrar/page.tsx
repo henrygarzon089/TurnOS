@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthCard } from "@/components/auth/AuthCard";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 export const metadata: Metadata = { title: "Entrar" };
@@ -13,10 +14,8 @@ export default async function LoginPage({
   const tab = params.rol === "dueno" ? "owner" : "barber";
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-8">
-      <h1 className="text-2xl font-bold">Entrar</h1>
-      <p className="text-muted mt-1">Solo para el personal del negocio.</p>
+    <AuthCard title="Entrar" subtitle="Solo para el personal del negocio.">
       <LoginForm initialTab={tab} volver={volver} />
-    </main>
+    </AuthCard>
   );
 }
