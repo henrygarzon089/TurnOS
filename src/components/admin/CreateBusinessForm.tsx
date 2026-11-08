@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { ErrorText, Field } from "@/components/auth/LoginForm";
+import { ErrorText } from "@/components/auth/LoginForm";
+import { Button } from "@/components/ui/Button";
+import { Field } from "@/components/ui/Field";
 import { createBusiness, type FormState } from "@/lib/actions/admin";
 
 function slugifyClient(name: string): string {
@@ -21,75 +23,51 @@ export function CreateBusinessForm({ needsAccount }: { needsAccount: boolean }) 
 
   return (
     <form action={action} className="mt-6 flex flex-col gap-4">
-      <Field label="Nombre del negocio" htmlFor="name">
-        <input
-          id="name"
-          name="name"
-          required
-          minLength={2}
-          maxLength={80}
-          className="input"
-          placeholder="Barbería La 33"
-          onChange={(e) => {
-            if (!slugTouched) setSlug(slugifyClient(e.target.value));
-          }}
-        />
-      </Field>
-      <Field label="Enlace de la fila" htmlFor="slug">
-        <div className="flex items-center gap-1">
-          <span className="text-muted text-sm">/</span>
-          <input
-            id="slug"
-            name="slug"
-            required
-            pattern="[a-z0-9-]{3,40}"
-            className="input"
-            value={slug}
-            onChange={(e) => {
-              setSlugTouched(true);
-              setSlug(e.target.value.toLowerCase());
-            }}
-          />
-        </div>
-        <span className="text-muted text-xs">
-          Así quedará el QR: tu-dominio/{slug || "mi-negocio"}
-        </span>
-      </Field>
-      <Field label="Dirección (opcional)" htmlFor="address">
-        <input id="address" name="address" maxLength={200} className="input" />
-      </Field>
+      <Field
+        label="Nombre del negocio"
+        name="name"
+        required
+        minLength={2}
+        maxLength={80}
+        placeholder="Barbería La 33"
+        onChange={(e) => {
+          if (!slugTouched) setSlug(slugifyClient(e.target.value));
+        }}
+      />
+      <Field
+        label="Enlace de la fila"
+        name="slug"
+        prefix="/"
+        required
+        pattern="[a-z0-9-]{3,40}"
+        value={slug}
+        hint={`Así quedará el QR: tu-dominio/${slug || "mi-negocio"}`}
+        onChange={(e) => {
+          setSlugTouched(true);
+          setSlug(e.target.value.toLowerCase());
+        }}
+      />
+      <Field label="Dirección (opcional)" name="address" maxLength={200} />
 
       {needsAccount && (
         <fieldset className="border-line mt-2 flex flex-col gap-4 rounded-md border p-4">
           <legend className="px-1 text-sm font-semibold">Tu cuenta de dueño</legend>
-          <Field label="Correo" htmlFor="email">
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              className="input"
-            />
-          </Field>
-          <Field label="Contraseña (mínimo 8)" htmlFor="password">
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              minLength={8}
-              required
-              className="input"
-            />
-          </Field>
+          <Field label="Correo" name="email" type="email" autoComplete="email" required />
+          <Field
+            label="Contraseña (mínimo 8)"
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            minLength={8}
+            required
+          />
         </fieldset>
       )}
 
       {state?.error && <ErrorText>{state.error}</ErrorText>}
-      <button type="submit" className="btn-primary" disabled={pending}>
-        {pending ? "Creando…" : "Crear negocio"}
-      </button>
+      <Button type="submit" className="mt-2 w-full" pending={pending}>
+        Crear negocio
+      </Button>
     </form>
   );
 }

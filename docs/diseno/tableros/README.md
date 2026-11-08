@@ -28,5 +28,6 @@ visual (versión 22 del lienzo). Son la referencia de `specs/design.md` §22 si 
 | `Dueno-Local.png`        | Limpieza, productos, inventario                                                            | T-167       |
 | `Dueno-Config.png`       | Barberos, servicios, horario, QR, mensajes, negocio, privacidad                            | T-167       |
 
-Los datos de los tableros son de ejemplo (Barbería La 33 del seed). Donde dice `[NOMBRE DEL NEGOCIO]`,
+Los datos de los tableros son de ejemplo (Barbería La 33 del seed). Donde un tablero muestra un celular
+en lista como `300 *** 0001`, la app usa `maskPhone`: `••• ••• 0001` (REQ-078.6, Henry 2026-11-07). Donde dice `[NOMBRE DEL NEGOCIO]`,
 `[DIRECCIÓN DEL LOCAL]` o `[ENLACE DE GOOGLE]` va el dato real del negocio.

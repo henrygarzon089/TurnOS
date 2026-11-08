@@ -217,7 +217,7 @@ test.describe("REQ-023 panel de cobro", () => {
         )
         .toBe(true);
       const sheet = await sheetPromise;
-      await sheet.getByRole("button", { name: "🎁 Aplicar premio" }).click();
+      await sheet.getByRole("button", { name: "Aplicar premio" }).click();
       await expect(sheet.getByTestId("checkout-total")).toHaveText("$ 0");
       await expect(sheet.getByRole("radiogroup", { name: "Medio de pago" })).toHaveCount(0);
       await sheet.getByRole("button", { name: "Registrar $ 0" }).click();

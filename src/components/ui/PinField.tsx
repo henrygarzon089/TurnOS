@@ -16,8 +16,11 @@ export function PinField({
   hint,
   length = 6,
   disabled,
+  name,
 }: {
   label: string;
+  /** Nombre del campo en un `<form action>`; sin él, el PIN solo vive en el estado. */
+  name?: string;
   value: string;
   onChange: (value: string) => void;
   error?: string;
@@ -46,15 +49,16 @@ export function PinField({
             return (
               <span
                 key={i}
-                className={`bg-card text-ink flex h-12 w-11 items-center justify-center rounded-sm border text-2xl leading-none ${border}`}
+                className={`bg-card text-ink flex h-12 w-11 items-center justify-center rounded-sm border text-base leading-none ${border}`}
               >
-                {filled ? "•" : ""}
+                {filled ? "●" : ""}
               </span>
             );
           })}
         </div>
         <input
           id={id}
+          name={name}
           type="password"
           inputMode="numeric"
           autoComplete="off"
@@ -71,7 +75,11 @@ export function PinField({
         />
       </div>
       {error ? (
-        <p id={`${id}-msg`} className="text-danger flex items-center gap-1.5 text-sm font-medium">
+        <p
+          id={`${id}-msg`}
+          role="alert"
+          className="text-danger flex items-center gap-1.5 text-sm font-medium"
+        >
           <Icon name="error" className="size-4" />
           {error}
         </p>

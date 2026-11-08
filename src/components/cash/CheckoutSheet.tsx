@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { ErrorText } from "@/components/auth/LoginForm";
 import {
   findCheckoutCustomer,
@@ -18,6 +19,15 @@ import { giftCardSplit, normalizeGiftCardCode } from "@/lib/domain/giftCard";
 import { membershipCheckoutLine, membershipLineKey } from "@/lib/domain/membership";
 import { formatCOP, parseCOP } from "@/lib/domain/money";
 import { saleParties, type Seller } from "@/lib/domain/showcase";
+
+/**
+ * Interruptor del cobro (tablero Barbero-Cobro): sigue siendo una casilla para el lector de
+ * pantalla y las pruebas; se ve como interruptor y se mueve en 150 ms (REQ-078.13).
+ */
+const SWITCH =
+  "relative h-7 w-12 shrink-0 cursor-pointer appearance-none rounded-full bg-line-strong transition-colors duration-150 checked:bg-brand before:absolute before:top-0.5 before:left-0.5 before:size-6 before:rounded-full before:bg-card before:transition-transform before:duration-150 checked:before:translate-x-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand motion-reduce:before:transition-none";
+/** Encabezado de sección del cobro: "SERVICIO", "MEDIO DE PAGO". */
+const SECTION = "text-muted text-xs font-semibold tracking-wide uppercase";
 
 const METHODS: { id: PaymentMethod; label: string }[] = [
   { id: "cash", label: "Efectivo" },
@@ -315,7 +325,13 @@ export function CheckoutSheet({
         <>
           <p className="flex items-baseline justify-between gap-3">
             <span className="text-muted">Total</span>
-            <span className="text-3xl font-bold tabular-nums">{formatCOP(total)}</span>
+            <span
+              className="text-[40px] leading-tight font-bold tabular-nums"
+              aria-live="polite"
+              data-testid="checkout-total"
+            >
+              {formatCOP(total)}
+            </span>
           </p>
           <button
             type="button"
@@ -336,10 +352,11 @@ export function CheckoutSheet({
       )}
 
       {!view.ticket && view.isOwner && view.staffDiscountPct > 0 && (
-        <label className="flex min-h-12 items-center gap-2 text-sm font-semibold">
+        <label className="flex min-h-12 items-center justify-between gap-3 text-base font-semibold">
+          Compra de un barbero (−{view.staffDiscountPct} %)
           <input
             type="checkbox"
-            className="h-5 w-5"
+            className={SWITCH}
             checked={staffPurchase}
             onChange={(e) => {
               setStaffPurchase(e.target.checked);
@@ -349,7 +366,6 @@ export function CheckoutSheet({
               setPhone("");
             }}
           />
-          Compra de un barbero (−{view.staffDiscountPct} %)
         </label>
       )}
 
@@ -359,9 +375,7 @@ export function CheckoutSheet({
           aria-label={staffPurchase ? "¿Qué barbero compra?" : "¿Quién vendió?"}
           className="flex flex-col gap-2"
         >
-          <p className="text-sm font-semibold">
-            {staffPurchase ? "¿Qué barbero compra?" : "¿Quién vendió?"}
-          </p>
+          <p className={SECTION}>{staffPurchase ? "¿Qué barbero compra?" : "¿Quién vendió?"}</p>
           <div className="grid grid-cols-2 gap-2">
             {[
               ...view.barbers.map((b) => ({
@@ -436,6 +450,7 @@ export function CheckoutSheet({
 
       {!staffPurchase && (
         <section aria-label="Servicios" className="flex flex-col gap-2">
+          <h3 className={SECTION}>{services.length > 1 ? "Servicios" : "Servicio"}</h3>
           {services.map((l) => (
             <div key={l.key} className="border-line rounded-md border p-3">
               <div className="flex items-center justify-between gap-2">
@@ -479,17 +494,17 @@ export function CheckoutSheet({
                 )}
               </div>
               {membership && countsFor(l) && (memberKey === null || memberKey === l.key) && (
-                <label className="mt-2 flex min-h-12 items-center gap-2 text-sm font-semibold">
+                <label className="mt-2 flex min-h-12 items-center justify-between gap-3 text-base font-semibold">
+                  Usar membresía
                   <input
                     type="checkbox"
-                    className="h-5 w-5"
+                    className={SWITCH}
                     checked={memberKey === l.key}
                     onChange={(e) => {
                       setMemberChoice(e.target.checked ? l.key : null);
                       if (e.target.checked) update(l.key, { discount: 0, reason: "" });
                     }}
                   />
-                  Usar membresía
                 </label>
               )}
               {memberLine(l) && (
@@ -499,7 +514,7 @@ export function CheckoutSheet({
               )}
               {rewardOn(l) && (
                 <p className="text-ok mt-1 text-sm font-semibold">
-                  🎁 Premio aplicado: −{formatCOP(rewardValue(l))}
+                  Premio aplicado: −{formatCOP(rewardValue(l))}
                 </p>
               )}
               {view.isOwner && !rewardOn(l) && !memberLine(l) && (
@@ -574,7 +589,7 @@ export function CheckoutSheet({
               className="btn-secondary"
               onClick={() => update(rewardLine.key, { isReward: true, discount: 0, reason: "" })}
             >
-              🎁 Aplicar premio
+              Aplicar premio
             </button>
           ) : (
             <p className="text-sm">
@@ -603,10 +618,7 @@ export function CheckoutSheet({
         </p>
       )}
 
-      <p className="text-center text-3xl font-bold" aria-live="polite" data-testid="checkout-total">
-        {formatCOP(total)}
-      </p>
-
+      {total > 0 && <h3 className={SECTION}>Medio de pago</h3>}
       {total > 0 && (
         <div role="radiogroup" aria-label="Medio de pago" className="grid grid-cols-2 gap-2">
           {[...METHODS, { id: "gift_card" as const, label: "Tarjeta de regalo" }].map((m) => (
@@ -765,7 +777,8 @@ function Sheet({
   title: string;
   footer?: React.ReactNode;
 }) {
-  return (
+  // En `body`: abierta desde una barra fija (caja, "Hoy") quedaría bajo el menú del dueño
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
@@ -781,6 +794,7 @@ function Sheet({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

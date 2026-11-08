@@ -2070,18 +2070,66 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   - Esqueleto de Mi fila con el botón reservado; píldoras fuera (cortesía, membresía, cita,
     categorías). `primaryButtons` de las pruebas visuales cuenta solo la hoja si hay una abierta.
 
-### [ ] T-164 · Acceso
+### [x] T-164 · Acceso
 - REQ: REQ-078.7, REQ-078.9, REQ-078.15
 - Archivos: `src/app/(auth)/**`, `src/components/auth/*`, `tests/e2e/visual-acceso.spec.ts`
 - Terminado: PIN con 6 casillas y teclado numérico, nunca dígitos; error "Ese PIN no es" con
   intentos; invitación y crear negocio como su tablero; tarjeta centrada en escritorio.
+- Nota (2026-11-07):
+  - `AuthCard`: marca "TurnOS" en texto con punto azul marino (el tablero lo pone rojo, pero el
+    rojo es solo para "atención ahora" y `lint:design` lo prohíbe), y en escritorio una tarjeta
+    centrada sobre el fondo.
+  - Pestañas con subrayado, sin relleno: "Entrar" es el único principal.
+  - Entrar del barbero: `PhoneField` con +57 y `PinField` de 6 casillas con "●" (el "•" se veía
+    diminuto con `system-ui`). `PinField` recibe `name` para ir en el formulario y su error tiene
+    `role="alert"`.
+  - Invitación: dos `PinField`. Al guardar, "Guardando…" (antes "Creando acceso…"), sin doble envío.
+  - Crear negocio: pasos 1 y 3 con `Field` y `Button` ("Guardando…", antes "Creando…"). El paso 2
+    usa `HoursForm`, que es de T-167 (horario del dueño), y queda como está.
+  - Se quedan los textos de la app, no los del tablero ("Soy barbero" primero, "Celular", "PIN (6
+    números)", "Repite el PIN", "Crear mi acceso", "¿Nuevo negocio? Crear mi cuenta").
+  - No se hizo (necesita cambios de flujo o servidor, fuera de ADR-047): el teclado numérico
+    propio, entrar solo al completar los 6, "Te quedan N intentos" (el servidor no cuenta
+    intentos), "Mostrar" la contraseña, "Olvidé mi contraseña" y la revisión del enlace libre.
+    El error sigue siendo "Celular o PIN incorrectos.", ahora bajo las casillas en rojo.
 
-### [ ] T-165 · Dueño: fila y caja
+### [x] T-165 · Dueño: fila y caja
 - REQ: REQ-078.3, REQ-078.6, REQ-078.12, REQ-078.15
 - Archivos: `src/app/(staff)/admin/{fila,caja}/**`, `src/components/{queue,cash}/*` del dueño,
   `tests/e2e/visual-dueno-fila-caja.spec.ts`
 - Terminado: fila por carriles en escritorio y lista en el celular con celulares enmascarados; caja
   en 390, 768 y 1280 px; anular y cerrar caja con hoja de confirmación; venta nueva con resaltado.
+- Hecho (2026-11-07). Notas y desvíos (ADR-047: la app manda donde el tablero muestra otra cosa):
+  - Fila: desde 1024 px un carril por barbero presente (o con turnos) y "El primero libre"
+    (`region` "Carril de …"); en el celular una sola lista en el orden de la fila. Es el mismo
+    DOM: los carriles usan `display: contents` y cada turno su `order`, así no hay dos copias.
+    No se construyen las pestañas por barbero del celular, arrastrar para reordenar ni el menú
+    flotante "⋯": las acciones siguen abriéndose debajo del turno (Subir/Bajar, Llamar con,
+    reasignar), como antes. La fila de presentes ("Juan · Disponible") se queda, sin píldoras.
+  - Celular en la fila con `maskPhone` (`300 *** 0001`); `maskPhone` cambia de `••• ••• 4567` a
+    ese formato (mismo cuerpo que T-166, prueba unitaria REQ-078.6).
+  - Estado del turno con `StatusChip` ("En espera" en vez de "Esperando"; `owner-queue` ajustado).
+  - "Cancelar turno" y "Cerrar fila por hoy" con hoja (`Sheet`) en vez de `window.confirm`
+    ("Sí, cancelar turno" / "No, dejarlo"; "Sí, cerrar la fila" / "No, dejarla abierta"); las E2E
+    que aceptaban el `confirm` tocan el botón de la hoja. "Agregar cliente" también es `Sheet`.
+  - Un solo principal: "Agregar cliente" en la fila; "Cobrar" de cobros pendientes y "Llegó" de
+    las citas (también en la fila del barbero) pasan a contorno.
+  - Caja: celular en una columna con "Cerrar caja" y "+ Nueva venta" fijos sobre el menú; 768 px
+    con resumen y barberos a la izquierda y ventas a la derecha (`data-tablet` en el layout del
+    personal ensancha a `max-w-3xl`); desde 1024 px franja de totales arriba, ventas a la
+    izquierda, barberos a la derecha y acciones junto al título. Ventas como lista (no tabla) en
+    todos los tamaños; no se construyen buscador ni filtros (no existen). "Liquidación semanal"
+    enlaza a `/admin/semana`; "Cierres anteriores" baja a la lista de cierres.
+  - Cerrar caja: hoja con "Efectivo que debería haber", el campo `MoneyField`, la diferencia
+    siempre presente ("Cuadra" / "Faltan $ …" / "Sobran $ …") y lo que no es efectivo; se quedan
+    "Confirmar cierre" y el título "Cerrar caja" (`close-cash` ajustado a la diferencia en
+    palabras). Reabrir en contorno rojo con el motivo en una hoja. Anular venta con `Sheet`.
+  - Venta nueva por tiempo real entra arriba con `FlashRow` (1,2 s); el aviso de "Venta
+    registrada" flota sobre la barra fija (`Toast`, también en "Hoy").
+  - Resto del cobro (`CheckoutSheet`): encabezados de sección (Servicio, Productos, Medio de
+    pago), "Compra de un barbero" y "Usar membresía" como interruptores (siguen siendo casillas
+    para el lector y las pruebas), un solo total de 40 px abajo (se quitó el total repetido del
+    medio) y sin emojis en el premio ("Aplicar premio").
 
 ### [x] T-166 · Dueño: operación y clientes
 - REQ: REQ-078.3, REQ-078.6, REQ-078.11

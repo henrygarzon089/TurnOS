@@ -37,7 +37,7 @@ export function ProductShowcase({
 
   return (
     <section aria-label="Productos" className="flex flex-col gap-2">
-      <p className="text-sm font-semibold">Productos</p>
+      <h3 className="text-muted text-xs font-semibold tracking-wide uppercase">Productos</h3>
       {categories.length > 0 && (
         <div role="tablist" aria-label="Categorías" className="flex gap-2 overflow-x-auto pb-1">
           {[null, ...categories].map((c) => (

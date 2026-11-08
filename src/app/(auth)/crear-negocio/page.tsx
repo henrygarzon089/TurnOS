@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { HoursForm } from "@/components/admin/HoursForm";
 import { CreateBusinessForm } from "@/components/admin/CreateBusinessForm";
 import { InitialServicesForm } from "@/components/admin/InitialServicesForm";
+import { AuthCard } from "@/components/auth/AuthCard";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -32,34 +33,37 @@ export default async function CreateBusinessPage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  const eyebrow = <p className="text-muted text-sm font-medium">Paso {paso} de 3</p>;
+  if (paso === 2 && session) {
+    return (
+      <AuthCard
+        eyebrow={eyebrow}
+        title={`Horario de ${session.business.name}`}
+        subtitle="Puedes cambiarlo después en Administración."
+      >
+        <HoursForm
+          hours={await loadHours(session.business.id)}
+          next="/crear-negocio?paso=3"
+          submitLabel="Siguiente"
+        />
+      </AuthCard>
+    );
+  }
+  if (paso === 3 && session) {
+    return (
+      <AuthCard
+        eyebrow={eyebrow}
+        title="Tus servicios"
+        subtitle="Nombre, duración y precio. Luego podrás agregar más."
+      >
+        <InitialServicesForm />
+      </AuthCard>
+    );
+  }
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-8">
-      <p className="text-muted text-sm font-medium">Paso {paso} de 3</p>
-      {paso === 1 && (
-        <>
-          <h1 className="text-2xl font-bold">Crear mi negocio</h1>
-          <CreateBusinessForm needsAccount={!user} />
-        </>
-      )}
-      {paso === 2 && session && (
-        <>
-          <h1 className="text-2xl font-bold">Horario de {session.business.name}</h1>
-          <p className="text-muted mt-1">Puedes cambiarlo después en Administración.</p>
-          <HoursForm
-            hours={await loadHours(session.business.id)}
-            next="/crear-negocio?paso=3"
-            submitLabel="Siguiente"
-          />
-        </>
-      )}
-      {paso === 3 && session && (
-        <>
-          <h1 className="text-2xl font-bold">Tus servicios</h1>
-          <p className="text-muted mt-1">Nombre, duración y precio. Luego podrás agregar más.</p>
-          <InitialServicesForm />
-        </>
-      )}
-    </main>
+    <AuthCard eyebrow={eyebrow} title="Crear mi negocio">
+      <CreateBusinessForm needsAccount={!user} />
+    </AuthCard>
   );
 }
 
