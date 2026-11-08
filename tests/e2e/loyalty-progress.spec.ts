@@ -154,9 +154,9 @@ test.describe("REQ-019 progreso y premio de fidelidad", () => {
       // Limpieza: cancelar el turno 3
       await owner.goto("/admin/fila");
       const row = activeRow(owner, name);
-      owner.once("dialog", (d) => d.accept());
       await row.getByRole("button", { name: new RegExp(name) }).click();
       await row.getByRole("button", { name: "Cancelar turno" }).click();
+      await owner.getByRole("button", { name: "Sí, cancelar turno" }).click();
       await expect(row).toBeHidden({ timeout: 15_000 });
     } finally {
       await setVisits(owner, 10).catch(() => {});

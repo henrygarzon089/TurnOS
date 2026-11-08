@@ -48,14 +48,17 @@ test.describe("REQ-054 Agenda del dueño", () => {
         /^https:\/\/wa\.me\//,
       );
 
-      const row = page.getByRole("listitem", { name: `Cita de ${name}` });
+      // T-166: la agenda muestra el día de la cita nueva; tocarla abre su hoja
+      await page.getByRole("button", { name: `Cita de ${name}` }).click();
+      const row = page.getByRole("dialog", { name: `Cita de ${name}` });
       await expect(row).toContainText("con Juan");
       await row.getByLabel(`Pasar la cita de ${name} a`).selectOption({ label: "Pedro" });
       await row.getByRole("button", { name: "Pasar" }).click();
       await expect(row).toContainText("con Pedro", { timeout: 15_000 });
 
-      page.once("dialog", (d) => d.accept());
-      await row.getByRole("button", { name: "Cancelar" }).click();
+      // REQ-078.3 cancelar pide confirmación
+      await row.getByRole("button", { name: "Cancelar cita" }).click();
+      await row.getByRole("button", { name: "Sí, cancelar la cita" }).click();
       await expect(row).toContainText("Cancelada", { timeout: 15_000 });
       await expect(row.getByRole("link", { name: "Avisarle por WhatsApp" })).toHaveAttribute(
         "href",

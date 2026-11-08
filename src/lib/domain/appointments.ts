@@ -115,6 +115,41 @@ export function groupAgendaByDay<T extends AgendaLike>(
   return bookingDays(today).map((day) => ({ day, items: items.filter((i) => i.day === day) }));
 }
 
+type GridItem = { barberId: string; barberName: string; startsAt: string };
+
+/**
+ * REQ-054.1 agenda de un día como el tablero Dueno-Operacion: en escritorio, una columna por
+ * barbero (los que reciben citas y los que tengan alguna ese día) y una fila por hora de inicio;
+ * en el celular, agrupada por barbero, solo los que tienen citas.
+ */
+export function agendaGrid<T extends GridItem>(
+  items: T[],
+  barbers: { id: string; name: string }[],
+): {
+  columns: { id: string; name: string }[];
+  rows: { startsAt: string; cells: T[][] }[];
+  byBarber: { id: string; name: string; items: T[] }[];
+} {
+  const columns = [...barbers];
+  for (const i of items)
+    if (!columns.some((c) => c.id === i.barberId))
+      columns.push({ id: i.barberId, name: i.barberName });
+  const sorted = [...items].sort((x, y) => x.startsAt.localeCompare(y.startsAt));
+  const starts = [...new Set(sorted.map((i) => i.startsAt))];
+  return {
+    columns,
+    rows: starts.map((startsAt) => ({
+      startsAt,
+      cells: columns.map((c) =>
+        sorted.filter((i) => i.startsAt === startsAt && i.barberId === c.id),
+      ),
+    })),
+    byBarber: columns
+      .map((c) => ({ ...c, items: sorted.filter((i) => i.barberId === c.id) }))
+      .filter((b) => b.items.length > 0),
+  };
+}
+
 /** REQ-054.3: las pendientes de mañana, para recordarlas por WhatsApp. */
 export function tomorrowReminders<T extends AgendaLike>(items: T[], today: string): T[] {
   const tomorrow = addDays(today, 1);

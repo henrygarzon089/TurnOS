@@ -450,6 +450,27 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   los botones sin cambio. Prueba desde el celular: entrar como barbero, llamar, "Ya está en la
   silla", "Terminado" y ver el cobro; con modo avión, "Llamar al siguiente" deshabilitado.
   Siguiente: T-164 (acceso).
+- T-164 hecha (rama `claude/t-164-acceso`, encima de T-163, 2026-11-07): acceso con el sistema
+  visual. Entrar, invitación y crear negocio en una tarjeta centrada en escritorio; PIN en 6
+  casillas con puntos y teclado numérico; "Guardando…" sin doble envío. Textos sin cambio.
+  Prueba desde el celular: abrir /entrar, escribir el celular y un PIN equivocado: se ven seis
+  puntos y el error en rojo debajo; en el computador, /entrar?rol=dueno sale centrado.
+  T-165, T-166 y T-167 van en sesiones paralelas, cada una con su PR sobre T-163.
+- T-165 hecha (rama `claude/t-165-dueno-fila-caja`, encima de T-163, 2026-11-07): fila y caja del
+  dueño. Fila por carriles (uno por barbero y "El primero libre") en escritorio y lista en el
+  celular, con el celular enmascarado (`300 *** 0001`); cancelar turno y cerrar la fila con hoja de
+  confirmación. Caja en 390, 768 y 1280 px con "Cerrar caja" y "Nueva venta" a mano, hoja de
+  cierre con la diferencia en palabras ("Cuadra", "Faltan $ …"), anular y reabrir con hoja, y la
+  venta nueva resaltada. El resto del cobro con secciones e interruptores. Detalle en `tasks.md`.
+  Prueba desde el celular: entrar como dueño, abrir **Fila**, tocar un turno → "Cancelar turno"
+  → "No, dejarlo"; abrir **Caja**, "Cerrar caja", escribir el efectivo y ver "Cuadra" o "Faltan",
+  "Todavía no"; con otro celular registrar una venta y verla entrar resaltada.
+- T-166 hecha (rama `claude/t-166-dueno-modulos`, encima de T-163, 2026-11-07): citas, semana,
+  fidelidad, recordar, membresías y tarjetas de regalo con el sistema visual nuevo. Agenda de un
+  día con rejilla por barbero, hojas para cancelar cita, quitar de la familia, cobrar cuota y
+  vender tarjeta; celulares enmascarados `300 *** 0001` (REQ-078.6, ya con prueba). Prueba desde
+  el celular: entrar como dueño, abrir Citas (encenderlas si están apagadas), tocar una cita y
+  "Cancelar cita"; en Membresías, "Nueva familia" y ver el celular con asteriscos.
 - T-167 hecha (rama `claude/t-167-local-config`, encima de T-163, 2026-11-07): local y
   configuración del dueño. Encabezado y pestañas nuevos en Limpieza e Inventario; Servicios,
   Productos y Barberos como tabla (escritorio) o lista (celular) con "Editar" que abre una hoja;

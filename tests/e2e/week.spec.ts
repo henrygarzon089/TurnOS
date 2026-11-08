@@ -47,13 +47,13 @@ test("REQ-028.1 selector de semana y REQ-028.3 comparación con la semana anteri
   );
   await expect(page.getByTestId("lost")).toContainText(`${cur.lostTickets} turno`);
   // Semana actual: no se puede ir al futuro
-  await expect(page.getByRole("link", { name: "Siguiente →" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Semana siguiente" })).toHaveCount(0);
 
   const label0 = await page.getByTestId("week-label").textContent();
-  await page.getByRole("link", { name: "← Anterior" }).click();
+  await page.getByRole("link", { name: "Semana anterior" }).click();
   await expect(page).toHaveURL(new RegExp(`semana=${prev.weekStart}`));
   await expect(page.getByTestId("week-label")).not.toHaveText(label0!);
   await expect(page.getByTestId("services")).toContainText(String(prev.services));
-  await page.getByRole("link", { name: "Siguiente →" }).click();
+  await page.getByRole("link", { name: "Semana siguiente" }).click();
   await expect(page.getByTestId("week-label")).toHaveText(label0!);
 });
