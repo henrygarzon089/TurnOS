@@ -2090,12 +2090,51 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: como los tableros Dueno-Operacion y Dueno-Clientes; listas con `maskPhone`; vacíos con
   qué hacer.
 
-### [ ] T-167 · Dueño: local y configuración
+### [x] T-167 · Dueño: local y configuración
 - REQ: REQ-078.3, REQ-078.6, REQ-078.11
 - Archivos: `src/app/(staff)/admin/{limpieza,productos,inventario,barberos,servicios,horario,qr,mensajes,negocio,privacidad}/**`
   y sus componentes, E2E en `visual-dueno-modulos.spec.ts`
 - Terminado: como los tableros Dueno-Local y Dueno-Config; cambiar el % de un barbero y borrar datos
   de un cliente piden confirmación; celulares de barberos enmascarados en la tabla.
+- Hecho (2026-11-07). Notas y desvíos (ADR-047: la app manda donde el tablero muestra otra cosa):
+  - E2E en `tests/e2e/visual-dueno-config.spec.ts` y no en `visual-dueno-modulos.spec.ts`: T-166
+    usa ese archivo al mismo tiempo. Mide en 390 y 1280 px un solo botón principal, botones ≥ 48 px
+    y ninguna píldora ni acción en rojo relleno en las 14 rutas.
+  - Piezas nuevas: `admin/PageHeader.tsx` (`PageHeader`, `Panel`), `admin/SectionTabs.tsx`
+    (pestañas con raya, reemplazan las píldoras de Limpieza e Inventario), `admin/RetryError.tsx`
+    (error con "Intentar de nuevo") y `admin/CatalogLists.tsx` (filas de servicios y tarjetas de
+    productos con "Editar" en una hoja `Sheet`).
+  - Servicios, Productos y Barberos: la edición pasa de formularios en línea a una hoja con
+    "Editar"; "Nuevo servicio", "Nuevo producto" y "Nuevo barbero" abren su hoja y son el único
+    botón principal. Mismos campos, textos y acciones. Las E2E que llenaban esos formularios
+    (`admin-config`, `pos-settings`, `menu-courtesy`, `services-by-barber`, `barber-photos`) ahora
+    tocan "Editar" o "Nuevo …" primero; la lista de servicios de un barbero ya no dice "Hace:" (la
+    columna se llama "Servicios que hace").
+    "Activar"/"Desactivar" cierra la hoja: la fila cambia de puesto (activos primero) y un
+    `<dialog>` abierto que el navegador mueve de lugar se pierde.
+  - Barberos: celular con `maskPhone` en la fila (el número completo solo en el campo de editar).
+    Un % distinto pregunta "¿Cambiar la parte de X de 60 % a 55 %?" con "Sí, cambiar a 55 %" / "No,
+    dejar 60 %"; el texto dice que lo ya cobrado se queda al % anterior (la venta guarda su %).
+    "Retirar…" en contorno rojo pregunta en la misma hoja (antes `window.confirm`). Las fotos de
+    cortes y "Nuevo PIN" quedan dentro de la hoja; "Hoy" sigue en la fila.
+  - Borrar los datos de un cliente vive en su ficha (`DeleteCustomer`, REQ-018.6), no en
+    Privacidad: pasa a la hoja `Sheet` con "Sí, eliminar sus datos" en contorno rojo. La tabla de
+    solicitudes del tablero no existe en la app y no se construye; Privacidad dice dónde se hace y
+    lleva a Clientes.
+  - Productos: filtro por categoría (`?categoria=`) con vacío que dice qué hacer y "Comisión de
+    productos: N % · Cambiar" (lleva a Negocio). No se construyen: existencias de vitrina en la
+    tarjeta ("quedan 2"), logo del negocio, estado de plantillas de Meta en Mensajes ni el
+    interruptor "Visible al público" (sigue "Activar/Desactivar" en la hoja).
+  - Limpieza: la pestaña "Revisión" sigue siendo la revisión del dueño con su lista (no la lista
+    de fotos por aprobar del tablero) y no se cuentan pendientes en la pestaña.
+  - Negocio: cada bloque en su tarjeta; solo "Guardar" de los datos del negocio va relleno; reseña,
+    avisos y alerta de inventario en contorno. Inventario: "Reponer", "Entrada a bodega" y
+    "Transferir" van rellenos (uno a la vez); rendimiento sugerido y edición de ítems en contorno.
+  - `HoursForm` también lo usa crear negocio (T-164): solo cambió el diseño de las filas.
+  - `CleaningToday` (también en /app/limpieza del barbero): solo la primera limpieza que falta va
+    rellena, las demás en contorno (con apertura, cierre y profunda pendientes había tres).
+  - Los `<select>` del inventario llevan `h-12`: WebKit ignora `min-height` en un select y en el
+    iPhone medían menos de 48 px.
 
 ### [ ] T-168 · Validación Hito 16
 - REQ: REQ-078

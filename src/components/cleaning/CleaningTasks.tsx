@@ -302,7 +302,7 @@ function TaskCard({ task, businessId }: { task: CleaningTask; businessId: string
               {r.attachmentPath && (
                 <button
                   type="button"
-                  className="text-brand min-h-10 px-2 font-semibold"
+                  className="text-brand min-h-12 px-2 font-semibold underline underline-offset-4"
                   onClick={() => void openAttachment(r.attachmentPath!)}
                 >
                   Ver adjunto

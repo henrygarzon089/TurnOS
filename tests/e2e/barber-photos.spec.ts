@@ -179,6 +179,7 @@ test.describe("T-062 fotos de cortes", () => {
     await loginAsOwner(page);
     await page.goto("/admin/barberos");
     const card = page.getByRole("article", { name: "Barbero Pedro" });
+    await card.getByRole("button", { name: "Editar" }).click();
     await card.getByText("Fotos de cortes").click();
     await card.getByLabel("Escoger foto").setInputFiles(photo);
     await card.getByRole("checkbox", { name: CONSENT }).check();

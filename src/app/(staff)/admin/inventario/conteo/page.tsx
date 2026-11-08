@@ -52,7 +52,6 @@ export default async function InventoryCountPage({
 
   return (
     <main className="pb-6">
-      <h1 className="text-2xl font-bold">Inventario</h1>
       <InventoryNav current="/admin/inventario/conteo" />
 
       <p className="text-muted mt-4 text-sm">
@@ -65,8 +64,10 @@ export default async function InventoryCountPage({
             key={l.id}
             href={`/admin/inventario/conteo?sitio=${l.id}`}
             aria-current={loc?.id === l.id ? "page" : undefined}
-            className={`flex min-h-12 items-center justify-center rounded-md border px-2 text-center text-sm font-semibold ${
-              loc?.id === l.id ? "bg-ink text-card border-ink" : "border-line bg-card"
+            className={`flex min-h-12 items-center justify-center rounded-sm px-2 text-center text-base ${
+              loc?.id === l.id
+                ? "border-brand bg-brand-soft text-ink border-2 font-bold"
+                : "border-line-strong bg-card text-ink border font-semibold"
             }`}
           >
             {locationName(l)}
@@ -74,8 +75,11 @@ export default async function InventoryCountPage({
         ))}
       </nav>
 
+      {!loc && locations.length > 0 && (
+        <p className="text-muted mt-4 text-base">Escoge arriba qué sitio vas a contar.</p>
+      )}
       {loc && !counted && (
-        <p className="border-line bg-card mt-4 rounded-md border p-3 text-sm">
+        <p className="bg-brand-soft mt-4 rounded-md p-3 text-base">
           Es el conteo inicial de este sitio: lo que cuentes queda como punto de partida.
         </p>
       )}

@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ErrorText } from "@/components/auth/LoginForm";
+import { EmptyState } from "@/components/ui/States";
 import {
   acceptYield,
   addBasicTemplate,
@@ -39,6 +40,7 @@ function ActionForm({
   done,
   children,
   resetOnDone = true,
+  primary = false,
   className = "border-line bg-card flex flex-col gap-3 rounded-md border p-4",
 }: {
   action: (prev: ActionResult, fd: FormData) => Promise<ActionResult>;
@@ -48,6 +50,8 @@ function ActionForm({
   done: string;
   children: React.ReactNode;
   resetOnDone?: boolean;
+  /** La acción principal de la pantalla va rellena; las demás en contorno (REQ-078.4). */
+  primary?: boolean;
   className?: string;
 }) {
   const router = useRouter();
@@ -77,7 +81,11 @@ function ActionForm({
           {done}
         </p>
       )}
-      <button type="submit" className="btn-primary" disabled={pending}>
+      <button
+        type="submit"
+        className={primary ? "btn-primary" : "btn-secondary"}
+        disabled={pending}
+      >
         {pending ? pendingText : submit}
       </button>
     </form>
@@ -97,14 +105,14 @@ function Field({
     <label className="flex flex-col gap-1 text-sm font-medium">
       {label}
       {children}
-      {hint && <span className="text-muted text-xs font-normal">{hint}</span>}
+      {hint && <span className="text-muted text-sm font-normal">{hint}</span>}
     </label>
   );
 }
 
 function ItemSelect({ items, use }: { items: OverviewItem[]; use?: InventoryUse }) {
   return (
-    <select name="itemId" required className="input" defaultValue="">
+    <select name="itemId" required className="input h-12" defaultValue="">
       <option value="" disabled>
         Escoge un ítem
       </option>
@@ -156,8 +164,10 @@ export function InventoryMovements({
             role="tab"
             aria-selected={tab === t.id}
             onClick={() => setTab(t.id)}
-            className={`min-h-12 rounded-md border px-2 text-sm font-semibold ${
-              tab === t.id ? "bg-ink text-card border-ink" : "border-line bg-card"
+            className={`min-h-12 rounded-sm px-2 text-base ${
+              tab === t.id
+                ? "border-brand bg-brand-soft text-ink border-2 font-bold"
+                : "border-line-strong bg-card text-ink border font-semibold"
             }`}
           >
             {t.label}
@@ -169,6 +179,7 @@ export function InventoryMovements({
         {tab === "refill" && (
           <ActionForm
             action={refillStation}
+            primary
             label="Reponer"
             submit="Reponer"
             pendingText="Reponiendo…"
@@ -178,7 +189,7 @@ export function InventoryMovements({
               El barbero entrega el envase vacío y recibe uno lleno de la bodega.
             </p>
             <Field label="Barbero">
-              <select name="barberId" required className="input" defaultValue="">
+              <select name="barberId" required className="input h-12" defaultValue="">
                 <option value="" disabled>
                   Escoge un barbero
                 </option>
@@ -205,6 +216,7 @@ export function InventoryMovements({
         {tab === "purchase" && (
           <ActionForm
             action={registerPurchase}
+            primary
             label="Entrada a bodega"
             submit="Registrar entrada"
             pendingText="Guardando…"
@@ -231,6 +243,7 @@ export function InventoryMovements({
         {tab === "transfer" && (
           <ActionForm
             action={transferStock}
+            primary
             label="Transferir"
             submit="Transferir"
             pendingText="Transfiriendo…"
@@ -243,7 +256,7 @@ export function InventoryMovements({
               <ItemSelect items={items} />
             </Field>
             <Field label="Desde">
-              <select name="from" required className="input" defaultValue="">
+              <select name="from" required className="input h-12" defaultValue="">
                 <option value="" disabled>
                   Escoge el origen
                 </option>
@@ -255,7 +268,7 @@ export function InventoryMovements({
               </select>
             </Field>
             <Field label="Hacia">
-              <select name="to" required className="input" defaultValue="">
+              <select name="to" required className="input h-12" defaultValue="">
                 <option value="" disabled>
                   Escoge el destino
                 </option>
@@ -320,6 +333,7 @@ export function InventoryItemForm({
   return (
     <ActionForm
       action={saveInventoryItem}
+      primary={!item}
       label={item ? `Editar ${item.name}` : "Nuevo ítem"}
       submit={item ? "Guardar cambios" : "Crear ítem"}
       pendingText="Guardando…"
@@ -336,8 +350,10 @@ export function InventoryItemForm({
           {(["internal", "sale"] as const).map((u) => (
             <label
               key={u}
-              className={`flex min-h-12 items-center justify-center rounded-md border text-sm font-semibold ${
-                use === u ? "bg-ink text-card border-ink" : "border-line bg-card"
+              className={`flex min-h-12 items-center justify-center rounded-sm text-base ${
+                use === u
+                  ? "border-brand bg-brand-soft text-ink border-2 font-bold"
+                  : "border-line-strong bg-card text-ink border font-semibold"
               }`}
             >
               <input
@@ -357,7 +373,7 @@ export function InventoryItemForm({
         <select
           name="group"
           required
-          className="input"
+          className="input h-12"
           defaultValue={item?.group ?? (use === "sale" ? "for_sale" : "")}
         >
           <option value="" disabled>
@@ -435,7 +451,7 @@ export function InventoryItemForm({
       ) : (
         <>
           <Field label="Producto de la caja">
-            <select name="productId" className="input" defaultValue={item?.product_id ?? ""}>
+            <select name="productId" className="input h-12" defaultValue={item?.product_id ?? ""}>
               <option value="">Sin enlazar</option>
               {products.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -540,7 +556,7 @@ export function BasicTemplateButton() {
       >
         {pending ? "Agregando…" : "Agregar plantilla básica"}
       </button>
-      <p className="text-muted text-xs">
+      <p className="text-muted text-sm">
         Guantes (caja de 50 pares), cuchillas (paquete de 10) y papel cuello (rollo de 100). Después
         escoges qué servicios los gastan.
       </p>
@@ -597,7 +613,7 @@ export function CountForm({
           {state.lines.map((l) => (
             <li
               key={l.itemId}
-              className={`rounded-md border p-3 text-sm ${l.alert ? "border-danger text-danger" : "border-line bg-card"}`}
+              className={`rounded-md border p-3 text-base ${l.alert ? "border-danger bg-accent-soft" : "border-line bg-card"}`}
             >
               <p className="font-semibold">
                 {l.name}: {l.countedQty} {l.unitLabel}
@@ -608,7 +624,7 @@ export function CountForm({
                 <p>
                   {l.services ?? 0} servicios · gastó {l.realUse}
                   {l.measuring ? " · Midiendo" : ` · se esperaba ${l.expectedUse ?? 0}`}
-                  {l.alert && " · Revisar"}
+                  {l.alert && <span className="text-danger font-semibold"> · Revisar</span>}
                 </p>
               )}
             </li>
@@ -632,7 +648,11 @@ export function CountForm({
     <form onSubmit={onSubmit} aria-label="Conteo" className="mt-4 flex flex-col gap-3">
       <input type="hidden" name="locationId" value={locationId} />
       {rows.length === 0 && (
-        <p className="text-muted text-sm">Este sitio no tiene ítems para contar.</p>
+        <EmptyState
+          icon="list"
+          title="Este sitio no tiene ítems para contar"
+          text="Dale dotación desde el catálogo o escoge otro sitio arriba."
+        />
       )}
       <ul className="flex flex-col gap-2">
         {rows.map((r) => {
@@ -647,7 +667,7 @@ export function CountForm({
               <div className="grid grid-cols-[1fr_6rem] items-center gap-2">
                 <label htmlFor={`counted-${r.itemId}`} className="text-sm">
                   <span className="font-semibold">{r.name}</span>
-                  <span className="text-muted block text-xs">
+                  <span className="text-muted block text-sm">
                     Calculado: {r.systemQty} {r.unitLabel}
                   </span>
                 </label>
@@ -665,7 +685,7 @@ export function CountForm({
                 <select
                   name={`reason:${r.itemId}`}
                   required
-                  className="input"
+                  className="input h-12"
                   defaultValue=""
                   aria-label={`Motivo de ${r.name}`}
                 >
@@ -703,7 +723,7 @@ export function AlertPctForm({ pct }: { pct: number }) {
       pendingText="Guardando…"
       done="Alerta guardada."
       resetOnDone={false}
-      className="border-line bg-card mt-6 flex flex-col gap-3 rounded-md border p-4"
+      className="border-line bg-card flex flex-col gap-3 rounded-md border p-4"
     >
       <h2 className="text-lg font-semibold">Inventario</h2>
       <Field

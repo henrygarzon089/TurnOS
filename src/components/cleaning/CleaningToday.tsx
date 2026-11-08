@@ -45,6 +45,10 @@ export function CleaningToday({
   ];
   const closingLocked =
     !today.isOwner && today.closingFrom !== null && nowHHMM() < today.closingFrom;
+  // REQ-078.4: solo la primera que falta va rellena; las demás en contorno
+  const firstPending = cards.findIndex(
+    ({ kind, record }) => !record && !(kind === "closing" && closingLocked),
+  );
 
   if (open) {
     return (
@@ -74,7 +78,7 @@ export function CleaningToday({
           {notice}
         </p>
       )}
-      {cards.map(({ kind, title, record }) => (
+      {cards.map(({ kind, title, record }, i) => (
         <section
           key={kind}
           aria-label={title}
@@ -92,7 +96,11 @@ export function CleaningToday({
               El cierre se registra desde las {formatHour(today.closingFrom!)}
             </p>
           ) : (
-            <button type="button" className="btn-primary mt-2 w-full" onClick={() => setOpen(kind)}>
+            <button
+              type="button"
+              className={`${i === firstPending ? "btn-primary" : "btn-secondary"} mt-2 w-full`}
+              onClick={() => setOpen(kind)}
+            >
               Registrar {KIND_LABEL[kind].toLocaleLowerCase("es")}
             </button>
           )}

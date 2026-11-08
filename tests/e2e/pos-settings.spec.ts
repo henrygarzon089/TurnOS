@@ -28,6 +28,10 @@ test.describe("Hito 12 · configurar la vitrina", () => {
   }) => {
     await loginAsOwner(page);
     await page.goto("/admin/productos");
+    await page
+      .getByRole("article", { name: "Producto Jugo" })
+      .getByRole("button", { name: "Editar" })
+      .click();
     const form = page.getByRole("form", { name: "Producto Jugo" });
     const box = form.getByRole("checkbox", { name: "Da comisión al que vende" });
     await expect(box).not.toBeChecked();

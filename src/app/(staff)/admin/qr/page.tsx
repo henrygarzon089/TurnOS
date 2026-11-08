@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/admin/PageHeader";
 import { QrCard } from "@/components/admin/QrCard";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -19,10 +20,12 @@ export default async function QrPage() {
 
   return (
     <main className="pb-6">
-      <h1 className="text-2xl font-bold">QR de la fila</h1>
-      <p className="text-muted mt-1 text-sm">
-        Imprímelo y pégalo en el local. El mismo enlace sirve para compartir por WhatsApp.
-      </p>
+      <PageHeader
+        title="QR de la fila"
+        subtitle={
+          <>Imprímelo y pégalo en el local. El mismo enlace sirve para compartir por WhatsApp.</>
+        }
+      />
       <QrCard
         url={url}
         slug={session.business.slug}

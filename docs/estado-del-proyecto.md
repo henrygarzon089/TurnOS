@@ -450,6 +450,13 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   los botones sin cambio. Prueba desde el celular: entrar como barbero, llamar, "Ya está en la
   silla", "Terminado" y ver el cobro; con modo avión, "Llamar al siguiente" deshabilitado.
   Siguiente: T-164 (acceso).
+- T-167 hecha (rama `claude/t-167-local-config`, encima de T-163, 2026-11-07): local y
+  configuración del dueño. Encabezado y pestañas nuevos en Limpieza e Inventario; Servicios,
+  Productos y Barberos como tabla (escritorio) o lista (celular) con "Editar" que abre una hoja;
+  celulares de barberos enmascarados; cambiar el % y retirar a un barbero piden confirmación; borrar
+  los datos de un cliente usa la hoja nueva; un solo botón relleno por pantalla. Prueba desde el
+  celular: Más → Barberos, "Editar" a uno, cambiar el % y ver la pregunta; Productos con el filtro
+  por categoría; Más → Privacidad, "Ir a Clientes".
 - La aprobación del hito terminado será un ADR nuevo.
 
 ### Hito 4 — servicios por barbero (2026-10-28)

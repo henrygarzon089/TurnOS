@@ -10,6 +10,7 @@ test.describe("REQ-015/016/017/033 administración del negocio", () => {
     page,
   }) => {
     await page.goto("/admin/servicios");
+    await page.getByRole("button", { name: "Nuevo servicio" }).click();
     const form = page.getByRole("form", { name: "Nuevo servicio" });
     const name = `Servicio E2E ${Date.now().toString(36)}`;
     await form.getByLabel("Servicio").fill(name);
@@ -20,30 +21,39 @@ test.describe("REQ-015/016/017/033 administración del negocio", () => {
     // también lo valida con zod en admin.ts).
     const minutes = form.getByLabel("Minutos");
     expect(await minutes.evaluate((el: HTMLInputElement) => el.validity.stepMismatch)).toBe(true);
-    await expect(page.getByRole("form", { name: `Servicio ${name}` })).toHaveCount(0);
+    await expect(page.getByRole("article", { name: `Servicio ${name}` })).toHaveCount(0);
 
     await form.getByLabel("Minutos").fill("25");
     await form.getByRole("button", { name: "Agregar servicio" }).click();
-    await expect(page.getByRole("form", { name: `Servicio ${name}` })).toBeVisible();
+    await expect(page.getByRole("article", { name: `Servicio ${name}` })).toBeVisible();
   });
 
   test("REQ-015.2 desactivar un servicio lo deja visible pero apagado", async ({ page }) => {
     await page.goto("/admin/servicios");
+    await page
+      .getByRole("article", { name: "Servicio Cejas" })
+      .getByRole("button", { name: "Editar" })
+      .click();
     const cejas = page.getByRole("form", { name: "Servicio Cejas" });
+    const row = page.getByRole("article", { name: "Servicio Cejas" });
     await cejas.getByRole("button", { name: "Desactivar" }).click();
-    await expect(cejas.getByRole("button", { name: "Activar" })).toBeVisible();
+    await expect(row).toContainText("Desactivado");
+    await row.getByRole("button", { name: "Editar" }).click();
     await cejas.getByRole("button", { name: "Activar" }).click();
+    await expect(row).not.toContainText("Desactivado");
+    await row.getByRole("button", { name: "Editar" }).click();
     await expect(cejas.getByRole("button", { name: "Desactivar" })).toBeVisible();
   });
 
   test("REQ-024.1 crea un producto", async ({ page }) => {
     await page.goto("/admin/productos");
+    await page.getByRole("button", { name: "Nuevo producto" }).click();
     const form = page.getByRole("form", { name: "Nuevo producto" });
     const name = `Producto E2E ${Date.now().toString(36)}`;
     await form.getByLabel("Producto").fill(name);
     await form.getByLabel("Precio").fill("3.500");
     await form.getByRole("button", { name: "Agregar producto" }).click();
-    await expect(page.getByRole("form", { name: `Producto ${name}` })).toBeVisible();
+    await expect(page.getByRole("article", { name: `Producto ${name}` })).toBeVisible();
   });
 
   test("REQ-016.4 marca a un barbero como presente hoy", async ({ page }) => {

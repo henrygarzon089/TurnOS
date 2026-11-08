@@ -136,9 +136,9 @@ export function CleaningInspection({
                   className={`flex min-h-12 flex-1 items-center justify-center gap-2 rounded-sm border font-semibold ${
                     a.ok === v
                       ? v
-                        ? "border-ok text-ok"
-                        : "border-danger text-danger"
-                      : "border-line"
+                        ? "border-ok bg-ok-soft text-ok border-2"
+                        : "border-danger bg-accent-soft text-danger border-2"
+                      : "border-line-strong"
                   }`}
                 >
                   <input
@@ -216,7 +216,7 @@ export function CleaningInspection({
         <h2 className="text-lg font-semibold">Revisión</h2>
         <button
           type="button"
-          className="btn-secondary min-h-10 px-3 text-sm"
+          className="btn-secondary w-auto px-3 text-base"
           onClick={() =>
             setAnswers((prev) => prev.map((a) => (a.ok === null ? { ...a, ok: true } : a)))
           }
