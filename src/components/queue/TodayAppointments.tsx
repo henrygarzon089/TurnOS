@@ -53,7 +53,7 @@ export function TodayAppointments({
               </div>
               <button
                 type="button"
-                className="btn-primary w-auto shrink-0 px-4"
+                className="btn-secondary w-auto shrink-0 px-4"
                 disabled={disabled}
                 onClick={() => onArrived(a.id)}
                 aria-label={`Llegó ${a.customerName}`}
