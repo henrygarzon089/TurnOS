@@ -1952,13 +1952,22 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   - Colores del manifiesto y `themeColor` salen de `PWA_THEME_COLOR`/`PWA_BACKGROUND_COLOR` en
     `src/lib/pwa.ts`, con prueba de que igualan a `brand` y `surface`.
 
-### [ ] T-161 · Componentes base
+### [x] T-161 · Componentes base
 - REQ: REQ-078.3, REQ-078.5, REQ-078.7, REQ-078.9, REQ-078.11, REQ-078.12, REQ-078.13
 - Archivos: `src/components/ui/{Button,Field,PhoneField,MoneyField,PinField,OptionList,StatusChip,Sheet,Dialog,EmptyState,ErrorState,Toast,FlashRow,Icon}.tsx`,
   `src/components/ui/{Skeleton,ConnectionBanner}.tsx` (reescritos), utilidades de movimiento en
   `globals.css`, pruebas unitarias de cada uno
 - Terminado: pruebas de `PinField` (solo puntos), `Button` guardando (un solo envío), `Sheet` y
   `Dialog` (foco y cierre), movimiento reducido; se ven igual que el tablero Componentes.
+- Hecho (2026-11-07). Desvíos de la lista de archivos:
+  - `Sheet` y `Dialog` viven juntos en `Sheet.tsx` (comparten el `<dialog>` nativo: foco, Esc,
+    fondo inerte); `EmptyState` y `ErrorState` en `States.tsx`; `SubmitButton` (con
+    `useFormStatus`) en `Button.tsx`. La franja sin conexión es `ConnectionBanner` con `lastSeen`.
+  - `formatPhoneTyping` nuevo en `src/lib/domain/phone.ts` para `PhoneField`.
+  - Página de muestra `/diseno` (solo en desarrollo, `notFound()` en producción) para revisar
+    contra el tablero y para `tests/e2e/ui-components.spec.ts` (foco, Esc, doble toque, PIN,
+    movimiento reducido); las unitarias están en `tests/unit/ui-components.test.tsx`.
+  - Las pantallas todavía no usan estos componentes: cada una los adopta en T-162…T-167.
 
 ### [ ] T-162 · Pantallas del cliente
 - REQ: REQ-078.3, REQ-078.4, REQ-078.8, REQ-078.10, REQ-078.11, REQ-078.15

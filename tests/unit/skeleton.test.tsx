@@ -32,7 +32,7 @@ describe("Skeleton (REQ-075)", () => {
     const html = renderToStaticMarkup(<SkeletonBlock className="h-12 w-full" />);
     expect(html).toContain("motion-safe:animate-pulse");
     expect(html).not.toMatch(/(^|\s|")animate-pulse/);
-    expect(html).toContain("bg-line");
+    expect(html).toContain("bg-skeleton");
     expect(html).toContain("h-12 w-full");
     expect(visibleText(html)).toBe("");
   });
@@ -42,7 +42,7 @@ describe("Skeleton (REQ-075)", () => {
       const html = renderToStaticMarkup(<Loading />);
       expect(html).toContain('aria-busy="true"');
       // título + tarjeta + 3 filas + botón primario = al menos 6 bloques grises
-      expect(html.match(/bg-line/g)?.length ?? 0).toBeGreaterThanOrEqual(6);
+      expect(html.match(/bg-skeleton/g)?.length ?? 0).toBeGreaterThanOrEqual(6);
       expect(html).not.toContain("spinner");
     });
 
