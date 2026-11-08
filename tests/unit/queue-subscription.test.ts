@@ -67,6 +67,24 @@ describe("ADR-008 suscripción a queue_changed", () => {
     vi.useRealTimers();
   });
 
+  it("REQ-078.8 un primer intento que vence en red lenta no prende la franja (no mueve la página)", () => {
+    const f = fakeClient();
+    const onConnection = vi.fn();
+    subscribeToQueue({
+      client: f.client,
+      businessId: "b1",
+      reload: vi.fn(),
+      onConnection,
+      pollMs: 0,
+    });
+    f.status("TIMED_OUT");
+    f.status("CHANNEL_ERROR");
+    expect(onConnection).not.toHaveBeenCalled(); // la página acaba de llegar del servidor
+    f.status("SUBSCRIBED");
+    f.status("CLOSED");
+    expect(onConnection.mock.calls).toEqual([[true], [false]]); // ya conectado, sí avisa
+  });
+
   it("NFR-003 polling de respaldo y limpieza al desmontar", () => {
     vi.useFakeTimers();
     const f = fakeClient();

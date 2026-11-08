@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { StampCard } from "@/components/loyalty/StampCard";
+import { Button } from "@/components/ui/Button";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
+import { Sheet } from "@/components/ui/Sheet";
 import {
   cancelTicketByToken,
   getPublicBusiness,
@@ -14,6 +16,7 @@ import {
 import { appointmentTag } from "@/lib/domain/appointments";
 import { membershipTicketLine } from "@/lib/domain/membership";
 import { formatMinutes } from "@/lib/domain/time";
+import { useBrowserOnline } from "@/lib/realtime/use-browser-online";
 import { useQueueSubscription } from "@/lib/realtime/use-queue-subscription";
 import type { CourtesyOption, MyTicket as Ticket } from "@/lib/queue/public-queue";
 import { writePrefs } from "@/lib/storage/customer-prefs";
@@ -22,6 +25,9 @@ const CACHE_KEY = (token: string) => `turnos:ticket:${token}`;
 
 /**
  * REQ-004: "Mi turno" en vivo. REQ-005: cancelar. REQ-011.6: último estado conocido sin conexión.
+ * Sistema visual de T-162 (tablero Mi turno): el número grande, cancelar en contorno rojo con
+ * hoja de confirmación (REQ-078.3) y, sin señal, la franja con la hora de lo último que vimos y
+ * cancelar deshabilitado con el motivo (REQ-078.10).
  */
 export function MyTicket({
   token,
@@ -44,7 +50,11 @@ export function MyTicket({
     if (t) setTicket(t);
   }, [token]);
 
-  const { online, lastUpdated } = useQueueSubscription(ticket.business.id, reload);
+  const { online: live, lastUpdated } = useQueueSubscription(ticket.business.id, reload);
+  const browser = useBrowserOnline();
+  const online = live && browser.online;
+  const [loadedAt] = useState(() => new Date());
+  const [confirming, setConfirming] = useState(false);
 
   // Caché local del último estado (REQ-011.6) y recuerdo del turno (REQ-003.7)
   useEffect(() => {
@@ -67,7 +77,7 @@ export function MyTicket({
   const active = ticket.status === "waiting" || ticket.status === "called";
 
   function cancel() {
-    if (!window.confirm("¿Seguro que quieres cancelar tu turno?")) return;
+    setConfirming(false);
     setError(null);
     startTransition(async () => {
       const r = await cancelTicketByToken(token);
@@ -78,14 +88,20 @@ export function MyTicket({
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pb-28">
-      <ConnectionBanner online={online} />
-      <header className="py-5">
-        <p className="text-muted text-sm">
-          {ticket.business.name} · Turno {ticket.displayNumber}
-        </p>
+      <ConnectionBanner online={online} lastSeen={lastUpdated ?? loadedAt} />
+      <header className="pt-5 pb-4">
+        <p className="text-muted text-sm">{ticket.business.name}</p>
         <h1 className="text-2xl font-bold">Hola, {ticket.customerName.split(" ")[0]}</h1>
+        <p className="mt-3 text-sm font-semibold">Turno</p>
+        {/* Alto fijo de una línea: el número no empuja lo de abajo al llegar (REQ-078.8) */}
+        <p
+          data-testid="ticket-number"
+          className="text-[clamp(6rem,30vw,7.5rem)] leading-none font-bold tabular-nums"
+        >
+          {ticket.displayNumber}
+        </p>
         {ticket.scheduledAt && ticket.status === "waiting" && (
-          <p className="bg-brand text-brand-ink mt-2 inline-block rounded-full px-3 py-1 text-sm font-semibold">
+          <p className="bg-brand-soft text-brand mt-3 inline-block rounded-sm px-3 py-1 text-sm font-semibold">
             {appointmentTag(ticket.scheduledAt)}
           </p>
         )}
@@ -138,12 +154,26 @@ export function MyTicket({
         </p>
       )}
 
-      <div className="bg-surface fixed inset-x-0 bottom-0 p-4">
+      <div className="border-line bg-card fixed inset-x-0 bottom-0 border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
         <div className="mx-auto flex max-w-md flex-col gap-2">
           {active ? (
-            <button type="button" className="btn-danger" onClick={cancel} disabled={pending}>
-              {pending ? "Cancelando…" : "Cancelar mi turno"}
-            </button>
+            <>
+              <Button
+                variant="danger"
+                className="w-full"
+                onClick={() => setConfirming(true)}
+                disabled={!online}
+                pending={pending}
+                pendingText="Cancelando…"
+              >
+                Cancelar mi turno
+              </Button>
+              {!online && (
+                <p className="text-muted text-center text-sm">
+                  Para cancelar necesitas señal. Tu turno sigue en la fila.
+                </p>
+              )}
+            </>
           ) : (
             <Link
               href={`/${ticket.business.slug}`}
@@ -154,6 +184,20 @@ export function MyTicket({
           )}
         </div>
       </div>
+
+      <Sheet
+        open={confirming}
+        onClose={() => setConfirming(false)}
+        title="¿Seguro que quieres cancelar tu turno?"
+        description={`Turno ${ticket.displayNumber}. Si vuelves, tomas un turno nuevo al final de la fila.`}
+      >
+        <Button variant="danger" className="w-full" onClick={cancel}>
+          Sí, cancelar mi turno
+        </Button>
+        <Button variant="text" className="mx-auto" onClick={() => setConfirming(false)}>
+          No, seguir en la fila
+        </Button>
+      </Sheet>
     </main>
   );
 }

@@ -172,6 +172,9 @@ describe("Celular al escribir", () => {
     expect(formatPhoneTyping("300100")).toBe("300 100");
     expect(formatPhoneTyping("3001000001")).toBe("300 100 0001");
     expect(formatPhoneTyping("300-100-0001 99")).toBe("300 100 0001");
+    // T-162: pegado con el indicativo, que ya va fijo en el campo
+    expect(formatPhoneTyping("+57 300 100 0001")).toBe("300 100 0001");
+    expect(formatPhoneTyping("573001000001")).toBe("300 100 0001");
     expect(formatPhoneTyping("")).toBe("");
   });
 });

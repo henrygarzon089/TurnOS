@@ -46,7 +46,10 @@ export function ScreenBoard({
   }
 
   return (
-    <main className="bg-ink text-card flex min-h-screen flex-col p-8" style={{ fontSize: 32 }}>
+    <main
+      className="bg-brand text-brand-ink flex min-h-screen flex-col p-8"
+      style={{ fontSize: 32 }}
+    >
       <header className="flex items-start justify-between">
         <div>
           <h1 className="text-6xl font-bold">{view.name}</h1>
@@ -74,7 +77,7 @@ export function ScreenBoard({
           return (
             <article
               key={b.id}
-              className={`rounded-lg p-6 ${hl ? "bg-called text-accent-ink animate-pulse" : "bg-white/10"}`}
+              className={`rounded-md p-6 ${hl ? "bg-called text-accent-ink motion-safe:animate-pulse" : "bg-white/10"}`}
               aria-label={b.name}
             >
               <h2 className="text-4xl font-bold">{b.name}</h2>
@@ -87,7 +90,7 @@ export function ScreenBoard({
               </p>
               <div className="mt-6">
                 <p className="text-xl uppercase opacity-60">Ahora</p>
-                <p className="text-5xl font-bold">{b.current?.name ?? "—"}</p>
+                <p className="text-5xl font-bold break-words">{b.current?.name ?? "—"}</p>
                 {hl && <p className="mt-2 text-2xl font-semibold">Pasa a la silla de {b.name}</p>}
               </div>
               {b.next.length > 0 && (
@@ -106,7 +109,7 @@ export function ScreenBoard({
       </section>
 
       {view.anyone.length > 0 && (
-        <section className="mt-6 rounded-lg bg-white/10 p-6">
+        <section className="mt-6 rounded-md bg-white/10 p-6">
           <p className="text-xl uppercase opacity-60">El que esté libre</p>
           <p className="text-3xl">{view.anyone.join(" · ")}</p>
         </section>

@@ -1,5 +1,5 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED } from "./helpers";
+import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED, cancelMyTicket } from "./helpers";
 
 /**
  * Hito 6 (design.md §12.7): el servidor corre con WHATSAPP_FAKE_CHANNEL=1 (playwright.config.ts y
@@ -97,8 +97,7 @@ test.describe("REQ-041 / REQ-042 / REQ-043 aviso por WhatsApp activo", () => {
     await confirm(page);
     expect((await consent(cel))?.whatsapp_opt_in_at).not.toBeNull();
 
-    page.once("dialog", (d) => d.accept());
-    await page.getByRole("button", { name: "Cancelar mi turno" }).click();
+    await cancelMyTicket(page);
     await expect(page.getByText("Turno cancelado")).toBeVisible();
 
     await page.goto(`/${SEED.slug}/turno`);
@@ -126,8 +125,7 @@ test.describe("REQ-041 / REQ-042 / REQ-043 aviso por WhatsApp activo", () => {
     await expect(page.getByRole("button", { name: OPT_OUT })).toHaveCount(0);
     expect((await consent(cel))?.whatsapp_opt_out_at).not.toBeNull();
 
-    page.once("dialog", (d) => d.accept());
-    await page.getByRole("button", { name: "Cancelar mi turno" }).click();
+    await cancelMyTicket(page);
     await expect(page.getByText("Turno cancelado")).toBeVisible();
     await page.goto(`/${SEED.slug}/turno`);
     await expect(page.getByRole("checkbox", { name: OPT_IN })).toBeVisible();

@@ -36,7 +36,11 @@ export function FieldFrame({
       </label>
       {children}
       {error ? (
-        <p id={`${id}-msg`} className="text-danger flex items-center gap-1.5 text-sm font-medium">
+        <p
+          id={`${id}-msg`}
+          role="alert"
+          className="text-danger flex items-center gap-1.5 text-sm font-medium"
+        >
           <Icon name="error" className="size-4" />
           {error}
         </p>

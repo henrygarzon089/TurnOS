@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { PublicHeader } from "@/components/public/PublicHeader";
 import { notFound } from "next/navigation";
 import { AppointmentForm } from "@/components/queue/AppointmentForm";
 import { getPublicBusiness } from "@/lib/actions/public";
@@ -20,18 +20,21 @@ export default async function BookAppointmentPage({
   if (!b || !info) notFound();
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-6">
-      <Link href={`/${b.slug}`} className="text-muted text-sm">
-        ← {b.name}
-      </Link>
-      <h1 className="mt-2 text-2xl font-bold">Reservar cita</h1>
-      {info.enabled && info.barbers.length > 0 ? (
-        <AppointmentForm business={b} info={info} today={businessDayBogota()} />
-      ) : (
-        <p className="bg-warn-soft mt-4 rounded-md p-4">
-          {b.name} no está recibiendo citas por ahora. Puedes tomar turno en la fila.
-        </p>
-      )}
-    </main>
+    <div className="flex flex-1 flex-col">
+      <PublicHeader
+        name="Reservar cita"
+        subtitle={b.name}
+        back={{ href: `/${b.slug}`, label: `Volver a ${b.name}` }}
+      />
+      <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pt-4">
+        {info.enabled && info.barbers.length > 0 ? (
+          <AppointmentForm business={b} info={info} today={businessDayBogota()} />
+        ) : (
+          <p className="bg-warn-soft mt-4 rounded-md p-4">
+            {b.name} no está recibiendo citas por ahora. Puedes tomar turno en la fila.
+          </p>
+        )}
+      </main>
+    </div>
   );
 }

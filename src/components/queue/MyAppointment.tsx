@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { Button } from "@/components/ui/Button";
+import { Sheet } from "@/components/ui/Sheet";
 import { cancelAppointmentByToken } from "@/lib/actions/public-appointments";
 import {
   APPOINTMENT_TOLERANCE_MIN,
@@ -12,7 +14,10 @@ import {
 import { formatCOP } from "@/lib/domain/money";
 import type { PublicAppointment } from "@/lib/queue/appointments";
 
-/** REQ-051: la cita reservada. Sin celular (REQ-051.6). */
+/**
+ * REQ-051: la cita reservada. Sin celular (REQ-051.6). T-162: cancelar en contorno rojo con hoja
+ * de confirmación (REQ-078.3).
+ */
 export function MyAppointment({
   token,
   appointment: a,
@@ -26,9 +31,10 @@ export function MyAppointment({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const pendingAppt = a.status === "booked" && !a.lapsed;
+  const [confirming, setConfirming] = useState(false);
 
   function cancel() {
-    if (!window.confirm("¿Seguro que quieres cancelar tu cita?")) return;
+    setConfirming(false);
     setError(null);
     startTransition(async () => {
       const r = await cancelAppointmentByToken(token);
@@ -93,16 +99,22 @@ export function MyAppointment({
         </p>
       )}
 
-      <div className="bg-surface fixed inset-x-0 bottom-0 p-4">
+      <div className="border-line bg-card fixed inset-x-0 bottom-0 border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
         <div className="mx-auto flex max-w-md flex-col gap-2">
           {pendingAppt ? (
             <>
               <a href={`/c/${token}/calendario`} className="btn-secondary" download>
                 Agregar al calendario
               </a>
-              <button type="button" className="btn-danger" onClick={cancel} disabled={pending}>
-                {pending ? "Cancelando…" : "Cancelar mi cita"}
-              </button>
+              <Button
+                variant="danger"
+                className="w-full"
+                onClick={() => setConfirming(true)}
+                pending={pending}
+                pendingText="Cancelando…"
+              >
+                Cancelar mi cita
+              </Button>
             </>
           ) : (
             <Link href={`/${a.business.slug}/cita`} className="btn-primary">
@@ -111,6 +123,20 @@ export function MyAppointment({
           )}
         </div>
       </div>
+
+      <Sheet
+        open={confirming}
+        onClose={() => setConfirming(false)}
+        title="¿Seguro que quieres cancelar tu cita?"
+        description="La hora queda libre para otra persona."
+      >
+        <Button variant="danger" className="w-full" onClick={cancel}>
+          Sí, cancelar mi cita
+        </Button>
+        <Button variant="text" className="mx-auto" onClick={() => setConfirming(false)}>
+          No, mantener la cita
+        </Button>
+      </Sheet>
     </main>
   );
 }

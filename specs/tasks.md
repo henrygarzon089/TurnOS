@@ -2009,13 +2009,35 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
     movimiento reducido); las unitarias están en `tests/unit/ui-components.test.tsx`.
   - Las pantallas todavía no usan estos componentes: cada una los adopta en T-162…T-167.
 
-### [ ] T-162 · Pantallas del cliente
+### [x] T-162 · Pantallas del cliente
 - REQ: REQ-078.3, REQ-078.4, REQ-078.8, REQ-078.10, REQ-078.11, REQ-078.15
 - Archivos: `src/app/(public)/**`, `src/components/queue/*` usados por el cliente,
   `tests/e2e/visual-cliente.spec.ts`
 - Terminado: página del negocio, tomar turno, "Mi turno" (espera, llamado, en servicio, terminado),
   cita, tarjeta de regalo, privacidad y pantalla TV como sus tableros; E2E de §22.5 en verde; prueba
   desde el celular con el QR de La 33.
+- Hecho (2026-11-07). Notas y desvíos (ADR-047: la app manda donde el tablero muestra otra cosa):
+  - Portada: encabezado con la marca del negocio (`businessMark`, número o iniciales; sin logo),
+    "Abierto hasta …", fila en vivo con una línea por barbero (`publicBarberLines`: "En pausa",
+    "Libre" solo si quien llega pasa de una, o "n en fila · ~ espera") y "Tomar turno" fijo abajo;
+    desde 1024 px, fila a la izquierda y servicios con "Tomar turno" a la derecha. Se queda el flujo
+    de dos pantallas (portada → `/turno`); "Ver menú" del tablero no se construye (no existe).
+  - Tomar turno: servicios en tarjetas de 2 columnas, barberos en fichas (la ficha elegida ya no es
+    azul rellena: borde y fondo suave, también en reservar cita y la agenda), `Field`/`PhoneField`
+    de T-161, "Confirmar turno" fijo abajo, "Guardando…" al enviar y, sin red, deshabilitado con
+    "Necesitas señal para tomar turno. Lo que escribiste no se borra.". El error general dice "Tus
+    datos siguen ahí.". `formatPhoneTyping` quita el 57 si se pega `+57…`.
+  - "Mi turno": número grande (96–120 px), "Cancelar mi turno" en contorno rojo con hoja de
+    confirmación (antes `window.confirm`), sin red deshabilitado con "Para cancelar necesitas
+    señal…"; franja con la hora de lo último que vimos. "Mi cita" igual (hoja en vez de
+    `window.confirm`). Las E2E que aceptaban el `confirm` usan `cancelMyTicket` (helpers).
+  - Reservar cita y privacidad con el encabezado de volver; tarjeta de regalo y pantalla TV en
+    azul marino; el resaltado de la TV respeta movimiento reducido. Esqueletos de portada y
+    "Mi turno" con la forma nueva.
+  - CLS: en red lenta el primer intento del canal vence y la franja "Sin conexión" salía un
+    instante y movía todo (0,24). `subscribeToQueue` ya no avisa caída antes de haber conectado una
+    vez; la falta de red del navegador la sigue avisando el hook, también al abrir sin red.
+  - Los errores de `Field` ahora tienen `role="alert"` (antes los decía `ErrorText`).
 
 ### [ ] T-163 · Pantallas del barbero
 - REQ: REQ-078.4, REQ-078.5, REQ-078.8, REQ-078.10, REQ-078.12

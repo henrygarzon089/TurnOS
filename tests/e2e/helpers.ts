@@ -152,3 +152,12 @@ export async function resetQueue() {
     .eq("is_active", true);
   if (error) throw new Error(error.message);
 }
+
+/** "Cancelar mi turno" y confirmar en la hoja (REQ-005.2, REQ-078.3). */
+export async function cancelMyTicket(page: Page) {
+  await page.getByRole("button", { name: "Cancelar mi turno", exact: true }).click();
+  await page
+    .getByRole("dialog", { name: /cancelar tu turno/ })
+    .getByRole("button", { name: "Sí, cancelar mi turno" })
+    .click();
+}
