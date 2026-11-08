@@ -127,9 +127,9 @@ test.describe("REQ-020 clientes para recordar", () => {
       await expect(row.getByRole("link", { name: /Avisar/ })).toHaveCount(0);
 
       // Limpieza: cancelar el turno y volver a permitir el contacto
-      owner.once("dialog", (d) => d.accept());
       await active.getByRole("button", { name: new RegExp(name) }).click();
       await active.getByRole("button", { name: "Cancelar turno" }).click();
+      await owner.getByRole("button", { name: "Sí, cancelar turno" }).click();
       await expect(active).toBeHidden({ timeout: 15_000 });
       await owner.goto("/app/clientes");
       await owner.getByLabel("Buscar cliente").fill(name);

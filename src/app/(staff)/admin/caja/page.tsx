@@ -15,27 +15,41 @@ export default async function CashPage() {
   const [summary, closures] = await Promise.all([getCashDay(), getClosures()]);
   const past = closures.filter((c) => c.day !== summary!.day);
   return (
-    <main className="pb-6">
-      <h1 className="text-2xl font-bold">Caja de hoy</h1>
-      <p className="text-muted text-sm">{formatDayCO(summary!.day)}</p>
+    <main data-wide data-tablet className="pb-6">
       <CashDay
         businessId={session.business.id}
         businessName={session.business.name}
         initial={summary!}
         isToday
+        heading={
+          <>
+            <h1 className="text-[28px] leading-tight font-bold">Caja de hoy</h1>
+            <p className="text-muted flex flex-wrap items-center gap-x-3 text-sm">
+              {formatDayCO(summary!.day)}
+              {past.length > 0 && (
+                <a
+                  href="#cierres"
+                  className="text-brand flex min-h-12 items-center font-semibold underline underline-offset-4"
+                >
+                  Cierres anteriores
+                </a>
+              )}
+            </p>
+          </>
+        }
       />
       {past.length > 0 && (
-        <section aria-label="Cierres anteriores" className="mt-6">
-          <h2 className="mb-2 font-semibold">Cierres anteriores</h2>
+        <section id="cierres" aria-label="Cierres anteriores" className="mt-6 scroll-mt-4">
+          <h2 className="mb-2 font-bold">Cierres anteriores</h2>
           <ul className="border-line bg-card divide-line divide-y rounded-md border">
             {past.map((c) => (
               <li key={c.day}>
                 <Link
                   href={`/admin/caja/${c.day}`}
-                  className="flex min-h-12 items-center justify-between px-4 text-sm"
+                  className="flex min-h-12 flex-wrap items-center justify-between gap-x-3 px-4 py-2 text-base"
                 >
-                  <span className="font-medium">{formatDayCO(c.day)}</span>
-                  <span className="text-muted">
+                  <span className="font-semibold">{formatDayCO(c.day)}</span>
+                  <span className="text-muted text-sm tabular-nums">
                     {formatCOP(c.total)} · diferencia {formatCOP(c.difference)}
                   </span>
                 </Link>

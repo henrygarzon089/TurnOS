@@ -11,7 +11,8 @@ import { getStaffSession } from "@/lib/auth/session";
  * Sin membresía (dueño recién registrado) → asistente de creación (REQ-030.1).
  * El dueño tiene su menú (REQ-077) en todas sus pantallas, también en /app/clientes: barra
  * inferior en el celular (el contenido deja 56 px más abajo) y menú lateral desde 1024 px. El
- * barbero, su barra inferior (T-163) en todos los tamaños.
+ * barbero, su barra inferior (T-163) en todos los tamaños. `data-wide` ensancha la página desde
+ * 1024 px y `data-tablet` desde 768 px (la caja en tablet, REQ-078.15).
  */
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
   const session = await getStaffSession();
@@ -23,7 +24,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
     <div className={`flex flex-1 flex-col ${owner ? "lg:pl-60" : ""}`}>
       <StaffHeader session={session} />
       <div
-        className={`mx-auto flex w-full max-w-md flex-1 flex-col px-4 ${owner ? "pt-6 pb-40 lg:pb-24 lg:has-[[data-wide]]:max-w-6xl" : "pb-28"}`}
+        className={`mx-auto flex w-full max-w-md flex-1 flex-col px-4 ${owner ? "pt-6 pb-40 md:has-[[data-tablet]]:max-w-3xl lg:pb-24 lg:has-[[data-wide]]:max-w-6xl" : "pb-28"}`}
       >
         {children}
       </div>

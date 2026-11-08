@@ -456,6 +456,15 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   Prueba desde el celular: abrir /entrar, escribir el celular y un PIN equivocado: se ven seis
   puntos y el error en rojo debajo; en el computador, /entrar?rol=dueno sale centrado.
   T-165, T-166 y T-167 van en sesiones paralelas, cada una con su PR sobre T-163.
+- T-165 hecha (rama `claude/t-165-dueno-fila-caja`, encima de T-163, 2026-11-07): fila y caja del
+  dueño. Fila por carriles (uno por barbero y "El primero libre") en escritorio y lista en el
+  celular, con el celular enmascarado (`300 *** 0001`); cancelar turno y cerrar la fila con hoja de
+  confirmación. Caja en 390, 768 y 1280 px con "Cerrar caja" y "Nueva venta" a mano, hoja de
+  cierre con la diferencia en palabras ("Cuadra", "Faltan $ …"), anular y reabrir con hoja, y la
+  venta nueva resaltada. El resto del cobro con secciones e interruptores. Detalle en `tasks.md`.
+  Prueba desde el celular: entrar como dueño, abrir **Fila**, tocar un turno → "Cancelar turno"
+  → "No, dejarlo"; abrir **Caja**, "Cerrar caja", escribir el efectivo y ver "Cuadra" o "Faltan",
+  "Todavía no"; con otro celular registrar una venta y verla entrar resaltada.
 - La aprobación del hito terminado será un ADR nuevo.
 
 ### Hito 4 — servicios por barbero (2026-10-28)

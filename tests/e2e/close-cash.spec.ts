@@ -63,9 +63,9 @@ test.describe("REQ-027 cierre de caja", () => {
 
       await page.getByRole("button", { name: "Cerrar caja" }).click();
       const dialog = page.getByRole("dialog", { name: "Cerrar caja" });
-      await expect(dialog).toContainText(`Esperado ${cop(expected)}`);
+      await expect(dialog.getByTestId("close-expected")).toHaveText(cop(expected));
       await dialog.getByLabel("Efectivo contado").fill(String(expected - 2000));
-      await expect(dialog.getByTestId("close-difference")).toHaveText(cop(-2000));
+      await expect(dialog.getByTestId("close-difference")).toHaveText("Faltan $ 2.000");
       await dialog.getByRole("button", { name: "Confirmar cierre" }).click();
 
       const closed = page.getByRole("region", { name: "Cierre de caja" });

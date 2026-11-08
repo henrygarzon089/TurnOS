@@ -33,11 +33,11 @@ test.describe("REQ-012 vista del dueño sobre la fila", () => {
 
     await row.getByRole("button", { name: new RegExp(name) }).click();
     await row.getByRole("button", { name: "Devolver a la fila" }).click();
-    await expect(row.getByText("Esperando")).toBeVisible();
+    await expect(row.getByText("En espera")).toBeVisible();
 
-    page.once("dialog", (d) => d.accept());
     await row.getByRole("button", { name: new RegExp(name) }).click();
     await row.getByRole("button", { name: "Cancelar turno" }).click();
+    await page.getByRole("button", { name: "Sí, cancelar turno" }).click();
     await expect(row).toBeHidden();
   });
 
@@ -45,8 +45,8 @@ test.describe("REQ-012 vista del dueño sobre la fila", () => {
     page,
     browser,
   }) => {
-    page.once("dialog", (d) => d.accept());
     await page.getByRole("button", { name: "Cerrar fila por hoy" }).click();
+    await page.getByRole("button", { name: "Sí, cerrar la fila" }).click();
     await expect(page.getByText("Cerrada")).toBeVisible();
 
     const ctx = await browser.newContext();
