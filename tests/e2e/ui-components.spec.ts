@@ -45,7 +45,7 @@ test.describe("componentes base", () => {
     const pin = page.getByLabel("PIN de prueba");
     await pin.pressSequentially("1234");
     const cells = page.getByTestId("pin-cells").first(); // el primer PIN es el de prueba
-    await expect(cells).toHaveText("••••");
+    await expect(cells).toHaveText("●●●●");
     await expect(cells).not.toContainText(/\d/);
   });
 

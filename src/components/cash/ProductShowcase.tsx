@@ -58,7 +58,8 @@ export function ProductShowcase({
           ))}
         </div>
       )}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      {/* Columnas de al menos 136 px: el − cantidad + cabe entero; con zoom 200 % queda una sola */}
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))] gap-2">
         {shown.map((p) => {
           const n = qty[p.id] ?? 0;
           return (

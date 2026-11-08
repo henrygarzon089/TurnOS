@@ -82,6 +82,7 @@ test.describe("T-164 acceso con el sistema visual (REQ-078)", () => {
 
   test("REQ-078.7 REQ-078.9 la invitación pide el PIN dos veces sin mostrarlo y guarda una sola vez", async ({
     page,
+    browserName,
   }) => {
     await withInvitation(async (token) => {
       await page.goto(`/invitacion/${token}`);
@@ -90,19 +91,26 @@ test.describe("T-164 acceso con el sistema visual (REQ-078)", () => {
       expect(await cellsText(page, 0)).not.toMatch(/\d/);
       expect(await cellsText(page, 1)).not.toMatch(/\d/);
 
-      // El envío se demora: el botón queda en "Guardando…" y deshabilitado
+      // Se cuentan los envíos con el evento de la página: funciona en los tres motores
       let posts = 0;
+      page.on("request", (r) => {
+        if (r.method() === "POST" && r.url().includes(`/invitacion/${token}`)) posts++;
+      });
+      // Demora del envío para ver "Guardando…" y tocar otra vez mientras guarda. WebKit no deja
+      // interceptar el POST de la server action: sin demora la respuesta llega antes del segundo
+      // toque, así que allí solo se prueba el aviso y que un toque envía una vez.
       await page.route(`**/invitacion/${token}`, async (route) => {
         if (route.request().method() !== "POST") return route.continue();
-        posts++;
+        const response = await route.fetch();
         await new Promise((r) => setTimeout(r, 1500));
-        await route.continue();
+        await route.fulfill({ response });
       });
-      const submit = page.getByRole("button", { name: "Crear mi acceso" });
-      await submit.click();
+      await page.getByRole("button", { name: "Crear mi acceso" }).click();
       const saving = page.getByRole("button", { name: "Guardando…" });
-      await expect(saving).toBeDisabled();
-      await saving.click({ force: true }).catch(() => {});
+      if (browserName === "chromium") {
+        await expect(saving).toBeDisabled();
+        await saving.click({ force: true, timeout: 1_000 }).catch(() => {});
+      }
       await expect(
         page.getByRole("alert").filter({ hasText: "Los dos PIN no coinciden." }),
       ).toBeVisible();

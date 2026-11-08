@@ -19,6 +19,7 @@ describe("NFR-009 pruebas trazables", () => {
       "13",
       "14",
       "15",
+      "16",
     ]) {
       const out = execFileSync(
         "node_modules/.bin/tsx",

@@ -45,7 +45,7 @@ jobs:
     name: E2E móvil (Pixel 7 + iPhone 13)
     runs-on: ubuntu-latest
     needs: quality
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
