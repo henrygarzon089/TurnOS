@@ -2,6 +2,8 @@
 
 import { useActionState } from "react";
 import { ErrorText } from "@/components/auth/LoginForm";
+import { Button } from "@/components/ui/Button";
+import { FIELD_INPUT } from "@/components/ui/Field";
 import { addInitialServices, type FormState } from "@/lib/actions/admin";
 
 const DEFAULTS = [
@@ -24,11 +26,16 @@ export function InitialServicesForm() {
           key={i}
           className="border-line bg-card grid grid-cols-[1fr_72px_96px] gap-2 rounded-md border p-3"
         >
-          <label className="flex flex-col text-xs">
+          <label className="text-ink flex flex-col gap-1 text-sm font-semibold">
             Servicio
-            <input name={`s${i}_name`} defaultValue={s.name} maxLength={60} className="input" />
+            <input
+              name={`s${i}_name`}
+              defaultValue={s.name}
+              maxLength={60}
+              className={`${FIELD_INPUT} border-line-strong px-2 font-normal`}
+            />
           </label>
-          <label className="flex flex-col text-xs">
+          <label className="text-ink flex flex-col gap-1 text-sm font-semibold">
             Minutos
             <input
               name={`s${i}_duration`}
@@ -37,26 +44,26 @@ export function InitialServicesForm() {
               min={5}
               defaultValue={s.duration}
               inputMode="numeric"
-              className="input"
+              className={`${FIELD_INPUT} border-line-strong px-2 font-normal`}
             />
           </label>
-          <label className="flex flex-col text-xs">
+          <label className="text-ink flex flex-col gap-1 text-sm font-semibold">
             Precio
             <input
               name={`s${i}_price`}
               defaultValue={s.price}
               inputMode="numeric"
               placeholder="25.000"
-              className="input"
+              className={`${FIELD_INPUT} border-line-strong px-2 font-normal`}
             />
           </label>
         </div>
       ))}
-      <p className="text-muted text-xs">Deja vacío el nombre de las filas que no uses.</p>
+      <p className="text-muted text-sm">Deja vacío el nombre de las filas que no uses.</p>
       {state?.error && <ErrorText>{state.error}</ErrorText>}
-      <button type="submit" className="btn-primary mt-2" disabled={pending}>
-        {pending ? "Guardando…" : "Terminar"}
-      </button>
+      <Button type="submit" className="mt-2 w-full" pending={pending}>
+        Terminar
+      </Button>
     </form>
   );
 }

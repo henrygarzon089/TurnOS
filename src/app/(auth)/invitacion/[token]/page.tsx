@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AcceptInvitationForm } from "@/components/auth/AcceptInvitationForm";
+import { AuthCard } from "@/components/auth/AuthCard";
 import { getInvitation } from "@/lib/actions/public";
 
 export const metadata: Metadata = { title: "Invitación" };
@@ -8,25 +9,27 @@ export default async function InvitationPage({ params }: { params: Promise<{ tok
   const { token } = await params;
   const info = await getInvitation(token);
 
+  if (!info || !info.isValid) {
+    return (
+      <AuthCard
+        title="Invitación no válida"
+        subtitle="Este enlace ya se usó o venció (dura 7 días). Pídele al dueño que te envíe uno nuevo."
+      >
+        {null}
+      </AuthCard>
+    );
+  }
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-8">
-      {!info || !info.isValid ? (
+    <AuthCard
+      title={`Hola, ${info.barberName}`}
+      subtitle={
         <>
-          <h1 className="text-2xl font-bold">Invitación no válida</h1>
-          <p className="text-muted mt-2">
-            Este enlace ya se usó o venció (dura 7 días). Pídele al dueño que te envíe uno nuevo.
-          </p>
+          <strong className="text-ink">{info.businessName}</strong> te invitó a TurnOS. Elige un PIN
+          de 6 números: con tu celular y ese PIN entrarás a tu fila.
         </>
-      ) : (
-        <>
-          <h1 className="text-2xl font-bold">Hola, {info.barberName}</h1>
-          <p className="text-muted mt-2">
-            <strong>{info.businessName}</strong> te invitó a TurnOS. Elige un PIN de 6 números: con
-            tu celular y ese PIN entrarás a tu fila.
-          </p>
-          <AcceptInvitationForm token={token} />
-        </>
-      )}
-    </main>
+      }
+    >
+      <AcceptInvitationForm token={token} />
+    </AuthCard>
   );
 }

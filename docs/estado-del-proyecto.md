@@ -450,6 +450,12 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   los botones sin cambio. Prueba desde el celular: entrar como barbero, llamar, "Ya está en la
   silla", "Terminado" y ver el cobro; con modo avión, "Llamar al siguiente" deshabilitado.
   Siguiente: T-164 (acceso).
+- T-164 hecha (rama `claude/t-164-acceso`, encima de T-163, 2026-11-07): acceso con el sistema
+  visual. Entrar, invitación y crear negocio en una tarjeta centrada en escritorio; PIN en 6
+  casillas con puntos y teclado numérico; "Guardando…" sin doble envío. Textos sin cambio.
+  Prueba desde el celular: abrir /entrar, escribir el celular y un PIN equivocado: se ven seis
+  puntos y el error en rojo debajo; en el computador, /entrar?rol=dueno sale centrado.
+  T-165, T-166 y T-167 van en sesiones paralelas, cada una con su PR sobre T-163.
 - T-165 hecha (rama `claude/t-165-dueno-fila-caja`, encima de T-163, 2026-11-07): fila y caja del
   dueño. Fila por carriles (uno por barbero y "El primero libre") en escritorio y lista en el
   celular, con el celular enmascarado (`300 *** 0001`); cancelar turno y cerrar la fila con hoja de

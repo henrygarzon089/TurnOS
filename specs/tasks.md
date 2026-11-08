@@ -2070,11 +2070,28 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   - Esqueleto de Mi fila con el botón reservado; píldoras fuera (cortesía, membresía, cita,
     categorías). `primaryButtons` de las pruebas visuales cuenta solo la hoja si hay una abierta.
 
-### [ ] T-164 · Acceso
+### [x] T-164 · Acceso
 - REQ: REQ-078.7, REQ-078.9, REQ-078.15
 - Archivos: `src/app/(auth)/**`, `src/components/auth/*`, `tests/e2e/visual-acceso.spec.ts`
 - Terminado: PIN con 6 casillas y teclado numérico, nunca dígitos; error "Ese PIN no es" con
   intentos; invitación y crear negocio como su tablero; tarjeta centrada en escritorio.
+- Nota (2026-11-07):
+  - `AuthCard`: marca "TurnOS" en texto con punto azul marino (el tablero lo pone rojo, pero el
+    rojo es solo para "atención ahora" y `lint:design` lo prohíbe), y en escritorio una tarjeta
+    centrada sobre el fondo.
+  - Pestañas con subrayado, sin relleno: "Entrar" es el único principal.
+  - Entrar del barbero: `PhoneField` con +57 y `PinField` de 6 casillas con "●" (el "•" se veía
+    diminuto con `system-ui`). `PinField` recibe `name` para ir en el formulario y su error tiene
+    `role="alert"`.
+  - Invitación: dos `PinField`. Al guardar, "Guardando…" (antes "Creando acceso…"), sin doble envío.
+  - Crear negocio: pasos 1 y 3 con `Field` y `Button` ("Guardando…", antes "Creando…"). El paso 2
+    usa `HoursForm`, que es de T-167 (horario del dueño), y queda como está.
+  - Se quedan los textos de la app, no los del tablero ("Soy barbero" primero, "Celular", "PIN (6
+    números)", "Repite el PIN", "Crear mi acceso", "¿Nuevo negocio? Crear mi cuenta").
+  - No se hizo (necesita cambios de flujo o servidor, fuera de ADR-047): el teclado numérico
+    propio, entrar solo al completar los 6, "Te quedan N intentos" (el servidor no cuenta
+    intentos), "Mostrar" la contraseña, "Olvidé mi contraseña" y la revisión del enlace libre.
+    El error sigue siendo "Celular o PIN incorrectos.", ahora bajo las casillas en rojo.
 
 ### [x] T-165 · Dueño: fila y caja
 - REQ: REQ-078.3, REQ-078.6, REQ-078.12, REQ-078.15
