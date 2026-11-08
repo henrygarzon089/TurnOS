@@ -148,6 +148,12 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   start` en el CI: portada 97/100, Mi turno 95/100, Mi fila 96/100. Desde 2026-10-25 el job **E2E móvil** corre en cada push contra `supabase start` en el CI
   (ADR-022): 162/162 en Pixel 7 + iPhone 13 (run 40201883218). Falta solo la regla de protección
   de `main` en GitHub para que bloquee en rojo (configuración de Henry).
+- Nota (2026-11-08): CI de `main` en verde con el Hito 16 (run 42499277874): E2E 479/479 en 22 min
+  (límite del job subido a 45 min). El agente intentó crear la regla con la API y GitHub respondió
+  404: el `gh` de la Mac entra como `hdgarzon`, que tiene escritura pero no es administrador de
+  `henrygarzon089/TurnOS`. Falta que Henry, con la cuenta `henrygarzon089`, cree la regla de `main`
+  exigiendo los checks "Lint · typecheck · unit · pgTAP · integración", "E2E móvil (Pixel 7 +
+  iPhone 13)" y "Lighthouse móvil", sin force push ni borrado.
 - REQ: REQ-032.1, NFR-009, NFR-012, NFR-006
 - Archivos: `.github/workflows/ci.yml`, `src/app/manifest.ts`, `public/icons/*`,
   `src/app/salud/route.ts`, `scripts/lint-texts.ts`, `scripts/traceability.ts`,
