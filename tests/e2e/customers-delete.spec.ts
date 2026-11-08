@@ -30,9 +30,9 @@ test.describe("REQ-018.6 eliminar datos del cliente (Ley 1581)", () => {
 
     // Se cancela el turno y ahora sí
     await page.goto("/admin/fila");
-    page.once("dialog", (d) => d.accept());
     await row.getByRole("button", { name: new RegExp(name) }).click();
     await row.getByRole("button", { name: "Cancelar turno" }).click();
+    await page.getByRole("button", { name: "Sí, cancelar turno" }).click();
     await expect(row).toBeHidden({ timeout: 15_000 });
 
     await page.goto("/app/clientes");

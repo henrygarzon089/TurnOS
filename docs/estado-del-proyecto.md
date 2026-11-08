@@ -450,6 +450,15 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   los botones sin cambio. Prueba desde el celular: entrar como barbero, llamar, "Ya está en la
   silla", "Terminado" y ver el cobro; con modo avión, "Llamar al siguiente" deshabilitado.
   Siguiente: T-164 (acceso).
+- T-165 hecha (rama `claude/t-165-dueno-fila-caja`, encima de T-163, 2026-11-07): fila y caja del
+  dueño. Fila por carriles (uno por barbero y "El primero libre") en escritorio y lista en el
+  celular, con el celular enmascarado (`300 *** 0001`); cancelar turno y cerrar la fila con hoja de
+  confirmación. Caja en 390, 768 y 1280 px con "Cerrar caja" y "Nueva venta" a mano, hoja de
+  cierre con la diferencia en palabras ("Cuadra", "Faltan $ …"), anular y reabrir con hoja, y la
+  venta nueva resaltada. El resto del cobro con secciones e interruptores. Detalle en `tasks.md`.
+  Prueba desde el celular: entrar como dueño, abrir **Fila**, tocar un turno → "Cancelar turno"
+  → "No, dejarlo"; abrir **Caja**, "Cerrar caja", escribir el efectivo y ver "Cuadra" o "Faltan",
+  "Todavía no"; con otro celular registrar una venta y verla entrar resaltada.
 - La aprobación del hito terminado será un ADR nuevo.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
