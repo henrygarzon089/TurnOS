@@ -65,6 +65,9 @@ export async function loginAsOwner(page: Page) {
  */
 export async function openOwnerModule(page: Page, label: string) {
   const bar = page.getByRole("navigation", { name: "Accesos rápidos" });
+  const side = page.getByRole("navigation", { name: "Menú del dueño" });
+  // isVisible() no espera: mientras la pantalla carga podía elegir el menú equivocado
+  await expect(bar.or(side).first()).toBeVisible();
   if (await bar.isVisible()) {
     await bar.getByRole("button", { name: "Más" }).click();
     await page
@@ -72,10 +75,7 @@ export async function openOwnerModule(page: Page, label: string) {
       .getByRole("link", { name: label, exact: true })
       .click();
   } else {
-    await page
-      .getByRole("navigation", { name: "Menú del dueño" })
-      .getByRole("link", { name: label, exact: true })
-      .click();
+    await side.getByRole("link", { name: label, exact: true }).click();
   }
 }
 

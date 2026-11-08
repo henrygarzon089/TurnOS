@@ -51,7 +51,7 @@ test.describe("Hito 14 · esqueletos del personal", () => {
       await loginAsOwner(page);
       if (path === "/admin/fila") {
         await page
-          .getByRole("navigation", { name: "Administración" })
+          .getByRole("navigation", { name: "Accesos rápidos" })
           .getByRole("link", { name: "Caja" })
           .click();
         await expect(page).toHaveURL(/\/admin\/caja/);
@@ -60,7 +60,7 @@ test.describe("Hito 14 · esqueletos del personal", () => {
 
       const release = await holdRsc(page, path);
       await page
-        .getByRole("navigation", { name: "Administración" })
+        .getByRole("navigation", { name: "Accesos rápidos" })
         .getByRole("link", { name: label, exact: true })
         .click();
       await expect(busy(page)).toBeVisible();
