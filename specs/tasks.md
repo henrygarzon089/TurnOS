@@ -1860,6 +1860,9 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Depende de Henry: confirmar la región del proyecto de Supabase y la de las funciones en Vercel
   (si no coinciden, se cambia en la configuración del proyecto); aprobación (ADR-044, reservado).
 - Terminado: `pnpm trace --hito=14` sin huecos; misma región; CI verde.
+- Nota (2026-11-08): región verificada con la CLI (solo lectura). Supabase `uucjmxdssnmvznibrafc`
+  en `us-east-1` (N. Virginia) y las funciones de Vercel (`turnos`) en `iad1` (Washington, misma
+  zona): coinciden, no hay que cambiar nada. Queda `[ ]` hasta la aprobación de Henry (ADR-044).
 
 ---
 
