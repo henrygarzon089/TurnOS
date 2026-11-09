@@ -38,14 +38,12 @@ test.describe("REQ-061 / REQ-062 Limpieza del barbero", () => {
     // REQ-062.1 y REQ-062.2: el aviso está arriba y la fila sigue ahí
     await expect(page.getByRole("status", { name: "Apertura pendiente" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Mi fila" })).toBeVisible();
-    // REQ-062.6 botón Limpieza (en la fila; también está en el menú de abajo, REQ-078.5)
+    // REQ-062.6 botón Limpieza en el menú de abajo, con punto rojo mientras falta (T-169)
     const menu = page.getByRole("navigation", { name: "Menú del barbero" });
-    await expect(
-      page.getByRole("link", { name: "Limpieza", exact: true }).and(page.locator(":not(nav *)")),
-    ).toBeVisible();
     await expect(menu.getByRole("link", { name: "Limpieza", exact: true })).toBeVisible();
+    await expect(menu.getByTestId("cleaning-dot")).toBeVisible();
 
-    await page.getByRole("link", { name: "Registrar apertura" }).click();
+    await page.getByRole("link", { name: "Hacerla" }).click();
     const form = page.getByRole("form", { name: "Apertura" });
     await expect(form).toBeVisible();
     // REQ-061.5 el aviso de la cámara
@@ -72,6 +70,7 @@ test.describe("REQ-061 / REQ-062 Limpieza del barbero", () => {
     await page.goto("/app/fila");
     await expect(page.getByRole("heading", { name: "Mi fila" })).toBeVisible();
     await expect(page.getByRole("status", { name: "Apertura pendiente" })).toHaveCount(0);
+    await expect(menu.getByTestId("cleaning-dot")).toHaveCount(0);
   });
 
   test("REQ-061.4 el cierre no se envía sin la foto del local, y con ella sí", async ({ page }) => {

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { adminDb, loginAsBarber, resetQueue, SEED } from "./helpers";
+import { CALL, adminDb, loginAsBarber, resetQueue, SEED } from "./helpers";
 import { clsSlow4G, noHorizontalScroll, primaryButtons, smallTargets } from "./visual-helpers";
 
 /**
@@ -52,7 +52,7 @@ async function barberReady(page: Page) {
   }
 }
 
-async function height(page: Page, name: string) {
+async function height(page: Page, name: string | RegExp) {
   const box = await page.getByRole("button", { name, exact: true }).boundingBox();
   return box?.height ?? 0;
 }
@@ -91,20 +91,20 @@ test.describe("T-163 pantallas del barbero con el sistema visual (REQ-078)", () 
   }) => {
     await addTicket("Visual Gigante");
     await barberReady(page);
-    expect(await height(page, "Llamar al siguiente")).toBeGreaterThanOrEqual(80);
+    expect(await height(page, CALL)).toBeGreaterThanOrEqual(80);
     const nav = await page.getByRole("navigation", { name: "Menú del barbero" }).boundingBox();
-    const call = await page.getByRole("button", { name: "Llamar al siguiente" }).boundingBox();
+    const call = await page.getByRole("button", { name: CALL }).boundingBox();
     expect(call!.y + call!.height).toBeLessThanOrEqual(nav!.y);
 
-    await page.getByRole("button", { name: "Llamar al siguiente" }).click();
-    await expect(page.getByRole("button", { name: "Ya está en la silla" })).toBeVisible();
-    expect(await height(page, "Ya está en la silla")).toBeGreaterThanOrEqual(80);
-    expect(await height(page, "No llegó")).toBeGreaterThanOrEqual(48);
+    await page.getByRole("button", { name: CALL }).click();
+    await expect(page.getByRole("button", { name: "Empezar corte" })).toBeVisible();
+    expect(await height(page, "Empezar corte")).toBeGreaterThanOrEqual(80);
+    expect(await height(page, "No vino")).toBeGreaterThanOrEqual(48);
     expect(await primaryButtons(page)).toBe(1);
 
-    await page.getByRole("button", { name: "Ya está en la silla" }).click();
-    await expect(page.getByRole("button", { name: "Terminado" })).toBeVisible();
-    expect(await height(page, "Terminado")).toBeGreaterThanOrEqual(80);
+    await page.getByRole("button", { name: "Empezar corte" }).click();
+    await expect(page.getByRole("button", { name: "Terminar y cobrar" })).toBeVisible();
+    expect(await height(page, "Terminar y cobrar")).toBeGreaterThanOrEqual(80);
   });
 
   test("REQ-078.4 el cobro deja el total y el botón fijos abajo, con un solo botón principal", async ({
@@ -112,9 +112,9 @@ test.describe("T-163 pantallas del barbero con el sistema visual (REQ-078)", () 
   }) => {
     await addTicket("Visual Cobro");
     await barberReady(page);
-    await page.getByRole("button", { name: "Llamar al siguiente" }).click();
-    await page.getByRole("button", { name: "Ya está en la silla" }).click();
-    await page.getByRole("button", { name: "Terminado" }).click();
+    await page.getByRole("button", { name: CALL }).click();
+    await page.getByRole("button", { name: "Empezar corte" }).click();
+    await page.getByRole("button", { name: "Terminar y cobrar" }).click();
     const sheet = page.getByRole("dialog", { name: "Registrar cobro" });
     const pay = sheet.getByRole("button", { name: /^Registrar \$/ });
     await expect(pay).toBeVisible({ timeout: 15_000 });
@@ -153,11 +153,11 @@ test.describe("T-163 pantallas del barbero con el sistema visual (REQ-078)", () 
   }) => {
     await addTicket("Visual Sin Red");
     await barberReady(page);
-    await expect(page.getByRole("button", { name: "Llamar al siguiente" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: CALL })).toBeEnabled();
     await context.setOffline(true);
     try {
       await expect(page.getByText(/Sin conexión\. Mostrando lo último que vimos/)).toBeVisible();
-      await expect(page.getByRole("button", { name: "Llamar al siguiente" })).toBeDisabled();
+      await expect(page.getByRole("button", { name: CALL })).toBeDisabled();
       await expect(
         page.getByText("Sin señal no podemos avisarle. Reintentamos solos."),
       ).toBeVisible();

@@ -79,8 +79,8 @@ test.describe("Hito 14 · esqueletos del personal", () => {
     const html = await (await page.request.get("/app/fila")).text();
     const skeleton = html.indexOf('aria-busy="true"');
     expect(skeleton).toBeGreaterThan(-1);
-    // "Salir" es del encabezado, que se pinta cuando llega la sesión
-    expect(skeleton).toBeLessThan(html.indexOf("Salir"));
+    // El menú del barbero se pinta cuando llega la sesión (T-169: sin encabezado)
+    expect(skeleton).toBeLessThan(html.indexOf("Menú del barbero"));
   });
 
   test("REQ-075.1 sin sesión /app/fila sigue redirigiendo a /entrar", async ({ page }) => {
