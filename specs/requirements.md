@@ -98,10 +98,11 @@ datos, **para** cumplir la Ley 1581 de 2012.
 **Como** cliente, **quiero** dejar mi nombre, celular, el servicio que quiero y mi barbero
 preferido (o "el que esté libre"), **para** entrar en la fila.
 
-- REQ-003.1 CUANDO el cliente toca "Tomar turno", EL SISTEMA DEBE mostrar un formulario con: nombre
-  (obligatorio), celular (obligatorio), servicio (obligatorio, lista de servicios activos del
-  negocio con duración y precio) y barbero (obligatorio: lista de barberos **disponibles hoy** más
-  la opción "El que esté libre", seleccionada por defecto).
+- REQ-003.1 La portada del negocio (`/<slug>`) DEBE mostrar, mientras la fila está abierta, el
+  formulario de turno con: servicio (obligatorio, servicios activos del negocio con precio), barbero
+  (obligatorio: barberos **disponibles hoy** más "El primero libre", seleccionada por defecto),
+  nombre (obligatorio) y celular (obligatorio), y el botón "Tomar turno" (ADR-052; antes estaba en
+  una segunda pantalla, `/<slug>/turno`, que ahora lleva a la portada).
 - REQ-003.2 CUANDO el cliente escribe un celular, EL SISTEMA DEBE aceptar 10 dígitos que inicien en
   3 (con o sin espacios, con o sin `+57`), normalizarlo a E.164 y rechazar cualquier otro formato
   con un mensaje en español.
@@ -123,7 +124,7 @@ tiempo al local.
 
 - REQ-004.1 CUANDO el cliente abre "Mi turno" (URL con token no adivinable, `/t/<token>`), EL
   SISTEMA DEBE mostrar: nombre del negocio, su nombre, servicio, barbero asignado o "El que esté
-  libre", **posición** ("Eres el 3.º"), **personas delante**, **tiempo estimado** en minutos y el
+  libre", **posición** ("Vas de 3.º", ADR-052), **personas delante**, **tiempo estimado** en minutos y el
   estado del turno.
 - REQ-004.2 MIENTRAS el turno esté activo, EL SISTEMA DEBE actualizar posición y tiempo estimado
   sin que el cliente recargue, en menos de 3 segundos desde que cambia la fila.
@@ -300,8 +301,8 @@ en el local vean el orden sin preguntar.
 - REQ-013.2 Los nombres DEBEN mostrarse como **primer nombre + inicial del apellido** ("Juan P.")
   y nunca el celular (P6).
 - REQ-013.3 La pantalla DEBE actualizarse en tiempo real y mostrar el QR de la fila en una esquina.
-- REQ-013.4 CUANDO un turno pasa a `llamado`, EL SISTEMA DEBE resaltarlo durante 30 segundos con
-  el texto "Pasa a la silla de <barbero>".
+- REQ-013.4 CUANDO un turno pasa a `llamado`, EL SISTEMA DEBE mostrar durante 30 segundos una
+  franja roja arriba "LLAMANDO A <número> <nombre> → <barbero>" (ADR-052).
 - REQ-013.5 La pantalla DEBE funcionar en un navegador de Smart TV o Chromecast sin interacción
   (sin login, sin scroll, sin que la sesión caduque).
 
@@ -630,8 +631,8 @@ corte, **para** que más gente del barrio nos encuentre.
   la barbería; EL SISTEMA DEBE aceptar solo enlaces `https://` y mostrar "Ese enlace no parece
   válido" si no lo es.
 - REQ-036.2 CUANDO el turno del cliente pasa a terminado y hay enlace guardado, "Mi turno" DEBE
-  mostrar "¡Gracias por venir!" y un botón "Déjanos tu reseña en Google" que abre el enlace en una
-  pestaña nueva.
+  mostrar "Quedaste bien, <nombre>." y la tarjeta "¿Cómo te fue con <barbero>?" con el botón
+  "Dejar reseña en Google" que abre el enlace en una pestaña nueva (textos de ADR-052).
 - REQ-036.3 SI no hay enlace guardado, ENTONCES EL SISTEMA NO DEBE mostrar el botón (el mensaje de
   gracias sí).
 - REQ-036.4 El botón NO DEBE aparecer en turnos cancelados ni en "no llegó".
@@ -662,9 +663,9 @@ tomar turno, **para** que me la tengan lista cuando llegue.
 
 - REQ-038.1 Cada producto DEBE poder marcarse como "A la venta" (se muestra con precio), "De
   cortesía" (se ofrece gratis con el turno), o ambas, y tener una foto opcional.
-- REQ-038.2 La portada `/[slug]` DEBE mostrar "Lo que vendemos" con foto, nombre y precio de los
-  productos activos a la venta; solo se muestran (se compran en persona). SI no hay ninguno, la
-  sección no aparece.
+- REQ-038.2 La portada `/[slug]` DEBE ofrecer "Ver menú", que abre "Lo que vendemos" en una hoja
+  con foto, nombre y precio de los productos activos a la venta; solo se muestran (se compran en
+  persona). SI no hay ninguno, "Ver menú" no aparece (ADR-052).
 - REQ-038.3 CUANDO hay productos activos de cortesía, el formulario de turno DEBE ofrecer
   "Bebida de cortesía" con esas opciones y "No, gracias" (seleccionada por defecto); el cliente
   escoge **una** como máximo.
@@ -1585,6 +1586,66 @@ también al sol y con una mano.
   el total con "Cobrar $ …" fijos abajo.
 - REQ-078.20 Ningún control DEBE mostrar texto propio del navegador (por ejemplo "Choose File"):
   subir una foto DEBE ser un botón en español ("Subir foto", "Tomar foto").
+- REQ-078.21 La portada del negocio DEBE mostrar en una sola pantalla, en este orden: encabezado con
+  la marca y "Abierto hasta <hora>", el bloque en vivo ("N esperando", "en vivo" y una línea por
+  barbero con "n · ~ N min", "En pausa" o "Libre"), "¿Qué te vas a hacer?" (servicios en rejilla de
+  2 columnas con nombre y precio), "¿Con quién?" (fichas en una fila que se desliza, "El primero
+  libre" primero), "Tu nombre", "Tu celular" y la privacidad; "Tomar turno" DEBE ir fijo abajo con
+  "Reservar una cita" y "Ver menú" debajo cuando existan. Desde 1024 px, la fila en vivo como tabla
+  (Barbero, Estado, En fila, Espera aprox.) a la izquierda y el formulario en una tarjeta a la
+  derecha (ADR-052).
+- REQ-078.22 "Mi turno" DEBE mostrar, en este orden: encabezado con la marca, el nombre del negocio
+  y "En vivo"; la tarjeta "Tu turno" con el número a 120 px y la insignia del estado; dos celdas
+  "Vas de N.º" (con "N antes de ti") y "Te toca en ~ N min" (con "cerca de <hora>"); el barbero con
+  sus iniciales y "<servicio> · $ <precio>"; la barra de 4 pasos (En espera, Tu turno, En servicio,
+  Listo) y "Cancelar turno" en contorno rojo fijo abajo. Lo que la app tiene y el tablero no (bebida,
+  membresía, aviso por WhatsApp, cortes de fidelidad) va debajo de la barra de pasos.
+- REQ-078.23 CUANDO el turno pasa a llamado, "Mi turno" DEBE cambiar la tarjeta por un bloque rojo
+  arriba con "¡Es tu turno!", el número y "Pasa a la silla de <barbero>", el aviso "Acércate al
+  local. <barbero> te está esperando." y abajo el enlace "No puedo ir: cancelar turno". En servicio
+  DEBE decir "Con <barbero> desde <hora>"; terminado DEBE mostrar "TERMINADO · <hora>", "Quedaste
+  bien, <nombre>.", "<número> · <servicio> con <barbero>", la tarjeta de cortes (10 círculos, el
+  10.º punteado), la tarjeta de reseña de REQ-036.2 y "Tomar otro turno".
+- REQ-078.24 "Reservar una cita" DEBE mostrar arriba "Servicio" y "Barbero" como filas con
+  "Cambiar", una tira de días que se desliza (día de la semana y número), las horas libres en una
+  rejilla de 3 columnas, "Tu nombre", "Tu celular", la privacidad y el botón fijo "Confirmar · <día>,
+  <hora>". SI el barbero no tiene horas ese día, ENTONCES DEBE decir "<barbero> ya no tiene horas
+  <día>" y ofrecer "Ver el <próximo día con horas>", "Probar con otro barbero" y "Mejor tomar turno
+  en la fila". "Mi cita" DEBE mostrar "TU CITA", el día y la hora en grande y las filas Barbero,
+  Servicio (con precio) y Dónde.
+- REQ-078.25 La pantalla del televisor DEBE mostrar arriba la marca, el nombre, "● N esperando" y la
+  hora; debajo una columna por barbero con su nombre, el estado (Atendiendo, Llamando, En pausa,
+  Libre), el número que atiende en grande y los siguientes con nombre y número (o "Cita <hora>"); y
+  abajo el QR con "Escanea para tomar turno" y "y espera en tu casa. Te avisamos por WhatsApp."
+- REQ-078.26 El CSS que sirve producción DEBE ser el del build del mismo commit. `pnpm check:deploy
+  <url>` DEBE fallar SI el CSS publicado no trae los tokens de `globals.css`.
+- REQ-078.27 Desde 1024 px, todas las pantallas del dueño DEBEN usar el ancho de escritorio (hasta
+  1152 px junto al menú lateral) y NINGUNA tabla DEBE quedar cortada ni con desplazamiento
+  horizontal (ADR-053). El dueño DEBE ver arriba una barra azul marino a todo el ancho con el
+  nombre del negocio, la fecha y su menú ("Salir" dentro); el menú lateral DEBE mostrar el conteo
+  de la fila y de las citas de hoy, y la insignia roja de Limpieza e Inventario cuando piden acción.
+- REQ-078.28 En escritorio, "Hoy" DEBE seguir el orden del tablero Dueno-Hoy: "Fila en vivo" con
+  "Caja de hoy" al lado; "Piden tu atención" con "Citas de hoy" al lado; "Ingresos de la semana" con
+  "Para recordar" al lado. Junto al título DEBE decir "en vivo · <hora>". "Fila en vivo" DEBE ser una
+  tabla Barbero · Ahora · Desde · En su fila, y "Para recordar" DEBE listar personas (CUMPLE / NO
+  VUELVE) con "Escribirle". Los días de la semana que no han llegado DEBEN mostrar "—".
+- REQ-078.29 En el celular, "Hoy" DEBE empezar con la cabecera azul "Hoy · <fecha> · en vivo" y,
+  si hay alertas, con el bloque "Piden tu atención" antes de la fila; cada barbero de "Fila en vivo"
+  DEBE mostrar su turno o estado, los minutos y "N en fila".
+- REQ-078.30 En la fila del dueño, cada carril DEBE medir lo mismo (también "El primero libre") y
+  NINGÚN nombre DEBE partirse letra por letra; NO DEBE haber la hilera de chips de presentes (el
+  estado va en el encabezado del carril). Los cobros pendientes DEBEN verse en una sola fila "N
+  cobros pendientes" que abre la lista (como REQ-078.18) y NO DEBEN empujar la fila.
+- REQ-078.31 La caja del dueño DEBE tener junto al título la fecha y "Cierres anteriores"; en
+  escritorio, ventas como tabla (Hora · Concepto · Cliente · Barbero · Medio · Valor) con buscador y
+  filtros por barbero y por medio, y "Por barbero" con Serv. y Comisión.
+- REQ-078.32 Semana DEBE mostrar arriba Ingresos, Servicios, Comisiones y Queda al negocio, y la
+  tabla por barbero con %, Servicios, Comisión serv., Productos, Compras suyas y A pagar (en el
+  celular, "A PAGAR" por barbero). La ocupación se conserva debajo.
+- REQ-078.33 Clientes del dueño, en escritorio, DEBE ser una tabla (Nombre · Celular · Última vez ·
+  Barbero habitual · Cortes · Fidelidad · Membresía) con el celular enmascarado; Barberos,
+  Servicios, Recordar, Membresías, Tarjetas de regalo e Inventario DEBEN verse como las tablas de su
+  tablero, y Horario DEBE mostrar las horas en español ("9:00 a. m.").
 
 Se mantienen sin cambio: la casilla del aviso de privacidad antes de guardar datos (REQ-002), las
 pantallas públicas sin celulares (REQ-013.2) y los textos en español colombiano (NFR-006).
@@ -1598,7 +1659,9 @@ Preguntas abiertas del Hito 16:
 - **PA-H16-3**: ¿se guardan en el repo (`docs/diseno/tableros/`) capturas PNG de los 20 tableros para
   que el diseño no dependa del enlace del lienzo? **Resuelta (Henry, 2026-11-07): sí.**
 
-Fuera de alcance del Hito 16: cambiar flujos, textos de negocio (salvo los del barbero, ADR-051) o funciones; modo oscuro; logo o
+Fuera de alcance del Hito 16: cambiar flujos (salvo tomar turno en una pantalla, ADR-052), textos
+de negocio (salvo los del barbero y el cliente, ADR-051 y ADR-052) o funciones (salvo buscar y
+filtrar las ventas de la caja, ADR-053); modo oscuro; logo o
 marca propia de TurnOS más allá del punto rojo y el nombre; ilustraciones; animaciones de celebración.
 
 ---

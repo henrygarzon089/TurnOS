@@ -18,7 +18,7 @@ export default async function PastCashPage({ params }: { params: Promise<{ fecha
   const summary = await getCashDay(fecha);
   if (!summary) notFound();
   return (
-    <main data-wide data-tablet className="pb-6">
+    <main data-tablet className="pb-6">
       <CashDay
         businessId={session.business.id}
         businessName={session.business.name}

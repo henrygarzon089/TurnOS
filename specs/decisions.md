@@ -757,6 +757,20 @@
   `requirements.md` §6). La aprobación del hito será ADR-044 (reservado). Número: ADR-043 es el primero libre
   después de ADR-042 (Hito 13).
 
+## ADR-044 · Aprobación del Hito 14 (rendimiento percibido y medición)
+- Estado: **aceptada** (Henry, 2026-11-09)
+- Contexto: REQ-075 implementado en T-130…T-133 (PRs #110, #112, #113 y #131): esqueletos de carga en
+  `/[slug]`, `/t/[token]`, `/app/fila`, `/admin/fila` y `/admin/caja` (la sesión del personal se
+  espera dentro de un `Suspense`), y Speed Insights anónimo con `redactVitalsUrl`. `pnpm trace
+  --hito=14` sin huecos; la E2E `loading.spec.ts` en verde en Pixel 7 y iPhone 13. Región verificada
+  (T-133): Supabase en `us-east-1` y las funciones de Vercel en `iad1`, misma zona. Sin migraciones.
+- Decisión: Henry aprueba el Hito 14 con sus palabras: "dale doy authorizacion para poder avanzar
+  realiza todo lo que sea necesario para avanzar".
+- Consecuencias: T-133 cerrada. Queda como operación de Henry, no como condición del hito: activar
+  Speed Insights en el proyecto de Vercel, revisar la cuota de su plan y mirar los datos de `/[slug]`
+  y `/app/fila` (NFR-001) después de unos días de uso. Número: ADR-044 (estaba reservado desde
+  ADR-043).
+
 ## ADR-045 · Daviplata como medio de pago
 - Estado: **aceptada** (Henry, 2026-11-06, en el chat de coordinación)
 - Contexto: el plan operativo de Gamma acepta Daviplata además de efectivo, Nequi, transferencia y
@@ -886,3 +900,82 @@
   revisan igual cliente, acceso y dueño, una superficie a la vez. La 0069 la sube Henry con
   `supabase db push`.
 
+
+## ADR-052 · El cliente fiel al tablero; una sola pantalla para tomar turno; CSS publicado vigilado
+- Fecha: 2026-11-08 · Estado: **aceptada** (Henry, 2026-11-08: "Sí, escribe la spec" y "apenas
+  termines puedes empezar con los cambios").
+- Contexto: Henry revisó producción y el cliente no se parece al lienzo. Dos causas:
+  1. **Producción servía el CSS de antes del Hito 16.** El HTML del despliegue (`b6a8533`) traía las
+     clases nuevas (`bg-brand`…), pero el CSS publicado era el viejo (`accent` azul `#1d4ed8`,
+     esquinas `.375rem`, sin `.bg-brand`, `called` amarillo). El build arrancó con "Restored build
+     cache from previous deployment" y Turbopack reusó el CSS. Un preview con `vercel deploy --force`
+     (sin caché) sale bien. Así se veía mal **todo**: cliente, barbero y dueño.
+  2. **Con el CSS correcto, T-162 siguió la estructura vieja** (mismo error que ADR-051 con el
+     barbero): portada y formulario en dos pantallas, "Mi turno" sin la tarjeta del número, sin
+     "Vas de / Te toca en", sin la barra de pasos ni el bloque rojo arriba; "Terminado" sin la
+     tarjeta de cortes; cita en un formulario largo; TV sin franja "Llamando a" ni números.
+- Decisión:
+  - **ADR-051 aplica al cliente**: estructura, jerarquía y textos del tablero; lo que el tablero
+    muestra y la app no tiene **no se construye** (se anota); lo que la app tiene y el tablero no
+    muestra se conserva donde menos estorbe.
+  - **Tomar turno en una sola pantalla** (cambia el flujo; ADR-047 no lo permitía): la portada
+    `/[slug]` lleva la fila en vivo y el formulario; `/[slug]/turno` redirige a la portada (QR y
+    enlaces viejos siguen sirviendo). "Lo que vendemos" pasa a "Ver menú" (hoja).
+  - **Textos del cliente como el tablero**: "N esperando", "¿Qué te vas a hacer?", "¿Con quién?",
+    "El primero libre", "Tomar turno", "Vas de N.º", "Te toca en", "Quedaste bien, <nombre>.",
+    "¿Cómo te fue con <barbero>?", "Dejar reseña en Google", "Tomar otro turno", "Cancelar turno",
+    "No puedo ir: cancelar turno", "TU CITA", "Confirmar · <día>, <hora>", "Cancelar la cita".
+  - **Datos que faltan y sí se exponen** (sin columnas nuevas): `get_ticket_by_token` devuelve
+    `started_at` y `finished_at` ("Con Andrés desde 3:52 p. m.", "TERMINADO · 4:21 P. M."), y
+    `get_screen_queue` devuelve el número del turno y la hora de la cita (TV).
+  - **No se construye** (la app no lo tiene): "Silla N" (no hay sillas), prefijo "A" del número,
+    "vuelve 4:30 p. m." de la pausa, horas tomadas tachadas en la cita (solo llegan las libres),
+    "Ya llegué" del cliente (la llegada la marca el barbero o el dueño, REQ-052.2), "De parte de" y
+    "Mensaje" de la tarjeta de regalo (no existen, REQ-056.3), "Compartir por WhatsApp" en la
+    tarjeta, "Pedir que borren mis datos" (lo atiende el dueño, REQ-018.6), og:image de la tarjeta.
+  - **CSS publicado vigilado**: `pnpm check:deploy <url>` compara el CSS que sirve una URL con los
+    tokens de `globals.css` y falla si no coinciden. Henry vuelve a desplegar producción sin caché
+    (`vercel --prod --force`) y, si se repite, pone `VERCEL_FORCE_NO_BUILD_CACHE=1` en Producción.
+- Consecuencias: REQ-078.21…REQ-078.26; cambian los textos de REQ-003.1, REQ-004.1, REQ-013.4,
+  REQ-036.2 y REQ-038.2; design §22.7; tareas T-172…T-176; migración 0070 (solo funciones). Cada PR
+  lleva la captura de cada estado junto a su tablero (§22.5). Después: acceso y dueño.
+
+## ADR-053 · El dueño fiel al tablero: ancho de escritorio y estructura de cada pantalla
+- Fecha: 2026-11-08 · Estado: **aceptada** (Henry, 2026-11-08: "Sí, escríbela").
+- Contexto: Henry revisó producción y el dueño "no se ve nada igual" al lienzo. Se comparó `main`
+  con `docs/diseno/tableros/Dueno-*.png` en 1440 px y 390 px, pantalla por pantalla. Hallazgos:
+  - 11 de las 19 pantallas (Clientes, Limpieza, Productos, Inventario, Barberos, Servicios, Horario,
+    QR, Mensajes, Negocio y Privacidad) no marcan `data-wide` y en escritorio quedan en una columna
+    de 448 px: tablas de Barberos y Servicios cortadas a la derecha, tarjetas de Productos con el
+    nombre partido, botones del QR en cuatro líneas, "Cerrado" del horario fuera de su recuadro.
+  - Marco: el tablero tiene barra azul marino a todo el ancho (logo, negocio, fecha, menú del
+    usuario); la app, una franja blanca centrada con "Salir". El menú lateral no muestra conteos.
+  - "Hoy": rejilla en otro orden, "Fila en vivo" como lista y no como tabla, "Para recordar" con
+    totales y no con personas, sin "en vivo · hora". En el celular, sin cabecera ni alertas arriba.
+  - Fila: chips de presentes que el tablero no tiene, la columna "El primero libre" se aplasta hasta
+    partir el nombre letra por letra, cobros pendientes en tarjetas que empujan la fila (lo mismo que
+    ADR-051 arregló para el barbero).
+  - Caja, Semana y Clientes con otra disposición; Semana con otras cifras arriba.
+  - Horario muestra las horas en "12:00 AM" (control del navegador, en inglés).
+  La causa es la misma de ADR-051: T-165…T-167 leyeron "manda la app" (ADR-047) como permiso para no
+  seguir la disposición, y solo se midió que nada se desbordara en 1280 px, no que se pareciera.
+- Decisión:
+  - ADR-051 aplica también al dueño: **la estructura y la jerarquía del tablero se siguen**; "manda
+    la app" solo para datos o funciones que no existen (no se inventan) y para funciones que la app
+    tiene y el tablero no muestra (se conservan donde menos estorben). Cada caso se anota en la tarea.
+  - **Todas** las pantallas del dueño son anchas desde 1024 px: el ancho lo decide el layout del
+    dueño, no cada página (se acaba el `data-wide` por página).
+  - Marco del dueño como el tablero: barra azul marino a todo el ancho y menú lateral con conteos.
+  - Con los datos que ya trae la app se arman las tablas del tablero (comisiones y "Queda al
+    negocio" de la semana salen de `weekly_summary.barbers`); buscador y filtros de la caja filtran
+    en el navegador las ventas del día ya cargadas. Sin migraciones; si una columna necesita una
+    lectura nueva, la tarea lo anota y pide aprobación antes.
+  - Horas con un selector propio en español ("9:00 a. m."), no el control del navegador
+    (REQ-078.20).
+  - Cada PR lleva la captura de cada pantalla en 1440 px y 390 px junto a su tablero y la revisa
+    Henry antes de fusionar (como ADR-051).
+- No se construye (la app no lo tiene): sillas numeradas ("Silla 3"), "Marcar pagado" y "Descargar
+  PDF" de la semana, arrastrar turnos, logo del negocio, estado de plantillas de Meta, la tabla de
+  solicitudes de privacidad, "Anular" de tarjetas de regalo, "Hablar con <barbero>" de limpieza.
+- Consecuencias: REQ-078.27…REQ-078.33, design §22.8, tareas T-177…T-181 (dueño). T-168 espera
+  también estas tareas. Henry autorizó empezar el código al terminar la spec (2026-11-08).
