@@ -1859,7 +1859,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   una ruta sin token; Henry activa Speed Insights en el proyecto de Vercel y ve datos de `/[slug]` al
   día siguiente, revisando la cuota de su plan.
 
-### [ ] T-133 · Región y validación Hito 14
+### [x] T-133 · Región y validación Hito 14
 - REQ: REQ-075
 - Archivos: `scripts/traceability.ts` (`HITOS["14"] = [[75, 75]]`, ya desde el PR de la spec),
   `tests/unit/traceability.test.ts` (agregar "14" al loop), `docs/estado-del-proyecto.md`
@@ -1869,6 +1869,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Nota (2026-11-08): región verificada con la CLI (solo lectura). Supabase `uucjmxdssnmvznibrafc`
   en `us-east-1` (N. Virginia) y las funciones de Vercel (`turnos`) en `iad1` (Washington, misma
   zona): coinciden, no hay que cambiar nada. Queda `[ ]` hasta la aprobación de Henry (ADR-044).
+- Nota (2026-11-09): Henry aprueba el Hito 14 (ADR-044). Cerrada.
 
 ---
 
