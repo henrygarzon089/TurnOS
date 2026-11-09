@@ -22,7 +22,7 @@ export default async function MembershipsPage() {
   const view = (await getMembershipsView())!;
   const plan = view.plan;
   return (
-    <main data-wide className="pb-6">
+    <main className="pb-6">
       <ModuleHeader title="Membresía familiar" subtitle="Plan familiar, familias y cuotas" />
       <p className="text-muted mt-3 text-sm">
         Una familia paga una cuota y comparte los cortes durante 30 días. Al gastarlos, tiene

@@ -1619,6 +1619,33 @@ también al sol y con una mano.
   abajo el QR con "Escanea para tomar turno" y "y espera en tu casa. Te avisamos por WhatsApp."
 - REQ-078.26 El CSS que sirve producción DEBE ser el del build del mismo commit. `pnpm check:deploy
   <url>` DEBE fallar SI el CSS publicado no trae los tokens de `globals.css`.
+- REQ-078.27 Desde 1024 px, todas las pantallas del dueño DEBEN usar el ancho de escritorio (hasta
+  1152 px junto al menú lateral) y NINGUNA tabla DEBE quedar cortada ni con desplazamiento
+  horizontal (ADR-053). El dueño DEBE ver arriba una barra azul marino a todo el ancho con el
+  nombre del negocio, la fecha y su menú ("Salir" dentro); el menú lateral DEBE mostrar el conteo
+  de la fila y de las citas de hoy, y la insignia roja de Limpieza e Inventario cuando piden acción.
+- REQ-078.28 En escritorio, "Hoy" DEBE seguir el orden del tablero Dueno-Hoy: "Fila en vivo" con
+  "Caja de hoy" al lado; "Piden tu atención" con "Citas de hoy" al lado; "Ingresos de la semana" con
+  "Para recordar" al lado. Junto al título DEBE decir "en vivo · <hora>". "Fila en vivo" DEBE ser una
+  tabla Barbero · Ahora · Desde · En su fila, y "Para recordar" DEBE listar personas (CUMPLE / NO
+  VUELVE) con "Escribirle". Los días de la semana que no han llegado DEBEN mostrar "—".
+- REQ-078.29 En el celular, "Hoy" DEBE empezar con la cabecera azul "Hoy · <fecha> · en vivo" y,
+  si hay alertas, con el bloque "Piden tu atención" antes de la fila; cada barbero de "Fila en vivo"
+  DEBE mostrar su turno o estado, los minutos y "N en fila".
+- REQ-078.30 En la fila del dueño, cada carril DEBE medir lo mismo (también "El primero libre") y
+  NINGÚN nombre DEBE partirse letra por letra; NO DEBE haber la hilera de chips de presentes (el
+  estado va en el encabezado del carril). Los cobros pendientes DEBEN verse en una sola fila "N
+  cobros pendientes" que abre la lista (como REQ-078.18) y NO DEBEN empujar la fila.
+- REQ-078.31 La caja del dueño DEBE tener junto al título la fecha y "Cierres anteriores"; en
+  escritorio, ventas como tabla (Hora · Concepto · Cliente · Barbero · Medio · Valor) con buscador y
+  filtros por barbero y por medio, y "Por barbero" con Serv. y Comisión.
+- REQ-078.32 Semana DEBE mostrar arriba Ingresos, Servicios, Comisiones y Queda al negocio, y la
+  tabla por barbero con %, Servicios, Comisión serv., Productos, Compras suyas y A pagar (en el
+  celular, "A PAGAR" por barbero). La ocupación se conserva debajo.
+- REQ-078.33 Clientes del dueño, en escritorio, DEBE ser una tabla (Nombre · Celular · Última vez ·
+  Barbero habitual · Cortes · Fidelidad · Membresía) con el celular enmascarado; Barberos,
+  Servicios, Recordar, Membresías, Tarjetas de regalo e Inventario DEBEN verse como las tablas de su
+  tablero, y Horario DEBE mostrar las horas en español ("9:00 a. m.").
 
 Se mantienen sin cambio: la casilla del aviso de privacidad antes de guardar datos (REQ-002), las
 pantallas públicas sin celulares (REQ-013.2) y los textos en español colombiano (NFR-006).
@@ -1633,7 +1660,8 @@ Preguntas abiertas del Hito 16:
   que el diseño no dependa del enlace del lienzo? **Resuelta (Henry, 2026-11-07): sí.**
 
 Fuera de alcance del Hito 16: cambiar flujos (salvo tomar turno en una pantalla, ADR-052), textos
-de negocio (salvo los del barbero y el cliente, ADR-051 y ADR-052) o funciones; modo oscuro; logo o
+de negocio (salvo los del barbero y el cliente, ADR-051 y ADR-052) o funciones (salvo buscar y
+filtrar las ventas de la caja, ADR-053); modo oscuro; logo o
 marca propia de TurnOS más allá del punto rojo y el nombre; ilustraciones; animaciones de celebración.
 
 ---
