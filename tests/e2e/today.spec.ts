@@ -81,7 +81,7 @@ test.describe("Hoy del dueño", () => {
   }) => {
     await loginOwnerToToday(page);
     const cash = page.getByRole("region", { name: "Caja de hoy" });
-    await expect(cash).toContainText(/pasado \(todo el día\)/);
+    await expect(cash).toContainText(/pasado, todo el día/);
     const total0 = await pesos(page, "today-total");
     const nequi0 = await pesos(page, "today-method-nequi");
 
@@ -102,16 +102,74 @@ test.describe("Hoy del dueño", () => {
     await expect.poll(() => pesos(page, "cash-total")).toBeGreaterThanOrEqual(shown);
   });
 
-  test("REQ-076.11 en el celular el orden es alertas, fila, caja y recordar", async ({
+  test("REQ-076.11 REQ-078.29 en el celular: cabecera azul y alertas, fila, caja y recordar en ese orden", async ({
     page,
     isMobile,
   }) => {
     test.skip(!isMobile, "orden de una columna");
     await loginOwnerToToday(page);
-    const ys: number[] = [];
-    for (const name of ["Piden tu atención", "Fila en vivo", "Caja de hoy", "Para recordar"])
-      ys.push((await page.getByRole("region", { name }).boundingBox())!.y);
+    const header = page.getByTestId("today-mobile-header");
+    await expect(header).toBeVisible();
+    await expect(header).toContainText("Hoy");
+    await expect(header).toContainText("en vivo");
+    const names = ["Fila en vivo", "Caja de hoy", "Para recordar"];
+    // "Piden tu atención" solo se dibuja si hay alertas (design §22.8)
+    if (await page.getByRole("region", { name: "Piden tu atención" }).isVisible())
+      names.unshift("Piden tu atención");
+    const ys = [(await header.boundingBox())!.y];
+    for (const name of names) ys.push((await page.getByRole("region", { name }).boundingBox())!.y);
     expect([...ys].sort((a, b) => a - b)).toEqual(ys);
+    // Cada barbero con su turno o estado y "N en fila"
+    const rows = page
+      .getByRole("region", { name: "Fila en vivo" })
+      .getByRole("list", { name: "Barberos" })
+      .getByRole("listitem");
+    await expect(rows).toHaveCount(SEED.barbers.length);
+    for (const b of SEED.barbers) await expect(rows.filter({ hasText: b.name })).toBeVisible();
+    for (const row of await rows.all()) await expect(row).toContainText(/(\d+ en fila|0)$/);
+  });
+
+  test("REQ-078.28 en escritorio, el orden del tablero: fila y caja, alertas y citas, semana y recordar", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(isMobile, "solo escritorio (1280 px)");
+    await loginOwnerToToday(page);
+    await expect(page.getByTestId("today-live")).toHaveText(/en vivo · \d{1,2}:\d{2} [ap]\. m\./);
+    const box = async (name: string) => (await page.getByRole("region", { name }).boundingBox())!;
+    const [fila, caja, alertas, semana, recordar] = await Promise.all(
+      [
+        "Fila en vivo",
+        "Caja de hoy",
+        "Piden tu atención",
+        "Ingresos de la semana",
+        "Para recordar",
+      ].map(box),
+    );
+    // Fila (8) con Caja al lado; Alertas debajo de la fila; Semana (6) con Recordar al lado
+    expect(Math.abs(fila.y - caja.y)).toBeLessThan(2);
+    expect(caja.x).toBeGreaterThan(fila.x + fila.width - 1);
+    expect(fila.width).toBeGreaterThan(caja.width * 1.8);
+    expect(alertas.y).toBeGreaterThan(fila.y + fila.height - 1);
+    expect(Math.abs(semana.y - recordar.y)).toBeLessThan(2);
+    expect(semana.y).toBeGreaterThan(alertas.y + alertas.height - 1);
+    expect(Math.abs(semana.width - recordar.width)).toBeLessThan(2);
+    // La fila es una tabla Barbero · Ahora · Desde · En su fila, sin Silla
+    const table = page.getByRole("region", { name: "Fila en vivo" }).getByRole("table");
+    await expect(table.getByRole("columnheader")).toHaveText([
+      "Barbero",
+      "Ahora",
+      "Desde",
+      "En su fila",
+    ]);
+    // Recordar: personas con "Escribirle" (o el aviso de que no hay nadie)
+    const remind = page.getByRole("region", { name: "Para recordar" });
+    await expect(
+      remind
+        .getByRole("link", { name: "Escribirle" })
+        .first()
+        .or(remind.getByText("Nadie para recordar esta semana.")),
+    ).toBeVisible();
   });
 });
 
@@ -184,24 +242,30 @@ test.describe("Hoy: alertas, citas y recordar", () => {
     }
   });
 
-  test("REQ-076.7 recordar muestra cuántos cumplen y cuántos no vienen, sin celulares", async ({
+  test("REQ-076.7 REQ-078.28 recordar lista personas con Escribirle, sin mostrar celulares", async ({
     page,
   }) => {
     await loginOwnerToToday(page);
     const remind = page.getByRole("region", { name: "Para recordar" });
-    await expect(remind).toContainText(/cumplen? años esta semana/i);
-    await expect(remind).toContainText(/hace rato no vienen?/i);
-    await expect(remind.getByRole("link", { name: "Recordar" })).toHaveAttribute(
+    await expect(remind.getByRole("link", { name: "Ver todos" })).toHaveAttribute(
       "href",
       "/admin/recordar",
     );
+    const write = remind.getByRole("link", { name: "Escribirle" });
+    if ((await write.count()) > 0) {
+      await expect(write.first()).toHaveAttribute("href", /^https:\/\/wa\.me\//);
+      await expect(remind).toContainText(/CUMPLE|NO VUELVE/i);
+    } else {
+      await expect(remind).toContainText("Nadie para recordar esta semana.");
+    }
     await expect(remind).not.toContainText(/\+57|3\d{2} ?\d{3} ?\d{4}/);
   });
 });
 
 test.describe("Hoy: accesos directos y semana", () => {
-  test("REQ-076.8 los accesos llevan a Fila, a Cerrar caja y abren Nueva venta", async ({
+  test("REQ-076.8 REQ-078.29 los accesos llevan a Fila, a Cerrar caja y abren Nueva venta", async ({
     page,
+    isMobile,
   }) => {
     await loginOwnerToToday(page);
     const shortcuts = page.getByRole("group", { name: "Accesos directos" });
@@ -210,10 +274,14 @@ test.describe("Hoy: accesos directos y semana", () => {
     await page.keyboard.press("Escape");
     await page.reload(); // cierra la hoja sin depender de cómo se cierra
 
-    await shortcuts.getByRole("link", { name: "Fila" }).click();
-    await expect(page).toHaveURL(/\/admin\/fila$/, { timeout: 15_000 });
-    await page.goBack();
-    await expect(page.getByRole("heading", { name: "Hoy", level: 1 })).toBeVisible();
+    // En el celular "Fila" sale de los accesos: ya está en el menú de abajo (design §22.8)
+    if (isMobile) await expect(shortcuts.getByRole("link", { name: "Fila" })).toBeHidden();
+    else {
+      await shortcuts.getByRole("link", { name: "Fila" }).click();
+      await expect(page).toHaveURL(/\/admin\/fila$/, { timeout: 15_000 });
+      await page.goBack();
+      await expect(page.getByRole("heading", { name: "Hoy", level: 1 })).toBeVisible();
+    }
     await shortcuts.getByRole("link", { name: "Cerrar caja" }).click();
     await expect(page).toHaveURL(/\/admin\/caja$/, { timeout: 15_000 });
   });

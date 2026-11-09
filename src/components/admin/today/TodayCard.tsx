@@ -3,31 +3,46 @@ import { useId } from "react";
 import { SkeletonBlock, SkeletonScreen } from "@/components/ui/Skeleton";
 
 /**
- * Bloque de "Hoy" (design §21.1): región con título y, si hay, enlace al módulo. Cada bloque carga
- * por su cuenta, con su propio esqueleto y su propio error (REQ-076.10).
+ * Bloque de "Hoy" (design §21.1, §22.8): región con título, lo que va al lado (`aside`) y, si hay,
+ * enlace al módulo. En el celular y la tablet es una franja a todo el ancho; desde 1024 px, una
+ * tarjeta que llena su celda de la rejilla. Cada bloque carga por su cuenta, con su propio
+ * esqueleto y su propio error (REQ-076.10).
  */
 export function TodayCard({
   title,
   badge,
+  aside,
   link,
+  className = "",
+  titleClassName = "",
   children,
+  ...rest
 }: {
   title: string;
   /** Insignia de conteo junto al título (fuera del nombre de la región). */
   badge?: React.ReactNode;
+  /** Cifra o nota entre el título y el enlace ("7 esperando · ~ 25 min", "$ … hasta hoy"). */
+  aside?: React.ReactNode;
   link?: { href: string; label: string };
+  className?: string;
+  titleClassName?: string;
   children: React.ReactNode;
-}) {
+} & { "data-empty"?: boolean }) {
   const id = useId();
   return (
-    <section aria-labelledby={id} className="bg-card border-line rounded-md border">
-      <div className="border-line flex min-h-14 items-center justify-between gap-3 border-b px-4">
-        <div className="flex items-center gap-2">
-          <h2 id={id} className="text-lg font-bold">
+    <section
+      aria-labelledby={id}
+      {...rest}
+      className={`bg-card border-line border-y lg:h-full lg:rounded-md lg:border ${className}`}
+    >
+      <div className="border-line flex min-h-12 items-center justify-between gap-3 border-b px-4">
+        <div className="flex shrink-0 items-center gap-2">
+          <h2 id={id} className={`text-lg font-bold ${titleClassName}`}>
             {title}
           </h2>
           {badge}
         </div>
+        {aside && <div className="min-w-0 flex-1">{aside}</div>}
         {link && (
           <Link
             href={link.href}
@@ -45,8 +60,8 @@ export function TodayCard({
 /** Esqueleto de un bloque: título y `rows` filas, mientras llegan los datos (REQ-075.2). */
 export function TodayCardSkeleton({ rows = 4 }: { rows?: number }) {
   return (
-    <SkeletonScreen className="bg-card border-line rounded-md border">
-      <div className="border-line flex min-h-14 items-center border-b px-4">
+    <SkeletonScreen className="bg-card border-line border-y lg:h-full lg:rounded-md lg:border">
+      <div className="border-line flex min-h-12 items-center border-b px-4">
         <SkeletonBlock className="h-5 w-32" />
       </div>
       <div className="flex flex-col gap-3 p-4">

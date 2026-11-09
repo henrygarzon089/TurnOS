@@ -1462,11 +1462,15 @@ atención, **para** no tener que abrir módulo por módulo.
 - REQ-076.2 "Hoy" DEBE mostrar la **fila en vivo**: cuántos esperan, el tiempo estimado del próximo
   turno y, por cada barbero activo, su estado: "Libre", "Atendiendo a Juan P. desde hace 12 min",
   "En pausa" o "No vino hoy". Los nombres van cortos (`short_name`); NO DEBEN aparecer celulares.
+  (Desde T-178 el texto va como la tabla de REQ-078.28: "Atiende a 11 · Ana M." y los minutos en
+  "Desde"; ADR-053.)
 - REQ-076.3 CUANDO la fila o la caja cambian, "Hoy" DEBE actualizarse en < 3 s sin recargar (mismo
   canal y relectura que la fila, ADR-008; NFR-002).
 - REQ-076.4 "Hoy" DEBE mostrar la **caja de hoy**: total cobrado, total por medio de pago, ventas de
   vitrina y número de servicios terminados, con las mismas cifras de la Caja de hoy (REQ-027.1).
   Junto al total DEBE mostrar el total del **mismo día de la semana pasada** (PA-H15-1).
+  (Corregido 2026-11-09, ADR-053: el número de servicios terminados sale de "Hoy" y queda en la
+  Caja; Transferencia y Tarjeta van sumadas, design §22.8.)
 - REQ-076.5 "Hoy" DEBE mostrar las **citas de hoy**: cuántas quedan, las próximas 3 con hora, barbero
   y servicio, y cuáles ya llegaron. SI el módulo de citas está apagado, el bloque NO DEBE aparecer.
 - REQ-076.6 "Hoy" DEBE mostrar la lista de **alertas que piden acción**, cada una con un enlace al
@@ -1479,6 +1483,8 @@ atención, **para** no tener que abrir módulo por módulo.
   Un módulo apagado no genera alertas. SIN alertas, el bloque DEBE decir "Todo en orden".
 - REQ-076.7 "Hoy" DEBE mostrar cuántos clientes **cumplen años esta semana** y cuántos **hace rato no
   vienen**, con enlace a "Recordar" (REQ-037, REQ-020). NO DEBE listar sus celulares.
+  (Corregido 2026-11-09, ADR-053: en vez de los conteos, las personas con "Escribirle", REQ-078.28;
+  el celular va solo dentro del enlace de WhatsApp.)
 - REQ-076.8 "Hoy" DEBE tener accesos directos a "Nueva venta", "Fila" y "Cerrar caja".
 - REQ-076.9 En pantallas de 1024 px o más, "Hoy" DEBE mostrar además los **ingresos de la semana en
   curso por día** (barras simples, lunes a domingo): cada barra es el total de la Caja de ese día

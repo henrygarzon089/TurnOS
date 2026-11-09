@@ -91,7 +91,7 @@ export function weekdayName(day: string): string {
   return WEEKDAYS[new Date(`${day}T00:00:00Z`).getUTCDay()];
 }
 
-/** REQ-076.4 (PA-H15-1): "El jueves pasado (todo el día)". */
+/** REQ-076.4 (PA-H15-1), como el tablero Dueno-Hoy: "El jueves pasado, todo el día". */
 export function lastWeekLabel(day: string): string {
-  return `El ${weekdayName(day)} pasado (todo el día)`;
+  return `El ${weekdayName(day)} pasado, todo el día`;
 }

@@ -14,7 +14,11 @@ async function loadTodayAppointments(): Promise<Data | "off"> {
   return todayAppointments(agenda.items, agenda.today, new Date());
 }
 
-/** REQ-076.5 citas de hoy: cuántas quedan y las próximas 3 (hora, cliente, barbero, servicio). */
+/**
+ * REQ-076.5 citas de hoy: cuántas quedan (junto al título) y las próximas 3 como el tablero: hora,
+ * cliente · barbero (servicio en suave) y "Llegó" en negrita o "Pendiente" en suave. "Atendido" no
+ * se construye: la cita no sabe si el turno terminó (ADR-053).
+ */
 export async function TodayAppointments({
   load = loadTodayAppointments,
 }: { load?: () => Promise<Data | "off"> } = {}) {
@@ -26,22 +30,30 @@ export async function TodayAppointments({
   }
   if (data === "off") return null;
   return (
-    <TodayCard title="Citas de hoy" link={{ href: "/admin/citas", label: "Agenda" }}>
+    <TodayCard
+      title="Citas de hoy"
+      link={{ href: "/admin/citas", label: "Agenda" }}
+      aside={
+        data &&
+        data.remaining > 0 && (
+          <p className="text-muted text-sm">
+            {data.remaining} {data.remaining === 1 ? "queda" : "quedan"}
+          </p>
+        )
+      }
+    >
       {!data ? (
         <TodayBlockError />
       ) : (
         <>
-          <p className="text-muted px-4 pt-3 pb-2">
-            {data.remaining === 0
-              ? "No quedan citas hoy."
-              : `${data.remaining} ${data.remaining === 1 ? "queda" : "quedan"} por llegar.`}
-          </p>
-          {data.next.length > 0 && (
+          {data.next.length === 0 ? (
+            <p className="text-muted px-4 py-4">No quedan citas hoy.</p>
+          ) : (
             <ul>
               {data.next.map((a) => (
                 <li
                   key={a.id}
-                  className="border-line flex min-h-12 items-center gap-3 border-t px-4 py-2"
+                  className="border-line flex min-h-13 items-center gap-3 border-t px-4 py-2 first:border-t-0"
                 >
                   <b className="w-20 shrink-0 tabular-nums">
                     {formatTimeBogota(new Date(a.startsAt))}
@@ -51,7 +63,7 @@ export async function TodayAppointments({
                     <span className="text-muted"> · {a.service}</span>
                   </span>
                   <span
-                    className={`shrink-0 text-sm ${a.arrived ? "text-ok font-semibold" : "text-muted"}`}
+                    className={`shrink-0 text-sm ${a.arrived ? "text-ink font-bold" : "text-muted"}`}
                   >
                     {a.arrived ? "Llegó" : "Pendiente"}
                   </span>
