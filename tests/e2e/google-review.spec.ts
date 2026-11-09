@@ -109,14 +109,14 @@ test.describe("REQ-036 reseña en Google", () => {
       await loginAsBarber(barber, 0); // Juan
       const token = await ownerAdds(owner, name);
       await callWithJuan(owner, barber, name);
-      await barber.getByRole("button", { name: "Ya está en la silla" }).click();
+      await barber.getByRole("button", { name: "Empezar corte" }).click();
 
       await customer.goto(`/t/${token}`);
       await expect(customer.getByText("Te están atendiendo")).toBeVisible({ timeout: 15_000 });
       await expect(customer.getByRole("link", { name: BUTTON })).toHaveCount(0);
 
       // Sin recargar: "Mi turno" se relee con queue_changed (ADR-008)
-      await barber.getByRole("button", { name: "Terminado" }).click();
+      await barber.getByRole("button", { name: "Terminar y cobrar" }).click();
       await expect(customer.getByText(THANKS)).toBeVisible({ timeout: 15_000 });
       const review = customer.getByRole("link", { name: BUTTON });
       await expect(review).toHaveAttribute("href", LINK);
@@ -150,7 +150,7 @@ test.describe("REQ-036 reseña en Google", () => {
 
       const noShow = await ownerAdds(owner, `Falta ${suffix}`);
       await callWithJuan(owner, barber, `Falta ${suffix}`);
-      await barber.getByRole("button", { name: "No llegó" }).click();
+      await barber.getByRole("button", { name: "No vino" }).click();
       await customer.goto(`/t/${noShow}`);
       await expect(customer.getByText("Te llamamos y no estabas")).toBeVisible({
         timeout: 15_000,

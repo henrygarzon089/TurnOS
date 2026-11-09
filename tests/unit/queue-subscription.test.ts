@@ -99,3 +99,71 @@ describe("ADR-008 suscripción a queue_changed", () => {
     vi.useRealTimers();
   });
 });
+
+describe("REQ-011.7 relectura al volver a primer plano", () => {
+  function fakePage() {
+    const doc = Object.assign(new EventTarget(), {
+      visibilityState: "visible" as DocumentVisibilityState,
+    });
+    const win = new EventTarget();
+    return {
+      doc,
+      win,
+      hide: () => {
+        doc.visibilityState = "hidden";
+        doc.dispatchEvent(new Event("visibilitychange"));
+      },
+      show: () => {
+        doc.visibilityState = "visible";
+        doc.dispatchEvent(new Event("visibilitychange"));
+      },
+      pageshow: () => win.dispatchEvent(new Event("pageshow")),
+    };
+  }
+
+  it("REQ-011.7 al ocultar y mostrar la pestaña relee una sola vez (con pageshow junto)", () => {
+    vi.useFakeTimers();
+    const f = fakeClient();
+    const page = fakePage();
+    const reload = vi.fn();
+    subscribeToQueue({
+      client: f.client,
+      businessId: "b1",
+      reload,
+      pollMs: 0,
+      visibilityTarget: page.doc,
+      pageShowTarget: page.win,
+    });
+    page.hide();
+    vi.advanceTimersByTime(1000);
+    expect(reload).not.toHaveBeenCalled(); // ocultarla no relee
+    page.show();
+    page.pageshow(); // el navegador puede mandar los dos avisos juntos
+    expect(reload).not.toHaveBeenCalled(); // pasa por la misma espera de 300 ms
+    vi.advanceTimersByTime(300);
+    expect(reload).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
+  });
+
+  it("REQ-011.7 al desmontar deja de escuchar la visibilidad", () => {
+    vi.useFakeTimers();
+    const f = fakeClient();
+    const page = fakePage();
+    const reload = vi.fn();
+    const stop = subscribeToQueue({
+      client: f.client,
+      businessId: "b1",
+      reload,
+      pollMs: 0,
+      visibilityTarget: page.doc,
+      pageShowTarget: page.win,
+    });
+    stop();
+    page.hide();
+    page.show();
+    page.pageshow();
+    vi.advanceTimersByTime(1000);
+    expect(reload).not.toHaveBeenCalled();
+    vi.useRealTimers();
+  });
+});

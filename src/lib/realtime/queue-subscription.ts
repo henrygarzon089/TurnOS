@@ -10,6 +10,8 @@
  *    servidor) y prender la franja ahí movía todo (REQ-078.8). La caída de red del navegador la
  *    avisa el hook aparte.
  *  - polling de respaldo cada `pollMs` (por defecto 30 s)
+ *  - al volver a primer plano (`visibilitychange` a visible o `pageshow`) → reload() por el mismo
+ *    debounce: el navegador congela socket y reloj en segundo plano (REQ-011.7)
  */
 export type ChannelStatus = "SUBSCRIBED" | "TIMED_OUT" | "CLOSED" | "CHANNEL_ERROR";
 
@@ -27,6 +29,14 @@ export type MinimalClient = {
   removeChannel: (ch: MinimalChannel) => unknown;
 };
 
+/** `document` (o un doble de prueba): avisa `visibilitychange` y dice si quedó visible. */
+export type VisibilityTarget = Pick<EventTarget, "addEventListener" | "removeEventListener"> & {
+  readonly visibilityState: DocumentVisibilityState;
+};
+
+/** `window` (o un doble de prueba): avisa `pageshow` al restaurar desde la caché del navegador. */
+export type PageShowTarget = Pick<EventTarget, "addEventListener" | "removeEventListener">;
+
 export type SubscriptionOptions = {
   client: MinimalClient;
   businessId: string;
@@ -38,6 +48,8 @@ export type SubscriptionOptions = {
   clearTimeoutFn?: typeof clearTimeout;
   setIntervalFn?: typeof setInterval;
   clearIntervalFn?: typeof clearInterval;
+  visibilityTarget?: VisibilityTarget;
+  pageShowTarget?: PageShowTarget;
 };
 
 export function subscribeToQueue(opts: SubscriptionOptions): () => void {
@@ -52,6 +64,8 @@ export function subscribeToQueue(opts: SubscriptionOptions): () => void {
     clearTimeoutFn = clearTimeout,
     setIntervalFn = setInterval,
     clearIntervalFn = clearInterval,
+    visibilityTarget,
+    pageShowTarget,
   } = opts;
 
   let debounce: ReturnType<typeof setTimeout> | undefined;
@@ -85,7 +99,15 @@ export function subscribeToQueue(opts: SubscriptionOptions): () => void {
 
   const poll = pollMs > 0 ? setIntervalFn(() => void reload(), pollMs) : undefined;
 
+  const onVisibility = () => {
+    if (visibilityTarget?.visibilityState === "visible") scheduleReload();
+  };
+  visibilityTarget?.addEventListener("visibilitychange", onVisibility);
+  pageShowTarget?.addEventListener("pageshow", scheduleReload);
+
   return () => {
+    visibilityTarget?.removeEventListener("visibilitychange", onVisibility);
+    pageShowTarget?.removeEventListener("pageshow", scheduleReload);
     if (debounce) clearTimeoutFn(debounce);
     if (poll) clearIntervalFn(poll);
     client.removeChannel(channel);
