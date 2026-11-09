@@ -20,15 +20,20 @@ export const metadata: Metadata = { title: "Catálogo de inventario" };
  * REQ-070.1/070.2/070.6 catálogo de insumos y productos de vitrina, y REQ-073.1 servicios que
  * gastan cada insumo (design.md §18.6). Solo el dueño: lo asegura el layout de /admin.
  */
-export default async function InventoryCatalogPage() {
+export default async function InventoryCatalogPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ nuevo?: string }>;
+}) {
+  const { nuevo } = await searchParams;
   const catalog = (await getInventoryCatalog())!;
   const usageCount = (id: string) => catalog.usage.filter((u) => u.item_id === id).length;
 
   return (
     <main className="pb-6">
-      <InventoryNav current="/admin/inventario/catalogo" />
+      <InventoryNav current="/admin/inventario" />
 
-      <details className="border-line bg-card mt-4 rounded-md border">
+      <details open={nuevo === "1"} className="border-line bg-card mt-4 rounded-md border">
         <summary className="flex min-h-12 cursor-pointer items-center px-4 font-semibold">
           Nuevo ítem
         </summary>

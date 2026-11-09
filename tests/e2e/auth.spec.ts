@@ -4,7 +4,8 @@ import { appAlert, loginAsBarber, loginOwnerToToday, SEED } from "./helpers";
 test.describe("REQ-030 acceso del personal", () => {
   test("REQ-030.1 dueño entra con correo y contraseña y llega a /admin", async ({ page }) => {
     await loginOwnerToToday(page); // espera /admin y el título "Hoy" (REQ-076.1)
-    await expect(page.getByText("Dueño")).toBeVisible();
+    // REQ-078.27: en el celular el dueño se reconoce por su barra inferior ("Dueño ▾" es de 1024 px)
+    await expect(page.getByRole("navigation", { name: "Accesos rápidos" })).toBeVisible();
   });
 
   test("ADR-010 barbero entra con celular y PIN y llega a su fila", async ({ page }) => {

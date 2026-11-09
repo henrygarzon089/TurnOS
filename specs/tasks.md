@@ -31,7 +31,7 @@
 | H13 | Inventario de insumos y vitrina (ADR-039) | T-120…T-129 | REQ-070…REQ-074 |
 | H14 | Rendimiento percibido y medición (ADR-043) | T-130…T-133 | REQ-075 |
 | H15 | Inicio "Hoy" y menú del dueño (ADR-046) | T-150…T-154 | REQ-076, REQ-077 |
-| H16 | Sistema visual nuevo (ADR-047) | T-160…T-168 | REQ-078 |
+| H16 | Sistema visual nuevo (ADR-047, ADR-051, ADR-053) | T-160…T-181 | REQ-078 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -2270,8 +2270,101 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Archivos: `src/app/(staff)/app/{clientes,clientes/[id],mis-numeros,mis-fotos,limpieza,estacion}/*`
   y sus componentes, E2E del barbero.
 - Terminado: cada pantalla como Barbero-Otros (captura en el PR); ningún texto del navegador en
-  inglés; `pnpm trace --hito=16` sin huecos y el hito 16 de vuelta en el loop de
-  `tests/unit/traceability.test.ts`.
+  inglés. (El hito 16 vuelve al loop de `tests/unit/traceability.test.ts` con la última tarea de
+  T-169…T-181, cuando REQ-078.16…33 tengan prueba; ADR-053.)
+
+> Dueño fiel al tablero (ADR-053, design §22.8). Una tarea = una PR con la captura de cada pantalla
+> en 1440 px y 390 px junto a su tablero. Orden: T-177 primero (marco y ancho arreglan 11 pantallas);
+> después T-178…T-181 en cualquier orden. T-177 toca `src/app/(staff)/layout.tsx`, igual que T-169:
+> la que entre segunda resuelve el choque.
+
+### [x] T-177 · Dueño: marco, ancho de escritorio y menú con conteos
+- REQ: REQ-078.27, REQ-078.16 (ADR-053, design §22.8)
+- Archivos: `src/app/(staff)/layout.tsx` (ancho del dueño en todas sus pantallas), los `data-wide`
+  de `src/app/(staff)/admin/**/page.tsx` y `OwnerQueue.tsx` (se quitan),
+  `src/components/staff/StaffHeader.tsx` (barra azul del dueño), `src/components/admin/AdminNav.tsx`
+  (conteos e insignias), `tests/unit/admin-nav.test.tsx`, E2E `tests/e2e/visual-dueno-ancho.spec.ts`.
+- Terminado: en 1280 px las 19 pantallas del dueño miden lo mismo de ancho y ninguna tabla se corta
+  (prueba que mide `scrollWidth` de cada tabla); barra azul con negocio, fecha y "Salir" en el menú
+  del dueño; conteos de Fila y Citas e insignias de Limpieza e Inventario iguales a las de "Hoy".
+- Nota (2026-11-09): hecho. Ancho `lg:max-w-6xl` para todo el dueño, sin `data-wide`
+  (`data-tablet` queda solo en la caja y vale de 768 a 1023 px). Barra azul con iniciales, negocio,
+  fecha larga y "<nombre> ▾" con "Salir"; en el celular la barra solo lleva iniciales y negocio, y
+  "Salir" está al final de "Más". Menú lateral bajo la barra con insignias rojas de Limpieza e
+  Inventario (`NavAlertBadge`: mismas alertas de "Hoy" por tipo, vía `navAlertCounts`). El E2E
+  recorre las 20 entradas del menú (19 módulos + "Hoy"). **Desvío (aprobado por Henry el
+  2026-11-09, "Sí, conéctalos"):** el número de Fila (esperando) y de Citas (de hoy, por llegar)
+  no sale de `loadOwnerAlerts`, que no tiene esos datos, sino de `getBusinessQueue`, que ya existía
+  (trae `active` y `appointments`). Va en `loadOwnerQueue` con `cache()`, que comparte con "Fila
+  en vivo" de "Hoy" (`NavCount`, `navQueueCounts`). No hay SQL nuevo, pero fuera de "Hoy" suma esa
+  lectura en cada pantalla del dueño. Con número o insignia, el nombre accesible del enlace lo
+  incluye ("Fila 3 esperando"): se ajustó el E2E de REQ-077.2 y el de REQ-030.1 ("Dueño ▾" es de
+  1024 px). "Stock por sitio" de Inventario tiene una columna por estación y en el CI se desplazaba:
+  desde 1024 px usa columnas fijas con encabezados que se parten (probado con 16 sitios).
+  Cabecera propia de cada pantalla en el celular (design §22.8): si la pantalla marca la suya con
+  `data-screen-header`, el layout oculta la barra del negocio por debajo de 1024 px (una sola barra
+  azul). T-178…T-181 deben poner ese atributo en su cabecera y en la de su `loading.tsx`. Para T-180/T-181: Clientes es una
+  lista larga a todo el ancho (el tablero pide tabla) y en Inventario y Mensajes los campos se
+  estiran a todo el ancho.
+
+### [ ] T-178 · Dueño: "Hoy" como el tablero
+- REQ: REQ-078.28, REQ-078.29, REQ-078.16
+- Archivos: `src/app/(staff)/admin/(hoy)/{page,loading}.tsx`,
+  `src/components/admin/today/{TodayQueue,TodayCash,TodayAppointments,TodayRemind,TodayWeek,TodayShortcuts}.tsx`,
+  `src/lib/domain/today.ts` (filas de la tabla, días futuros "—"), pruebas unitarias y
+  `tests/e2e/today.spec.ts`.
+- Terminado: escritorio, celular y tablet como Dueno-Hoy y Dueno-Hoy-Movil (captura en el PR);
+  "Para recordar" con personas y "Escribirle"; "en vivo · <hora>".
+
+### [ ] T-179 · Dueño: Fila y Caja como el tablero
+- REQ: REQ-078.30, REQ-078.31, REQ-078.16
+- Archivos: `src/components/queue/OwnerQueue.tsx`, `src/components/cash/*` del dueño,
+  `src/app/(staff)/admin/{fila,caja}/**`, `tests/e2e/visual-dueno-fila-caja.spec.ts`.
+- Terminado: carriles de igual ancho sin nombres partidos (prueba con un nombre largo en "El primero
+  libre"); sin chips de presentes; "N cobros pendientes" en una fila; menú "⋯"; caja con fecha,
+  "Cierres anteriores", tabla con buscador y filtros (prueba unitaria del filtro).
+
+### [ ] T-180 · Dueño: Semana, Citas y Clientes como el tablero
+- REQ: REQ-078.32, REQ-078.33, REQ-078.16
+- Archivos: `src/app/(staff)/admin/{semana,citas,fidelidad,recordar,membresias,regalos}/**`,
+  `src/app/(staff)/app/clientes/page.tsx` (vista del dueño), sus componentes y E2E de esos módulos.
+- Terminado: como Dueno-Operacion y Dueno-Clientes (captura en el PR); cifras de la semana iguales a
+  las de la caja de cada día (prueba de Comisiones y Queda al negocio); tabla de clientes con
+  `maskPhone`.
+
+### [x] T-181 · Dueño: Local y Configuración como el tablero
+- REQ: REQ-078.33, REQ-078.20, REQ-078.16
+- Archivos: `src/app/(staff)/admin/{limpieza,productos,inventario,barberos,servicios,horario,qr,mensajes,negocio,privacidad}/**`,
+  `src/components/admin/{HoursForm,CatalogLists,QrCard,...}.tsx`, `tests/e2e/visual-dueno-config.spec.ts`.
+- Terminado: como Dueno-Local y Dueno-Config (captura en el PR); horas en español con selector
+  propio (también en crear negocio); `pnpm trace --hito=16` sin huecos y el hito 16 de vuelta en el
+  loop si es la última de T-169…T-181.
+- Nota (2026-11-09): hecho; capturas en `docs/diseno/capturas/T-181/` (1440 y 390 px). Horario con
+  `TimeSelect` (un `select` con las horas en español cada 15 min más "11:59 p. m.", `hourOptions` en
+  `src/lib/domain/hours.ts`; una hora guardada fuera de los cuartos se agrega para no perderla) e
+  interruptor `Switch` "Abierto"; apagado dice "Cerrado" y guarda las horas en campos ocultos.
+  `HoursForm` usa consultas de contenedor, así se ve bien en crear negocio. Barberos y Servicios en
+  una tarjeta con su botón en la cabecera; "Visible al público" llama a `toggleService`, igual que
+  Activar/Desactivar. Mensajes, Negocio y Privacidad en 2 columnas desde 1024 px. Inventario:
+  `inventoryCatalogRows` y `filterCatalogRows` (pruebas unitarias); "Pedir" con la misma regla que
+  la alerta de "Hoy" y "Consumo raro" si el último conteo lo marcó. **Desvíos:** (1) Horario y QR
+  son dos entradas del menú: las dos pantallas muestran las dos tarjetas lado a lado; la de la
+  pantalla abierta va primero en el celular y solo su botón es relleno (REQ-078.4). (2) Barberos sin
+  "Silla" (la app no tiene sillas) y con la columna "Hoy" que ya existía. El interruptor de
+  Servicios solo va en escritorio; en el celular sigue "Desactivado" en la línea y el botón en la
+  hoja. (3) Productos lee `inventory_overview` para "categoría · existencias" y "quedan N" (ámbar)
+  cuando el producto está en la vitrina con mínimo; es una lectura más en esa pantalla. (4)
+  Inventario pierde la pestaña "Resumen": sus bloques (pendientes y movimientos lado a lado, después
+  rendimiento y stock por sitio) van debajo de la tabla del Catálogo. La edición de ítems sigue en
+  `/admin/inventario/catalogo` ("Nuevo insumo" la abre con `?nuevo=1`). Los envíos de Movimientos
+  quedan en contorno: el botón principal es "Nuevo insumo". (5) Limpieza: la app registra una
+  apertura, un cierre y una profunda por negocio, no por barbero, y no tiene "Aprobar" ni "Descargar
+  PDF" (la spec dice que el PDF ya existe, pero no está). No se inventan. Las pestañas toman los
+  nombres del tablero donde la app hace lo mismo: Revisión → "Fallas por barbero", Tareas →
+  "Tareas periódicas"; "Hoy" y "Listas" se quedan. En "Hoy", el dueño ve filas con miniatura de 64 px
+  (primera foto), "<quién> · apertura", "Incompleta"/"Tarde", "N de M", "Ver foto" y "Marcar falla"
+  (lleva a Fallas por barbero). El barbero (`/app/limpieza`) no cambia. No es la última de
+  T-169…T-181: faltan los CA de T-169…T-171 y T-178…T-180, así que el hito 16 todavía no vuelve al loop.
 
 ### [x] T-172 · CSS publicado igual al del build
 - REQ: REQ-078.26 (ADR-052, design §22.7)
@@ -2349,8 +2442,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `tests/unit/traceability.test.ts` (agregar "16" al loop), `docs/estado-del-proyecto.md`
 - Depende de Henry: recorrer cliente, barbero y dueño en su celular y en el computador, y una prueba
   en la barbería (PA-H16-2); aprobación del hito (ADR nuevo).
-- Depende también de T-169…T-171 (ADR-051), T-172…T-176 (ADR-052) y de la revisión igual de
-  acceso y dueño.
+- Depende también de T-169…T-171 (ADR-051), T-172…T-176 (ADR-052), T-177…T-181 (ADR-053) y de la
+  revisión igual de acceso.
 - Terminado: `pnpm trace --hito=16` sin huecos; CI verde; Speed Insights sin empeorar respecto al
   Hito 14 (REQ-075.3).
 - Nota (2026-11-08): `pnpm trace --hito=16` con 0 sin prueba (423 criterios en total) y el hito 16

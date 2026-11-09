@@ -30,7 +30,8 @@ export default async function BusinessPage() {
         title="Mi negocio"
         subtitle="Datos del local, comisiones, reseñas y avisos. Cada bloque se guarda por aparte."
       />
-      <div className="mt-4 flex flex-col gap-4">
+      {/* Tarjetas lado a lado desde 1024 px (tablero Dueno-Config, design §22.8) */}
+      <div data-two-up className="mt-4 grid items-start gap-4 lg:grid-cols-2">
         <BusinessForm business={data as BusinessSettings} />
         <GoogleReviewForm url={data?.google_review_url ?? null} />
         {/* REQ-073.4 porcentaje de la alerta de consumo del inventario. */}

@@ -16,7 +16,7 @@ export default async function AppointmentsPage() {
   const [settings, agenda] = await Promise.all([getAppointmentSettings(), getAppointmentAgenda()]);
   const showAgenda = agenda && (settings!.enabled || agenda.items.length > 0);
   return (
-    <main data-wide className="pb-6">
+    <main className="pb-6">
       <ModuleHeader title="Citas" subtitle="Agenda por barbero y día" />
       <p className="text-muted mt-3 text-sm">
         El cliente reserva una hora con un barbero. Al llegar, pasa de primero en la fila de ese
