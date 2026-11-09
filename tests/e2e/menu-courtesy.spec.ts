@@ -148,6 +148,11 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     // Los botones van en la barra fija de abajo, fuera de la tarjeta (REQ-078.5)
     await page.getByRole("button", { name: "Empezar corte" }).click();
     await page.getByRole("button", { name: "Terminar y cobrar" }).click();
+    // T-170: la vitrina del cobro se abre con "+ Agregar producto"
+    await page
+      .getByRole("dialog", { name: /^Cobrar a / })
+      .getByRole("button", { name: "+ Agregar producto" })
+      .click();
     const products = page.getByRole("region", { name: "Productos" });
     await expect(products.getByText("Helado")).toBeVisible();
     await expect(products.getByText("Tinto")).toHaveCount(0);
@@ -271,6 +276,10 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
 
     await page.goto("/admin/caja");
     await page.getByRole("button", { name: "+ Nueva venta" }).click();
+    await page
+      .getByRole("dialog", { name: "Nueva venta" })
+      .getByRole("button", { name: "+ Agregar producto" })
+      .click();
     const products = page.getByRole("region", { name: "Productos" });
     await expect(products.getByText("Helado")).toBeVisible();
     await expect(products.getByText("Agua")).toHaveCount(0);

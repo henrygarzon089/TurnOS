@@ -27,7 +27,10 @@ export async function noHorizontalScroll(page: Page, path: string, widths = [360
 export async function primaryButtons(page: Page) {
   return page.evaluate((brand) => {
     const modal = document.querySelector('dialog[open], [role="dialog"][aria-modal="true"]');
-    const els = [...(modal ?? document).querySelectorAll<HTMLElement>("button, a")];
+    // La pestaña elegida de un control segmentado (T-171) no es una acción: no cuenta
+    const els = [
+      ...(modal ?? document).querySelectorAll<HTMLElement>('button:not([role="tab"]), a'),
+    ];
     return els.filter((el) => {
       const r = el.getBoundingClientRect();
       return r.width > 0 && r.height > 0 && getComputedStyle(el).backgroundColor === brand;

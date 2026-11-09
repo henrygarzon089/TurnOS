@@ -376,8 +376,10 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   el proyecto de Vercel y revisar la cuota de su plan.
 - T-133 hecha (PR #131, 2026-11-08): región verificada, Supabase `us-east-1` y Vercel `iad1`; `pnpm trace
   --hito=14` sin huecos.
-- Henry aprueba el Hito 14 (ADR-044, 2026-11-09). Queda como operación: activar Speed Insights en el
-  proyecto de Vercel, revisar la cuota del plan y mirar los datos de `/[slug]` y `/app/fila`.
+- Henry aprueba el Hito 14 (ADR-044, 2026-11-09).
+- Speed Insights **apagado por costo** (ADR-054, 2026-11-09): no se activa en Vercel mientras el negocio
+  no lo pague. El código se queda y no envía nada; para retomarlo basta activarlo (con ADR nuevo). La
+  referencia de velocidad es Lighthouse móvil del CI.
 
 ### Hito 15 — inicio "Hoy" y menú del dueño (**spec aprobada**, ADR-046, 2026-11-06)
 
@@ -506,8 +508,8 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   tabla y tarjeta. Capturas en `docs/diseno/capturas/T-173/`. Sin migraciones. Siguen T-174 (Mi
   turno), T-175 (cita/regalo/privacidad) y T-176 (TV).
 - Falta de Henry: desplegar `main` cuando el CI esté en verde, recorrer cliente, barbero y dueño en
-  el celular y el computador, la prueba en la barbería (PA-H16-2), comparar Speed Insights con el
-  Hito 14 y aprobar (ADR-050, reservado).
+  el celular y el computador, la prueba en la barbería (PA-H16-2), comparar Lighthouse móvil del CI
+  con el Hito 14 (ADR-054) y aprobar (ADR-050, reservado).
 - 2026-11-09, **el dueño fiel al tablero** (ADR-053; spec en la PR #136, rama
   `claude/spec-dueno-tablero`, renumerada a REQ-078.27…33, design §22.8, T-177…T-181 porque la spec
   del cliente, PR #137, tomó ADR-052 y T-172…T-176). Cada tarea va en su propia PR con base

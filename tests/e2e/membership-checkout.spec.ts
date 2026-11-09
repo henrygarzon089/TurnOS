@@ -134,16 +134,14 @@ test.describe("REQ-047 / REQ-048 membresía en el cobro, la fila y Mi turno", ()
       await barber.getByRole("button", { name: "Terminar y cobrar" }).click();
 
       // REQ-047.1 "Usar membresía" marcado, el corte queda en $ 0 (REQ-047.3: el barbero puede)
-      const sheet = barber.getByRole("dialog", { name: "Registrar cobro" });
+      const sheet = barber.getByRole("dialog", { name: /^Cobrar a / });
       await expect(sheet.getByLabel("Usar membresía")).toBeChecked({ timeout: 15_000 });
       await expect(sheet.getByTestId("membership-line")).toHaveText(
         "Corte de membresía (quedan 3): −$ 25.000",
       );
       await expect(sheet.getByTestId("checkout-total")).toHaveText("$ 0");
-      await sheet.getByRole("button", { name: "Registrar $ 0" }).click();
-      await expect(
-        barber.getByRole("status").filter({ hasText: "Cobro registrado: $ 0" }),
-      ).toBeVisible();
+      await sheet.getByRole("button", { name: "Cobrar $ 0" }).click();
+      await expect(barber.getByRole("status").filter({ hasText: "Cobrado · $ 0" })).toBeVisible();
 
       const { data: ticket } = await admin
         .from("tickets")
@@ -219,9 +217,9 @@ test.describe("REQ-047 / REQ-048 membresía en el cobro, la fila y Mi turno", ()
         .getByRole("radiogroup", { name: "¿Quién vendió?" })
         .getByRole("radio", { name: "Juan" })
         .click();
-      await sheet.getByRole("button", { name: "Registrar $ 0" }).click();
+      await sheet.getByRole("button", { name: "Cobrar $ 0" }).click();
       await expect(
-        page.getByRole("status").filter({ hasText: "Venta registrada: $ 0" }),
+        page.getByRole("status").filter({ hasText: "Venta registrada · $ 0" }),
       ).toBeVisible();
 
       const { data: cust } = await admin

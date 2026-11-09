@@ -118,7 +118,7 @@ export function BarberNav({ cleaningDot }: { cleaningDot?: React.ReactNode }) {
           onClose={() => setSale(false)}
           onDone={(msg) => {
             setSale(false);
-            setNotice(msg.replace("Cobro registrado", "Venta registrada"));
+            setNotice(msg);
             router.refresh();
           }}
         />

@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
-import { loginAsBarber, loginAsOwner, SEED, tapNewSale } from "./helpers";
+import { loginAsBarber, loginAsOwner, SEED, tapNewSale, addProduct } from "./helpers";
 
 /** T-044 · REQ-023.4, REQ-024.1–24.3. Los montos se verifican en la base con service_role. */
 function db() {
@@ -53,16 +53,15 @@ test.describe("REQ-023.4 / REQ-024 nueva venta sin turno", () => {
     await loginAsOwner(page);
     await page.goto("/admin/caja");
     const sheet = await openNewSale(page);
-    await sheet.getByRole("button", { name: "Agregar un Helado" }).click();
-    await sheet.getByRole("button", { name: "Agregar un Helado" }).click();
+    await addProduct(sheet, "Helado", 2);
     await expect(sheet.getByTestId("checkout-total")).toHaveText("$ 6.000");
     // REQ-066.3 el dueño escoge quién vendió: "Nadie (el negocio)"
-    await expect(sheet.getByRole("button", { name: "Registrar $ 6.000" })).toBeDisabled();
+    await expect(sheet.getByRole("button", { name: "Cobrar $ 6.000" })).toBeDisabled();
     await sheet.getByRole("radio", { name: "Nadie (el negocio)" }).click();
     await sheet.getByRole("radio", { name: "Efectivo" }).click();
-    await sheet.getByRole("button", { name: "Registrar $ 6.000" }).click();
+    await sheet.getByRole("button", { name: "Cobrar $ 6.000" }).click();
     await expect(
-      page.getByRole("status").filter({ hasText: "Venta registrada: $ 6.000" }),
+      page.getByRole("status").filter({ hasText: "Venta registrada · $ 6.000" }),
     ).toBeVisible();
     const s = await lastSale();
     expect(s).toMatchObject({
@@ -81,15 +80,15 @@ test.describe("REQ-023.4 / REQ-024 nueva venta sin turno", () => {
     await sheet.getByRole("button", { name: "+ Agregar servicio" }).click();
     await sheet.getByLabel("Servicio", { exact: true }).selectOption({ label: "Corte · $ 25.000" });
     // Sin barbero no se puede registrar un servicio
-    await expect(sheet.getByRole("button", { name: "Registrar $ 25.000" })).toBeDisabled();
+    await expect(sheet.getByRole("button", { name: "Cobrar $ 25.000" })).toBeDisabled();
     await sheet
       .getByRole("radiogroup", { name: "¿Quién vendió?" })
       .getByRole("radio", { name: "Juan" })
       .click();
     await sheet.getByRole("radio", { name: "Nequi" }).click();
-    await sheet.getByRole("button", { name: "Registrar $ 25.000" }).click();
+    await sheet.getByRole("button", { name: "Cobrar $ 25.000" }).click();
     await expect(
-      page.getByRole("status").filter({ hasText: "Venta registrada: $ 25.000" }),
+      page.getByRole("status").filter({ hasText: "Venta registrada · $ 25.000" }),
     ).toBeVisible();
     const s = await lastSale();
     expect(s.ticket_id).toBeNull();
@@ -106,11 +105,11 @@ test.describe("REQ-023.4 / REQ-024 nueva venta sin turno", () => {
     const sheet = await openNewSale(page);
     await expect(sheet.getByRole("radiogroup", { name: "¿Quién vendió?" })).toHaveCount(0);
     await expect(sheet.getByText("Venta a tu nombre")).toBeVisible();
-    await sheet.getByRole("button", { name: "Agregar un Gaseosa" }).click();
+    await addProduct(sheet, "Gaseosa");
     await sheet.getByRole("radio", { name: "Efectivo" }).click();
-    await sheet.getByRole("button", { name: "Registrar $ 4.000" }).click();
+    await sheet.getByRole("button", { name: "Cobrar $ 4.000" }).click();
     await expect(
-      page.getByRole("status").filter({ hasText: "Venta registrada: $ 4.000" }),
+      page.getByRole("status").filter({ hasText: "Venta registrada · $ 4.000" }),
     ).toBeVisible();
     const s = await lastSale();
     expect(s.barbers?.display_name).toBe("Juan");
