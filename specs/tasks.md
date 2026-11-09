@@ -2290,7 +2290,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
     encabezado del carril en escritorio (un botón de 48 px no cabe en 40 px) y en el "⋯" de la línea
     roja en el celular.
   - Presentes: sin la hilera de chips, el dueño marca a un barbero ausente con "No están hoy:
-    <nombre>" debajo de los carriles, y "<barbero> no vino hoy" en el "⋯" del encabezado (también
+    <nombre>" debajo de los carriles, y "<barbero> no vino hoy" en el "⋯" del encabezado (en el
+    celular, al final de la pestaña del barbero; también
     sigue en Barberos, REQ-016.4).
   - En escritorio la fila muestra el nombre corto ("Ana M.") como el tablero; en el celular, el
     nombre completo. El detalle del turno (servicio, preferencia, minutos, celular enmascarado,
