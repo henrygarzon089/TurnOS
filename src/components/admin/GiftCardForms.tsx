@@ -243,11 +243,11 @@ export function GiftCardList({ view, limit }: { view: GiftCardsView; limit?: num
       <table className="w-full text-sm" aria-label="Tarjetas de regalo">
         <thead className="bg-brand text-brand-ink text-left text-xs">
           <tr>
-            <th className="px-3 py-2 font-bold sm:px-4">N.º</th>
-            <th className="px-3 py-2 font-bold">Para</th>
+            <th className="px-2 py-2 font-bold sm:px-4">N.º</th>
+            <th className="px-2 py-2 font-bold sm:px-3">Para</th>
             <th className="hidden px-3 py-2 text-right font-bold sm:table-cell">Valor</th>
-            <th className="px-3 py-2 text-right font-bold">Saldo</th>
-            <th className="px-4 py-2 font-bold">
+            <th className="px-2 py-2 text-right font-bold sm:px-3">Saldo</th>
+            <th className="px-2 py-2 font-bold sm:px-4">
               <span className="sr-only">Estado</span>
             </th>
           </tr>
@@ -257,10 +257,10 @@ export function GiftCardList({ view, limit }: { view: GiftCardsView; limit?: num
             const voided = c.status === "voided";
             return (
               <tr key={c.id} className={c.status === "active" ? "" : "text-muted"}>
-                <td className="px-3 py-2 font-bold whitespace-nowrap sm:px-4 sm:tracking-wide">
+                <td className="px-2 py-2 font-bold whitespace-nowrap sm:px-4 sm:tracking-wide">
                   {formatGiftCardCode(c.code)}
                 </td>
-                <td className="min-w-0 px-3 py-2">
+                <td className="min-w-0 px-2 py-2 break-words sm:px-3">
                   <p className={voided ? "line-through" : ""}>{c.recipientName ?? c.buyerName}</p>
                   {!limit && (
                     <p className="text-muted text-xs">
@@ -274,8 +274,8 @@ export function GiftCardList({ view, limit }: { view: GiftCardsView; limit?: num
                 >
                   {formatCOP(c.amount)}
                 </td>
-                <td className="px-3 py-2 text-right">{voided ? "—" : formatCOP(c.balance)}</td>
-                <td className="px-3 py-1 text-right sm:px-4">
+                <td className="px-2 py-2 text-right whitespace-nowrap sm:px-3">{voided ? "—" : formatCOP(c.balance)}</td>
+                <td className="px-2 py-1 text-right sm:px-4">
                   {c.status === "active" && !limit ? (
                     <SendButton card={c} view={view} compact />
                   ) : (

@@ -521,6 +521,18 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   #140 (numeración vieja) se cerró. Prueba desde el celular: entrar como dueño y ver la barra
   azul; "Más" → "Salir". En el computador, Barberos y Servicios se ven completos y el menú
   lateral muestra el número de la fila.
+- T-180 hecha (PR #147, rama `claude/t-180-semana-clientes-be62d4`, base `main`; REQ-078.32 y
+  .33): **Semana** con Ingresos · Servicios · Comisiones · Queda al negocio y la tabla Barbero · % ·
+  Servicios · Comisión serv. · Productos · Compras suyas · A pagar (pgTAP 0078: cuadra con la caja de
+  cada día); "Compras suyas" es un dato y no se resta (REQ-068.4 manda sobre el tablero). **Clientes**
+  del dueño en tabla con celular enmascarado, filtros y las columnas Fidelidad ("7/10") y Membresía
+  ("Familia X" / "Vence en N días"), leídas después de `search_customers` con RLS y sin SQL nuevo
+  (lectura aprobada por Henry, 2026-11-09). **Recordar** como tabla Cliente · Por qué · WhatsApp junto
+  a Fidelidad; **Membresías** junto a **Tarjetas de regalo** en tablas ("Editar plan" en una hoja).
+  Sin "Siguientes 50", sin "No trabaja" en la agenda, sin Marcar pagado / PDF / Anular. Capturas en
+  `docs/diseno/capturas/T-180/`. Prueba desde el celular: entrar como dueño y abrir Semana (cambiar
+  de semana), Clientes (buscar por los últimos números), Recordar, Fidelidad, Membresías, Regalos y
+  Citas.
 
 ### Cambio · relectura al volver a primer plano (T-182, REQ-011.7, 2026-11-09)
 
