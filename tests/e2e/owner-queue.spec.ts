@@ -20,22 +20,30 @@ test.describe("REQ-012 vista del dueño sobre la fila", () => {
     const row = page.getByRole("listitem").filter({ hasText: name });
     await expect(row).toBeVisible();
 
-    // Asegurar un barbero presente
-    const juan = page.getByRole("button", { name: /^Juan ·/ });
-    if ((await juan.textContent())?.includes("No está")) await juan.click();
+    // Asegurar un barbero presente (sin hilera de chips, REQ-078.30: se marca con service_role)
+    await adminDb()
+      .from("barbers")
+      .update({ status: "available" })
+      .eq("display_name", "Juan")
+      .eq("status", "off");
+    await page.reload();
 
-    await row.getByRole("button", { name: new RegExp(name) }).click();
+    // Las acciones van en el menú "⋯" del turno (REQ-078.30)
+    const actions = page.getByRole("button", { name: `Acciones para ${name}` });
+    await actions.click();
     const select = row.getByLabel("Llamar con");
     const juanOption = await select.locator("option", { hasText: "Juan" }).getAttribute("value");
     await select.selectOption(juanOption!);
     await row.getByRole("button", { name: "Llamar" }).click();
-    await expect(row.getByText("Llamado")).toBeVisible();
+    // El llamado sube al bloque de arriba en rojo suave: "Llamó a <n.º> · <nombre corto>"
+    await expect(page.getByText(/^Llamó a \d+ · Mostrador /)).toBeVisible();
+    await expect(row).toBeHidden();
 
-    await row.getByRole("button", { name: new RegExp(name) }).click();
-    await row.getByRole("button", { name: "Devolver a la fila" }).click();
-    await expect(row.getByText("En espera")).toBeVisible();
+    await actions.click();
+    await page.getByRole("button", { name: "Devolver a la fila" }).click();
+    await expect(row).toBeVisible();
 
-    await row.getByRole("button", { name: new RegExp(name) }).click();
+    await actions.click();
     await row.getByRole("button", { name: "Cancelar turno" }).click();
     await page.getByRole("button", { name: "Sí, cancelar turno" }).click();
     await expect(row).toBeHidden();

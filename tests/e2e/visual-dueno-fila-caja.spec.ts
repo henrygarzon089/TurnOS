@@ -6,7 +6,9 @@ import { noHorizontalScroll, primaryButtons, smallTargets } from "./visual-helpe
  * T-165 · REQ-078 en la fila y la caja del dueño (design §22.4, §22.5; tableros Dueno-Fila,
  * Dueno-Caja y Dueno-Caja-Movil): carriles por barbero en escritorio y lista en el celular con
  * celulares enmascarados, caja en 390/768/1280, anular y cerrar caja con hoja de confirmación y
- * venta nueva con resaltado.
+ * venta nueva con resaltado. T-179 (REQ-078.30, REQ-078.31, design §22.8): carriles de igual
+ * ancho sin chips, "⋯", cobros pendientes en una fila, pestañas en el celular; caja con fecha,
+ * "Cierres anteriores", tabla con buscador y filtros, y "Por barbero" con Total.
  */
 
 async function businessId() {
@@ -64,10 +66,37 @@ async function cashOpen() {
     .eq("business_day", new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" }));
 }
 
+/** El barbero presente hoy (service_role): su carril sale aunque no tenga turnos. */
 async function present(page: Page, barber: string) {
-  const b = page.getByRole("button", { name: new RegExp(`^${barber} ·`) });
-  if ((await b.textContent())?.includes("No está")) await b.click();
-  await expect(b).not.toContainText("No está");
+  await adminDb()
+    .from("barbers")
+    .update({ status: "available" })
+    .eq("id", await idOf("barbers", barber, "display_name"))
+    .eq("status", "off");
+  await page.reload();
+}
+
+/** Abre el "⋯" de un turno y devuelve su menú. */
+async function menuOf(page: Page, name: string) {
+  await page.getByRole("button", { name: `Acciones para ${name}` }).click();
+  return page.getByRole("group", { name: `Acciones para ${name}` });
+}
+
+/** Turno terminado con el cobro pendiente (service_role), como si el barbero tocara "Cobrar después". */
+async function pendingPayment(name: string) {
+  await addTicket(name, "Juan");
+  const { error } = await adminDb()
+    .from("tickets")
+    .update({
+      status: "done",
+      payment_status: "pending",
+      assigned_barber_id: await idOf("barbers", "Juan", "display_name"),
+      called_at: new Date().toISOString(),
+      started_at: new Date().toISOString(),
+      finished_at: new Date().toISOString(),
+    })
+    .eq("customer_name", name);
+  if (error) throw new Error(error.message);
 }
 
 test.describe("T-165 fila y caja del dueño con el sistema visual (REQ-078)", () => {
@@ -114,8 +143,9 @@ test.describe("T-165 fila y caja del dueño con el sistema visual (REQ-078)", ()
 
     const juan = page.getByRole("region", { name: "Carril de Juan" });
     const free = page.getByRole("region", { name: "El primero libre" });
-    await expect(juan.getByText("Carril Juan")).toBeVisible();
-    await expect(free.getByText("Carril Libre")).toBeVisible();
+    // En escritorio, nombre corto como el tablero ("Carril J.")
+    await expect(juan.getByText("Carril J.")).toBeVisible();
+    await expect(free.getByText("Carril L.")).toBeVisible();
     const a = (await juan.boundingBox())!;
     const b = (await free.boundingBox())!;
     expect(Math.abs(a.y - b.y)).toBeLessThan(2); // lado a lado
@@ -136,7 +166,7 @@ test.describe("T-165 fila y caja del dueño con el sistema visual (REQ-078)", ()
     const phone = await addTicket("Visual Celular");
     await loginAsOwner(page);
     await page.goto("/admin/fila");
-    const row = page.getByRole("listitem").filter({ hasText: "Visual Celular" });
+    const row = await menuOf(page, "Visual Celular");
     const local = phone.slice(3); // 304XXXXXXX
     await expect(row).toContainText(`${local.slice(0, 3)} *** ${local.slice(-4)}`);
     await expect(row).not.toContainText(local.slice(3, 6) + " " + local.slice(-4));
@@ -150,8 +180,9 @@ test.describe("T-165 fila y caja del dueño con el sistema visual (REQ-078)", ()
     await loginAsOwner(page);
     await page.goto("/admin/fila");
     const row = page.getByRole("listitem").filter({ hasText: "Visual Cancelar" });
-    await row.getByRole("button", { name: /Visual Cancelar/ }).click();
-    const cancel = row.getByRole("button", { name: "Cancelar turno" });
+    const cancel = (await menuOf(page, "Visual Cancelar")).getByRole("button", {
+      name: "Cancelar turno",
+    });
     expect(await cancel.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe(
       "rgb(194, 30, 47)",
     );
@@ -162,7 +193,11 @@ test.describe("T-165 fila y caja del dueño con el sistema visual (REQ-078)", ()
     await expect(sheet).toBeHidden();
     await expect(row).toBeVisible();
 
-    await row.getByRole("button", { name: "Cancelar turno" }).click();
+    await (
+      await menuOf(page, "Visual Cancelar")
+    )
+      .getByRole("button", { name: "Cancelar turno" })
+      .click();
     await page.getByRole("button", { name: "Sí, cancelar turno" }).click();
     await expect(row).toBeHidden();
   });
@@ -219,7 +254,8 @@ test.describe("T-165 fila y caja del dueño con el sistema visual (REQ-078)", ()
     await sheet.getByLabel("Motivo").fill("Prueba visual");
     await confirm.click();
     await expect(sheet).toBeHidden();
-    await expect(row.locator(".line-through").first()).toBeVisible();
+    // La fila trae la celda del celular y las de escritorio: vale la que se ve
+    await expect(row.locator(".line-through:visible").first()).toBeVisible();
   });
 
   test("REQ-078.3 cerrar caja abre una hoja con la diferencia y se puede salir sin cerrar", async ({
@@ -256,5 +292,161 @@ test.describe("T-165 fila y caja del dueño con el sistema visual (REQ-078)", ()
       .boundingBox())!;
     const sales = (await page.getByRole("region", { name: "Ventas del día" }).boundingBox())!;
     expect(sales.x).toBeGreaterThan(summary.x + summary.width - 1);
+  });
+  test('REQ-078.30 los carriles miden lo mismo y un nombre largo en "El primero libre" no se parte', async ({
+    page,
+  }) => {
+    await addTicket("Maximiliano Alejandro Bustamante Restrepo");
+    await addTicket("Carril Igual Juan", "Juan");
+    await loginAsOwner(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/admin/fila");
+    await present(page, "Juan");
+
+    await expect(page.getByRole("region", { name: "El primero libre" })).toBeVisible();
+    const lanes = page.getByRole("region", { name: /^(Carril de |El primero libre)/ });
+    const widths = await lanes.evaluateAll((els) =>
+      els.map((e) => e.getBoundingClientRect().width),
+    );
+    expect(widths.length).toBeGreaterThanOrEqual(2);
+    for (const w of widths) expect(Math.abs(w - widths[0])).toBeLessThan(1.5);
+
+    // Cada texto de la cabecera y de la fila queda en un solo renglón (no letra por letra)
+    const free = page.getByRole("region", { name: "El primero libre" });
+    for (const text of [
+      free.getByText("El primero libre", { exact: true }),
+      free.getByText("Maximiliano A."),
+    ]) {
+      const box = (await text.boundingBox())!;
+      expect(box.height).toBeLessThan(30);
+      expect(box.width).toBeGreaterThan(40);
+    }
+    await noHorizontalScroll(page, "/admin/fila", [1440]);
+  });
+
+  test("REQ-078.30 no hay hilera de chips: el estado va en el encabezado del carril", async ({
+    page,
+  }) => {
+    await loginAsOwner(page);
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/admin/fila");
+    await present(page, "Juan");
+    await expect(page.getByRole("button", { name: /^Juan · / })).toHaveCount(0);
+    const juan = page.getByRole("region", { name: "Carril de Juan" });
+    await expect(juan.getByText(/\d+ en fila/)).toBeVisible();
+    // El bloque fijo de 40 px bajo el encabezado dice qué pasa ahora
+    const block = juan.getByRole("listitem").first();
+    await expect(block).toHaveText(/Libre|Atiende|Llamó a|En pausa|No está/);
+    expect((await block.boundingBox())!.height).toBeCloseTo(40, 0);
+  });
+
+  test('REQ-078.30 las acciones del turno van en el menú "⋯" flotante, sin empujar la fila', async ({
+    page,
+  }) => {
+    await addTicket("Menu Primero");
+    await addTicket("Menu Segundo");
+    await loginAsOwner(page);
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/admin/fila");
+    const second = page.getByRole("listitem").filter({ hasText: "Menu S." });
+    const before = (await second.boundingBox())!.y;
+    const menu = await menuOf(page, "Menu Primero");
+    for (const action of ["Subir un puesto", "Bajar un puesto", "Llamar", "Cancelar turno"])
+      await expect(menu.getByRole("button", { name: action })).toBeVisible();
+    await expect(menu.getByLabel("Pasar a otro barbero")).toBeVisible();
+    await expect(menu.getByLabel("Llamar con")).toBeVisible();
+    expect((await second.boundingBox())!.y).toEqual(before);
+    await page.keyboard.press("Escape");
+    await expect(menu).toBeHidden();
+  });
+
+  test("REQ-078.30 los cobros pendientes van en una sola fila que abre la lista y no empuja la fila", async ({
+    page,
+  }) => {
+    await addTicket("Pendiente Visual Espera");
+    await pendingPayment("Pendiente Visual Cobro");
+    await loginAsOwner(page);
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/admin/fila");
+    const row = page.getByRole("button", { name: /cobros? pendientes?$/ });
+    await expect(row).toBeVisible();
+    expect((await row.boundingBox())!.height).toBeLessThanOrEqual(64);
+    // La lista no está en la página: solo la fila
+    await expect(page.getByText("Pendiente Visual Cobro")).toHaveCount(0);
+    await row.click();
+    const sheet = page.getByRole("dialog", { name: "Cobros pendientes" });
+    const item = sheet.getByRole("listitem").filter({ hasText: "Pendiente Visual Cobro" });
+    await expect(item.getByRole("button", { name: "Cobrar" })).toBeVisible();
+  });
+
+  test('REQ-078.30 en el celular: pestañas Todos / <barbero> N y "Llamar al siguiente de <barbero>"', async ({
+    page,
+  }) => {
+    await addTicket("Pestaña Juan", "Juan");
+    await addTicket("Pestaña Libre");
+    await loginAsOwner(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/admin/fila");
+    await present(page, "Juan");
+    await expect(page.getByRole("tab", { name: "Todos" })).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("button", { name: "Agregar cliente" })).toBeVisible();
+    await expect(page.getByText("Pestaña Libre")).toBeVisible();
+
+    await page.getByRole("tab", { name: /^Juan \d+$/ }).click();
+    await expect(page.getByText("Pestaña Juan")).toBeVisible();
+    await expect(page.getByText("Pestaña Libre")).toBeHidden();
+    await expect(page.getByRole("button", { name: "Llamar al siguiente de Juan" })).toBeVisible();
+    expect(await primaryButtons(page)).toBe(1);
+  });
+
+  test('REQ-078.31 la caja tiene junto al título la fecha y "Cierres anteriores"', async ({
+    page,
+  }) => {
+    await cashOpen();
+    await loginAsOwner(page);
+    for (const width of [390, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/admin/caja");
+      const title = (await page.getByRole("heading", { name: "Caja de hoy" }).boundingBox())!;
+      const date = (await page.getByLabel("Ver la caja de otro día").boundingBox())!;
+      expect(Math.abs(date.y + date.height / 2 - (title.y + title.height / 2))).toBeLessThan(20);
+      await expect(page.getByRole("link", { name: "Cierres anteriores" })).toBeVisible();
+    }
+    await expect(
+      page.locator("label").filter({ has: page.getByLabel("Ver la caja de otro día") }),
+    ).toHaveText(/^(dom|lun|mar|mié|jue|vie|sáb) \d+ [a-z]+\.\s*▾$/);
+    await expect(page.getByText("Transf. y tarjeta")).toBeVisible();
+    await expect(page.getByText("Vitrina", { exact: true })).toBeVisible();
+  });
+
+  test("REQ-078.31 en escritorio las ventas son una tabla con buscador y filtros por barbero y medio", async ({
+    page,
+  }) => {
+    await cashOpen();
+    const saleId = await saleFromOutside();
+    await loginAsOwner(page);
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/admin/caja");
+    const sales = page.getByRole("region", { name: "Ventas del día" });
+    for (const col of ["Hora", "Concepto", "Cliente", "Barbero", "Medio", "Valor"])
+      await expect(sales.getByRole("columnheader", { name: col })).toBeVisible();
+    const row = page.getByTestId(`sale-${saleId}`);
+    await expect(row).toBeVisible();
+
+    await sales.getByLabel("Barbero").selectOption("Juan");
+    await expect(row).toBeVisible();
+    await sales.getByLabel("Medio de pago").selectOption("Nequi");
+    await expect(row).toBeVisible();
+    await sales.getByLabel("Buscar cliente o concepto").fill("concepto que no existe");
+    await expect(row).toBeHidden();
+    await expect(sales.getByText("Ninguna venta coincide.")).toBeVisible();
+    await sales.getByLabel("Buscar cliente o concepto").fill("corte");
+    await expect(row).toBeVisible();
+
+    const byBarber = page.getByRole("region", { name: "Por barbero" });
+    for (const col of ["Barbero", "Serv.", "Comisión"])
+      await expect(byBarber.getByRole("columnheader", { name: col })).toBeVisible();
+    await expect(byBarber.getByRole("row").filter({ hasText: /^Total/ })).toBeVisible();
+    await noHorizontalScroll(page, "/admin/caja", [1440]);
   });
 });

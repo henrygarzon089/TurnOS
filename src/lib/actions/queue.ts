@@ -547,6 +547,27 @@ export async function callTicket(ticketId: string, barberId: string) {
     p_barber_id: barberId,
   });
 }
+/**
+ * REQ-078.30 "Llamar al siguiente de <barbero>" (fila del dueño en el celular): el mismo
+ * `call_next` del barbero, pedido por el dueño para ese barbero.
+ */
+export async function callNextFor(barberId: string): Promise<ActionResult> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return { ok: false, error: "Solo el dueño puede hacer esto." };
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("call_next", { p_barber_id: barberId });
+  if (error?.message?.includes("NEXT_APPOINTMENT"))
+    return { ok: false, error: appointmentErrorMessage(error), code: error.code };
+  if (error?.code === "P0005")
+    return {
+      ok: false,
+      error: "Ese barbero ya tiene a alguien o no está disponible.",
+      code: error.code,
+    };
+  if (error) return mapError(error);
+  afterQueueChange(session.business.id);
+  return { ok: true };
+}
 /** REQ-012.2: devolver a la fila. */
 export async function uncallTicket(ticketId: string) {
   return ownerRpc("transition_ticket", {

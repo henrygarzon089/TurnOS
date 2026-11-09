@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CashDay } from "@/components/cash/CashDay";
+import { CashDayPicker } from "@/components/cash/CashDayPicker";
 import { getCashDay, getClosures } from "@/lib/actions/cash";
 import { getStaffSession } from "@/lib/auth/session";
 import { formatCOP } from "@/lib/domain/money";
@@ -24,23 +25,22 @@ export default async function CashPage() {
         heading={
           <>
             <h1 className="text-[28px] leading-tight font-bold">Caja de hoy</h1>
-            <p className="text-muted flex flex-wrap items-center gap-x-3 text-sm">
-              {formatDayCO(summary!.day)}
-              {past.length > 0 && (
-                <a
-                  href="#cierres"
-                  className="text-brand flex min-h-12 items-center font-semibold underline underline-offset-4"
-                >
-                  Cierres anteriores
-                </a>
-              )}
-            </p>
+            {/* REQ-078.31: la fecha y "Cierres anteriores" junto al título */}
+            <CashDayPicker day={summary!.day} today={summary!.day} />
+            <a
+              href="#cierres"
+              className="text-brand flex min-h-12 items-center font-semibold underline underline-offset-4"
+            >
+              Cierres anteriores
+            </a>
           </>
         }
       />
-      {past.length > 0 && (
-        <section id="cierres" aria-label="Cierres anteriores" className="mt-6 scroll-mt-4">
-          <h2 className="mb-2 font-bold">Cierres anteriores</h2>
+      <section id="cierres" aria-label="Cierres anteriores" className="mt-6 scroll-mt-4">
+        <h2 className="mb-2 font-bold">Cierres anteriores</h2>
+        {past.length === 0 ? (
+          <p className="text-muted text-base">Todavía no hay cierres anteriores.</p>
+        ) : (
           <ul className="border-line bg-card divide-line divide-y rounded-md border">
             {past.map((c) => (
               <li key={c.day}>
@@ -56,8 +56,8 @@ export default async function CashPage() {
               </li>
             ))}
           </ul>
-        </section>
-      )}
+        )}
+      </section>
     </main>
   );
 }
