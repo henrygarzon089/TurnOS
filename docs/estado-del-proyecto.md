@@ -1,4 +1,4 @@
-# Estado del proyecto — traspaso (2026-11-07)
+# Estado del proyecto — traspaso (2026-11-09)
 
 Este documento resume la conversación en la que se construyó todo hasta aquí, para que cualquier
 persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `specs/`.
@@ -494,6 +494,24 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - Falta de Henry: desplegar `main` cuando el CI esté en verde, recorrer cliente, barbero y dueño en
   el celular y el computador, la prueba en la barbería (PA-H16-2), comparar Speed Insights con el
   Hito 14 y aprobar (ADR-050, reservado).
+- 2026-11-09, **el dueño fiel al tablero** (ADR-053; spec en la PR #136, rama
+  `claude/spec-dueno-tablero`, renumerada a REQ-078.27…33, design §22.8, T-177…T-181 porque la spec
+  del cliente, PR #137, tomó ADR-052 y T-172…T-176). Cada tarea va en su propia PR con base
+  `claude/spec-dueno-tablero`: T-177 #141, T-178 #142 y T-179 #143; T-180 #147 y T-181 #146 van
+  sobre la rama de T-177. La fusión la hace Henry: primero la #136, luego la #141 y después las
+  demás.
+- T-177 hecha (PR #141, rama `claude/t-177-marco-dueno`): todas las pantallas del dueño usan
+  `lg:max-w-6xl` (sin `data-wide`; `data-tablet` sigue de 768 a 1023 px). Hay una barra azul de
+  56 px con iniciales, negocio, fecha larga y "<nombre> ▾" con "Salir"; en el celular "Salir" está
+  en "Más". Menú lateral bajo la barra: números de Fila (esperando) y Citas (de hoy, por llegar),
+  e insignias rojas de Limpieza e Inventario. Desvío aprobado por Henry: los números salen de
+  `getBusinessQueue` con `cache()` (`loadOwnerQueue`, compartido con "Hoy"), no de
+  `loadOwnerAlerts`. Una pantalla con cabecera propia en el celular la marca con
+  `data-screen-header` y el layout oculta la barra del negocio (ya lo hace "Hoy" en la #142).
+  "Stock por sitio" de Inventario cabe en escritorio con cualquier número de estaciones. La
+  #140 (numeración vieja) se cerró. Prueba desde el celular: entrar como dueño y ver la barra
+  azul; "Más" → "Salir". En el computador, Barberos y Servicios se ven completos y el menú
+  lateral muestra el número de la fila.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
