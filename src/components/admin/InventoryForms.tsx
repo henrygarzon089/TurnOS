@@ -179,7 +179,6 @@ export function InventoryMovements({
         {tab === "refill" && (
           <ActionForm
             action={refillStation}
-            primary
             label="Reponer"
             submit="Reponer"
             pendingText="Reponiendo…"
@@ -216,7 +215,6 @@ export function InventoryMovements({
         {tab === "purchase" && (
           <ActionForm
             action={registerPurchase}
-            primary
             label="Entrada a bodega"
             submit="Registrar entrada"
             pendingText="Guardando…"
@@ -243,7 +241,6 @@ export function InventoryMovements({
         {tab === "transfer" && (
           <ActionForm
             action={transferStock}
-            primary
             label="Transferir"
             submit="Transferir"
             pendingText="Transfiriendo…"

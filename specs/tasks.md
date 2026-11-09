@@ -1859,7 +1859,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   una ruta sin token; Henry activa Speed Insights en el proyecto de Vercel y ve datos de `/[slug]` al
   día siguiente, revisando la cuota de su plan.
 
-### [ ] T-133 · Región y validación Hito 14
+### [x] T-133 · Región y validación Hito 14
 - REQ: REQ-075
 - Archivos: `scripts/traceability.ts` (`HITOS["14"] = [[75, 75]]`, ya desde el PR de la spec),
   `tests/unit/traceability.test.ts` (agregar "14" al loop), `docs/estado-del-proyecto.md`
@@ -1869,6 +1869,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Nota (2026-11-08): región verificada con la CLI (solo lectura). Supabase `uucjmxdssnmvznibrafc`
   en `us-east-1` (N. Virginia) y las funciones de Vercel (`turnos`) en `iad1` (Washington, misma
   zona): coinciden, no hay que cambiar nada. Queda `[ ]` hasta la aprobación de Henry (ADR-044).
+- Nota (2026-11-09): Henry aprueba el Hito 14 (ADR-044). Cerrada.
 
 ---
 
@@ -2258,12 +2259,20 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   lleva punto rojo en el menú (`CleaningDot`, en `ACCENT_FILL_ALLOWED`). "Nueva venta" del
   barbero vive en "Más". Henry revisa las capturas antes de fusionar (ADR-051) y sube 0069.
 
-### [ ] T-170 · Cobro en pantalla completa como el tablero
+### [x] T-170 · Cobro en pantalla completa como el tablero
 - REQ: REQ-078.16, REQ-078.19
 - Archivos: `src/components/cash/CheckoutSheet.tsx`, `src/components/cash/ProductShowcase.tsx`,
   `src/components/ui/Sheet.tsx` (variante de pantalla completa), E2E de cobro y caja.
 - Terminado: cobro, corte gratis y error al guardar como Barbero-Cobro (captura en el PR); "Nueva
   venta" del dueño con las mismas secciones; "Cobrar $ …".
+- Nota (2026-11-09): hecho; capturas en `docs/diseno/capturas/T-170/`. Desvíos: la pantalla
+  completa vive en `CheckoutSheet` (`Screen`), no en `Sheet.tsx`; `ProductShowcase` no cambió y
+  ahora se abre en la hoja "Agregar producto". Cambiar el servicio usa el selector nativo del
+  celular sobre la fila (no una hoja propia). "Descuento" sigue solo para el dueño (REQ-023).
+  "Usar membresía" muestra los cortes que quedan, no el nombre de la familia (la vista no lo trae).
+  La tarjeta de regalo pasa de medio de pago a "Pago con · Agregar"; el medio cubre lo que falta.
+  Avisos: "Cobrado · $ X" y "Venta registrada · $ X". Sin señal al guardar: recuadro "No quedó
+  cobrado." con el texto del tablero. "Dividido" general sigue sin construirse (design §22.6).
 
 ### [ ] T-171 · Barbero: Clientes, Mis números, Mis fotos, Limpieza y Mi estación
 - REQ: REQ-078.16, REQ-078.20
@@ -2363,13 +2372,89 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   sale de la lista 7 días, REQ-020.4). E2E: `week.spec.ts`, `visual-dueno-clientes.spec.ts` y los
   de recordar, cumpleaños, membresías y tarjetas ajustados a las tablas.
 
-### [ ] T-181 · Dueño: Local y Configuración como el tablero
+### [x] T-181 · Dueño: Local y Configuración como el tablero
 - REQ: REQ-078.33, REQ-078.20, REQ-078.16
 - Archivos: `src/app/(staff)/admin/{limpieza,productos,inventario,barberos,servicios,horario,qr,mensajes,negocio,privacidad}/**`,
   `src/components/admin/{HoursForm,CatalogLists,QrCard,...}.tsx`, `tests/e2e/visual-dueno-config.spec.ts`.
 - Terminado: como Dueno-Local y Dueno-Config (captura en el PR); horas en español con selector
   propio (también en crear negocio); `pnpm trace --hito=16` sin huecos y el hito 16 de vuelta en el
   loop si es la última de T-169…T-181.
+- Nota (2026-11-09): hecho; capturas en `docs/diseno/capturas/T-181/` (1440 y 390 px). Horario con
+  `TimeSelect` (un `select` con las horas en español cada 15 min más "11:59 p. m.", `hourOptions` en
+  `src/lib/domain/hours.ts`; una hora guardada fuera de los cuartos se agrega para no perderla) e
+  interruptor `Switch` "Abierto"; apagado dice "Cerrado" y guarda las horas en campos ocultos.
+  `HoursForm` usa consultas de contenedor, así se ve bien en crear negocio. Barberos y Servicios en
+  una tarjeta con su botón en la cabecera; "Visible al público" llama a `toggleService`, igual que
+  Activar/Desactivar. Mensajes, Negocio y Privacidad en 2 columnas desde 1024 px. Inventario:
+  `inventoryCatalogRows` y `filterCatalogRows` (pruebas unitarias); "Pedir" con la misma regla que
+  la alerta de "Hoy" y "Consumo raro" si el último conteo lo marcó. **Desvíos:** (1) Horario y QR
+  son dos entradas del menú: las dos pantallas muestran las dos tarjetas lado a lado; la de la
+  pantalla abierta va primero en el celular y solo su botón es relleno (REQ-078.4). (2) Barberos sin
+  "Silla" (la app no tiene sillas) y con la columna "Hoy" que ya existía. El interruptor de
+  Servicios solo va en escritorio; en el celular sigue "Desactivado" en la línea y el botón en la
+  hoja. (3) Productos lee `inventory_overview` para "categoría · existencias" y "quedan N" (ámbar)
+  cuando el producto está en la vitrina con mínimo; es una lectura más en esa pantalla. (4)
+  Inventario pierde la pestaña "Resumen": sus bloques (pendientes y movimientos lado a lado, después
+  rendimiento y stock por sitio) van debajo de la tabla del Catálogo. La edición de ítems sigue en
+  `/admin/inventario/catalogo` ("Nuevo insumo" la abre con `?nuevo=1`). Los envíos de Movimientos
+  quedan en contorno: el botón principal es "Nuevo insumo". (5) Limpieza: la app registra una
+  apertura, un cierre y una profunda por negocio, no por barbero, y no tiene "Aprobar" ni "Descargar
+  PDF" (la spec dice que el PDF ya existe, pero no está). No se inventan. Las pestañas toman los
+  nombres del tablero donde la app hace lo mismo: Revisión → "Fallas por barbero", Tareas →
+  "Tareas periódicas"; "Hoy" y "Listas" se quedan. En "Hoy", el dueño ve filas con miniatura de 64 px
+  (primera foto), "<quién> · apertura", "Incompleta"/"Tarde", "N de M", "Ver foto" y "Marcar falla"
+  (lleva a Fallas por barbero). El barbero (`/app/limpieza`) no cambia. No es la última de
+  T-169…T-181: faltan los CA de T-169…T-171 y T-178…T-180, así que el hito 16 todavía no vuelve al loop.
+
+### [x] T-172 · CSS publicado igual al del build
+- REQ: REQ-078.26 (ADR-052, design §22.7)
+- Archivos: `scripts/check-deploy.ts`, `src/lib/design/deploy-css.ts` (`compareDeployedCss`),
+  `tests/unit/deploy-css.test.ts`, `package.json` (`check:deploy`), `docs/estado-del-proyecto.md`.
+- Depende de Henry: `vercel --prod --force` (producción sin caché) y correr
+  `pnpm check:deploy https://turnos-smoky-nine.vercel.app`.
+- Terminado: la prueba unitaria falla con el CSS viejo (accent `#1d4ed8`, sin `.bg-brand`) y pasa con
+  el nuevo; el preview sin caché pasa `check:deploy`.
+- Hecho (2026-11-09). Notas y desvíos:
+  - La lógica va en `src/lib/design/deploy-css.ts` (junto a `lint-rules.ts`), no en
+    `src/lib/domain/`: es una regla del sistema visual, como `lint:design`.
+  - Tailwind publica solo los tokens que se usan y acorta los hex (`#fff`): se compara cada token
+    publicado con `globals.css` y se exigen `--color-brand` y la regla `.bg-brand`.
+  - `pnpm check:deploy https://turnos-smoky-nine.vercel.app` hoy falla (11 diferencias, sin
+    `--color-brand` ni `.bg-brand`); contra el servidor local pasa. Falta lo de Henry:
+    `vercel --prod --force` y volver a correrlo.
+
+### [ ] T-173 · Cliente: portada y tomar turno en una pantalla
+- REQ: REQ-078.16, REQ-078.21, REQ-003.1, REQ-038.2
+- Archivos: `src/app/(public)/[slug]/page.tsx`, `src/app/(public)/[slug]/turno/page.tsx` (redirige),
+  `src/components/queue/JoinForm.tsx`, `src/components/public/*` (bloque en vivo, hoja "Menú"),
+  `src/app/(public)/[slug]/loading.tsx`, E2E del cliente que entran por `/turno`.
+- Terminado: normal, guardando, error, sin conexión, esqueleto, cerrado y escritorio como
+  Cliente-Negocio y Cliente-Escritorio (captura junto al tablero en el PR).
+
+### [ ] T-174 · Cliente: Mi turno como el tablero
+- REQ: REQ-078.16, REQ-078.22, REQ-078.23, REQ-004.1, REQ-036.2
+- Archivos: `supabase/migrations/0070_public_ticket_times.sql`,
+  `supabase/tests/0070_public_ticket_times.sql`, `src/lib/queue/public-queue.ts`,
+  `src/components/queue/MyTicket.tsx`, `src/components/queue/CourtesyLine.tsx`,
+  `src/app/(public)/t/[token]/loading.tsx`, E2E de "Mi turno".
+- Terminado: en espera, sin conexión, cancelar, ¡Es tu turno!, en servicio, terminado y esqueleto
+  como Cliente-MiTurno (captura en el PR). La 0070 la sube Henry con `supabase db push`.
+
+### [ ] T-175 · Cliente: cita, Mi cita, tarjeta de regalo y privacidad
+- REQ: REQ-078.16, REQ-078.24
+- Archivos: `src/components/queue/AppointmentForm.tsx`, `src/components/queue/MyAppointment.tsx`,
+  `src/app/(public)/{[slug]/cita,c/[token],regalo/[token],[slug]/privacidad}/*`, E2E de citas y
+  regalos.
+- Terminado: reservar, vacío, Mi cita, tarjeta de regalo y privacidad como Cliente-Cita (captura en
+  el PR).
+
+### [ ] T-176 · Pantalla del televisor como el tablero
+- REQ: REQ-078.16, REQ-078.25, REQ-013.4
+- Archivos: `supabase/migrations/0071_screen_numbers.sql`, `supabase/tests/0071_screen_numbers.sql`,
+  `src/lib/actions/public.ts` (`getScreenQueue`), `src/components/queue/ScreenBoard.tsx`, E2E de la
+  pantalla.
+- Terminado: como Cliente-Pantalla en 1920×1080 (captura en el PR), llamado 30 s con la franja,
+  sin celulares; `pnpm trace --hito=16` sin huecos para REQ-078.21…26. La 0071 la sube Henry.
 
 ### [ ] T-168 · Validación Hito 16
 - REQ: REQ-078
@@ -2377,8 +2462,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `tests/unit/traceability.test.ts` (agregar "16" al loop), `docs/estado-del-proyecto.md`
 - Depende de Henry: recorrer cliente, barbero y dueño en su celular y en el computador, y una prueba
   en la barbería (PA-H16-2); aprobación del hito (ADR nuevo).
-- Depende también de T-169…T-171 (ADR-051), de T-177…T-181 (ADR-053) y de la revisión igual de
-  cliente y acceso.
+- Depende también de T-169…T-171 (ADR-051), T-172…T-176 (ADR-052), T-177…T-181 (ADR-053) y de la
+  revisión igual de acceso.
 - Terminado: `pnpm trace --hito=16` sin huecos; CI verde; Speed Insights sin empeorar respecto al
   Hito 14 (REQ-075.3).
 - Nota (2026-11-08): `pnpm trace --hito=16` con 0 sin prueba (423 criterios en total) y el hito 16

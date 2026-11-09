@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
-import { adminDb, loginAsBarber, SEED, tapNewSale } from "./helpers";
+import { adminDb, loginAsBarber, SEED, tapNewSale, addProduct } from "./helpers";
 
 /** T-095 · REQ-057: el barbero cobra con la tarjeta de regalo en "Nueva venta". */
 async function openNewSale(page: Page) {
@@ -36,7 +36,7 @@ test.describe("REQ-057 pagar con la tarjeta de regalo en el cobro", () => {
         .getByLabel("Servicio", { exact: true })
         .selectOption({ label: "Corte · $ 25.000" });
       await expect(sheet.getByTestId("checkout-total")).toHaveText("$ 25.000");
-      await sheet.getByRole("radio", { name: "Tarjeta de regalo" }).click();
+      await sheet.getByRole("button", { name: "Agregar tarjeta de regalo" }).click();
       // Se escribe como venga: minúsculas y con guion
       await sheet
         .getByLabel("Código")
@@ -45,13 +45,13 @@ test.describe("REQ-057 pagar con la tarjeta de regalo en el cobro", () => {
       await expect(sheet.getByTestId("gift-card-balance")).toHaveText(
         /^Saldo \$\s20\.000 · vence el \d+ de [a-z]+ de \d{4}$/,
       );
-      await expect(sheet.getByText("Con la tarjeta:")).toContainText("$ 20.000");
+      await expect(sheet.getByRole("region", { name: "Pago con" })).toContainText("−$ 20.000");
       await expect(sheet.getByText(/Faltan/)).toContainText("$ 5.000");
       await sheet
-        .getByRole("radiogroup", { name: "Medio para lo que falta" })
+        .getByRole("radiogroup", { name: "Medio de pago" })
         .getByRole("radio", { name: "Efectivo" })
         .click();
-      await sheet.getByRole("button", { name: "Registrar $ 25.000" }).click();
+      await sheet.getByRole("button", { name: "Cobrar $ 25.000" }).click();
       await expect(page.getByRole("status").filter({ hasText: "$ 25.000" })).toBeVisible();
 
       const { data: pays } = await db
@@ -70,12 +70,12 @@ test.describe("REQ-057 pagar con la tarjeta de regalo en el cobro", () => {
 
       // La misma tarjeta ya no tiene saldo
       const again = await openNewSale(page);
-      await again.getByRole("button", { name: "Agregar un Gaseosa" }).click();
-      await again.getByRole("radio", { name: "Tarjeta de regalo" }).click();
+      await addProduct(again, "Gaseosa");
+      await again.getByRole("button", { name: "Agregar tarjeta de regalo" }).click();
       await again.getByLabel("Código").fill(card.code);
       await again.getByRole("button", { name: "Buscar tarjeta de regalo" }).click();
       await expect(again.getByText("Esta tarjeta ya no tiene saldo.")).toBeVisible();
-      await again.getByRole("button", { name: /Registrar/ }).click();
+      await again.getByRole("button", { name: /^Cobrar \$/ }).click();
       await expect(
         again.getByText("Escribe el código de la tarjeta de regalo y búscalo."),
       ).toBeVisible();
@@ -97,16 +97,16 @@ test.describe("REQ-057 pagar con la tarjeta de regalo en el cobro", () => {
   }) => {
     await loginAsBarber(page, 0);
     const sheet = await openNewSale(page);
-    await sheet.getByRole("button", { name: "Agregar un Gaseosa" }).click();
-    await sheet.getByRole("radio", { name: "Tarjeta de regalo" }).click();
-    await expect(sheet.getByRole("region", { name: "Tarjeta de regalo" })).toBeVisible();
-    await sheet.getByRole("button", { name: "Usar otro medio de pago" }).click();
-    await expect(sheet.getByRole("region", { name: "Tarjeta de regalo" })).toHaveCount(0);
-    await expect(sheet.getByRole("radio", { name: "Tarjeta de regalo" })).not.toBeChecked();
+    await addProduct(sheet, "Gaseosa");
+    await sheet.getByRole("button", { name: "Agregar tarjeta de regalo" }).click();
+    await expect(sheet.getByLabel("Código")).toBeVisible();
+    await sheet.getByRole("button", { name: "Cerrar tarjeta de regalo" }).click();
+    await expect(sheet.getByLabel("Código")).toHaveCount(0);
+    await expect(sheet.getByRole("button", { name: "Agregar tarjeta de regalo" })).toBeVisible();
     await sheet.getByRole("radio", { name: "Efectivo" }).click();
-    await sheet.getByRole("button", { name: "Registrar $ 4.000" }).click();
+    await sheet.getByRole("button", { name: "Cobrar $ 4.000" }).click();
     await expect(
-      page.getByRole("status").filter({ hasText: "Venta registrada: $ 4.000" }),
+      page.getByRole("status").filter({ hasText: "Venta registrada · $ 4.000" }),
     ).toBeVisible();
   });
 });

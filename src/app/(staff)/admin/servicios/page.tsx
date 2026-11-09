@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/admin/PageHeader";
+import { PageHeader, Panel } from "@/components/admin/PageHeader";
 import { NewServiceButton, ServiceList } from "@/components/admin/CatalogLists";
 import { type BarberOption, type ServiceRow } from "@/components/admin/ItemForms";
 import { EmptyState } from "@/components/ui/States";
@@ -42,20 +42,24 @@ export default async function ServicesPage() {
     <main className="pb-6">
       <PageHeader
         title="Servicios"
-        subtitle="La duración define el tiempo estimado de la fila; el precio, el cobro. Un servicio desactivado deja de ofrecerse pero se conserva en el historial."
-        action={<NewServiceButton barbers={barbers} />}
+        subtitle="La duración define el tiempo estimado de la fila; el precio, el cobro. Un servicio que no es visible al público deja de ofrecerse pero se conserva en el historial."
       />
-      {services.length > 0 ? (
-        <ServiceList services={services} barbers={barbers} />
-      ) : (
-        <div className="border-line bg-card mt-4 rounded-md border">
+      <Panel
+        title="Servicios"
+        aria-label="Servicios"
+        action={<NewServiceButton barbers={barbers} />}
+        className="mt-4"
+      >
+        {services.length > 0 ? (
+          <ServiceList services={services} barbers={barbers} />
+        ) : (
           <EmptyState
             icon="scissors"
             title="Todavía no hay servicios"
             text="Agrega el primero con el botón Nuevo servicio: sin servicios no se puede tomar turno."
           />
-        </div>
-      )}
+        )}
+      </Panel>
     </main>
   );
 }

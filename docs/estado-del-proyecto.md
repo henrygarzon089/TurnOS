@@ -361,7 +361,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   6. ~~Aprobación del hito~~ hecho (ADR-042, 2026-11-05; Henry aprobó antes de la prueba en Filo,
      que queda como operación: pasos 3 a 5).
 
-### Hito 14 — rendimiento percibido y medición (**spec aprobada**, ADR-043, 2026-11-06)
+### Hito 14 — rendimiento percibido y medición (**aprobado**, ADR-044, 2026-11-09)
 
 - Spec aprobada por Henry (PR #109, `claude/h14-spec-rendimiento`): REQ-075 (esqueletos en `/[slug]`, `/t/[token]`,
   `/app/fila`, `/admin/fila`, `/admin/caja`; velocidad de usuarios reales sin tokens ni cookies),
@@ -374,8 +374,10 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   E2E `tests/e2e/loading.spec.ts`.
 - T-132 hecha (PR #113, 2026-11-06): Speed Insights con `redactVitalsUrl`. Pendiente de Henry: activarlo en
   el proyecto de Vercel y revisar la cuota de su plan.
-- Siguiente: T-133. Pendiente de Henry: confirmar la región de Supabase y de las funciones de Vercel.
-- ADR-043 aceptada; la aprobación del hito terminado será ADR-044 (reservado).
+- T-133 hecha (PR #131, 2026-11-08): región verificada, Supabase `us-east-1` y Vercel `iad1`; `pnpm trace
+  --hito=14` sin huecos.
+- Henry aprueba el Hito 14 (ADR-044, 2026-11-09). Queda como operación: activar Speed Insights en el
+  proyecto de Vercel, revisar la cuota del plan y mirar los datos de `/[slug]` y `/app/fila`.
 
 ### Hito 15 — inicio "Hoy" y menú del dueño (**spec aprobada**, ADR-046, 2026-11-06)
 
@@ -491,6 +493,13 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - CI de `main` en verde (E2E 479/479, run 42499277874) tras #129 y #132. **En producción desde el
   2026-11-08** (`vercel deploy --prod` de Henry desde `main`, sin migraciones).
 - Guía de prueba de los Hitos 8, 14, 15 y 16, con casillas: `docs/guia-de-prueba-hitos-8-14-15-16.md`.
+- **2026-11-08: producción servía el CSS de antes del Hito 16** (ADR-052). El despliegue de `b6a8533`
+  reusó la caché de build y publicó el HTML nuevo con el CSS viejo: por eso nada se parecía al
+  lienzo. Un preview con `vercel deploy --force` sale bien. **Falta de Henry**:
+  `vercel --prod --force` y después `pnpm check:deploy https://turnos-smoky-nine.vercel.app`
+  (T-172). Desde ahora ese chequeo va después de cada despliegue a producción.
+- Cliente fiel al tablero (ADR-052, design §22.7): spec en PR #137, tareas T-172…T-176 (portada y
+  tomar turno en una pantalla, Mi turno, cita/regalo/privacidad, TV; migraciones 0070 y 0071).
 - Falta de Henry: desplegar `main` cuando el CI esté en verde, recorrer cliente, barbero y dueño en
   el celular y el computador, la prueba en la barbería (PA-H16-2), comparar Speed Insights con el
   Hito 14 y aprobar (ADR-050, reservado).
@@ -634,6 +643,8 @@ Pendientes (H3): `/admin/caja`,
    (sensible), `NEXT_PUBLIC_APP_URL`. **Pendiente (Henry)**: conectar el repo de GitHub en
    Vercel (Settings → Git; el CLI no pudo: la app de Vercel no tiene acceso al repo) para que cada
    push a `main` despliegue solo. Mientras tanto: `vercel deploy --prod --scope henry-garzons-projects`.
+   Después de cada despliegue a producción: `pnpm check:deploy https://turnos-smoky-nine.vercel.app`
+   (REQ-078.26); si falla, `vercel --prod --force`.
 4. Correr `pnpm test:e2e` (y `E2E_SCREEN_KEY=<businesses.screen_key>` para la pantalla TV) y
    Lighthouse (`lighthouserc.json`) → pasar las `[~]` a `[x]` → T-030 demo con Henry → cerrar H1.
 5. CI (`.github/workflows/ci.yml`) nunca ha corrido: validar en el primer push.

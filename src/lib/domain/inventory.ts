@@ -65,7 +65,10 @@ export type InventoryItemInput = {
 
 type Parsed = { ok: true; value: InventoryItemInput } | { ok: false; error: string };
 
-function wholeQty(v: FormDataEntryValue | null, fallback: number | null): number | null | undefined {
+function wholeQty(
+  v: FormDataEntryValue | null,
+  fallback: number | null,
+): number | null | undefined {
   const s = String(v ?? "").trim();
   if (s === "") return fallback;
   return /^\d+$/.test(s) ? Number(s) : undefined;
@@ -151,7 +154,11 @@ export type PurchaseOrderLine = {
 };
 
 /** REQ-074.2 texto plano del pedido, agrupado por proveedor (sin proveedor al final). */
-export function purchaseOrderText(businessName: string, day: string, lines: PurchaseOrderLine[]): string {
+export function purchaseOrderText(
+  businessName: string,
+  day: string,
+  lines: PurchaseOrderLine[],
+): string {
   const out = [`Pedido de ${businessName} · ${day}`];
   const suppliers = [...new Set(lines.map((l) => l.supplier))].sort((a, b) =>
     a === null ? 1 : b === null ? -1 : a.localeCompare(b, "es"),
@@ -167,12 +174,19 @@ export function purchaseOrderText(businessName: string, day: string, lines: Purc
 }
 
 /** REQ-074.2 "Compartir por WhatsApp" (sin destinatario: el dueño escoge al proveedor). */
-export function purchaseOrderLink(businessName: string, day: string, lines: PurchaseOrderLine[]): string {
+export function purchaseOrderLink(
+  businessName: string,
+  day: string,
+  lines: PurchaseOrderLine[],
+): string {
   return `https://wa.me/?text=${encodeURIComponent(purchaseOrderText(businessName, day, lines))}`;
 }
 
 /** Plantilla básica (design.md §18.6): el dueño la agrega y luego escoge qué servicios la gastan. */
-export const BASIC_TEMPLATE: (Omit<InventoryItemInput, "id" | "supplier" | "productId" | "shelfMin" | "isActive"> & {
+export const BASIC_TEMPLATE: (Omit<
+  InventoryItemInput,
+  "id" | "supplier" | "productId" | "shelfMin" | "isActive"
+> & {
   suggestedYield: number;
 })[] = [
   {
@@ -251,4 +265,86 @@ export function basicTemplateItem(t: (typeof BASIC_TEMPLATE)[number]): Inventory
     productId: null,
     isActive: true,
   };
+}
+
+// ---------------------------------------------------------- catálogo (T-181) ----
+
+/** Estado de un insumo en la tabla del catálogo (tablero Dueno-Local, design §22.8). */
+export type InventoryStatus = "rare" | "order" | "ok";
+export const INVENTORY_STATUS_LABELS: Record<InventoryStatus, string> = {
+  rare: "Consumo raro",
+  order: "Pedir",
+  ok: "Bien",
+};
+
+/** Lo que la tabla necesita de `inventory_overview` (REQ-078.33). */
+export type CatalogSource = {
+  items: {
+    id: string;
+    name: string;
+    group: InventoryGroup;
+    presentation: string;
+    unitCost: number;
+    minQty: number;
+    warehouse: number;
+    stock: Record<string, number>;
+  }[];
+  locations: { id: string; kind: "warehouse" | "shelf" | "station" }[];
+  alerts: { itemId: string }[];
+};
+
+export type CatalogRow = {
+  id: string;
+  name: string;
+  group: InventoryGroup;
+  unit: string;
+  warehouse: number;
+  stations: number;
+  minQty: number;
+  unitCost: number;
+  status: InventoryStatus;
+};
+
+/**
+ * Filas de la tabla Insumo · Unidad · En bodega · En estaciones · Mínimo · Costo · Estado
+ * (REQ-078.33). "Consumo raro" si el último conteo de alguna estación lo marcó (REQ-073.4); "Pedir"
+ * con la misma regla que la alerta de "Hoy": mínimo mayor que 0 y bodega por debajo.
+ */
+export function inventoryCatalogRows(src: CatalogSource): CatalogRow[] {
+  const stations = src.locations.filter((l) => l.kind === "station").map((l) => l.id);
+  const rare = new Set(src.alerts.map((a) => a.itemId));
+  return src.items
+    .map((i) => ({
+      id: i.id,
+      name: i.name,
+      group: i.group,
+      unit: i.presentation,
+      warehouse: i.warehouse,
+      stations: stations.reduce((s, id) => s + (i.stock[id] ?? 0), 0),
+      minQty: i.minQty,
+      unitCost: i.unitCost,
+      status: (rare.has(i.id)
+        ? "rare"
+        : i.minQty > 0 && i.warehouse < i.minQty
+          ? "order"
+          : "ok") as InventoryStatus,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name, "es"));
+}
+
+const fold = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLocaleLowerCase("es")
+    .trim();
+
+/** Buscador y "Todas las categorías" de la tabla, en el navegador (REQ-078.33). */
+export function filterCatalogRows(
+  rows: CatalogRow[],
+  query: string,
+  group: InventoryGroup | "",
+): CatalogRow[] {
+  const q = fold(query);
+  return rows.filter((r) => (!group || r.group === group) && (!q || fold(r.name).includes(q)));
 }

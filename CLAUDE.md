@@ -40,6 +40,9 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
   apertura, cierre y profunda con foto, aviso en la fila, revisión del dueño con fallas por barbero,
   tareas periódicas con PDF e historial; fotos en el bucket privado `cleaning`, borradas a los 90
   días; migraciones 0057–0059 en producción. Falta la operación en Filo (encenderla y la prueba).
+- **Hito 14 (rendimiento percibido y medición, REQ-075, ADR-043)** aprobado (ADR-044, 2026-11-09):
+  esqueletos de carga en las pantallas públicas y del personal, Speed Insights anónimo con
+  `redactVitalsUrl`; sin migraciones. Falta que Henry active Speed Insights en Vercel.
 - **Hito 13 (inventario de insumos y vitrina, REQ-070…074, ADR-039)** aprobado (ADR-042,
   2026-11-05): catálogo, dotación por estación con reposición por envase vacío, vitrina que se
   descuenta desde la caja, conteos con alerta de consumo, orden de compra y "Mi estación";
