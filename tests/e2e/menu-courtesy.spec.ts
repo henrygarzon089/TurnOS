@@ -133,9 +133,12 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     const ownerCtx = await browser.newContext();
     const owner = await ownerCtx.newPage();
     await loginAsOwner(owner);
-    const ownerRow = owner.getByRole("listitem").filter({ hasText: name });
-    await expect(ownerRow.getByText("🥤 Tinto")).toBeVisible({ timeout: 15_000 });
-    await expect(ownerRow.getByText("Servida ✓")).toBeVisible();
+    // La bebida se ve en el menú "⋯" del turno (REQ-078.30)
+    await owner.goto("/admin/fila");
+    await owner.getByRole("button", { name: `Acciones para ${name}` }).click({ timeout: 15_000 });
+    const ownerMenu = owner.getByRole("group", { name: `Acciones para ${name}` });
+    await expect(ownerMenu.getByText("🥤 Tinto")).toBeVisible();
+    await expect(ownerMenu.getByText("Servida ✓")).toBeVisible();
     await ownerCtx.close();
 
     // Termina el turno: en el cobro no aparecen las cortesías y no hay venta
@@ -158,11 +161,19 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     const name = `Aromática E2E ${Date.now().toString(36)}`;
     await takeTicket(context, name, "Aromática");
     await loginAsOwner(page);
+    await page.goto("/admin/fila");
+    // En la fila se ve el vaso; la bebida y "Servida ✓" van en el menú "⋯" (REQ-078.30)
     const row = page.getByRole("listitem").filter({ hasText: name });
-    await expect(row.getByText("🥤 Aromática")).toBeVisible({ timeout: 15_000 });
-    await row.getByRole("button", { name: "Servida ✓" }).click();
-    await expect(row.getByRole("button", { name: "Servida ✓" })).toHaveCount(0);
-    await expect(row.getByText("Servida ✓")).toBeVisible();
+    await expect(row.getByLabel("Cortesía: Aromática")).toBeVisible({ timeout: 15_000 });
+    const actions = page.getByRole("button", { name: `Acciones para ${name}` });
+    const menu = page.getByRole("group", { name: `Acciones para ${name}` });
+    await actions.click();
+    await expect(menu.getByText("🥤 Aromática")).toBeVisible();
+    await menu.getByRole("button", { name: "Servida ✓" }).click();
+    await expect(row.getByLabel("Cortesía: Aromática")).toBeHidden();
+    await actions.click();
+    await expect(menu.getByRole("button", { name: "Servida ✓" })).toHaveCount(0);
+    await expect(menu.getByText("Servida ✓")).toBeVisible();
   });
 
   test("REQ-038.4 en espera cambia o quita la bebida; ya llamado no", async ({ page, context }) => {
