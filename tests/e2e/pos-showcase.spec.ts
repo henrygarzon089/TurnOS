@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { adminDb, loginAsBarber, loginAsOwner, SEED, tapNewSale } from "./helpers";
+import { adminDb, loginAsBarber, loginAsOwner, SEED, tapNewSale, addProduct } from "./helpers";
 
 /**
  * T-116 · T-117 · REQ-066, REQ-067, REQ-068: la vitrina en "Nueva venta" y en el cobro del turno,
@@ -100,13 +100,16 @@ test.describe("Hito 12 · vitrina y comisión de productos", () => {
     await loginAsOwner(page);
     await page.goto("/admin/caja");
     const sheet = await openNewSale(page);
-    const tabs = sheet.getByRole("tablist", { name: "Categorías" }).getByRole("tab");
+    // T-170: la vitrina se abre con "+ Agregar producto"
+    await sheet.getByRole("button", { name: "+ Agregar producto" }).click();
+    const picker = page.getByRole("dialog", { name: "Agregar producto" });
+    const tabs = picker.getByRole("tablist", { name: "Categorías" }).getByRole("tab");
     await expect(tabs).toHaveText(["Todos", "Bebidas", "Helados"]);
-    await expect(sheet.getByRole("button", { name: "Agregar un Agua" })).toBeVisible();
-    await expect(sheet.getByRole("button", { name: "Agregar un Tinto" })).toHaveCount(0);
-    await sheet.getByRole("tab", { name: "Helados" }).click();
-    await expect(sheet.getByRole("button", { name: "Agregar un Helado" })).toBeVisible();
-    await expect(sheet.getByRole("button", { name: "Agregar un Gaseosa" })).toHaveCount(0);
+    await expect(picker.getByRole("button", { name: "Agregar un Agua" })).toBeVisible();
+    await expect(picker.getByRole("button", { name: "Agregar un Tinto" })).toHaveCount(0);
+    await picker.getByRole("tab", { name: "Helados" }).click();
+    await expect(picker.getByRole("button", { name: "Agregar un Helado" })).toBeVisible();
+    await expect(picker.getByRole("button", { name: "Agregar un Gaseosa" })).toHaveCount(0);
   });
 
   test("REQ-066.3 REQ-067.1 el dueño vende 2 Gaseosas escogiendo a Juan: comisión de productos $ 800", async ({
@@ -115,11 +118,10 @@ test.describe("Hito 12 · vitrina y comisión de productos", () => {
     await loginAsOwner(page);
     await page.goto("/admin/caja");
     const sheet = await openNewSale(page);
-    await sheet.getByRole("button", { name: "Agregar un Gaseosa" }).click();
-    await sheet.getByRole("button", { name: "Agregar un Gaseosa" }).click();
+    await addProduct(sheet, "Gaseosa", 2);
     await sheet.getByRole("radio", { name: "Efectivo" }).click();
     // Sin escoger quién vendió no se puede confirmar
-    await expect(sheet.getByRole("button", { name: "Registrar $ 8.000" })).toBeDisabled();
+    await expect(sheet.getByRole("button", { name: "Cobrar $ 8.000" })).toBeDisabled();
     await sheet
       .getByRole("radiogroup", { name: "¿Quién vendió?" })
       .getByRole("radio", { name: "Juan" })
@@ -127,9 +129,9 @@ test.describe("Hito 12 · vitrina y comisión de productos", () => {
     await expect(sheet.getByTestId("product-commission")).toHaveText(
       "Comisión de productos para Juan: $ 800",
     );
-    await sheet.getByRole("button", { name: "Registrar $ 8.000" }).click();
+    await sheet.getByRole("button", { name: "Cobrar $ 8.000" }).click();
     await expect(
-      page.getByRole("status").filter({ hasText: "Venta registrada: $ 8.000" }),
+      page.getByRole("status").filter({ hasText: "Venta registrada · $ 8.000" }),
     ).toBeVisible();
     const s = await lastSale();
     expect(s.barbers?.display_name).toBe("Juan");
@@ -149,11 +151,11 @@ test.describe("Hito 12 · vitrina y comisión de productos", () => {
     await expect(sheet.getByRole("radiogroup", { name: "¿Quién vendió?" })).toHaveCount(0);
     await expect(sheet.getByText("Venta a tu nombre")).toBeVisible();
     await expect(sheet.getByText("Compra de un barbero", { exact: false })).toHaveCount(0);
-    await sheet.getByRole("button", { name: "Agregar un Gaseosa" }).click();
+    await addProduct(sheet, "Gaseosa");
     await sheet.getByRole("radio", { name: "Efectivo" }).click();
-    await sheet.getByRole("button", { name: "Registrar $ 4.000" }).click();
+    await sheet.getByRole("button", { name: "Cobrar $ 4.000" }).click();
     await expect(
-      page.getByRole("status").filter({ hasText: "Venta registrada: $ 4.000" }),
+      page.getByRole("status").filter({ hasText: "Venta registrada · $ 4.000" }),
     ).toBeVisible();
     const s = await lastSale();
     expect(s.barbers?.display_name).toBe("Juan");
@@ -172,13 +174,13 @@ test.describe("Hito 12 · vitrina y comisión de productos", () => {
       .getByRole("radiogroup", { name: "¿Qué barbero compra?" })
       .getByRole("radio", { name: "Pedro" })
       .click();
-    await sheet.getByRole("button", { name: "Agregar un Gaseosa" }).click();
+    await addProduct(sheet, "Gaseosa");
     await expect(sheet.getByTestId("staff-discount")).toHaveText("Descuento de empleado: −$ 800");
     await expect(sheet.getByTestId("product-commission")).toHaveCount(0);
     await sheet.getByRole("radio", { name: "Efectivo" }).click();
-    await sheet.getByRole("button", { name: "Registrar $ 3.200" }).click();
+    await sheet.getByRole("button", { name: "Cobrar $ 3.200" }).click();
     await expect(
-      page.getByRole("status").filter({ hasText: "Venta registrada: $ 3.200" }),
+      page.getByRole("status").filter({ hasText: "Venta registrada · $ 3.200" }),
     ).toBeVisible();
     const s = await lastSale();
     const { data: pedro } = await adminDb()
@@ -248,16 +250,16 @@ test.describe("Hito 12 · vitrina y comisión de productos", () => {
       ).toBeVisible({ timeout: 15_000 });
       await barber.getByRole("button", { name: "Empezar corte" }).click();
       await barber.getByRole("button", { name: "Terminar y cobrar" }).click();
-      const sheet = barber.getByRole("dialog", { name: "Registrar cobro" });
+      const sheet = barber.getByRole("dialog", { name: /^Cobrar a / });
       await expect(sheet.getByTestId("checkout-total")).toHaveText("$ 25.000");
-      await sheet.getByRole("button", { name: "Agregar un Gaseosa" }).click();
+      await addProduct(sheet, "Gaseosa");
       await expect(sheet.getByTestId("product-commission")).toHaveText(
         "Comisión de productos para Juan: $ 400",
       );
       await sheet.getByRole("radio", { name: "Efectivo" }).click();
-      await sheet.getByRole("button", { name: "Registrar $ 29.000" }).click();
+      await sheet.getByRole("button", { name: "Cobrar $ 29.000" }).click();
       await expect(
-        barber.getByRole("status").filter({ hasText: "Cobro registrado: $ 29.000" }),
+        barber.getByRole("status").filter({ hasText: "Cobrado · $ 29.000" }),
       ).toBeVisible();
       const s = await lastSale();
       expect(s.ticket_id).not.toBeNull();

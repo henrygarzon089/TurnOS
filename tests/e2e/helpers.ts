@@ -1,4 +1,4 @@
-import { expect, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { existsSync } from "node:fs";
 
@@ -13,6 +13,16 @@ export async function tapNewSale(page: Page) {
   });
   if (await more.isVisible()) await more.click();
   await page.getByRole("button", { name: "+ Nueva venta" }).click();
+}
+
+/** Cobro (T-170): "+ Agregar producto" abre la vitrina; agrega `times` y cierra con "Listo". */
+export async function addProduct(sheet: Locator, name: string, times = 1) {
+  await sheet.getByRole("button", { name: "+ Agregar producto" }).click();
+  const picker = sheet.page().getByRole("dialog", { name: "Agregar producto" });
+  for (let i = 0; i < times; i++)
+    await picker.getByRole("button", { name: `Agregar un ${name}` }).click();
+  await picker.getByRole("button", { name: "Listo" }).click();
+  await expect(picker).toHaveCount(0);
 }
 
 /** Abre la hoja de un turno de "Mi fila" (el de "Sigue" o uno de "Después", T-169). */

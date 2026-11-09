@@ -10,11 +10,8 @@ import {
 } from "@/lib/domain/customer-history";
 import { parseBirthday } from "@/lib/domain/birthday";
 import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
-import {
-  customerBadges,
-  type CustomerBadges,
-  type MemberRead,
-} from "@/lib/domain/owner-tables";
+import { toMembershipStatus, type MembershipStatus } from "@/lib/domain/membership";
+import { customerBadges, type CustomerBadges, type MemberRead } from "@/lib/domain/owner-tables";
 import { maskPhone } from "@/lib/domain/phone";
 import { businessDayBogota } from "@/lib/domain/time";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -28,6 +25,10 @@ export type CustomerListItem = {
   visitsCount: number;
   lastVisitAt: string | null;
   inQueueToday: boolean;
+  /** REQ-078.16 "7/10" en la lista del barbero; null con la fidelidad apagada (o para el dueño). */
+  stamps: number | null;
+  stampsRequired: number | null;
+  hasMembership: boolean;
 };
 
 export type CustomerView = {
@@ -52,6 +53,8 @@ export type CustomerView = {
   history: HistoryRow[];
   /** REQ-019.3 / REQ-019.7 tarjeta de fidelidad */
   loyalty: LoyaltyStatus | null;
+  /** REQ-078.16 fila "Membresía" del detalle (null: no tiene o el plan está apagado). */
+  membership: MembershipStatus | null;
 };
 
 export type CustomerFormState = { ok?: boolean; error?: string } | undefined;
@@ -106,6 +109,9 @@ export async function searchCustomers(q: string): Promise<CustomerListItem[]> {
       visitsCount: c.visits_count,
       lastVisitAt: c.last_visit_at,
       inQueueToday: false,
+      stamps: null,
+      stampsRequired: null,
+      hasMembership: false,
     }));
   }
 
@@ -118,6 +124,9 @@ export async function searchCustomers(q: string): Promise<CustomerListItem[]> {
       visits_count: number;
       last_visit_at: string | null;
       in_queue_today: boolean;
+      stamps: number | null;
+      stamps_required: number | null;
+      has_membership: boolean;
     }[]
   ).map((c) => ({
     id: c.id,
@@ -126,6 +135,9 @@ export async function searchCustomers(q: string): Promise<CustomerListItem[]> {
     visitsCount: c.visits_count,
     lastVisitAt: c.last_visit_at,
     inQueueToday: c.in_queue_today,
+    stamps: c.stamps,
+    stampsRequired: c.stamps_required,
+    hasMembership: c.has_membership,
   }));
 }
 
@@ -142,7 +154,7 @@ export async function getCustomer(id: string): Promise<CustomerView | null> {
     if (!allowed) return null;
   }
 
-  const [custRes, ticketsRes, barbersRes, loyaltyRes] = await Promise.all([
+  const [custRes, ticketsRes, barbersRes, loyaltyRes, membershipRes] = await Promise.all([
     supabase
       .from("customers")
       .select(
@@ -163,6 +175,10 @@ export async function getCustomer(id: string): Promise<CustomerView | null> {
       .eq("business_id", session.business.id)
       .order("sort_order"),
     supabase.rpc("customer_loyalty", { p_customer_id: id }),
+    supabase.rpc("membership_status", {
+      p_business_id: session.business.id,
+      p_customer_id: id,
+    }),
   ]);
 
   const c = custRes.data;
@@ -215,6 +231,7 @@ export async function getCustomer(id: string): Promise<CustomerView | null> {
     barbers: barbers.filter((b) => b.is_active).map((b) => ({ id: b.id, name: b.display_name })),
     history: toHistoryRows(tickets, viewer),
     loyalty: toLoyaltyStatus(loyaltyRes.data),
+    membership: toMembershipStatus(membershipRes.data),
   };
 }
 
@@ -319,6 +336,9 @@ export async function findMergeCandidates(
       visitsCount: c.visits_count,
       lastVisitAt: c.last_visit_at,
       inQueueToday: false,
+      stamps: null,
+      stampsRequired: null,
+      hasMembership: false,
       createdAt: c.created_at,
     }));
 }

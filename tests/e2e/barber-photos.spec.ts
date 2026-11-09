@@ -58,6 +58,14 @@ async function countPhotos(barber: string) {
   return count ?? 0;
 }
 
+/** T-171 borrar pide confirmar en un diálogo propio, no en el del navegador. */
+async function confirmDelete(page: Page) {
+  await page
+    .getByRole("dialog", { name: "¿Borrar esta foto?" })
+    .getByRole("button", { name: "Borrar" })
+    .click();
+}
+
 async function uploadWithConsent(page: Page) {
   await waitForContent(page);
   await page.getByLabel("Escoger foto").setInputFiles(photo);
@@ -149,9 +157,9 @@ test.describe("T-062 fotos de cortes", () => {
     await expect(page.getByText(LIMIT)).toBeVisible();
     await expect(page.getByLabel("Escoger foto")).toHaveCount(0);
 
-    page.once("dialog", (d) => d.accept());
     await page.getByRole("button", { name: "Borrar foto" }).first().click();
-    await expect(page.getByLabel("Escoger foto")).toBeVisible();
+    await confirmDelete(page);
+    await expect(page.getByLabel("Escoger foto")).toHaveCount(1);
     expect(await countPhotos("Juan")).toBe(11);
   });
 
@@ -180,8 +188,8 @@ test.describe("T-062 fotos de cortes", () => {
     await expect(img).toBeVisible({ timeout: 15_000 });
     const url = await img.getAttribute("src");
 
-    page.once("dialog", (d) => d.accept());
     await page.getByRole("button", { name: "Borrar foto" }).click();
+    await confirmDelete(page);
     await expect(img).toHaveCount(0);
     expect(await countPhotos("Juan")).toBe(0);
     await expect.poll(async () => (await page.request.get(url!)).ok()).toBe(false);
@@ -202,8 +210,8 @@ test.describe("T-062 fotos de cortes", () => {
     });
     expect(await countPhotos("Pedro")).toBe(1);
 
-    page.once("dialog", (d) => d.accept());
     await card.getByRole("button", { name: "Borrar foto" }).click();
+    await confirmDelete(page);
     await expect(card.getByRole("img", { name: "Corte de Pedro" })).toHaveCount(0);
     expect(await countPhotos("Pedro")).toBe(0);
   });

@@ -44,10 +44,8 @@ export default async function CustomersPage({
   const initial = await searchCustomers("");
   return (
     <main className="pb-6">
+      {/* T-171 (ADR-051): el barbero ve solo el título, sin subtítulo. */}
       <h1 className="pt-6 text-2xl font-bold">Clientes</h1>
-      <p className="text-muted mt-1 text-sm">
-        Los clientes de tu fila de hoy y los que has atendido.
-      </p>
       {eliminado === "1" && <Deleted />}
       <CustomerSearch initial={initial} role={session.role} />
     </main>

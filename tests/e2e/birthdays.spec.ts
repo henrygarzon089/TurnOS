@@ -193,6 +193,8 @@ test.describe("REQ-037 cumpleaños", () => {
         .getByRole("link", { name: /Mateo Londoño/ })
         .first()
         .click();
+      // T-171 el barbero edita desde "Editar" (hoja)
+      await page.getByRole("button", { name: "Editar datos del cliente" }).click();
       const form = page.getByRole("group", { name: "Cumpleaños" });
       await form.getByLabel("Día").fill("15");
       await form.getByLabel("Mes").selectOption({ label: "Junio" });

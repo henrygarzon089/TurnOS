@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BarberCustomerDetail } from "@/components/customers/BarberCustomerDetail";
 import { CustomerForm } from "@/components/customers/CustomerForm";
 import { CustomerHistory } from "@/components/customers/CustomerHistory";
 import { DeleteCustomer } from "@/components/customers/DeleteCustomer";
@@ -24,6 +25,7 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
   if (!view) notFound();
   const c = view.customer;
   const isOwner = view.viewer.role === "owner";
+  if (!isOwner) return <BarberCustomerDetail view={view} />;
 
   return (
     <main className="flex flex-col gap-4 py-4">
