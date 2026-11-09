@@ -1,5 +1,5 @@
 import { expect, test, type BrowserContext, type Page } from "@playwright/test";
-import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED } from "./helpers";
+import { CALL, adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED } from "./helpers";
 
 /** T-061 · REQ-038. Tinto y Aromática son del seed: solo de cortesía, sin precio. */
 const phone = () => `300 8${Math.floor(100000 + Math.random() * 899999)}`;
@@ -110,7 +110,8 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     await expect(section.getByText("🥤 Tinto")).toBeVisible();
 
     await loginAsBarber(page);
-    const row = page.getByRole("listitem").filter({ hasText: name });
+    // T-169: solo, el turno está en "Sigue" con su bebida
+    const row = page.getByRole("region", { name: "Turno" }).filter({ hasText: name });
     await expect(row.getByText("🥤 Tinto")).toBeVisible({ timeout: 15_000 });
     await row.getByRole("button", { name: "Servida ✓" }).click();
 
@@ -138,12 +139,12 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     await ownerCtx.close();
 
     // Termina el turno: en el cobro no aparecen las cortesías y no hay venta
-    await page.getByRole("button", { name: "Llamar al siguiente" }).click();
+    await page.getByRole("button", { name: CALL }).click();
     const current = page.getByRole("article", { name: `Turno actual ${name}` });
     await expect(current.getByText("🥤 Tinto")).toBeVisible();
     // Los botones van en la barra fija de abajo, fuera de la tarjeta (REQ-078.5)
-    await page.getByRole("button", { name: "Ya está en la silla" }).click();
-    await page.getByRole("button", { name: "Terminado" }).click();
+    await page.getByRole("button", { name: "Empezar corte" }).click();
+    await page.getByRole("button", { name: "Terminar y cobrar" }).click();
     const products = page.getByRole("region", { name: "Productos" });
     await expect(products.getByText("Helado")).toBeVisible();
     await expect(products.getByText("Tinto")).toHaveCount(0);
@@ -182,10 +183,10 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     await expect(section.getByText("🥤 Tinto")).toBeVisible();
 
     await loginAsBarber(page);
-    await expect(page.getByRole("listitem").filter({ hasText: name })).toBeVisible({
+    await expect(page.getByRole("main").getByText(name).first()).toBeVisible({
       timeout: 15_000,
     });
-    await page.getByRole("button", { name: "Llamar al siguiente" }).click();
+    await page.getByRole("button", { name: CALL }).click();
     await expect(mine.getByText("¡Es tu turno!")).toBeVisible({ timeout: 15_000 });
     await expect(section.getByText("🥤 Tinto")).toBeVisible();
     await expect(section.getByRole("button", { name: /bebida/ })).toHaveCount(0);

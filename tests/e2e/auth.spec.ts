@@ -58,7 +58,12 @@ test.describe("REQ-030 acceso del personal", () => {
 
   test("REQ-030.4 salir cierra la sesión", async ({ page }) => {
     await loginAsBarber(page, 3);
-    await page.getByRole("button", { name: "Salir" }).click();
+    // T-169: "Salir" está en "Más"
+    await page
+      .getByRole("navigation", { name: "Menú del barbero" })
+      .getByRole("button", { name: "Más" })
+      .click();
+    await page.getByRole("dialog", { name: "Más" }).getByRole("button", { name: "Salir" }).click();
     await expect(page).toHaveURL(/\/entrar/);
     await page.goto("/app/fila");
     await expect(page).toHaveURL(/\/entrar/);

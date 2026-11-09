@@ -31,10 +31,15 @@ pantalla y los mismos textos de siempre.
 ### Barbero (celular, celular + PIN)
 
 - [ ] Entrar: seis casillas con puntos para el PIN; un PIN equivocado muestra el error en rojo.
-- [ ] Mi fila: encabezado azul, número grande y el botón de lo que sigue fijo sobre el menú.
-- [ ] Llamar → "Ya está en la silla" → "Terminado" → cobro con el total y "Registrar" abajo.
-- [ ] Modo avión: "Llamar al siguiente" deshabilitado con el motivo.
-- [ ] Menú de abajo: Mi fila, Clientes, Números, Limpieza, Más.
+- [ ] Mi fila (T-169, como el tablero Barbero-Fila): franja azul con tu nombre, tu estado y
+      "Pausar"; bloque "Sigue" con el número grande y "Después · N más" debajo.
+- [ ] "Llamar a <número>" → "Empezar corte" (o "No vino") → "Terminar y cobrar" → cobro con el
+      total y "Registrar" abajo.
+- [ ] Tocar un turno abre su hoja con "Avisar por WhatsApp".
+- [ ] "Cobrar después": queda la fila "1 cobro pendiente"; tocarla abre la lista con "Cobrar".
+- [ ] Modo avión: el botón de llamar queda deshabilitado con el motivo.
+- [ ] Menú de abajo con íconos: Mi fila, Clientes, Números, Limpieza (punto rojo si falta la
+      apertura) y Más (Mis fotos, Mi estación, "+ Nueva venta" y "Salir").
 
 ### Dueño (celular y computador)
 
