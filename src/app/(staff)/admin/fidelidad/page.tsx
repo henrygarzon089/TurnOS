@@ -50,7 +50,7 @@ export default async function LoyaltyPage() {
   const rewards = cards.filter((c) => c.status === "completed").length;
 
   return (
-    <main data-wide className="pb-6">
+    <main className="pb-6">
       <ModuleHeader title="Tarjeta de fidelidad" subtitle="Regla de cortes y premio" />
       <p className="text-muted mt-3 text-sm">
         Cada servicio que suma es un sello. Al completar la tarjeta, el cliente gana el premio.

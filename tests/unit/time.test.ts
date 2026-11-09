@@ -5,6 +5,7 @@ import {
   ceil5,
   formatMinutes,
   formatDayCO,
+  formatLongDayCO,
   formatTimeBogota,
   minutesBetween,
 } from "@/lib/domain/time";
@@ -59,5 +60,11 @@ describe("P5 / REQ-027.5 día de negocio en America/Bogota", () => {
     const a = new Date("2026-10-23T10:00:00Z");
     expect(minutesBetween(a, new Date("2026-10-23T10:12:59Z"))).toBe(12);
     expect(minutesBetween(a, a)).toBe(0);
+  });
+
+  it("REQ-078.21 formatLongDayCO arma la fecha larga de la barra del dueño", () => {
+    expect(formatLongDayCO("2026-11-05")).toBe("Jueves 5 de noviembre");
+    expect(formatLongDayCO("2026-11-08")).toBe("Domingo 8 de noviembre");
+    expect(formatLongDayCO("2027-01-01")).toBe("Viernes 1 de enero");
   });
 });

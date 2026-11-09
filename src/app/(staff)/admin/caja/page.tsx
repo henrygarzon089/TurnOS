@@ -15,7 +15,7 @@ export default async function CashPage() {
   const [summary, closures] = await Promise.all([getCashDay(), getClosures()]);
   const past = closures.filter((c) => c.day !== summary!.day);
   return (
-    <main data-wide data-tablet className="pb-6">
+    <main data-tablet className="pb-6">
       <CashDay
         businessId={session.business.id}
         businessName={session.business.name}

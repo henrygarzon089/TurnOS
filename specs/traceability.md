@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-08.
+> Generada por `scripts/traceability.ts` el 2026-11-09.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -433,7 +433,7 @@
 | REQ-078.18 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (pendiente), T-170 (pendiente), T-171 (pendiente), T-172 (pendiente), T-173 (pendiente), T-174 (pendiente), T-175 (pendiente), T-176 (pendiente), T-168 (pendiente) | — | sin prueba |
 | REQ-078.19 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (pendiente), T-170 (pendiente), T-171 (pendiente), T-172 (pendiente), T-173 (pendiente), T-174 (pendiente), T-175 (pendiente), T-176 (pendiente), T-168 (pendiente) | — | sin prueba |
 | REQ-078.20 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (pendiente), T-170 (pendiente), T-171 (pendiente), T-172 (pendiente), T-173 (pendiente), T-174 (pendiente), T-175 (pendiente), T-176 (pendiente), T-168 (pendiente) | — | sin prueba |
-| REQ-078.21 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (pendiente), T-170 (pendiente), T-171 (pendiente), T-172 (pendiente), T-173 (pendiente), T-174 (pendiente), T-175 (pendiente), T-176 (pendiente), T-168 (pendiente) | — | sin prueba |
+| REQ-078.21 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (pendiente), T-170 (pendiente), T-171 (pendiente), T-172 (pendiente), T-173 (pendiente), T-174 (pendiente), T-175 (pendiente), T-176 (pendiente), T-168 (pendiente) | visual-dueno-ancho.spec.ts, admin-nav.test.tsx, time.test.ts | prueba escrita |
 | REQ-078.22 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (pendiente), T-170 (pendiente), T-171 (pendiente), T-172 (pendiente), T-173 (pendiente), T-174 (pendiente), T-175 (pendiente), T-176 (pendiente), T-168 (pendiente) | — | sin prueba |
 | REQ-078.23 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (pendiente), T-170 (pendiente), T-171 (pendiente), T-172 (pendiente), T-173 (pendiente), T-174 (pendiente), T-175 (pendiente), T-176 (pendiente), T-168 (pendiente) | — | sin prueba |
 | REQ-078.24 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (pendiente), T-170 (pendiente), T-171 (pendiente), T-172 (pendiente), T-173 (pendiente), T-174 (pendiente), T-175 (pendiente), T-176 (pendiente), T-168 (pendiente) | — | sin prueba |

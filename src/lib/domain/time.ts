@@ -91,6 +91,28 @@ export function weekdayName(day: string): string {
   return WEEKDAYS[new Date(`${day}T00:00:00Z`).getUTCDay()];
 }
 
+const MONTHS_LONG = [
+  "enero",
+  "febrero",
+  "marzo",
+  "abril",
+  "mayo",
+  "junio",
+  "julio",
+  "agosto",
+  "septiembre",
+  "octubre",
+  "noviembre",
+  "diciembre",
+];
+
+/** REQ-078.21 "2026-11-06" → "Jueves 6 de noviembre" (barra del dueño, sin depender de ICU). */
+export function formatLongDayCO(day: string): string {
+  const [, m, d] = day.split("-").map(Number);
+  const wd = weekdayName(day);
+  return `${wd[0].toUpperCase()}${wd.slice(1)} ${d} de ${MONTHS_LONG[m - 1]}`;
+}
+
 /** REQ-076.4 (PA-H15-1): "El jueves pasado (todo el día)". */
 export function lastWeekLabel(day: string): string {
   return `El ${weekdayName(day)} pasado (todo el día)`;

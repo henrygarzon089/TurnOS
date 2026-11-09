@@ -13,7 +13,7 @@ export const metadata: Metadata = { title: "Tarjetas de regalo" };
 export default async function GiftCardsPage() {
   const view = (await getGiftCardsView())!;
   return (
-    <main data-wide className="pb-6">
+    <main className="pb-6">
       <ModuleHeader title="Tarjetas de regalo" subtitle="Vender, enviar y ver el saldo" />
       <p className="text-muted mt-3 text-sm">
         Se paga hoy y quien la recibe la usa como medio de pago, en una o varias visitas, durante un
