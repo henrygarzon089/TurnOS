@@ -234,7 +234,7 @@ export function JoinForm({ business, now, canBook = false }: Props) {
                   className="absolute inset-0 cursor-[inherit] appearance-none opacity-0"
                 />
                 <span className="leading-tight font-semibold break-words">{s.name}</span>
-                <span className="text-sm tabular-nums">
+                <span className="text-sm tabular-nums lg:shrink-0 lg:whitespace-nowrap">
                   {nobody ? "Hoy no hay quién lo haga" : formatCOP(s.price)}
                 </span>
               </label>
@@ -246,7 +246,7 @@ export function JoinForm({ business, now, canBook = false }: Props) {
       <fieldset className="min-w-0">
         <legend className="mb-2 text-sm font-semibold">¿Con quién?</legend>
         {/* Se desliza la fila de fichas, no la página (REQ-078.15) */}
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0">
+        <div className="-mx-4 flex [scrollbar-width:none] gap-2 overflow-x-auto px-4 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0">
           <Chip selected={shownBarberId === null} onClick={() => pickBarber(null)}>
             El primero libre
           </Chip>
@@ -315,6 +315,7 @@ export function JoinForm({ business, now, canBook = false }: Props) {
                 type="text"
                 inputMode="numeric"
                 maxLength={2}
+                disabled={pending}
                 value={birthdayDay}
                 onChange={(e) => setBirthdayDay(e.target.value)}
                 className="input"
@@ -326,6 +327,7 @@ export function JoinForm({ business, now, canBook = false }: Props) {
               <select
                 name="birthdayMonth"
                 value={birthdayMonth}
+                disabled={pending}
                 onChange={(e) => setBirthdayMonth(e.target.value)}
                 className="input"
                 aria-invalid={error?.field === "birthday"}
@@ -357,6 +359,7 @@ export function JoinForm({ business, now, canBook = false }: Props) {
                     type="radio"
                     name="courtesyProductId"
                     checked={shownCourtesyId === c.id}
+                    disabled={pending}
                     onChange={() => setCourtesyId(c.id)}
                     className="h-5 w-5 shrink-0"
                   />
@@ -391,6 +394,7 @@ export function JoinForm({ business, now, canBook = false }: Props) {
             type="checkbox"
             name="whatsappOptIn"
             checked={whatsappOptIn}
+            disabled={pending}
             onChange={(e) => setWhatsappOptInPhone(e.target.checked ? e164 : null)}
             className="mt-0.5 h-6 w-6 shrink-0"
           />
@@ -415,6 +419,7 @@ export function JoinForm({ business, now, canBook = false }: Props) {
             type="checkbox"
             name="privacyAccepted"
             checked={privacy}
+            disabled={pending}
             onChange={(e) => setPrivacy(e.target.checked)}
             className="accent-brand size-6 shrink-0"
           />
@@ -467,7 +472,7 @@ export function JoinError({ message }: { message: string }) {
       <Icon name="error" className="text-danger mt-0.5 size-5 shrink-0" />
       <p>
         <b className="text-danger">{message}</b>
-        {message === JOIN_FAILED && ' Revisa la señal y toca "Tomar turno" otra vez.'} Tus datos
+        {message === JOIN_FAILED && " Revisa la señal y toca “Tomar turno” otra vez."} Tus datos
         siguen ahí.
       </p>
     </div>
@@ -493,7 +498,7 @@ export function Chip({
       aria-disabled={disabled}
       disabled={disabled}
       onClick={onClick}
-      className={`text-ink min-h-12 rounded-md px-4 text-base font-medium ${
+      className={`text-ink min-h-12 shrink-0 rounded-md px-4 text-base font-medium whitespace-nowrap ${
         selected ? "border-brand bg-brand-soft border-2" : "border-line-strong bg-card border"
       } disabled:opacity-50`}
     >

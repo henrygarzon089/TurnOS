@@ -20,9 +20,14 @@ pantalla y los mismos textos de siempre.
 
 ### Cliente (celular, sin entrar)
 
-- [ ] Abrir el QR del negocio (o `/<negocio>`): marca arriba, fila en vivo por barbero y
-      "Tomar turno" fijo abajo.
-- [ ] Tomar turno: tarjetas de servicio y "Confirmar turno" abajo.
+- [ ] Abrir el QR del negocio (o `/<negocio>`): marca arriba, "N esperando" con una línea por
+      barbero y el formulario en la misma pantalla (T-173): "¿Qué te vas a hacer?", "¿Con quién?"
+      con "El primero libre" primero, nombre, celular y la privacidad en una línea.
+- [ ] "Tomar turno" fijo abajo, con "Reservar una cita" y "Ver menú" debajo (si existen). "Ver
+      menú" abre la hoja con la dirección y lo que vendemos. Un enlace viejo a `/<negocio>/turno`
+      lleva a la portada.
+- [ ] En el computador: la fila como tabla a la izquierda y "Tomar turno" en una tarjeta a la
+      derecha.
 - [ ] "Mi turno": número grande; "Cancelar mi turno" abre una hoja; elegir "No, seguir en la fila".
 - [ ] Modo avión: aparece la franja "Sin conexión" con la hora y los botones quedan deshabilitados
       con el motivo. Al quitarlo, la franja se va sola.

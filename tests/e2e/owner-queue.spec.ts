@@ -52,7 +52,7 @@ test.describe("REQ-012 vista del dueño sobre la fila", () => {
     const ctx = await browser.newContext();
     const pub = await ctx.newPage();
     await pub.goto(`/${SEED.slug}`);
-    await expect(pub.getByRole("link", { name: "Tomar turno" })).toBeHidden();
+    await expect(pub.getByRole("button", { name: "Tomar turno" })).toBeHidden();
     await expect(pub.getByText(/Cerrado/)).toBeVisible();
 
     await page.getByRole("button", { name: "Abrir fila hoy" }).click();

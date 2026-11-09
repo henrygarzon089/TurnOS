@@ -210,7 +210,8 @@ export function JoinBar({
       <div className="mx-auto max-w-md lg:max-w-none">
         <button
           type="submit"
-          className="btn-primary disabled:bg-skeleton disabled:text-muted disabled:opacity-100"
+          // Guardando: azul marino atenuado; sin red o sin la casilla: gris (Cliente-Negocio)
+          className={`btn-primary ${pending ? "disabled:opacity-70" : "disabled:bg-skeleton disabled:text-muted disabled:opacity-100"}`}
           disabled={disabled}
           aria-busy={pending || undefined}
         >
@@ -229,6 +230,9 @@ export function JoinBar({
   );
 }
 
+/** Cierra la frase con un punto, sin doblarlo ("… 9:00 a. m." ya lo trae). */
+const sentence = (t: string) => (t.endsWith(".") ? t : `${t}.`);
+
 /** Cerrado (REQ-078.21): sin formulario; cuándo abrimos y "Reservar una cita" si hay. */
 export function ClosedNotice({
   slug,
@@ -245,7 +249,9 @@ export function ClosedNotice({
     <div className={BAR}>
       <div className="mx-auto max-w-md lg:max-w-none">
         <p className="text-ink flex min-h-12 items-center justify-center text-center font-semibold">
-          {nextOpening ? `Abrimos: ${nextOpening.toLowerCase()}.` : "La fila está cerrada por hoy."}
+          {nextOpening
+            ? `Abrimos: ${sentence(nextOpening.toLowerCase())}`
+            : "La fila está cerrada por hoy."}
         </p>
         <BarLinks slug={slug} canBook={canBook} menuTrigger={menuTrigger} />
       </div>

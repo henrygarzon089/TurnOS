@@ -246,7 +246,7 @@ describe("T-173 portada y tomar turno en una pantalla (REQ-078.21, ADR-052)", ()
   it("REQ-078.21 error del servidor: 'No pudimos darte el turno.' y los datos siguen ahí", () => {
     const t = visible(html(<JoinError message={JOIN_FAILED} />));
     expect(t).toBe(
-      'No pudimos darte el turno. Revisa la señal y toca "Tomar turno" otra vez. Tus datos siguen ahí.',
+      "No pudimos darte el turno. Revisa la señal y toca “Tomar turno” otra vez. Tus datos siguen ahí.",
     );
     const otro = visible(html(<JoinError message="El negocio está cerrado en este momento." />));
     expect(otro).toBe("El negocio está cerrado en este momento. Tus datos siguen ahí.");
@@ -259,6 +259,7 @@ describe("T-173 portada y tomar turno en una pantalla (REQ-078.21, ADR-052)", ()
       ),
     );
     expect(t).toContain("Abrimos: mañana 9:00 a. m.");
+    expect(t).not.toContain("a. m..");
     expect(t).toContain("Reservar una cita");
     expect(t).not.toContain("Tomar turno");
     const sin = visible(

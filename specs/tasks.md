@@ -2290,13 +2290,33 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
     `--color-brand` ni `.bg-brand`); contra el servidor local pasa. Falta lo de Henry:
     `vercel --prod --force` y volver a correrlo.
 
-### [ ] T-173 · Cliente: portada y tomar turno en una pantalla
+### [x] T-173 · Cliente: portada y tomar turno en una pantalla
 - REQ: REQ-078.16, REQ-078.21, REQ-003.1, REQ-038.2
 - Archivos: `src/app/(public)/[slug]/page.tsx`, `src/app/(public)/[slug]/turno/page.tsx` (redirige),
   `src/components/queue/JoinForm.tsx`, `src/components/public/*` (bloque en vivo, hoja "Menú"),
   `src/app/(public)/[slug]/loading.tsx`, E2E del cliente que entran por `/turno`.
 - Terminado: normal, guardando, error, sin conexión, esqueleto, cerrado y escritorio como
   Cliente-Negocio y Cliente-Escritorio (captura junto al tablero en el PR).
+- Hecho (2026-11-09): `src/components/public/PublicHome.tsx` (`LiveStatusProvider`, `LiveBanner`,
+  `LiveBlock`, `JoinBar`, `ClosedNotice`), `MenuSheet.tsx`, helpers `liveLineText`, `deskLine` y
+  `capLines` en `public-view.ts`; pruebas en `tests/unit/public-home.test.tsx`; capturas en
+  `docs/diseno/capturas/T-173/`. Notas y desvíos:
+  - Cerrado también ofrece "Ver menú" (REQ-038.2 pide "Ver menú" en la portada; §22.7 solo nombraba
+    "Reservar una cita").
+  - La frase de escritorio dice "Te escribimos por WhatsApp cuando falten dos." solo con el aviso
+    por WhatsApp encendido (como Mi turno en §22.7).
+  - Se queda "Marca la casilla de privacidad para continuar." bajo el botón deshabilitado (el
+    tablero muestra la casilla ya marcada).
+  - "Reservar una cita" lleva `?servicio=&barbero=` con lo elegido (lo lee T-175).
+  - Si la acción no responde (red o servidor), el recuadro "No pudimos darte el turno…"; los
+    errores con texto propio (cerrado, barbero no disponible) salen en el mismo recuadro con "Tus
+    datos siguen ahí.".
+  - Un barbero atendiendo sin turnos propios dice "0 · ~ N min" (el tablero no muestra ese caso).
+  - `PublicHeader` en escritorio queda alineado con el contenido (`max-w-6xl`), también en cita y
+    privacidad. `Field` con prefijo ("+57") se ve deshabilitado igual que los demás campos.
+  - La franja y el bloque en vivo comparten el estado de conexión (`LiveStatusProvider` reemplaza a
+    `LiveRefresh` en la portada); sin red, el bloque dice "a las <hora>" con el punto gris.
+  - "Abrimos: …" ya no dobla el punto cuando la próxima apertura termina en "a. m."/"p. m.".
 
 ### [ ] T-174 · Cliente: Mi turno como el tablero
 - REQ: REQ-078.16, REQ-078.22, REQ-078.23, REQ-004.1, REQ-036.2
