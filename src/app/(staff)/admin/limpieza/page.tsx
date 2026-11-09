@@ -6,12 +6,14 @@ import { CleaningHistory } from "@/components/cleaning/CleaningHistory";
 import { CleaningInspection } from "@/components/cleaning/CleaningInspection";
 import { CleaningListsEditor, CleaningSwitch } from "@/components/cleaning/CleaningListsEditor";
 import { CleaningTasks } from "@/components/cleaning/CleaningTasks";
-import { CleaningToday } from "@/components/cleaning/CleaningToday";
+import { CleaningToday, type RecordThumb } from "@/components/cleaning/CleaningToday";
 import {
   getCleaningHistory,
   getCleaningLists,
   getCleaningTasks,
   getCleaningToday,
+  getRecordDetail,
+  type CleaningToday as Today,
 } from "@/lib/actions/cleaning";
 import { getStaffSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -19,10 +21,11 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Limpieza" };
 
+// Nombres del tablero Dueno-Local donde la app tiene lo mismo (design §22.8)
 const TABS = [
   { key: "hoy", label: "Hoy" },
-  { key: "revision", label: "Revisión" },
-  { key: "tareas", label: "Tareas" },
+  { key: "revision", label: "Fallas por barbero" },
+  { key: "tareas", label: "Tareas periódicas" },
   { key: "historial", label: "Historial" },
   { key: "listas", label: "Listas" },
 ] as const;
@@ -59,7 +62,11 @@ export default async function OwnerCleaningPage({
         />
       )}
       {tab === "hoy" && today?.enabled && (
-        <CleaningToday today={today} businessId={session.business.id} />
+        <CleaningToday
+          today={today}
+          businessId={session.business.id}
+          thumbs={await todayThumbs(today)}
+        />
       )}
       {tab === "revision" && (await inspectionTab(session.business.id))}
       {tab === "tareas" && (
@@ -74,6 +81,22 @@ export default async function OwnerCleaningPage({
       )}
     </main>
   );
+}
+
+/** Miniatura y "N de M" de cada registro de hoy (REQ-063.6, fotos firmadas por 1 hora). */
+async function todayThumbs(today: Extract<Today, { enabled: true }>) {
+  const records = [today.opening, today.closing, today.deep].filter((r) => r !== null);
+  const details = await Promise.all(records.map((r) => getRecordDetail(r.id)));
+  const thumbs: Record<string, RecordThumb> = {};
+  for (const d of details) {
+    if (!d) continue;
+    thumbs[d.id] = {
+      photoUrl: d.photoUrls[0] ?? null,
+      done: d.items.filter((i) => i.done).length,
+      total: d.items.length,
+    };
+  }
+  return thumbs;
 }
 
 /** REQ-063.1: la lista de Cierre, la de Entre clientes y los barberos activos para asignar fallas. */
