@@ -2282,6 +2282,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   datos); sin ordenar fotos arrastrando; sin "Se acabó"/"En camino" en Mi estación; en Limpieza los
   puntos empiezan sin marcar y "No se hizo" + "¿Por qué?" cuenta como respondido (REQ-061.3).
   `primaryButtons` (E2E visual) no cuenta la pestaña elegida de un control segmentado.
+  REQ-078.20 queda con prueba; REQ-078.19 la cubren las pruebas de T-170.
   Henry revisa las capturas antes de fusionar (ADR-051) y sube 0070.
 
 > Dueño fiel al tablero (ADR-053, design §22.8). Una tarea = una PR con la captura de cada pantalla
