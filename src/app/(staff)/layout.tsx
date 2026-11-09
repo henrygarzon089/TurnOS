@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { NavAlertBadge } from "@/components/admin/today/NavAlertBadge";
+import { NavCount } from "@/components/admin/today/NavCount";
 import { TodayBadge } from "@/components/admin/today/TodayBadge";
 import { BarberNav } from "@/components/staff/BarberNav";
 import { StaffHeader } from "@/components/staff/StaffHeader";
@@ -51,14 +52,24 @@ async function StaffGate({ children }: { children: React.ReactNode }) {
               <TodayBadge />
             </Suspense>
           }
-          badges={Object.fromEntries(
-            ["/admin/limpieza", "/admin/inventario"].map((href) => [
-              href,
-              <Suspense key={href} fallback={null}>
-                <NavAlertBadge href={href} testId={`nav-badge-${href.split("/").at(-1)}`} />
-              </Suspense>,
-            ]),
-          )}
+          badges={{
+            ...Object.fromEntries(
+              ["/admin/fila", "/admin/citas"].map((href) => [
+                href,
+                <Suspense key={href} fallback={null}>
+                  <NavCount href={href} />
+                </Suspense>,
+              ]),
+            ),
+            ...Object.fromEntries(
+              ["/admin/limpieza", "/admin/inventario"].map((href) => [
+                href,
+                <Suspense key={href} fallback={null}>
+                  <NavAlertBadge href={href} testId={`nav-badge-${href.split("/").at(-1)}`} />
+                </Suspense>,
+              ]),
+            ),
+          }}
         />
       )}
     </div>

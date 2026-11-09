@@ -99,12 +99,11 @@ test.describe("menú del dueño en escritorio", () => {
     for (const group of ["Operación", "Clientes", "Local", "Configuración"])
       await expect(side.getByRole("heading", { name: group })).toBeVisible();
     for (const [label, url] of MODULES) {
-      await side.getByRole("link", { name: label, exact: true }).click();
+      // El nombre puede seguir con su número o insignia ("Fila 3 esperando", REQ-078.27)
+      const link = side.getByRole("link", { name: new RegExp(`^${label}( \\d.*)?$`) });
+      await link.click();
       await expect(page).toHaveURL(url, { timeout: 15_000 }); // primera compilación de la ruta en dev
-      await expect(side.getByRole("link", { name: label, exact: true })).toHaveAttribute(
-        "aria-current",
-        "page",
-      );
+      await expect(link).toHaveAttribute("aria-current", "page");
     }
   });
 

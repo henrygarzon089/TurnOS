@@ -18,18 +18,16 @@ import {
  * "Más", que abre los grupos en una hoja. 1024 px o más: menú lateral fijo de 240 px con los mismos
  * grupos, debajo de la barra azul de 56 px (REQ-078.27). Se monta una vez en el layout del
  * personal, solo para el dueño. `todayBadge` es la insignia de alertas de "Hoy" (REQ-077.6) y
- * `badges` las insignias rojas del lateral (Limpieza, Inventario): Server Components que llegan por
- * su cuenta. `counts` son números en texto suave junto al destino (REQ-078.27). En el celular,
+ * `badges` lo que va a la derecha de cada destino del lateral (REQ-078.27): números de Fila y Citas e
+ * insignias rojas de Limpieza e Inventario, Server Components que llegan por su cuenta. En el celular,
  * "Salir" va al final de "Más".
  */
 export function AdminNav({
   todayBadge,
   badges = {},
-  counts = {},
 }: {
   todayBadge?: React.ReactNode;
   badges?: Partial<Record<string, React.ReactNode>>;
-  counts?: Partial<Record<string, number>>;
 } = {}) {
   const pathname = usePathname();
   const [more, setMore] = useState(false);
@@ -61,11 +59,6 @@ export function AdminNav({
                   >
                     {it.label}
                     {it.href === "/admin" && <span className="ml-auto">{todayBadge}</span>}
-                    {counts[it.href] !== undefined && (
-                      <span className="text-muted ml-auto text-sm tabular-nums">
-                        {counts[it.href]}
-                      </span>
-                    )}
                     {badges[it.href] && <span className="ml-auto">{badges[it.href]}</span>}
                   </Link>
                 </li>

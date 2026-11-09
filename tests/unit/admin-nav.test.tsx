@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { NavCount } from "@/components/admin/today/NavCount";
 import { StaffHeader } from "@/components/staff/StaffHeader";
 import {
   ADMIN_GROUPS,
@@ -9,6 +10,7 @@ import {
   isActiveLink,
   isMoreActive,
   navAlertCounts,
+  navQueueCounts,
 } from "@/lib/domain/admin-nav";
 import type { OwnerAlert } from "@/lib/domain/owner-alerts";
 import type { StaffSession } from "@/lib/auth/session";
@@ -16,6 +18,7 @@ import type { StaffSession } from "@/lib/auth/session";
 const nav = vi.hoisted(() => ({ pathname: "/admin/caja" }));
 vi.mock("next/navigation", () => ({ usePathname: () => nav.pathname }));
 vi.mock("@/lib/actions/auth", () => ({ signOut: async () => {} }));
+vi.mock("@/lib/actions/queue", () => ({ getBusinessQueue: vi.fn() }));
 
 /** Los 19 destinos que tenía la fila de chips antes de T-150 (REQ-077.4). */
 const MODULES_BEFORE = [
@@ -150,11 +153,46 @@ describe("T-177 menú lateral con conteos (REQ-078.27)", () => {
     expect(h).not.toMatch(/Productos<span class="ml-auto/);
   });
 
-  it("REQ-078.27 el conteo de Fila y Citas va en texto suave a la derecha", () => {
+  it("REQ-078.27 Fila cuenta los que esperan y Citas las de hoy que faltan por llegar", () => {
+    const view = {
+      active: [
+        { status: "waiting" },
+        { status: "waiting" },
+        { status: "called" },
+        { status: "in_service" },
+      ],
+      appointments: [{ id: "a" }, { id: "b" }, { id: "c" }],
+    };
+    expect(navQueueCounts(view)).toEqual({ "/admin/fila": 2, "/admin/citas": 3 });
+  });
+
+  it("REQ-078.27 sin nadie esperando ni citas (o si la fila no cargó) no se pinta número", () => {
+    expect(navQueueCounts({ active: [{ status: "called" }], appointments: [] })).toEqual({});
+    expect(navQueueCounts(null)).toEqual({});
+  });
+
+  it("REQ-078.27 el conteo de Fila y Citas va en texto suave a la derecha del destino", async () => {
+    const load = async () => ({
+      active: [{ status: "waiting" }, { status: "waiting" }],
+      appointments: [{ id: "a" }],
+    });
+    const fila = renderToStaticMarkup(await NavCount({ href: "/admin/fila", load }));
+    expect(fila).toMatch(/<span[^>]*class="[^"]*text-muted[^"]*"[^>]*>2<\/span>/);
+    expect(fila).toContain('aria-label="2 esperando"');
+    const citas = renderToStaticMarkup(await NavCount({ href: "/admin/citas", load }));
+    expect(citas).toContain('aria-label="1 citas por llegar"');
+    expect(await NavCount({ href: "/admin/fila", load: async () => null })).toBeNull();
+    const fails = () => Promise.reject(new Error("x"));
+    expect(await NavCount({ href: "/admin/fila", load: fails })).toBeNull();
+  });
+
+  it("REQ-078.27 los conteos llegan al menú lateral junto a Fila y Citas", () => {
     nav.pathname = "/admin";
-    const h = renderToStaticMarkup(<AdminNav counts={{ "/admin/fila": 7, "/admin/citas": 4 }} />);
-    expect(h).toMatch(/Fila<span class="text-muted ml-auto[^"]*"[^>]*>7<\/span>/);
-    expect(h).toMatch(/Citas<span class="text-muted ml-auto[^"]*"[^>]*>4<\/span>/);
+    const h = renderToStaticMarkup(
+      <AdminNav badges={{ "/admin/fila": <i>7</i>, "/admin/citas": <i>4</i> }} />,
+    );
+    expect(h).toMatch(/Fila<span class="ml-auto[^"]*"><i>7<\/i>/);
+    expect(h).toMatch(/Citas<span class="ml-auto[^"]*"><i>4<\/i>/);
   });
 
   it("REQ-078.27 el activo lleva raya izquierda de 3 px y fondo suave", () => {

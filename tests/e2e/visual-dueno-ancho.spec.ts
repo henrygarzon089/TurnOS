@@ -51,6 +51,18 @@ test.describe("T-177 marco del dueño en escritorio", () => {
     expect(distinct[0]).toBeGreaterThan(900);
   });
 
+  test("REQ-078.27 el número de Fila en el menú es el mismo de esperando en Hoy", async ({
+    page,
+  }) => {
+    await page.goto("/admin");
+    const waiting = Number(await page.getByTestId("today-waiting").textContent());
+    const fila = page
+      .getByRole("navigation", { name: "Menú del dueño" })
+      .getByRole("link", { name: /^Fila/ });
+    if (waiting === 0) await expect(fila).toHaveText("Fila");
+    else await expect(fila.getByLabel(`${waiting} esperando`)).toHaveText(String(waiting));
+  });
+
   test("REQ-078.27 barra azul de 56 px por encima del menú lateral, con fecha y Salir en el menú del dueño", async ({
     page,
   }) => {

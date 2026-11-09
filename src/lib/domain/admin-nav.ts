@@ -103,3 +103,18 @@ export function businessInitials(name: string): string {
     .join("");
   return letters || "·";
 }
+
+/**
+ * REQ-078.27 números en texto suave del menú lateral: los que esperan en la fila y las citas de
+ * hoy que faltan por llegar, de la misma lectura de la fila del dueño. En cero, nada.
+ */
+export function navQueueCounts(
+  view: { active: { status: string }[]; appointments: unknown[] } | null,
+): Record<string, number> {
+  const out: Record<string, number> = {};
+  if (!view) return out;
+  const waiting = view.active.filter((t) => t.status === "waiting").length;
+  if (waiting > 0) out["/admin/fila"] = waiting;
+  if (view.appointments.length > 0) out["/admin/citas"] = view.appointments.length;
+  return out;
+}
