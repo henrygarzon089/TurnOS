@@ -267,6 +267,10 @@ no duplicar acciones ni creer que algo se guardó cuando no.
   el duplicado por la regla REQ-003.5 y, al reintentar, mostrarle su turno existente.
 - REQ-011.6 La PWA DEBE poder abrirse (shell) sin conexión y mostrar el último estado conocido con
   su hora ("Actualizado hace 2 min") en lugar de una pantalla en blanco.
+- REQ-011.7 CUANDO una pantalla con datos en vivo vuelve a primer plano (se desbloquea el celular,
+  se vuelve a la pestaña o el navegador la restaura desde su caché), EL SISTEMA DEBE volver a cargar
+  el estado completo desde el servidor una sola vez, aunque lleguen varios avisos juntos, sin
+  esperar al sondeo de 30 s ni a la reconexión.
 
 ### REQ-012 · Vista del dueño sobre la fila — M
 **Como** dueño, **quiero** ver toda la fila del negocio y poder intervenir, **para** resolver

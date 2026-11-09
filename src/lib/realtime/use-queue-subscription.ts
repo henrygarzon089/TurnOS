@@ -5,7 +5,8 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { subscribeToQueue, type MinimalClient } from "./queue-subscription";
 
 /**
- * Hook: se suscribe a `queue:<businessId>` y llama `reload` al recibir cambios o reconectar.
+ * Hook: se suscribe a `queue:<businessId>` y llama `reload` al recibir cambios, reconectar o
+ * volver a primer plano.
  * Devuelve `online` para la franja "Sin conexión" (REQ-011.1) y `lastUpdated`.
  */
 export function useQueueSubscription(
@@ -32,6 +33,9 @@ export function useQueueSubscription(
       },
       // Un SUBSCRIBED tardío llega por el socket ya abierto: no apaga la franja si no hay red
       onConnection: (up) => setOnline(up && navigator.onLine),
+      // Al volver del celular bloqueado o de otra pestaña: relee (REQ-011.7)
+      visibilityTarget: document,
+      pageShowTarget: window,
     });
     // Abierta sin red (desde la caché del service worker): el evento "offline" no llega
     const first = requestAnimationFrame(() => {

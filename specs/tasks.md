@@ -1889,6 +1889,22 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ---
 
+## Cambio · Relectura al volver a primer plano (ADR-008)
+
+> Aprobado por Henry el 2026-11-09. Agrega REQ-011.7. Diseño en `design.md` (Lectura por
+> relectura). Origen: "Hoy" decía "3 esperando" y la Fila "2" porque una pantalla congelada en
+> segundo plano no releía al volver.
+
+### [x] T-182 · Relectura al volver a primer plano
+- REQ: REQ-011.7, ADR-008
+- Archivos: `src/lib/realtime/queue-subscription.ts`, `src/lib/realtime/use-queue-subscription.ts`,
+  `tests/unit/queue-subscription.test.ts`
+- Terminado: la prueba `REQ-011.7 …` oculta y muestra la pestaña (y dispara `pageshow`) y comprueba
+  una sola relectura; ocultarla no relee; al desmontar se quitan los listeners; `pnpm lint`,
+  `typecheck`, `test` y `trace` en verde.
+
+---
+
 ## Hito 15 — Inicio "Hoy" del dueño (ADR-046)
 
 > REQ-076, REQ-077 y ADR-046 aprobados por Henry (2026-11-06). Diseño en `design.md` §21. Sin
@@ -2225,7 +2241,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   - Los `<select>` del inventario llevan `h-12`: WebKit ignora `min-height` en un select y en el
     iPhone medían menos de 48 px.
 
-### [ ] T-169 · Barbero: marco y Mi fila fieles al tablero
+### [x] T-169 · Barbero: marco y Mi fila fieles al tablero
 - REQ: REQ-078.16, REQ-078.17, REQ-078.18 (ADR-051, design §22.6)
 - Archivos: `supabase/migrations/0069_call_expected.sql`, `supabase/tests/0069_call_expected.sql`,
   `src/lib/actions/queue.ts` (`callNext(expectedId)`), `src/app/(staff)/layout.tsx` y
@@ -2234,6 +2250,13 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: estados silla libre, llamado, en servicio, vacío, sin conexión y esqueleto como
   Barbero-Fila (captura junto al tablero en el PR); "Llamar a <número>" no llama a otro; cobros
   pendientes en una fila; textos nuevos en pruebas y en `docs/`.
+- Nota (2026-11-08): "Sigue" muestra el turno que `call_next` llamaría (no siempre el primero si
+  hay una cita cerca): `my_next_ticket()` en 0069 envuelve `barber_next_ticket` (0046) para el
+  barbero en sesión. Tocar "Sigue" también abre la hoja del turno, para poder avisar al primero
+  (REQ-009.4); la hoja trae servicio, duración, espera y "te eligió" (REQ-006.2). El aviso de
+  limpieza dice "Falta la limpieza de apertura · Hacerla" (texto del tablero, ADR-051) y Limpieza
+  lleva punto rojo en el menú (`CleaningDot`, en `ACCENT_FILL_ALLOWED`). "Nueva venta" del
+  barbero vive en "Más". Henry revisa las capturas antes de fusionar (ADR-051) y sube 0069.
 
 ### [ ] T-170 · Cobro en pantalla completa como el tablero
 - REQ: REQ-078.16, REQ-078.19
@@ -2277,7 +2300,10 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   lectura en cada pantalla del dueño. Con número o insignia, el nombre accesible del enlace lo
   incluye ("Fila 3 esperando"): se ajustó el E2E de REQ-077.2 y el de REQ-030.1 ("Dueño ▾" es de
   1024 px). "Stock por sitio" de Inventario tiene una columna por estación y en el CI se desplazaba:
-  desde 1024 px usa columnas fijas con encabezados que se parten (probado con 16 sitios). Para T-180/T-181: Clientes es una
+  desde 1024 px usa columnas fijas con encabezados que se parten (probado con 16 sitios).
+  Cabecera propia de cada pantalla en el celular (design §22.8): si la pantalla marca la suya con
+  `data-screen-header`, el layout oculta la barra del negocio por debajo de 1024 px (una sola barra
+  azul). T-178…T-181 deben poner ese atributo en su cabecera y en la de su `loading.tsx`. Para T-180/T-181: Clientes es una
   lista larga a todo el ancho (el tablero pide tabla) y en Inventario y Mensajes los campos se
   estiran a todo el ancho.
 

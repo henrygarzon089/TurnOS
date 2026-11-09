@@ -4,6 +4,7 @@ import { AdminNav } from "@/components/admin/AdminNav";
 import { NavAlertBadge } from "@/components/admin/today/NavAlertBadge";
 import { NavCount } from "@/components/admin/today/NavCount";
 import { TodayBadge } from "@/components/admin/today/TodayBadge";
+import { CleaningDot } from "@/components/cleaning/CleaningDot";
 import { BarberNav } from "@/components/staff/BarberNav";
 import { StaffHeader } from "@/components/staff/StaffHeader";
 import { SkeletonBlock, SkeletonScreen } from "@/components/ui/Skeleton";
@@ -18,7 +19,8 @@ import { getStaffSession } from "@/lib/auth/session";
  * inferior en el celular (el contenido deja 56 px más abajo) y menú lateral desde 1024 px, debajo
  * de su barra azul (REQ-078.27). Desde 1024 px todas sus pantallas usan el ancho de escritorio
  * (`lg:max-w-6xl`, ADR-053); `data-tablet` ensancha desde 768 px (la caja, REQ-078.15).
- * El barbero, su barra inferior (T-163) en todos los tamaños.
+ * El barbero, su barra inferior (T-163) en todos los tamaños y sin encabezado: cada pantalla empieza
+ * con su título y Mi fila trae su franja azul (T-169, ADR-051).
  */
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -35,8 +37,12 @@ async function StaffGate({ children }: { children: React.ReactNode }) {
   }
   const owner = session.role === "owner";
   return (
-    <div className="flex flex-1 flex-col">
-      <StaffHeader session={session} />
+    // Por debajo de 1024 px, una pantalla del dueño con su propia cabecera azul (`data-screen-header`,
+    // design §22.8) oculta la barra del negocio para no mostrar dos barras azules.
+    <div
+      className={`flex flex-1 flex-col ${owner ? "max-lg:has-[[data-screen-header]]:[&>header]:hidden" : ""}`}
+    >
+      {owner && <StaffHeader session={session} />}
       <div className={`flex flex-1 flex-col ${owner ? "lg:pl-60" : ""}`}>
         <div
           className={`mx-auto flex w-full max-w-md flex-1 flex-col px-4 ${owner ? "pt-6 pb-40 md:max-lg:has-[[data-tablet]]:max-w-3xl lg:max-w-6xl lg:pb-24" : "pb-28"}`}
@@ -44,7 +50,15 @@ async function StaffGate({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </div>
-      {session.role === "barber" && <BarberNav />}
+      {session.role === "barber" && (
+        <BarberNav
+          cleaningDot={
+            <Suspense fallback={null}>
+              <CleaningDot />
+            </Suspense>
+          }
+        />
+      )}
       {owner && (
         <AdminNav
           todayBadge={

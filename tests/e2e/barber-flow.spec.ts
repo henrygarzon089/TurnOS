@@ -1,5 +1,5 @@
 import { expect, test, type BrowserContext, type Page } from "@playwright/test";
-import { appAlert, loginAsBarber, resetQueue, SEED } from "./helpers";
+import { CALL, appAlert, loginAsBarber, resetQueue, SEED } from "./helpers";
 
 const phone = () => `300 8${Math.floor(100000 + Math.random() * 899999)}`;
 
@@ -38,17 +38,17 @@ test.describe("Hito 1 · flujo del barbero", () => {
 
     await loginAsBarber(page, 0); // Juan
     await ensurePresent(page);
-    await page.getByRole("button", { name: "Llamar al siguiente" }).click();
+    await page.getByRole("button", { name: CALL }).click();
     await expect(page.getByRole("article", { name: /Turno actual/ })).toBeVisible();
     // REQ-007.5: con turno abierto no hay cómo llamar (T-163: el botón de abajo pasa a lo que sigue)
-    await expect(page.getByRole("button", { name: "Llamar al siguiente" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: CALL })).toHaveCount(0);
 
-    await page.getByRole("button", { name: "Ya está en la silla" }).click();
-    await expect(page.getByText(/En servicio hace/)).toBeVisible();
+    await page.getByRole("button", { name: "Empezar corte" }).click();
+    await expect(page.getByText(/^desde .+ · \d+ min$/)).toBeVisible();
     await expect(customer.getByText("Te están atendiendo")).toBeVisible();
 
-    await page.getByRole("button", { name: "Terminado" }).click();
-    await expect(page.getByText("Nadie en la silla.")).toBeVisible();
+    await page.getByRole("button", { name: "Terminar y cobrar" }).click();
+    await expect(page.getByText("Nadie en tu fila por ahora")).toBeVisible();
     await expect(customer.getByText("¡Gracias por venir!")).toBeVisible();
     await cctx.close();
   });
@@ -68,10 +68,10 @@ test.describe("Hito 1 · flujo del barbero", () => {
     const juan = await otherCtx.newPage();
     await loginAsBarber(juan, 0);
     await ensurePresent(juan);
-    await juan.getByRole("button", { name: "Llamar al siguiente" }).click();
+    await juan.getByRole("button", { name: CALL }).click();
 
     await expect(page.getByText("Compartido")).toBeHidden({ timeout: 5000 });
-    await juan.getByRole("button", { name: "No llegó" }).click();
+    await juan.getByRole("button", { name: "No vino" }).click();
     await otherCtx.close();
     await cctx.close();
   });
@@ -84,8 +84,8 @@ test.describe("Hito 1 · flujo del barbero", () => {
     const customer = await customerTakesTicket(cctx, "No Llega");
     await loginAsBarber(page, 2); // Luis
     await ensurePresent(page);
-    await page.getByRole("button", { name: "Llamar al siguiente" }).click();
-    await page.getByRole("button", { name: "No llegó" }).click();
+    await page.getByRole("button", { name: CALL }).click();
+    await page.getByRole("button", { name: "No vino" }).click();
     await expect(customer.getByText("Te llamamos y no estabas")).toBeVisible();
     await expect(customer.getByRole("link", { name: "Tomar un turno nuevo" })).toBeVisible();
     await cctx.close();
@@ -109,21 +109,29 @@ test.describe("Hito 1 · flujo del barbero", () => {
     await cctx.close();
   });
 
-  test("REQ-009.2 / REQ-009.3 el botón Avisar abre wa.me con el mensaje y queda 'Avisado ✓'", async ({
+  test("REQ-009.2 / REQ-009.3 el botón Avisar abre wa.me con el mensaje y queda 'Avisado'", async ({
     browser,
     page,
   }) => {
+    test.setTimeout(60_000);
+    // Un turno activo por celular: cada cliente en su propio contexto
+    const first = await browser.newContext();
+    await customerTakesTicket(first, "Primero");
     const cctx = await browser.newContext();
     await customerTakesTicket(cctx, "Avisable");
     await loginAsBarber(page, 4); // Mateo
     await ensurePresent(page);
-    const link = page.getByRole("link", { name: /Avisar/ }).first();
+    // T-169: "Avisar por WhatsApp" está en la hoja de cada turno de "Después"
+    await page.getByTestId("waiting-row").filter({ hasText: "Avisable" }).click();
+    const sheet = page.getByRole("dialog", { name: /Avisable/ });
+    const link = sheet.getByRole("link", { name: "Avisar por WhatsApp" });
     await expect(link).toHaveAttribute("href", /^https:\/\/wa\.me\/57300\d{7}\?text=/);
     const href = await link.getAttribute("href");
     expect(decodeURIComponent(href!)).toContain("Barbería La 33");
     const [popup] = await Promise.all([page.waitForEvent("popup"), link.click()]);
     await popup.close();
-    await expect(page.getByRole("link", { name: "Avisado ✓" }).first()).toBeVisible();
+    await expect(sheet.getByText("Avisado ✓")).toBeVisible();
+    await first.close();
     await cctx.close();
   });
 
@@ -140,9 +148,9 @@ test.describe("Hito 1 · flujo del barbero", () => {
     await page.route(isQueuePage, (route) =>
       route.request().method() === "POST" ? route.abort("failed") : route.continue(),
     );
-    await page.getByRole("button", { name: "Llamar al siguiente" }).click();
+    await page.getByRole("button", { name: CALL }).click();
     await expect(appAlert(page)).toContainText("Revisa tu conexión", { timeout: 15000 });
-    await expect(page.getByText("Nadie en la silla.")).toBeVisible();
+    await expect(page.getByRole("region", { name: "Turno" })).toContainText("Sigue");
     await page.unroute(isQueuePage);
     await cctx.close();
   });
