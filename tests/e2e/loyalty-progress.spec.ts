@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { loginAsBarber, loginAsOwner } from "./helpers";
+import { loginAsBarber, loginAsOwner, openTicketSheet } from "./helpers";
 
 /**
  * T-036 · REQ-019.3, REQ-019.5, REQ-019.7. No depende de la hora: los turnos los agrega el dueño
@@ -30,9 +30,9 @@ async function ensureJuanFree(barber: Page) {
   if (await back.isVisible()) await back.click();
   const current = barber.getByRole("article", { name: /Turno actual/ });
   if (await current.isVisible()) {
-    const seat = barber.getByRole("button", { name: "Ya está en la silla" });
+    const seat = barber.getByRole("button", { name: "Empezar corte" });
     if (await seat.isVisible()) await seat.click();
-    await barber.getByRole("button", { name: "Terminado" }).click();
+    await barber.getByRole("button", { name: "Terminar y cobrar" }).click();
     await expect(current).toBeHidden({ timeout: 15_000 });
   }
 }
@@ -53,12 +53,10 @@ async function ownerAdds(owner: Page, name: string, phone: string) {
 /** Token de "Mi turno" desde el enlace wa.me del botón "Avisar" (REQ-009.2). */
 async function tokenFromBarber(barber: Page, name: string): Promise<string> {
   await barber.goto("/app/fila");
-  const row = barber
-    .getByRole("region", { name: "Siguen" })
-    .getByRole("listitem")
-    .filter({ hasText: name });
-  await expect(row).toBeVisible({ timeout: 15_000 });
-  const href = await row.getByRole("link").first().getAttribute("href");
+  await expect(barber.getByRole("main").getByText(name).first()).toBeVisible({ timeout: 15_000 });
+  const sheet = await openTicketSheet(barber, name);
+  const href = await sheet.getByRole("link", { name: "Avisar por WhatsApp" }).getAttribute("href");
+  await sheet.getByRole("button", { name: "Cerrar" }).click();
   const m = decodeURIComponent(href ?? "").match(/\/t\/([A-Za-z0-9_-]{16,64})/);
   expect(m, "el aviso debe incluir el enlace de Mi turno").not.toBeNull();
   return m![1];
@@ -80,9 +78,11 @@ async function serve(owner: Page, barber: Page, name: string) {
   ).toBeVisible({
     timeout: 15_000,
   });
-  await barber.getByRole("button", { name: "Ya está en la silla" }).click();
-  await barber.getByRole("button", { name: "Terminado" }).click();
-  await expect(barber.getByText("Nadie en la silla.")).toBeVisible({ timeout: 15_000 });
+  await barber.getByRole("button", { name: "Empezar corte" }).click();
+  await barber.getByRole("button", { name: "Terminar y cobrar" }).click();
+  await expect(barber.getByRole("article", { name: /Turno actual/ })).toBeHidden({
+    timeout: 15_000,
+  });
 }
 
 test.describe("REQ-019 progreso y premio de fidelidad", () => {
@@ -131,10 +131,7 @@ test.describe("REQ-019 progreso y premio de fidelidad", () => {
       await ownerAdds(owner, name, phone);
       await barber.goto("/app/fila");
       await expect(
-        barber
-          .getByRole("region", { name: "Siguen" })
-          .getByRole("listitem")
-          .filter({ hasText: name }),
+        barber.getByRole("region", { name: /^(Turno|Después)$/ }).filter({ hasText: name }),
       ).toContainText("Premio disponible");
 
       // Canje manual desde la ficha → tarjeta nueva en cero

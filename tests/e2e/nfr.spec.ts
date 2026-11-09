@@ -25,7 +25,7 @@ test.describe("NFR del MVP", () => {
       await add.getByLabel("Barbero").selectOption({ label: "Juan" });
       await add.getByRole("button", { name: "Agregar" }).click();
       // Sin recargar la pantalla del barbero
-      await expect(barber.getByRole("region", { name: "Siguen" }).getByText(name)).toBeVisible({
+      await expect(barber.getByRole("main").getByText(name).first()).toBeVisible({
         timeout: 3000,
       });
 

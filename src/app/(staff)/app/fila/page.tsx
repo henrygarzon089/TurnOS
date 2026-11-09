@@ -23,7 +23,7 @@ export default async function BarberQueuePage() {
     return (
       <main className="py-6">
         {banner}
-        <h1 className="mt-4 text-2xl font-bold">Mi fila</h1>
+        <h1 className="text-2xl font-bold">Mi fila</h1>
         <p className="text-muted mt-2">
           Tu cuenta no tiene una silla asignada.{" "}
           {session?.role === "owner" ? (
@@ -38,9 +38,6 @@ export default async function BarberQueuePage() {
     );
   }
   return (
-    <>
-      {banner}
-      <BarberQueue initial={view} appUrl={process.env.NEXT_PUBLIC_APP_URL ?? ""} />
-    </>
+    <BarberQueue initial={view} appUrl={process.env.NEXT_PUBLIC_APP_URL ?? ""} cleaning={banner} />
   );
 }

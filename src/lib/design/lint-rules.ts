@@ -10,6 +10,8 @@
 export const ACCENT_FILL_ALLOWED: string[] = [
   // T-152: insignias de conteo de "Hoy" y del menú del dueño (REQ-076.6, REQ-077.6)
   "src/components/admin/today/CountBadge.tsx",
+  // T-169: punto rojo de Limpieza en el menú del barbero cuando falta la apertura (design §22.6)
+  "src/components/cleaning/CleaningDot.tsx",
 ];
 
 const PALETTE =

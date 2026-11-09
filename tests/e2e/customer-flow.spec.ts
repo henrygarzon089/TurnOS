@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import {
+  CALL,
   appAlert,
   cancelMyTicket,
   loginAsBarber,
@@ -104,7 +105,7 @@ test.describe("Hito 1 · flujo del cliente", () => {
     const barberCtx = await browser.newContext();
     const barberPage = await barberCtx.newPage();
     await loginAsBarber(barberPage, 0);
-    await barberPage.getByRole("button", { name: "Llamar al siguiente" }).click();
+    await barberPage.getByRole("button", { name: CALL }).click();
 
     const t0 = Date.now();
     await expect(page.getByText("¡Es tu turno!")).toBeVisible({ timeout: 3000 });

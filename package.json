@@ -24,6 +24,7 @@
     "db:seed-auth": "docker exec -i supabase_db_turnos psql -U postgres -d postgres -v ON_ERROR_STOP=1 -q < supabase/seed-local-auth.sql",
     "lint:texts": "tsx scripts/lint-texts.ts",
     "lint:design": "tsx scripts/lint-design.ts",
+    "check:deploy": "tsx scripts/check-deploy.ts",
     "trace": "tsx scripts/traceability.ts",
     "lighthouse": "tsx scripts/lighthouse.ts",
     "test:coverage": "vitest run --project unit --coverage"

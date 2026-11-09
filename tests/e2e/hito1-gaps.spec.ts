@@ -1,5 +1,13 @@
 import { expect, test } from "@playwright/test";
-import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED } from "./helpers";
+import {
+  CALL,
+  adminDb,
+  loginAsBarber,
+  loginAsOwner,
+  openTicketSheet,
+  resetQueue,
+  SEED,
+} from "./helpers";
 
 const phone = () => `300 6${Math.floor(100000 + Math.random() * 899999)}`;
 
@@ -47,10 +55,10 @@ test.describe("Hito 1 · criterios de interfaz", () => {
     await loginAsBarber(barber, 0);
     const here = barber.getByRole("button", { name: "Estoy aquí" });
     if (await here.isVisible()) await here.click();
-    await barber.getByRole("button", { name: "Llamar al siguiente" }).click();
-    await barber.getByRole("button", { name: "Ya está en la silla" }).click();
+    await barber.getByRole("button", { name: CALL }).click();
+    await barber.getByRole("button", { name: "Empezar corte" }).click();
     await expect(page.getByRole("button", { name: "Cancelar mi turno" })).toBeHidden();
-    await barber.getByRole("button", { name: "Terminado" }).click();
+    await barber.getByRole("button", { name: "Terminar y cobrar" }).click();
     // REQ-004.4 estado final con agradecimiento
     await expect(page.getByText("¡Gracias por venir!")).toBeVisible();
     await bctx.close();
@@ -74,17 +82,19 @@ test.describe("Hito 1 · criterios de interfaz", () => {
     const here = page.getByRole("button", { name: "Estoy aquí" });
     if (await here.isVisible()) await here.click();
     await expect(page.getByText(/Disponible|En servicio|En pausa/)).toBeVisible(); // REQ-006.4
-    const row = page.getByRole("listitem").filter({ hasText: "Detalle Fila" });
-    await expect(row).toContainText("Barba 15'"); // REQ-006.2 servicio y duración
-    await expect(row).toContainText(/hace \d+'/); // REQ-006.2 hace cuánto llegó
+    // T-169: el detalle del turno está en su hoja (tocar "Sigue" o la fila)
+    const row = await openTicketSheet(page, "Detalle Fila");
+    await expect(row).toContainText("Barba 15 min"); // REQ-006.2 servicio y duración
+    await expect(row).toContainText(/esperando hace \d+ min/); // REQ-006.2 hace cuánto llegó
     await expect(row).toContainText("te eligió"); // REQ-006.2 lo eligió a él
     // REQ-009.4 el botón de aviso existe en cualquier posición
-    await expect(row.getByRole("link", { name: /Avisar/ })).toBeVisible();
+    await expect(row.getByRole("link", { name: "Avisar por WhatsApp" })).toBeVisible();
+    await row.getByRole("button", { name: "Cerrar" }).click();
 
-    await page.getByRole("button", { name: "Llamar al siguiente" }).click();
+    await page.getByRole("button", { name: CALL }).click();
     // REQ-008.1 el botón "No llegó" está disponible desde el llamado; el resaltado llega a los 5 min
-    await expect(page.getByRole("button", { name: "No llegó" })).toBeVisible();
-    await page.getByRole("button", { name: "No llegó" }).click();
+    await expect(page.getByRole("button", { name: "No vino" })).toBeVisible();
+    await page.getByRole("button", { name: "No vino" }).click();
     await cctx.close();
   });
 
@@ -127,10 +137,10 @@ test.describe("Hito 1 · criterios de interfaz", () => {
     await loginAsBarber(barber, 2);
     const here = barber.getByRole("button", { name: "Estoy aquí" });
     if (await here.isVisible()) await here.click();
-    await barber.getByRole("button", { name: "Llamar al siguiente" }).click();
+    await barber.getByRole("button", { name: CALL }).click();
     await expect(tv.getByText(/Pasa a la silla de/)).toBeVisible({ timeout: 5000 });
     await expect(tv.getByText("Pantalla P.")).toBeVisible();
-    await barber.getByRole("button", { name: "No llegó" }).click();
+    await barber.getByRole("button", { name: "No vino" }).click();
     await bctx.close();
     await cctx.close();
   });

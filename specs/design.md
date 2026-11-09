@@ -81,6 +81,10 @@ Principios de la arquitectura:
 - **Lectura por relectura.** Realtime solo transporta una señal `queue_changed` por negocio; cada
   pantalla recarga su vista completa (ADR-008). Así la reconexión y los eventos perdidos se
   resuelven con el mismo código (REQ-011.2).
+  Con el celular bloqueado o la pestaña en segundo plano el navegador congela el socket y el
+  reloj; por eso `subscribeToQueue` también relee en `visibilitychange` (solo al quedar `visible`)
+  y en `pageshow` (restaurada desde la caché del navegador), por la misma espera de 300 ms que
+  `queue_changed`: varios avisos juntos dan una sola relectura (REQ-011.7).
 - **Reglas en la base de datos.** Transiciones de estado, unicidad de turno activo por celular,
   cálculo de comisión y cierre de caja son funciones SQL con pruebas (ADR-011).
 - **Lógica pura en TypeScript** para lo que se calcula al vuelo y se muestra: posición, tiempo
@@ -2725,6 +2729,9 @@ Mis fotos, Mi estación, "Nueva venta" y "Salir". No se construye: "Silla N" (la
 - "Llamar a <número>" manda el id del turno: `call_next(p_barber_id, p_expected uuid default null)`
   (migración `0069_call_expected`). Si `p_expected` no es null y el turno que tocaría es otro,
   levanta `NOT_NEXT` sin cambiar nada; la acción muestra "Ese turno ya no es el siguiente." y relee.
+- "Sigue" es el turno que `call_next` llamaría ahora: `my_next_ticket()` (0069) devuelve
+  `barber_next_ticket` (0046) del barbero en sesión, que salta a quien no cabe antes de una cita.
+  Tocar "Sigue" abre la misma hoja que las filas de "Después" (REQ-009.4).
 - No se construye: "7 de 10 cortes" en "Sigue" ni "le llegó el WhatsApp" (la fila no trae ese
   dato), la nota del cliente en "Atendiendo" (no hay notas de cliente).
 
@@ -2780,7 +2787,8 @@ tablero lo muestra y la app no tiene el dato o la función.
 `--color-*` y `--radius-*` del `@theme` de `src/app/globals.css` aparezca con su valor y que exista la
 regla `.bg-brand{`. Sale con código 1 y la lista de lo que falta. Se corre después de cada despliegue
 a producción (paso en `docs/estado-del-proyecto.md` y en la guía de despliegue). La lógica que
-compara (`compareDeployedCss(themeCss, servedCss)`) es pura y tiene prueba unitaria.
+compara (`compareDeployedCss(themeCss, servedCss)`, `src/lib/design/deploy-css.ts`) es pura y
+tiene prueba unitaria.
 
 **Portada y tomar turno en una pantalla (T-173).** `/[slug]` (celular, de arriba abajo):
 1. `PublicHeader`: marca 48×48 en `brand`, nombre (20 px negrita) y "Abierto hasta <hora>" en

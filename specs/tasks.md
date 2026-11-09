@@ -1889,6 +1889,22 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ---
 
+## Cambio · Relectura al volver a primer plano (ADR-008)
+
+> Aprobado por Henry el 2026-11-09. Agrega REQ-011.7. Diseño en `design.md` (Lectura por
+> relectura). Origen: "Hoy" decía "3 esperando" y la Fila "2" porque una pantalla congelada en
+> segundo plano no releía al volver.
+
+### [x] T-182 · Relectura al volver a primer plano
+- REQ: REQ-011.7, ADR-008
+- Archivos: `src/lib/realtime/queue-subscription.ts`, `src/lib/realtime/use-queue-subscription.ts`,
+  `tests/unit/queue-subscription.test.ts`
+- Terminado: la prueba `REQ-011.7 …` oculta y muestra la pestaña (y dispara `pageshow`) y comprueba
+  una sola relectura; ocultarla no relee; al desmontar se quitan los listeners; `pnpm lint`,
+  `typecheck`, `test` y `trace` en verde.
+
+---
+
 ## Hito 15 — Inicio "Hoy" del dueño (ADR-046)
 
 > REQ-076, REQ-077 y ADR-046 aprobados por Henry (2026-11-06). Diseño en `design.md` §21. Sin
@@ -2225,7 +2241,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   - Los `<select>` del inventario llevan `h-12`: WebKit ignora `min-height` en un select y en el
     iPhone medían menos de 48 px.
 
-### [ ] T-169 · Barbero: marco y Mi fila fieles al tablero
+### [x] T-169 · Barbero: marco y Mi fila fieles al tablero
 - REQ: REQ-078.16, REQ-078.17, REQ-078.18 (ADR-051, design §22.6)
 - Archivos: `supabase/migrations/0069_call_expected.sql`, `supabase/tests/0069_call_expected.sql`,
   `src/lib/actions/queue.ts` (`callNext(expectedId)`), `src/app/(staff)/layout.tsx` y
@@ -2234,6 +2250,13 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: estados silla libre, llamado, en servicio, vacío, sin conexión y esqueleto como
   Barbero-Fila (captura junto al tablero en el PR); "Llamar a <número>" no llama a otro; cobros
   pendientes en una fila; textos nuevos en pruebas y en `docs/`.
+- Nota (2026-11-08): "Sigue" muestra el turno que `call_next` llamaría (no siempre el primero si
+  hay una cita cerca): `my_next_ticket()` en 0069 envuelve `barber_next_ticket` (0046) para el
+  barbero en sesión. Tocar "Sigue" también abre la hoja del turno, para poder avisar al primero
+  (REQ-009.4); la hoja trae servicio, duración, espera y "te eligió" (REQ-006.2). El aviso de
+  limpieza dice "Falta la limpieza de apertura · Hacerla" (texto del tablero, ADR-051) y Limpieza
+  lleva punto rojo en el menú (`CleaningDot`, en `ACCENT_FILL_ALLOWED`). "Nueva venta" del
+  barbero vive en "Más". Henry revisa las capturas antes de fusionar (ADR-051) y sube 0069.
 
 ### [ ] T-170 · Cobro en pantalla completa como el tablero
 - REQ: REQ-078.16, REQ-078.19
@@ -2250,14 +2273,22 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   inglés; `pnpm trace --hito=16` sin huecos y el hito 16 de vuelta en el loop de
   `tests/unit/traceability.test.ts`.
 
-### [ ] T-172 · CSS publicado igual al del build
+### [x] T-172 · CSS publicado igual al del build
 - REQ: REQ-078.26 (ADR-052, design §22.7)
-- Archivos: `scripts/check-deploy.ts`, `src/lib/domain/deploy-css.ts` (`compareDeployedCss`),
+- Archivos: `scripts/check-deploy.ts`, `src/lib/design/deploy-css.ts` (`compareDeployedCss`),
   `tests/unit/deploy-css.test.ts`, `package.json` (`check:deploy`), `docs/estado-del-proyecto.md`.
 - Depende de Henry: `vercel --prod --force` (producción sin caché) y correr
   `pnpm check:deploy https://turnos-smoky-nine.vercel.app`.
 - Terminado: la prueba unitaria falla con el CSS viejo (accent `#1d4ed8`, sin `.bg-brand`) y pasa con
   el nuevo; el preview sin caché pasa `check:deploy`.
+- Hecho (2026-11-09). Notas y desvíos:
+  - La lógica va en `src/lib/design/deploy-css.ts` (junto a `lint-rules.ts`), no en
+    `src/lib/domain/`: es una regla del sistema visual, como `lint:design`.
+  - Tailwind publica solo los tokens que se usan y acorta los hex (`#fff`): se compara cada token
+    publicado con `globals.css` y se exigen `--color-brand` y la regla `.bg-brand`.
+  - `pnpm check:deploy https://turnos-smoky-nine.vercel.app` hoy falla (11 diferencias, sin
+    `--color-brand` ni `.bg-brand`); contra el servidor local pasa. Falta lo de Henry:
+    `vercel --prod --force` y volver a correrlo.
 
 ### [ ] T-173 · Cliente: portada y tomar turno en una pantalla
 - REQ: REQ-078.16, REQ-078.21, REQ-003.1, REQ-038.2
