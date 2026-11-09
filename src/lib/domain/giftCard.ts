@@ -114,6 +114,12 @@ export function giftCardHeadline(card: { status: GiftCardStatus; balance: number
   return giftCardStatusLabel(card.status);
 }
 
+/** REQ-078.24 junto al saldo: "usó $ 25.000" si ya se gastó una parte; si no, nada. */
+export function giftCardUsedText(card: { amount: number; balance: number }): string | null {
+  const used = card.amount - card.balance;
+  return used > 0 ? `usó ${formatCOP(used)}` : null;
+}
+
 /** REQ-056.2 condiciones de uso (Ley 1480, arts. 23 y 24: informar al consumidor). */
 export function giftCardConditions(expiresOn: string): string[] {
   return [

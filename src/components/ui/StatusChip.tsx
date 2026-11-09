@@ -25,14 +25,23 @@ const CHIP: Record<ChipStatus, { icon: IconName; label: string; look: string }> 
   appointment: { icon: "calendar", label: "Cita", look: "border-2 border-ink bg-card text-ink" },
 };
 
-export function StatusChip({ status, time }: { status: ChipStatus; time?: string }) {
+/** `label` cambia solo el texto (p. ej. "Cita cancelada" en Mi cita); ícono y color se quedan. */
+export function StatusChip({
+  status,
+  time,
+  label,
+}: {
+  status: ChipStatus;
+  time?: string;
+  label?: string;
+}) {
   const c = CHIP[status];
   return (
     <span
       className={`inline-flex h-7 shrink-0 items-center gap-1.5 rounded-xs px-2 text-sm font-semibold whitespace-nowrap ${c.look}`}
     >
       <Icon name={c.icon} className="size-4" />
-      {status === "appointment" && time ? `${c.label} ${time}` : c.label}
+      {label ?? (status === "appointment" && time ? `${c.label} ${time}` : c.label)}
     </span>
   );
 }
