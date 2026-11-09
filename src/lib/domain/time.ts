@@ -113,7 +113,7 @@ export function formatLongDayCO(day: string): string {
   return `${wd[0].toUpperCase()}${wd.slice(1)} ${d} de ${MONTHS_LONG[m - 1]}`;
 }
 
-/** REQ-076.4 (PA-H15-1): "El jueves pasado (todo el día)". */
+/** REQ-076.4 (PA-H15-1), como el tablero Dueno-Hoy: "El jueves pasado, todo el día". */
 export function lastWeekLabel(day: string): string {
-  return `El ${weekdayName(day)} pasado (todo el día)`;
+  return `El ${weekdayName(day)} pasado, todo el día`;
 }

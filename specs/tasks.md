@@ -2307,7 +2307,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   lista larga a todo el ancho (el tablero pide tabla) y en Inventario y Mensajes los campos se
   estiran a todo el ancho.
 
-### [ ] T-178 · Dueño: "Hoy" como el tablero
+### [x] T-178 · Dueño: "Hoy" como el tablero
 - REQ: REQ-078.28, REQ-078.29, REQ-078.16
 - Archivos: `src/app/(staff)/admin/(hoy)/{page,loading}.tsx`,
   `src/components/admin/today/{TodayQueue,TodayCash,TodayAppointments,TodayRemind,TodayWeek,TodayShortcuts}.tsx`,
@@ -2315,6 +2315,36 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `tests/e2e/today.spec.ts`.
 - Terminado: escritorio, celular y tablet como Dueno-Hoy y Dueno-Hoy-Movil (captura en el PR);
   "Para recordar" con personas y "Escribirle"; "en vivo · <hora>".
+- Hecho (2026-11-09). Capturas en `docs/diseno/capturas/T-178/` (1440, 768 y 390 px). Notas y
+  desvíos (ADR-053: lo que la app no tiene no se inventa):
+  - Archivos de más: `TodayAlerts.tsx` (rojo suave arriba en el celular; sin alertas no se dibuja
+    ahí), `TodayCard.tsx` (`aside` junto al título, franja a todo el ancho bajo 1024 px),
+    `RemindWriteLink.tsx` (nuevo: "Escribirle" anota el recordatorio como en Recordar, REQ-020.4) y
+    `lastWeekLabel` en `time.ts` ("El jueves pasado, todo el día", como el tablero).
+  - La cabecera azul del celular la pinta la página de Hoy (`lg:hidden`); el `StaffHeader` blanco
+    sigue encima hasta T-177. `<main>` lleva `data-tablet` (design §22.8); `data-wide` se deja
+    para que lo quite T-177.
+  - Fila en vivo: el número es el del turno (11), sin la "A" del tablero. "Desde" queda en "—"
+    para "En pausa" y "Libre": la app no guarda desde cuándo. El estimado dice "~ N min de
+    espera", no "promedio": es el de la portada para quien llega ahora. "No vino hoy" se conserva.
+  - Caja: Transferencia y tarjeta sumadas; en celular y tablet, "Daviplata · transf. · tarjeta"
+    (el tablero de tablet dice "Otros medios"). Sale "N servicios terminados" (anotado en
+    REQ-076.4).
+  - Citas: "Atendido" no se construye (la cita no sabe si el turno terminó); "Llegó" en negrita y
+    "Pendiente" en suave. Las que quedan van junto al título; el servicio, en suave.
+  - Para recordar: hasta 4 (2 cumpleaños + 2 que no vuelven; si un lado no alcanza, el otro llena),
+    2 en el celular. Lee `getBirthdaysThisWeek` y `getInactiveCustomers` (sin lecturas nuevas).
+    REQ-076.7 anotado: personas en vez de conteos.
+  - Semana: los días que no han llegado ya decían "—" desde T-153 (`buildWeekBars`). Lo más probable
+    es que Henry lo viera el domingo 8 de noviembre: ese día toda la semana ya había llegado, y los
+    días sin ventas dicen $ 0 (correcto). Prueba nueva de los dos casos.
+  - "3 esperando" en Hoy y "2" en la Fila al mismo tiempo: las dos cuentan lo mismo (turnos
+    `waiting` de `getBusinessQueue`, sin filtro de día ni de barbero), así que la diferencia es una
+    pantalla sin releer. Hoy relee con `router.refresh()` por Broadcast (300 ms) y cada 30 s; con el
+    celular bloqueado o la pestaña de fondo, el navegador congela el socket y el reloj, y al volver
+    no relee hasta reconectar. Ahora "en vivo · <hora>" muestra cuándo fue la última relectura.
+    Pendiente aparte: releer al volver a la pestaña (`visibilitychange` en
+    `use-queue-subscription.ts`, que no es de esta tarea).
 
 ### [ ] T-179 · Dueño: Fila y Caja como el tablero
 - REQ: REQ-078.30, REQ-078.31, REQ-078.16
