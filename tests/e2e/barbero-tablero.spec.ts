@@ -52,7 +52,8 @@ async function addTicket(name: string) {
 async function barberReady(page: Page) {
   await loginAsBarber(page, 0);
   for (const name of ["Estoy aquí", "Volver"]) {
-    const b = page.getByRole("button", { name });
+    // exact: un turno llamado "Tablero Volver" también tiene "Volver" en el nombre
+    const b = page.getByRole("button", { name, exact: true });
     if (await b.isVisible()) await b.click();
   }
   // Si estaba en pausa, la pantalla se redibuja al volver: un toque antes caería en otro botón
