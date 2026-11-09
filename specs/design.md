@@ -2768,3 +2768,143 @@ Mis fotos, Mi estación, "Nueva venta" y "Salir". No se construye: "Silla N" (la
   camino · Pediste reposición <hora>" cuando aplica; la ayuda "Entrega el envase vacío en la caja".
   Reposiciones y último conteo como filas. No se construye: botón "Se acabó" (la reposición la
   registra el dueño, REQ-071.4).
+
+### 22.7 Cliente fiel al tablero (ADR-052, REQ-078.21…26)
+
+Comparación del 2026-11-08 contra Cliente-Negocio, Cliente-MiTurno, Cliente-Cita, Cliente-Escritorio
+y Cliente-Pantalla, con el CSS correcto (build local y preview sin caché). "No se construye" = el
+tablero lo muestra y la app no tiene el dato o la función.
+
+**CSS publicado (T-172).** `scripts/check-deploy.ts` (`pnpm check:deploy <url>`): baja `<url>/la-33`
+(o la ruta que se pase), toma cada `<link rel="stylesheet">`, baja el CSS y verifica que cada
+`--color-*` y `--radius-*` del `@theme` de `src/app/globals.css` aparezca con su valor y que exista la
+regla `.bg-brand{`. Sale con código 1 y la lista de lo que falta. Se corre después de cada despliegue
+a producción (paso en `docs/estado-del-proyecto.md` y en la guía de despliegue). La lógica que
+compara (`compareDeployedCss(themeCss, servedCss)`) es pura y tiene prueba unitaria.
+
+**Portada y tomar turno en una pantalla (T-173).** `/[slug]` (celular, de arriba abajo):
+1. `PublicHeader`: marca 48×48 en `brand`, nombre (20 px negrita) y "Abierto hasta <hora>" en
+   `muted` (cerrado: "Cerrado · <próxima apertura>" en `danger`). Sin la dirección (pasa a "Ver
+   menú").
+2. Bloque en vivo (124 px reservados, tarjeta con borde): punto `called` · "N esperando" (cifra 20 px
+   negrita) · "en vivo" a la derecha; una línea por barbero (máx. 5 y "y N más"): nombre a la
+   izquierda; a la derecha "n · ~ N min" (`publicBarberLines`), "En pausa" en `warn` o "Libre" en
+   `ok`. Sin la línea "Te atenderían de una vez".
+3. "¿Qué te vas a hacer?": rejilla 2×N de celdas de 60 px con nombre (negrita) y precio debajo; sin
+   la duración (sigue en el `title` y en la confirmación). Elegido: `OptionList` (borde 2 px `brand`
+   + `brand-soft`).
+4. "¿Con quién?": fichas en una fila con desplazamiento horizontal dentro de su caja (no la página),
+   "El primero libre" primero; en pausa deshabilitada con "(en pausa)". "Ver cortes" (REQ-039.5) se
+   queda como enlace pequeño debajo de la fila de fichas para el barbero elegido que tenga fotos.
+5. "Tu nombre", "Tu celular" (`PhoneField` +57).
+6. Lo que la app tiene y el tablero no, en este orden y solo cuando aplica: cumpleaños (REQ-037.2),
+   "Bebida de cortesía" (REQ-038.3), aviso de cierre cercano, "Avísame por WhatsApp".
+7. Privacidad en una línea: casilla "Acepto el aviso de privacidad (Ley 1581)" con "aviso de
+   privacidad" como enlace (REQ-002.1 pide texto corto + enlace; el texto largo actual sale). Ya
+   aceptada: "Ya aceptaste nuestra política de datos. Leerla" (REQ-002.4).
+8. Barra fija abajo (130 px, el contenido lleva el mismo padding inferior): "Tomar turno" (principal)
+   y debajo, en una línea, "Reservar una cita" (si hay citas, REQ-050.1) y "Ver menú" (si hay
+   productos a la venta) como enlaces. Guardando: "Guardando…" y campos en solo lectura. Sin red:
+   deshabilitado con "Necesitas señal para tomar turno. Lo que escribiste no se borra." Error del
+   servidor: recuadro `accent-soft` con borde `danger` encima de la barra: "**No pudimos darte el
+   turno.** Revisa la señal y toca "Tomar turno" otra vez. Tus datos siguen ahí."
+9. Cerrado: sin formulario; en su lugar "Abrimos: <próxima apertura>." y "Reservar una cita" si hay.
+- "Ver menú" abre `Sheet` "Menú" con la dirección del local arriba y "Lo que vendemos" (foto 48×48,
+  nombre, precio) y "Se compran en el local." (REQ-038.2).
+- `/[slug]/turno` → `redirect('/[slug]')` (se conserva la ruta). `JoinForm` se monta en la portada; los
+  E2E que entran por `/turno` cambian a la portada.
+- Escritorio (≥ 1024 px, Cliente-Escritorio): encabezado a todo el ancho con "Reservar una cita" y
+  "Ver menú" a la derecha; a la izquierda "● N personas esperando ahora" (cifra 64 px) y una tabla
+  con BARBERO, ESTADO ("Atendiendo", "En pausa" en `warn`, "Libre" en `ok`), EN FILA y ESPERA APROX.
+  ("—" en pausa, "ya" si libre), y debajo "Tomas el turno aquí y te vas a tu casa. Te escribimos por
+  WhatsApp cuando falten dos. La lista se actualiza sola."; a la derecha la tarjeta "Tomar turno" con
+  el mismo formulario (botón al final, no fijo). Pie "Fila con TurnOS".
+- No se construye: "vuelve 4:30 p. m." de la pausa (no hay hora de regreso).
+
+**Mi turno (T-174).** `MyTicket`, de arriba abajo:
+1. Encabezado 48 px: marca 28×28, nombre del negocio y a la derecha "● En vivo" (sin red: "sin
+   señal" en `muted`, con la franja de REQ-078.10 encima).
+2. Tarjeta "Tu turno" (214 px reservados): rótulo "Tu turno", número a 120 px (`clamp` hasta 30 vw),
+   `StatusChip` del estado. Sale "Hola, <nombre>".
+3. Dos celdas de 104 px: "Vas de" + "N.º" (28 px) + "N antes de ti" ("Eres el siguiente" cuando es
+   1.º); "Te toca en" + "~ N min" + "cerca de <hora>" (ahora + espera, `formatTimeBogota`). Sin
+   estimado: el texto de hoy ("Tu barbero está en pausa"…) en la celda. Sin red: "a las <hora>" y
+   "puede haber cambiado".
+4. Fila del barbero: círculo con iniciales (`brand-soft`), nombre (negrita) y "<servicio> · $
+   <precio>"; "El primero libre" mientras no hay asignado.
+5. Barra de 4 pasos (4 px, `brand` lleno hasta el paso actual) con En espera, Tu turno, En servicio,
+   Listo.
+6. "Puedes esperar en tu casa. Te escribimos por WhatsApp cuando falten 2 turnos. Esta página se
+   actualiza sola." (con aviso por WhatsApp; si no, sin la frase de WhatsApp).
+7. Lo de la app que el tablero no tiene: "Ya tienes un turno en la fila. Este es.", "Cita <hora>",
+   bebida (ícono SVG de taza en vez del emoji) con "Cambiar bebida", aviso por WhatsApp, membresía,
+   cortes de fidelidad (en espera), "Actualizado hace N s".
+8. Barra fija: "Cancelar turno" (contorno rojo) y "Ver menú del local" (enlace, abre la misma hoja de
+   la portada). Hoja de cancelar: "¿Cancelar tu turno <número>?", "Pierdes tu puesto en la fila. Si
+   vuelves, tomas turno nuevo al final.", "Sí, cancelar turno" (contorno rojo), "No, seguir en la
+   fila".
+- Llamado: el bloque `called` reemplaza encabezado y tarjeta (≈ 380 px desde arriba): campana SVG,
+  "¡Es tu turno!" (32 px), número (96 px), "Pasa a la silla de <barbero>"; debajo una fila con ícono
+  de ubicación "Acércate al local. <barbero> te está esperando."; barra de pasos en "Tu turno"; abajo
+  el enlace rojo "No puedo ir: cancelar turno" (abre la misma hoja). Título de la pestaña "¡Es tu
+  turno! · <número>" y vibración (ya existen).
+- En servicio: tarjeta con el número, `StatusChip` "En servicio" y "Con <barbero> desde <hora>"
+  (`started_at`); barra en "En servicio"; si tiene bebida, fila con taza "Tu bebida va por la casa"
+  y el nombre de la bebida; "Ver menú del local" en contorno.
+- Terminado: sin tarjeta del número; "✓ TERMINADO · <hora>" en `ok` (`finished_at`), "Quedaste
+  bien, <nombre>." (28 px), "<número> · <servicio> con <barbero>"; tarjeta "Tus cortes · N de 10"
+  con 10 círculos (llenos los sellos, el 10.º punteado) y "Te faltan N cortes para el gratis." (o
+  "Tu próximo corte es gratis."); tarjeta "¿Cómo te fue con <barbero>?", "Una reseña en Google
+  ayuda a que más vecinos nos encuentren. Toma un minuto." y "Dejar reseña en Google" (solo con
+  enlace, REQ-036.3); "Tomar otro turno" como enlace. Cancelado y no vino: como hoy, con el
+  encabezado nuevo.
+- Migración `0070_public_ticket_times.sql`: `get_ticket_by_token` agrega `startedAt` y `finishedAt`
+  (columnas que ya existen en `tickets`). Solo cambia la función; pgTAP en
+  `supabase/tests/0070_public_ticket_times.sql`.
+- No se construye: prefijo "A" del número, "Silla 3" (sin sillas).
+
+**Cita, Mi cita, tarjeta de regalo y privacidad (T-175).**
+- Reservar (`AppointmentForm`): encabezado con flecha "Reservar una cita". Filas de 52 px "Servicio
+  <nombre> Cambiar" y "Barbero <nombre> Cambiar" (cada "Cambiar" abre un `Sheet` con su
+  `OptionList`); preseleccionados desde `?servicio=&barbero=` (los manda "Reservar una cita" de la
+  portada con lo que el cliente ya eligió) o el primer servicio y "El primero libre". "DÍA": tira
+  horizontal de casillas 52×58 (día abreviado arriba, número grande); días sin horas punteados y
+  deshabilitados. "HORAS LIBRES · <DÍA N>": rejilla de 3 columnas de 52 px (esqueleto de 3 filas
+  mientras llegan). Vacío por barbero: "<barbero> ya no tiene horas <hoy|el día>", "<Mañana|el día>
+  tiene N libres, desde las <hora>." si se encuentra otro día en los 7 siguientes, botones "Ver el
+  <día>" y "Probar con otro barbero" (abre el selector), y abajo "Mejor tomar turno en la fila".
+  "Tu nombre", "Tu celular", privacidad en una línea, botón fijo "Confirmar · <día abreviado> <n>,
+  <hora>" (sin hora elegida: "Elige una hora", deshabilitado). "Llega a tu hora: te esperamos hasta
+  10 minutos." (REQ-051.1) va bajo la rejilla.
+- Mi cita: encabezado con marca y nombre; "TU CITA", el día "Sábado 8 de noviembre" (28 px) y la hora
+  "3:30" (56 px) con "p. m." más pequeño; estado (`StatusChip`) si no está confirmada; filas
+  Barbero, Servicio (con precio a la derecha) y Dónde (dirección); "Llega a tu hora: te esperamos
+  hasta 10 minutos." Barra fija: "Agregar al calendario" (principal, REQ-051.3) y "Cancelar la
+  cita" como enlace rojo (abre la hoja de hoy). No se construye: "Ya llegué" (REQ-052.2).
+- Tarjeta de regalo: tarjeta `brand` de 218 px con borde derecho `accent` de 4 px: "<NEGOCIO>" y
+  "TARJETA DE REGALO" arriba, "Vale por" y el valor original en grande, "Para <nombre>" abajo a la
+  izquierda y el código abajo a la derecha (en lugar de "Nº"). Debajo, filas Saldo ("$ saldo" y, si
+  se usó una parte, "usó $ <valor − saldo>" en `muted`) y Vence; luego "Se usa al pagar en el local:
+  dile al barbero el código de la tarjeta." y las condiciones. No se construye: "De parte de",
+  "Mensaje" (REQ-056.3, no hay esos datos), "Compartir por WhatsApp", og:image.
+- Privacidad: encabezado con flecha "Aviso de privacidad"; "Versión N · vigente desde <fecha>"
+  (`published_at`); el texto del dueño con títulos en negrita cuando una línea termina en ":" o es
+  una de las preguntas del tablero. No se construye: "Pedir que borren mis datos" (REQ-018.6).
+
+**Pantalla del televisor (T-176).** `ScreenBoard`, fondo `brand`, sin desplazamiento:
+1. Arriba: marca 80×80 (blanco con texto `brand`), nombre (56 px), a la derecha "● N esperando"
+   (punto `accent-on-brand`) y la hora (56 px, se mueve cada minuto).
+2. Franja `called` de 196 px durante 30 s tras un llamado (REQ-013.4): "LLAMANDO A", número (120 px),
+   nombre corto y "→ <barbero>". Sin llamado reciente, el espacio queda vacío (no salta lo de
+   abajo). Con movimiento reducido, sin parpadeo.
+3. Una columna por barbero (máx. 5): raya arriba (`accent-on-brand` si está llamando), "<BARBERO>"
+   en mayúsculas, estado (Atendiendo, Llamando en `accent-on-brand`, En pausa en `warn-soft`, Libre
+   en `ok-soft`), el número que atiende (72 px) o "—", y los siguientes como filas "Nombre P.
+   <número>" o "Cita <hora>". Libre sin fila: "Nadie en su fila. Escanea y pasas ya."
+4. "El primero libre": fila bajo las columnas con los siguientes sin barbero (REQ-013.1).
+5. Abajo: QR 120×120 en blanco, "Escanea para tomar turno" y "y espera en tu casa. Te avisamos por
+   WhatsApp."
+- Migración `0071_screen_numbers.sql`: `get_screen_queue` agrega `displayNumber` al actual, a cada
+  siguiente y a "el que esté libre", y `scheduledAt` cuando es cita llegada. pgTAP en
+  `supabase/tests/0071_screen_numbers.sql`; siguen sin celulares (REQ-013.2).
+- No se construye: "SILLA N" (sin sillas).
