@@ -887,7 +887,7 @@
   `supabase db push`.
 
 
-## ADR-052 · El dueño fiel al tablero: ancho de escritorio y estructura de cada pantalla
+## ADR-053 · El dueño fiel al tablero: ancho de escritorio y estructura de cada pantalla
 - Fecha: 2026-11-08 · Estado: **aceptada** (Henry, 2026-11-08: "Sí, escríbela").
 - Contexto: Henry revisó producción y el dueño "no se ve nada igual" al lienzo. Se comparó `main`
   con `docs/diseno/tableros/Dueno-*.png` en 1440 px y 390 px, pantalla por pantalla. Hallazgos:
@@ -924,5 +924,5 @@
 - No se construye (la app no lo tiene): sillas numeradas ("Silla 3"), "Marcar pagado" y "Descargar
   PDF" de la semana, arrastrar turnos, logo del negocio, estado de plantillas de Meta, la tabla de
   solicitudes de privacidad, "Anular" de tarjetas de regalo, "Hablar con <barbero>" de limpieza.
-- Consecuencias: REQ-078.21…REQ-078.27, design §22.7, tareas T-172…T-176 (dueño). T-168 espera
+- Consecuencias: REQ-078.27…REQ-078.33, design §22.8, tareas T-177…T-181 (dueño). T-168 espera
   también estas tareas. Henry autorizó empezar el código al terminar la spec (2026-11-08).

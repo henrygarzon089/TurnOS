@@ -2769,12 +2769,12 @@ Mis fotos, Mi estación, "Nueva venta" y "Salir". No se construye: "Silla N" (la
   Reposiciones y último conteo como filas. No se construye: botón "Se acabó" (la reposición la
   registra el dueño, REQ-071.4).
 
-### 22.7 Dueño fiel al tablero (ADR-052, REQ-078.21…27)
+### 22.8 Dueño fiel al tablero (ADR-053, REQ-078.27…33)
 
 Comparación del 2026-11-08 de `main` contra los tableros Dueno-*, en 1440 px y 390 px. "No se
 construye" = el tablero lo muestra y la app no tiene el dato o la función.
 
-**Marco del dueño (T-172).**
+**Marco del dueño (T-177).**
 - Ancho: el layout del personal da al dueño `lg:max-w-6xl` en **todas** sus pantallas (también
   `/app/clientes`); se quitan los `data-wide` de cada página. `data-tablet` (768 px) se queda para
   "Hoy" y "Caja".
@@ -2789,7 +2789,7 @@ construye" = el tablero lo muestra y la app no tiene el dato o la función.
   Limpieza (limpiezas con falla o sin hacer) e Inventario (insumos bajo el mínimo). Los conteos
   salen de `loadOwnerAlerts` (ya cacheado por pedido), sin consultas nuevas.
 
-**Hoy (T-173).**
+**Hoy (T-178).**
 - Escritorio, rejilla de 12 columnas en tres hileras: Fila en vivo (8) + Caja de hoy (4); Piden tu
   atención (8) + Citas de hoy (4) (si citas está apagado, alertas ocupa 12); Ingresos de la semana
   (6) + Para recordar (6).
@@ -2816,7 +2816,7 @@ construye" = el tablero lo muestra y la app no tiene el dato o la función.
 - Tablet (768): dos columnas, alertas y fila a la izquierda, caja, citas y recordar a la derecha;
   los tres botones fijos abajo.
 
-**Fila del dueño (T-174).**
+**Fila del dueño (T-179).**
 - Escritorio: título "Fila · N esperando · N con "el primero libre"" y a la derecha "Ver pantalla
   del televisor" (contorno) y "Agregar cliente" (principal). Sale la hilera de chips de presentes:
   el estado va en el encabezado de cada carril ("Silla" no se construye: "<nombre>" y "N en fila";
@@ -2834,7 +2834,7 @@ construye" = el tablero lo muestra y la app no tiene el dato o la función.
   de un barbero y "Agregar cliente" en "Todos".
 - No se construye: arrastrar para reordenar (siguen Subir/Bajar).
 
-**Caja (T-174).**
+**Caja (T-179).**
 - Junto al título: la fecha en un selector ("jue 6 nov. ▾", lleva a `/admin/caja/<fecha>`) y el
   enlace "Cierres anteriores". Franja: Total del día, Efectivo, Nequi, Daviplata, "Transf. y
   tarjeta", Vitrina.
@@ -2845,16 +2845,16 @@ construye" = el tablero lo muestra y la app no tiene el dato o la función.
   "Mostrando 10 de N · Ver más". Celular: la lista actual.
 - Por barbero: tabla Barbero · Serv. · Comisión con fila Total y la nota de comisión de productos.
 
-**Semana (T-175).** Flechas, "Lun 3 – dom 9 de noviembre"; franja Ingresos (`sold`), Servicios,
+**Semana (T-180).** Flechas, "Lun 3 – dom 9 de noviembre"; franja Ingresos (`sold`), Servicios,
 Comisiones (suma de `barbers[].commission` + comisión de productos), Queda al negocio (Ingresos −
 Comisiones); tabla Barbero · % · Servicios · Comisión serv. · Productos · Compras suyas (negativo) ·
 A pagar. Debajo, la ocupación que ya existe y los turnos perdidos. Celular: cifra de ingresos en
 grande y "A PAGAR" por barbero. No se construye: "Marcar pagado", "Descargar PDF".
 
-**Citas (T-175).** Encabezado "‹ Sábado 8 de noviembre › Hoy · N citas"; rejilla hora × barbero
+**Citas (T-180).** Encabezado "‹ Sábado 8 de noviembre › Hoy · N citas"; rejilla hora × barbero
 con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Ajustes al final.
 
-**Clientes, Fidelidad, Recordar, Membresías, Tarjetas de regalo (T-175).**
+**Clientes, Fidelidad, Recordar, Membresías, Tarjetas de regalo (T-180).**
 - Clientes (escritorio): buscador, "Todos ▾", "Barbero: todos ▾", "N clientes"; tabla Nombre ·
   Celular (`maskPhone`) · Última vez (ámbar si pasa de N días) · Barbero habitual · Cortes ·
   Fidelidad (X/10) · Membresía (insignia). Si Fidelidad o Membresía no vienen en
@@ -2864,7 +2864,7 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
 - Membresías y Tarjetas de regalo lado a lado, cada una como tabla (Familia · Usó · Cuota con
   insignia; N.º · Para · Valor · Saldo). "Editar plan" abre el formulario del plan en una hoja.
 
-**Local y configuración (T-176).**
+**Local y configuración (T-181).**
 - Limpieza: pestañas Por revisar · N / Fallas por barbero / Tareas periódicas / Historial y
   "Descargar PDF" (ya existe); filas con miniatura 64 px, "<barbero> · apertura", insignia
   "Falla", hora y "N de 5"; acciones "Ver foto", "Marcar falla", "Aprobar". No se construye:

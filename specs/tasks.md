@@ -31,7 +31,7 @@
 | H13 | Inventario de insumos y vitrina (ADR-039) | T-120…T-129 | REQ-070…REQ-074 |
 | H14 | Rendimiento percibido y medición (ADR-043) | T-130…T-133 | REQ-075 |
 | H15 | Inicio "Hoy" y menú del dueño (ADR-046) | T-150…T-154 | REQ-076, REQ-077 |
-| H16 | Sistema visual nuevo (ADR-047, ADR-051, ADR-052) | T-160…T-176 | REQ-078 |
+| H16 | Sistema visual nuevo (ADR-047, ADR-051, ADR-053) | T-160…T-181 | REQ-078 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -2248,15 +2248,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   y sus componentes, E2E del barbero.
 - Terminado: cada pantalla como Barbero-Otros (captura en el PR); ningún texto del navegador en
   inglés. (El hito 16 vuelve al loop de `tests/unit/traceability.test.ts` con la última tarea de
-  T-169…T-176, cuando REQ-078.16…27 tengan prueba; ADR-052.)
+  T-169…T-181, cuando REQ-078.16…33 tengan prueba; ADR-053.)
 
-> Dueño fiel al tablero (ADR-052, design §22.7). Una tarea = una PR con la captura de cada pantalla
-> en 1440 px y 390 px junto a su tablero. Orden: T-172 primero (marco y ancho arreglan 11 pantallas);
-> después T-173…T-176 en cualquier orden. T-172 toca `src/app/(staff)/layout.tsx`, igual que T-169:
+> Dueño fiel al tablero (ADR-053, design §22.8). Una tarea = una PR con la captura de cada pantalla
+> en 1440 px y 390 px junto a su tablero. Orden: T-177 primero (marco y ancho arreglan 11 pantallas);
+> después T-178…T-181 en cualquier orden. T-177 toca `src/app/(staff)/layout.tsx`, igual que T-169:
 > la que entre segunda resuelve el choque.
 
-### [ ] T-172 · Dueño: marco, ancho de escritorio y menú con conteos
-- REQ: REQ-078.21, REQ-078.16 (ADR-052, design §22.7)
+### [ ] T-177 · Dueño: marco, ancho de escritorio y menú con conteos
+- REQ: REQ-078.27, REQ-078.16 (ADR-053, design §22.8)
 - Archivos: `src/app/(staff)/layout.tsx` (ancho del dueño en todas sus pantallas), los `data-wide`
   de `src/app/(staff)/admin/**/page.tsx` y `OwnerQueue.tsx` (se quitan),
   `src/components/staff/StaffHeader.tsx` (barra azul del dueño), `src/components/admin/AdminNav.tsx`
@@ -2265,8 +2265,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   (prueba que mide `scrollWidth` de cada tabla); barra azul con negocio, fecha y "Salir" en el menú
   del dueño; conteos de Fila y Citas e insignias de Limpieza e Inventario iguales a las de "Hoy".
 
-### [ ] T-173 · Dueño: "Hoy" como el tablero
-- REQ: REQ-078.22, REQ-078.23, REQ-078.16
+### [ ] T-178 · Dueño: "Hoy" como el tablero
+- REQ: REQ-078.28, REQ-078.29, REQ-078.16
 - Archivos: `src/app/(staff)/admin/(hoy)/{page,loading}.tsx`,
   `src/components/admin/today/{TodayQueue,TodayCash,TodayAppointments,TodayRemind,TodayWeek,TodayShortcuts}.tsx`,
   `src/lib/domain/today.ts` (filas de la tabla, días futuros "—"), pruebas unitarias y
@@ -2274,29 +2274,29 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: escritorio, celular y tablet como Dueno-Hoy y Dueno-Hoy-Movil (captura en el PR);
   "Para recordar" con personas y "Escribirle"; "en vivo · <hora>".
 
-### [ ] T-174 · Dueño: Fila y Caja como el tablero
-- REQ: REQ-078.24, REQ-078.25, REQ-078.16
+### [ ] T-179 · Dueño: Fila y Caja como el tablero
+- REQ: REQ-078.30, REQ-078.31, REQ-078.16
 - Archivos: `src/components/queue/OwnerQueue.tsx`, `src/components/cash/*` del dueño,
   `src/app/(staff)/admin/{fila,caja}/**`, `tests/e2e/visual-dueno-fila-caja.spec.ts`.
 - Terminado: carriles de igual ancho sin nombres partidos (prueba con un nombre largo en "El primero
   libre"); sin chips de presentes; "N cobros pendientes" en una fila; menú "⋯"; caja con fecha,
   "Cierres anteriores", tabla con buscador y filtros (prueba unitaria del filtro).
 
-### [ ] T-175 · Dueño: Semana, Citas y Clientes como el tablero
-- REQ: REQ-078.26, REQ-078.27, REQ-078.16
+### [ ] T-180 · Dueño: Semana, Citas y Clientes como el tablero
+- REQ: REQ-078.32, REQ-078.33, REQ-078.16
 - Archivos: `src/app/(staff)/admin/{semana,citas,fidelidad,recordar,membresias,regalos}/**`,
   `src/app/(staff)/app/clientes/page.tsx` (vista del dueño), sus componentes y E2E de esos módulos.
 - Terminado: como Dueno-Operacion y Dueno-Clientes (captura en el PR); cifras de la semana iguales a
   las de la caja de cada día (prueba de Comisiones y Queda al negocio); tabla de clientes con
   `maskPhone`.
 
-### [ ] T-176 · Dueño: Local y Configuración como el tablero
-- REQ: REQ-078.27, REQ-078.20, REQ-078.16
+### [ ] T-181 · Dueño: Local y Configuración como el tablero
+- REQ: REQ-078.33, REQ-078.20, REQ-078.16
 - Archivos: `src/app/(staff)/admin/{limpieza,productos,inventario,barberos,servicios,horario,qr,mensajes,negocio,privacidad}/**`,
   `src/components/admin/{HoursForm,CatalogLists,QrCard,...}.tsx`, `tests/e2e/visual-dueno-config.spec.ts`.
 - Terminado: como Dueno-Local y Dueno-Config (captura en el PR); horas en español con selector
   propio (también en crear negocio); `pnpm trace --hito=16` sin huecos y el hito 16 de vuelta en el
-  loop si es la última de T-169…T-176.
+  loop si es la última de T-169…T-181.
 
 ### [ ] T-168 · Validación Hito 16
 - REQ: REQ-078
@@ -2304,7 +2304,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `tests/unit/traceability.test.ts` (agregar "16" al loop), `docs/estado-del-proyecto.md`
 - Depende de Henry: recorrer cliente, barbero y dueño en su celular y en el computador, y una prueba
   en la barbería (PA-H16-2); aprobación del hito (ADR nuevo).
-- Depende también de T-169…T-171 (ADR-051), de T-172…T-176 (ADR-052) y de la revisión igual de
+- Depende también de T-169…T-171 (ADR-051), de T-177…T-181 (ADR-053) y de la revisión igual de
   cliente y acceso.
 - Terminado: `pnpm trace --hito=16` sin huecos; CI verde; Speed Insights sin empeorar respecto al
   Hito 14 (REQ-075.3).
