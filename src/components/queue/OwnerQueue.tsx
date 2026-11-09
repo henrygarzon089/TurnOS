@@ -116,7 +116,7 @@ export function OwnerQueue({
   const freeWaiting = waiting.filter((t) => laneOf(t) === FREE).length;
 
   return (
-    <main data-wide className="pb-24">
+    <main className="pb-24">
       <ConnectionBanner online={online} lastSeen={lastUpdated} />
       {top}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">

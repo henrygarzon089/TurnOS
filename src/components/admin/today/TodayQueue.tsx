@@ -1,16 +1,16 @@
 import { getPublicBusiness } from "@/lib/actions/public";
-import { getBusinessQueue } from "@/lib/actions/queue";
 import {
   buildTodayQueue,
   type TodayBarberState,
   type TodayQueue as Data,
 } from "@/lib/domain/today";
+import { loadOwnerQueue } from "./load-owner-queue";
 import { TodayBlockError } from "./TodayBlockError";
 import { TodayCard } from "./TodayCard";
 
 /** Fila del dueño + estimado de la portada (el mismo número que ve el cliente, REQ-017.3). */
 async function loadTodayQueue(): Promise<Data | null> {
-  const view = await getBusinessQueue();
+  const view = await loadOwnerQueue();
   if (!view) return null;
   const pub = await getPublicBusiness(view.business.slug);
   return buildTodayQueue(
