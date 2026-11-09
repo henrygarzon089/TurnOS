@@ -35,7 +35,11 @@ async function StaffGate({ children }: { children: React.ReactNode }) {
   }
   const owner = session.role === "owner";
   return (
-    <div className="flex flex-1 flex-col">
+    // Por debajo de 1024 px, una pantalla del dueño con su propia cabecera azul (`data-screen-header`,
+    // design §22.8) oculta la barra del negocio para no mostrar dos barras azules.
+    <div
+      className={`flex flex-1 flex-col ${owner ? "max-lg:has-[[data-screen-header]]:[&>header]:hidden" : ""}`}
+    >
       <StaffHeader session={session} />
       <div className={`flex flex-1 flex-col ${owner ? "lg:pl-60" : ""}`}>
         <div
