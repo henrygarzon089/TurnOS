@@ -6,8 +6,8 @@ import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED, cancelMyTicket 
  * "Mi turno" se lee de la base. El enlace se borra al terminar cada prueba: el seed no trae.
  */
 const LINK = "https://g.page/r/la-33-e2e/review";
-const THANKS = "¡Gracias por venir!";
-const BUTTON = "Déjanos tu reseña en Google";
+const THANKS = /^Quedaste bien, /;
+const BUTTON = "Dejar reseña en Google";
 
 async function setReviewUrl(url: string | null) {
   const { error } = await adminDb()
@@ -112,7 +112,7 @@ test.describe("REQ-036 reseña en Google", () => {
       await barber.getByRole("button", { name: "Empezar corte" }).click();
 
       await customer.goto(`/t/${token}`);
-      await expect(customer.getByText("Te están atendiendo")).toBeVisible({ timeout: 15_000 });
+      await expect(customer.getByText(/^Con .+ desde /)).toBeVisible({ timeout: 15_000 });
       await expect(customer.getByRole("link", { name: BUTTON })).toHaveCount(0);
 
       // Sin recargar: "Mi turno" se relee con queue_changed (ADR-008)

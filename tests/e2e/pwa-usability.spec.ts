@@ -139,7 +139,10 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
   test("REQ-032.2 / NFR-008 Mi turno: cancelar ≥ 48 px abajo, zoom 200 %", async ({ page }) => {
     const token = await newTicketToken();
     await page.goto(`/t/${token}`);
-    await expectThumbButton(page, page.getByRole("button", { name: "Cancelar mi turno" }));
+    await expectThumbButton(
+      page,
+      page.getByRole("button", { name: "Cancelar turno", exact: true }),
+    );
     await expectAllTargets48(page);
     await expectBaseFont16(page);
     await expectZoom200(page);

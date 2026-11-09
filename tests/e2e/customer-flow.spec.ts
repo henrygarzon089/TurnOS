@@ -54,9 +54,9 @@ test.describe("Hito 1 · flujo del cliente", () => {
     const t0 = Date.now();
     await takeTicket(page, "Camilo E2E", phone());
     expect(Date.now() - t0).toBeLessThan(5000); // margen de red del E2E; el objetivo es 2 s en 4G
-    // la posición y el estimado pueden decir los dos "Eres el siguiente" (REQ-004.5)
-    await expect(page.getByText(/Eres el|En la fila/).first()).toBeVisible();
-    await expect(page.locator("p", { hasText: "Servicio:" })).toContainText("Corte");
+    // "Vas de N.º" (REQ-004.1, ADR-052); el 1.º dice además "Eres el siguiente"
+    await expect(page.getByText("Vas de", { exact: true })).toBeVisible();
+    await expect(page.getByText(/^Corte · \$/)).toBeVisible();
   });
 
   test("REQ-003.2 celular inválido muestra error en español", async ({ page }) => {
@@ -120,8 +120,8 @@ test.describe("Hito 1 · flujo del cliente", () => {
     const url = page.url();
     await page.goto("about:blank");
     await page.goto(url);
-    // la posición y el estimado pueden decir los dos "Eres el siguiente" (REQ-004.5)
-    await expect(page.getByText(/Eres el|En la fila/).first()).toBeVisible();
+    // "Vas de N.º" (REQ-004.1, ADR-052); el 1.º dice además "Eres el siguiente"
+    await expect(page.getByText("Vas de", { exact: true })).toBeVisible();
     await page.goto("/t/xxxxxxxxxxxxxxxxxxxxxx");
     await expect(
       page.getByRole("heading", { name: "Este turno no existe o ya terminó" }),

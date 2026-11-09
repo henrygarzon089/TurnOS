@@ -72,6 +72,8 @@ export type MyTicket = {
   customerName: string;
   serviceName: string;
   serviceDurationMin: number;
+  /** REQ-078.22: precio congelado del turno ("Corte · $ 25.000"); null antes de la 0072. */
+  servicePrice: number | null;
   preferredBarberId: string | null;
   preferredBarberName: string | null;
   assignedBarberId: string | null;
@@ -81,6 +83,10 @@ export type MyTicket = {
   scheduledAt: string | null;
   createdAt: string;
   calledAt: string | null;
+  /** REQ-078.23: "Con <barbero> desde <hora>" (en servicio). */
+  startedAt: string | null;
+  /** REQ-078.23: "TERMINADO · <hora>". */
+  finishedAt: string | null;
   cancelReason: "customer" | "business" | "closing" | "barber_removed" | null;
   /** Solo mientras está en espera */
   estimate: Estimate | null;
@@ -387,6 +393,7 @@ export async function getTicketByToken(
     customerName: String(raw.customerName),
     serviceName: String(raw.serviceName),
     serviceDurationMin: Number(raw.serviceDurationMin),
+    servicePrice: raw.servicePrice == null ? null : Number(raw.servicePrice),
     preferredBarberId: (raw.preferredBarberId as string | null) ?? null,
     preferredBarberName: (raw.preferredBarberName as string | null) ?? null,
     assignedBarberId: (raw.assignedBarberId as string | null) ?? null,
@@ -395,6 +402,8 @@ export async function getTicketByToken(
     scheduledAt: String(queue.waiting.find((t) => t.id === raw.id)?.scheduledAt ?? "") || null,
     createdAt: String(raw.createdAt),
     calledAt: (raw.calledAt as string | null) ?? null,
+    startedAt: (raw.startedAt as string | null) ?? null,
+    finishedAt: (raw.finishedAt as string | null) ?? null,
     cancelReason: (raw.cancelReason as MyTicket["cancelReason"]) ?? null,
     estimate,
     loyalty: toLoyaltyStatus(raw.loyalty),

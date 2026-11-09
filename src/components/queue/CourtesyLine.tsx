@@ -1,4 +1,9 @@
-/** REQ-038.5: bebida del turno en las filas del barbero y del dueño. Servida no se desmarca. */
+import { Icon } from "@/components/ui/Icon";
+
+/**
+ * REQ-038.5: bebida del turno en las filas del barbero y del dueño. Servida no se desmarca.
+ * La taza es SVG de trazo (REQ-078.14), no el emoji.
+ */
 export function CourtesyLine({
   name,
   served,
@@ -12,7 +17,10 @@ export function CourtesyLine({
 }) {
   return (
     <div className="mt-2 flex items-center justify-between gap-3">
-      <span className="min-w-0 font-medium break-words">🥤 {name}</span>
+      <span className="flex min-w-0 items-center gap-1.5 font-medium break-words">
+        <Icon name="cup" className="size-5" />
+        {name}
+      </span>
       {served ? (
         <span className="text-ok shrink-0 text-sm font-semibold">Servida ✓</span>
       ) : (

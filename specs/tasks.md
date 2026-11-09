@@ -2412,14 +2412,24 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
     `LiveRefresh` en la portada); sin red, el bloque dice "a las <hora>" con el punto gris.
   - "Abrimos: …" ya no dobla el punto cuando la próxima apertura termina en "a. m."/"p. m.".
 
-### [ ] T-174 · Cliente: Mi turno como el tablero
+### [x] T-174 · Cliente: Mi turno como el tablero
 - REQ: REQ-078.16, REQ-078.22, REQ-078.23, REQ-004.1, REQ-036.2
-- Archivos: `supabase/migrations/0070_public_ticket_times.sql`,
-  `supabase/tests/0070_public_ticket_times.sql`, `src/lib/queue/public-queue.ts`,
+- Archivos: `supabase/migrations/0072_public_ticket_times.sql`,
+  `supabase/tests/0072_public_ticket_times.sql`, `src/lib/queue/public-queue.ts`,
   `src/components/queue/MyTicket.tsx`, `src/components/queue/CourtesyLine.tsx`,
   `src/app/(public)/t/[token]/loading.tsx`, E2E de "Mi turno".
 - Terminado: en espera, sin conexión, cancelar, ¡Es tu turno!, en servicio, terminado y esqueleto
-  como Cliente-MiTurno (captura en el PR). La 0070 la sube Henry con `supabase db push`.
+  como Cliente-MiTurno (captura en el PR). La 0072 la sube Henry con `supabase db push`.
+- Nota (2026-11-09): desvíos. (1) La migración es la **0072**, no la 0070: T-171 (PR #151) ya
+  tomó `0070_barber_screens` y la 0071 queda para T-176. (2) `get_ticket_by_token` agrega también
+  `servicePrice` (precio congelado del turno): la fila del barbero del tablero dice "Corte · $
+  25.000" y la función no lo traía; antes de subir la 0072 la fila sale sin precio. (3) Textos en
+  `src/lib/domain/my-ticket.ts` (pruebas en `tests/unit/my-ticket.test.tsx`); sin espera, la celda
+  dice "Ya". (4) El título "¡Es tu turno! · <número>" no existía: se agregó. (5) Llamado conserva
+  "Tienes N minutos para llegar." bajo el aviso de ubicación (REQ-078.16). (6) "Ver menú del
+  local" usa `MenuList` de T-173 en una hoja propia (el botón de `MenuSheet` dice "Ver menú");
+  la página trae el negocio en espera, llamado y en servicio. (7) La bebida de "Mi turno" es la
+  región "Tu bebida" (E2E). Capturas en `docs/diseno/capturas/T-174/`.
 
 ### [ ] T-175 · Cliente: cita, Mi cita, tarjeta de regalo y privacidad
 - REQ: REQ-078.16, REQ-078.24
