@@ -2242,12 +2242,20 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   lleva punto rojo en el menú (`CleaningDot`, en `ACCENT_FILL_ALLOWED`). "Nueva venta" del
   barbero vive en "Más". Henry revisa las capturas antes de fusionar (ADR-051) y sube 0069.
 
-### [ ] T-170 · Cobro en pantalla completa como el tablero
+### [x] T-170 · Cobro en pantalla completa como el tablero
 - REQ: REQ-078.16, REQ-078.19
 - Archivos: `src/components/cash/CheckoutSheet.tsx`, `src/components/cash/ProductShowcase.tsx`,
   `src/components/ui/Sheet.tsx` (variante de pantalla completa), E2E de cobro y caja.
 - Terminado: cobro, corte gratis y error al guardar como Barbero-Cobro (captura en el PR); "Nueva
   venta" del dueño con las mismas secciones; "Cobrar $ …".
+- Nota (2026-11-09): hecho; capturas en `docs/diseno/capturas/T-170/`. Desvíos: la pantalla
+  completa vive en `CheckoutSheet` (`Screen`), no en `Sheet.tsx`; `ProductShowcase` no cambió y
+  ahora se abre en la hoja "Agregar producto". Cambiar el servicio usa el selector nativo del
+  celular sobre la fila (no una hoja propia). "Descuento" sigue solo para el dueño (REQ-023).
+  "Usar membresía" muestra los cortes que quedan, no el nombre de la familia (la vista no lo trae).
+  La tarjeta de regalo pasa de medio de pago a "Pago con · Agregar"; el medio cubre lo que falta.
+  Avisos: "Cobrado · $ X" y "Venta registrada · $ X". Sin señal al guardar: recuadro "No quedó
+  cobrado." con el texto del tablero. "Dividido" general sigue sin construirse (design §22.6).
 
 ### [ ] T-171 · Barbero: Clientes, Mis números, Mis fotos, Limpieza y Mi estación
 - REQ: REQ-078.16, REQ-078.20

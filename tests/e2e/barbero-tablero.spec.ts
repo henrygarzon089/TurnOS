@@ -5,6 +5,7 @@ import { adminDb, loginAsBarber, resetQueue, SEED } from "./helpers";
  * T-169 · ADR-051: el marco del barbero y "Mi fila" como el tablero Barbero-Fila (design §22.6):
  * franja azul solo en Mi fila, "Salir" en "Más", bloque "Sigue" con "Llamar a <número>", cobros
  * pendientes en una fila y "Después" sin el primero.
+ * T-170: el cobro a pantalla completa como el tablero Barbero-Cobro (REQ-078.19).
  */
 
 async function businessId() {
@@ -196,5 +197,72 @@ test.describe("T-169 barbero fiel al tablero (ADR-051)", () => {
     await page.getByTestId("waiting-row").filter({ hasText: "Tablero Dos" }).click();
     const sheet = page.getByRole("dialog", { name: /Tablero Dos/ });
     await expect(sheet.getByRole("link", { name: "Avisar por WhatsApp" })).toBeVisible();
+  });
+
+  test("REQ-078.19 el cobro ocupa la pantalla: Cobrar a <nombre>, servicio en una fila, vitrina en lista, medios en 3 columnas y Cobrar abajo", async ({
+    page,
+  }) => {
+    const a = await addTicket("Tablero Cobro");
+    await barberReady(page);
+    await page.getByRole("button", { name: `Llamar a ${a.number}` }).click();
+    await page.getByRole("button", { name: "Empezar corte" }).click();
+    await page.getByRole("button", { name: "Terminar y cobrar" }).click();
+
+    const sheet = page.getByRole("dialog", { name: "Cobrar a Tablero Cobro" });
+    await expect(sheet).toBeVisible({ timeout: 15_000 });
+    await expect(sheet).toContainText(`${a.number} · terminó`);
+    await expect(sheet.getByRole("button", { name: "Volver" })).toBeVisible();
+    // Pantalla completa en el celular
+    const vp = page.viewportSize()!;
+    const box = (await sheet.boundingBox())!;
+    expect(box.x).toBe(0);
+    expect(box.width).toBe(vp.width);
+    expect(Math.round(box.height)).toBe(vp.height);
+
+    // El servicio en una fila con su precio
+    const service = sheet.getByRole("region", { name: "Servicio" });
+    await expect(service).toContainText("Corte");
+    await expect(service).toContainText("$ 25.000");
+
+    // La vitrina como lista: "+ Agregar producto" abre la vitrina y el producto queda en una fila
+    await sheet.getByRole("button", { name: "+ Agregar producto" }).click();
+    const picker = page.getByRole("dialog", { name: "Agregar producto" });
+    await picker.getByRole("button", { name: "Agregar un Gaseosa" }).click();
+    await picker.getByRole("button", { name: "Listo" }).click();
+    await expect(picker).toHaveCount(0);
+    const showcase = sheet.getByRole("region", { name: "De la vitrina" });
+    await expect(showcase).toContainText("Gaseosa");
+    await expect(showcase.getByLabel("Gaseosa: 1")).toBeVisible();
+    await expect(sheet.getByTestId("checkout-total")).toHaveText("$ 29.000");
+
+    // Medios de pago en 3 columnas
+    const methods = sheet.getByRole("radiogroup", { name: "Medio de pago" });
+    const y = async (name: string) =>
+      (await methods.getByRole("radio", { name, exact: true }).boundingBox())!.y;
+    expect(await y("Nequi")).toBe(await y("Efectivo"));
+    expect(await y("Daviplata")).toBe(await y("Efectivo"));
+    expect(await y("Transferencia")).toBeGreaterThan(await y("Efectivo"));
+
+    // Total y "Cobrar $ …" fijos abajo
+    const pay = sheet.getByRole("button", { name: "Cobrar $ 29.000" });
+    const payBox = (await pay.boundingBox())!;
+    expect(payBox.y + payBox.height).toBeGreaterThan(vp.height - 80);
+    expect(payBox.y + payBox.height).toBeLessThanOrEqual(vp.height);
+
+    await methods.getByRole("radio", { name: "Nequi" }).click();
+    await pay.click();
+    await expect(page.getByRole("status").filter({ hasText: "Cobrado · $ 29.000" })).toBeVisible();
+  });
+
+  test("REQ-078.19 la flecha Volver deja el cobro pendiente", async ({ page }) => {
+    const a = await addTicket("Tablero Volver");
+    await barberReady(page);
+    await page.getByRole("button", { name: `Llamar a ${a.number}` }).click();
+    await page.getByRole("button", { name: "Empezar corte" }).click();
+    await page.getByRole("button", { name: "Terminar y cobrar" }).click();
+    const sheet = page.getByRole("dialog", { name: "Cobrar a Tablero Volver" });
+    await sheet.getByRole("button", { name: "Volver" }).click();
+    await expect(sheet).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /^\d+ cobros? pendientes?$/ })).toBeVisible();
   });
 });
