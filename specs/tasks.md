@@ -2265,13 +2265,24 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: cobro, corte gratis y error al guardar como Barbero-Cobro (captura en el PR); "Nueva
   venta" del dueño con las mismas secciones; "Cobrar $ …".
 
-### [ ] T-171 · Barbero: Clientes, Mis números, Mis fotos, Limpieza y Mi estación
+### [x] T-171 · Barbero: Clientes, Mis números, Mis fotos, Limpieza y Mi estación
 - REQ: REQ-078.16, REQ-078.20
 - Archivos: `src/app/(staff)/app/{clientes,clientes/[id],mis-numeros,mis-fotos,limpieza,estacion}/*`
   y sus componentes, E2E del barbero.
 - Terminado: cada pantalla como Barbero-Otros (captura en el PR); ningún texto del navegador en
   inglés; `pnpm trace --hito=16` sin huecos y el hito 16 de vuelta en el loop de
   `tests/unit/traceability.test.ts`.
+- Nota (2026-11-09): migración `0070_barber_screens` (`barber_customers` con sellos, programa y
+  membresía; `my_staff_purchases`), pgTAP `supabase/tests/0070_barber_screens.sql`. Componentes
+  nuevos: `ui/Segmented`, `customers/BarberCustomerDetail` + `EditCustomerSheet`,
+  `cleaning/BarberCleaning`; `CleaningChecklist` y `BarberPhotos` rediseñados (los usa también el
+  dueño). Capturas en `docs/diseno/capturas/T-171/`. Desvíos del tablero, anotados en design §22.6:
+  celular "*** 0001" (REQ-018.4); "Nota para el próximo" y "Mes" sí se construyen (existen los
+  datos); sin ordenar fotos arrastrando; sin "Se acabó"/"En camino" en Mi estación; en Limpieza los
+  puntos empiezan sin marcar y "No se hizo" + "¿Por qué?" cuenta como respondido (REQ-061.3).
+  `primaryButtons` (E2E visual) no cuenta la pestaña elegida de un control segmentado.
+  `pnpm trace --hito=16` queda sin huecos al juntarse con T-170 (sus pruebas cubren REQ-078.19).
+  Henry revisa las capturas antes de fusionar (ADR-051) y sube 0070.
 
 ### [ ] T-168 · Validación Hito 16
 - REQ: REQ-078

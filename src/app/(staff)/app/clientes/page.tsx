@@ -18,11 +18,11 @@ export default async function CustomersPage({
   return (
     <main className="pb-6">
       <h1 className={`text-2xl font-bold ${session.role === "owner" ? "" : "pt-6"}`}>Clientes</h1>
-      <p className="text-muted mt-1 text-sm">
-        {session.role === "owner"
-          ? "Busca por nombre o por los últimos números del celular."
-          : "Los clientes de tu fila de hoy y los que has atendido."}
-      </p>
+      {session.role === "owner" && (
+        <p className="text-muted mt-1 text-sm">
+          Busca por nombre o por los últimos números del celular.
+        </p>
+      )}
       {eliminado === "1" && (
         <p role="status" className="text-ok border-line bg-card mt-3 rounded-md border p-3 text-sm">
           Se eliminaron los datos del cliente. Sus visitas y montos se conservan sin datos

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { CleaningToday } from "@/components/cleaning/CleaningToday";
+import { BarberCleaning } from "@/components/cleaning/BarberCleaning";
 import { getCleaningToday } from "@/lib/actions/cleaning";
 import { getStaffSession } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Limpieza" };
 
-/** REQ-061, REQ-062.6: la limpieza del día para el barbero (y el dueño). */
+/** REQ-061, REQ-062.6: la limpieza del día para el barbero (y el dueño); T-171 en pestañas. */
 export default async function CleaningPage({
   searchParams,
 }: {
@@ -28,13 +28,10 @@ export default async function CleaningPage({
     );
   }
   return (
-    <main className="py-6">
-      <h1 className="text-2xl font-bold">Limpieza</h1>
-      <CleaningToday
-        today={today}
-        businessId={session.business.id}
-        initialOpen={abrir === "apertura" && !today.opening ? "opening" : null}
-      />
-    </main>
+    <BarberCleaning
+      today={today}
+      businessId={session.business.id}
+      initial={abrir === "apertura" ? "opening" : null}
+    />
   );
 }

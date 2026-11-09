@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { ErrorText } from "@/components/auth/LoginForm";
+import { Icon } from "@/components/ui/Icon";
+import { Dialog, Sheet } from "@/components/ui/Sheet";
 import { deleteBarberPhoto, uploadBarberPhoto } from "@/lib/actions/photos";
 import {
   checkPhotoUpload,
@@ -19,15 +21,22 @@ import { resizePhoto } from "@/lib/media/resize";
 
 type Draft = { blob: Blob; url: string };
 
-/** REQ-039.1–039.4: subir y borrar fotos de un barbero (`/app/mis-fotos` y `/admin/barberos`). */
+/**
+ * REQ-039.1–039.4: subir y borrar fotos de un barbero (`/app/mis-fotos` y `/admin/barberos`).
+ * T-171 (tablero Barbero-Otros, REQ-078.20): rejilla cuadrada numerada, "Subir foto" es un botón en
+ * español sobre un selector escondido (nunca "Choose File"), la confirmación va en una hoja y borrar
+ * pide confirmar en un diálogo. `fixed`: el botón queda fijo sobre la barra del barbero.
+ */
 export function BarberPhotos({
   barberId,
   barberName,
   photos,
+  fixed = false,
 }: {
   barberId: string;
   barberName: string;
   photos: BarberPhoto[];
+  fixed?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -35,6 +44,7 @@ export function BarberPhotos({
   const [draft, setDraft] = useState<Draft | null>(null);
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [toDelete, setToDelete] = useState<string | null>(null);
   const full = photos.length >= MAX_BARBER_PHOTOS || error === PHOTO_LIMIT_ERROR;
 
   function changeDraft(next: Draft | null) {
@@ -76,107 +86,158 @@ export function BarberPhotos({
     form.set("photo", draft.blob, "foto.webp");
     startTransition(async () => {
       const r = await uploadBarberPhoto(form);
-      if (r.ok) changeDraft(null);
-      else setError(r.error);
+      if (r.ok || r.error === PHOTO_LIMIT_ERROR) changeDraft(null);
+      if (!r.ok) setError(r.error);
       if (r.ok || r.error === PHOTO_LIMIT_ERROR) router.refresh();
     });
   }
 
-  function remove(id: string) {
-    if (!window.confirm("¿Borrar esta foto?")) return;
+  function remove() {
+    const id = toDelete;
+    if (!id) return;
     setError(null);
     startTransition(async () => {
       const r = await deleteBarberPhoto(id);
+      setToDelete(null);
       if (r.ok) router.refresh();
       else setError(r.error);
     });
   }
 
+  const picker = (
+    <label
+      className={`btn-primary flex cursor-pointer items-center justify-center gap-2 ${
+        reading || pending ? "pointer-events-none opacity-60" : ""
+      }`}
+    >
+      <Icon name="camera" className="h-5 w-5" />
+      {reading ? "Preparando foto…" : "Subir foto"}
+      <input
+        type="file"
+        accept="image/*"
+        aria-label="Escoger foto"
+        disabled={reading || pending}
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = ""; // deja volver a escoger el mismo archivo
+          if (file) void pick(file);
+        }}
+      />
+    </label>
+  );
+
   return (
-    <div className="flex flex-col gap-3">
-      <p className="text-muted text-sm">
-        {photos.length} de {MAX_BARBER_PHOTOS} fotos
-      </p>
+    <div className={`flex flex-col gap-3 ${fixed ? "pb-24" : ""}`}>
+      {!fixed && (
+        <p className="text-muted text-sm">
+          {photos.length} de {MAX_BARBER_PHOTOS} fotos
+        </p>
+      )}
+      {photos.length > 0 && (
+        <ul
+          className={`grid grid-cols-3 gap-0.5 ${fixed ? "-mx-4" : ""}`}
+          aria-label="Fotos de cortes"
+        >
+          {photos.map((p, i) => (
+            <li key={p.id} className="relative">
+              <Image
+                src={mediaUrl(p.path)}
+                alt={`Corte de ${barberName}`}
+                width={256}
+                height={256}
+                unoptimized
+                className="bg-skeleton aspect-square w-full object-cover"
+              />
+              <button
+                type="button"
+                className="absolute inset-0"
+                disabled={pending}
+                aria-label={`Borrar foto ${i + 1}`}
+                onClick={() => setToDelete(p.id)}
+              />
+              <span
+                aria-hidden="true"
+                className="bg-card text-ink pointer-events-none absolute top-1.5 left-1.5 min-w-5 rounded-sm px-1 text-center text-xs font-semibold"
+              >
+                {i + 1}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {photos.length > 0 ? (
+        <p className="text-muted text-sm">Toca una foto para borrarla.</p>
+      ) : (
+        fixed && (
+          <p className="text-muted py-8 text-center">
+            Todavía no tienes fotos. Sube la de tu mejor corte.
+          </p>
+        )
+      )}
 
       {full ? (
         <p role="alert" className="text-warn bg-warn-soft rounded-md p-3 text-sm font-medium">
           {PHOTO_LIMIT_ERROR}
         </p>
+      ) : fixed ? (
+        <div className="bg-card border-line fixed inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] z-10 border-t px-4 py-3">
+          <div className="mx-auto max-w-md">{picker}</div>
+        </div>
       ) : (
-        <>
-          <label className="flex flex-col gap-1 text-sm font-medium">
-            Escoger foto
-            <input
-              type="file"
-              accept="image/*"
-              disabled={reading || pending}
-              className="input"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                e.target.value = ""; // deja volver a escoger el mismo archivo
-                if (file) void pick(file);
-              }}
-            />
-          </label>
-          {reading && <p className="text-muted text-sm">Preparando foto…</p>}
-          {draft && (
-            <div className="flex flex-col gap-3">
-              <Image
-                src={draft.url}
-                alt="Foto por subir"
-                width={96}
-                height={96}
-                unoptimized
-                className="h-24 w-24 rounded-sm object-cover"
-              />
-              {/* REQ-039.3: se confirma foto por foto */}
-              <label className="flex items-start gap-3 text-sm">
-                <input
-                  type="checkbox"
-                  checked={consent}
-                  onChange={(e) => setConsent(e.target.checked)}
-                  className="mt-0.5 h-6 w-6 shrink-0"
-                />
-                <span>{PHOTO_CONSENT_LABEL}</span>
-              </label>
-              <button
-                type="button"
-                className="btn-primary"
-                disabled={!consent || pending}
-                onClick={upload}
-              >
-                {pending ? "Subiendo foto…" : "Subir foto"}
-              </button>
-            </div>
-          )}
-        </>
+        picker
       )}
       {error && error !== PHOTO_LIMIT_ERROR && <ErrorText>{error}</ErrorText>}
 
-      {photos.length > 0 && (
-        <ul className="grid grid-cols-2 gap-3" aria-label="Fotos de cortes">
-          {photos.map((p) => (
-            <li key={p.id} className="flex flex-col gap-1">
-              <Image
-                src={mediaUrl(p.path)}
-                alt={`Corte de ${barberName}`}
-                width={320}
-                height={320}
-                unoptimized
-                className="aspect-square w-full rounded-sm object-cover"
+      <Sheet open={draft !== null} onClose={() => changeDraft(null)} title="Nueva foto">
+        {draft && (
+          <>
+            <Image
+              src={draft.url}
+              alt="Foto por subir"
+              width={256}
+              height={256}
+              unoptimized
+              className="mx-auto aspect-square w-40 rounded-sm object-cover"
+            />
+            {/* REQ-039.3: se confirma foto por foto */}
+            <label className="flex min-h-12 items-start gap-3 text-base">
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+                className="mt-0.5 h-6 w-6 shrink-0"
               />
-              <button
-                type="button"
-                className="text-danger min-h-12 text-sm font-semibold underline"
-                disabled={pending}
-                onClick={() => remove(p.id)}
-              >
-                Borrar foto
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+              <span>{PHOTO_CONSENT_LABEL}</span>
+            </label>
+            {error && error !== PHOTO_LIMIT_ERROR && <ErrorText>{error}</ErrorText>}
+            <button
+              type="button"
+              className="btn-primary"
+              disabled={!consent || pending}
+              onClick={upload}
+            >
+              {pending ? "Subiendo foto…" : "Subir foto"}
+            </button>
+          </>
+        )}
+      </Sheet>
+
+      <Dialog
+        open={toDelete !== null}
+        onClose={() => setToDelete(null)}
+        title="¿Borrar esta foto?"
+        description="Los clientes ya no la verán al tomar turno."
+      >
+        <div className="flex gap-3">
+          <button type="button" className="btn-secondary flex-1" onClick={() => setToDelete(null)}>
+            Cancelar
+          </button>
+          <button type="button" className="btn-danger flex-1" disabled={pending} onClick={remove}>
+            {pending ? "Borrando…" : "Borrar"}
+          </button>
+        </div>
+      </Dialog>
     </div>
   );
 }

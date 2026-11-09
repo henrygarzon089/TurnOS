@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  agoCO,
   bogotaWeekStart,
   businessDayBogota,
   ceil5,
@@ -59,5 +60,21 @@ describe("P5 / REQ-027.5 día de negocio en America/Bogota", () => {
     const a = new Date("2026-10-23T10:00:00Z");
     expect(minutesBetween(a, new Date("2026-10-23T10:12:59Z"))).toBe(12);
     expect(minutesBetween(a, a)).toBe(0);
+  });
+});
+
+describe("REQ-078.16 'hace N semanas' de la lista de clientes del barbero", () => {
+  const now = new Date("2026-11-09T20:00:00Z"); // lunes 9 nov, 3 p. m. en Bogotá
+  it.each([
+    ["2026-11-09T14:00:00Z", "hoy"],
+    ["2026-11-09T04:00:00Z", "ayer"], // 11 p. m. del domingo en Bogotá
+    ["2026-11-05T15:00:00Z", "hace 4 días"],
+    ["2026-11-02T15:00:00Z", "hace 1 semana"],
+    ["2026-10-19T15:00:00Z", "hace 3 semanas"],
+    ["2026-10-01T15:00:00Z", "hace 1 mes"],
+    ["2026-07-01T15:00:00Z", "hace 4 meses"],
+    ["2025-10-01T15:00:00Z", "hace más de un año"],
+  ])("REQ-078.16 %s → %s", (iso, text) => {
+    expect(agoCO(iso, now)).toBe(text);
   });
 });
