@@ -2768,3 +2768,117 @@ Mis fotos, Mi estación, "Nueva venta" y "Salir". No se construye: "Silla N" (la
   camino · Pediste reposición <hora>" cuando aplica; la ayuda "Entrega el envase vacío en la caja".
   Reposiciones y último conteo como filas. No se construye: botón "Se acabó" (la reposición la
   registra el dueño, REQ-071.4).
+
+### 22.7 Dueño fiel al tablero (ADR-052, REQ-078.21…27)
+
+Comparación del 2026-11-08 de `main` contra los tableros Dueno-*, en 1440 px y 390 px. "No se
+construye" = el tablero lo muestra y la app no tiene el dato o la función.
+
+**Marco del dueño (T-172).**
+- Ancho: el layout del personal da al dueño `lg:max-w-6xl` en **todas** sus pantallas (también
+  `/app/clientes`); se quitan los `data-wide` de cada página. `data-tablet` (768 px) se queda para
+  "Hoy" y "Caja".
+- Barra superior desde 1024 px: azul marino (`bg-brand`), 56 px, a todo el ancho y por encima del
+  menú lateral: cuadro blanco con las iniciales del negocio, nombre en blanco negrita, a la derecha
+  la fecha larga ("Domingo 8 de noviembre") en texto suave y el nombre del dueño con "▾" que abre
+  un menú con "Salir". El menú lateral empieza debajo de la barra.
+- En el celular, cada pantalla del dueño empieza con su cabecera azul de 56 px (título y, en "Hoy",
+  la fecha corta y "● en vivo"); "Salir" pasa a "Más".
+- Menú lateral: activo con raya izquierda de 3 px y fondo suave; a la derecha, el número de
+  esperando en Fila y de citas de hoy en Citas (texto suave), e insignia roja `CountBadge` en
+  Limpieza (limpiezas con falla o sin hacer) e Inventario (insumos bajo el mínimo). Los conteos
+  salen de `loadOwnerAlerts` (ya cacheado por pedido), sin consultas nuevas.
+
+**Hoy (T-173).**
+- Escritorio, rejilla de 12 columnas en tres hileras: Fila en vivo (8) + Caja de hoy (4); Piden tu
+  atención (8) + Citas de hoy (4) (si citas está apagado, alertas ocupa 12); Ingresos de la semana
+  (6) + Para recordar (6).
+- Título "Hoy" con "● en vivo · 3:52 p. m." (hora de la última relectura). Acciones: "Fila"
+  (contorno, enlace; el tablero dice "Llamar al siguiente", pero el dueño llama desde la fila con
+  "Llamar con"), "Cerrar caja" (contorno) y "Nueva venta" (principal).
+- Fila en vivo: encabezado "Fila en vivo · N esperando · ~ M min promedio · Abrir la fila"; tabla
+  Barbero · Ahora · Desde · En su fila. "Ahora": "Atiende a <n.º> · <nombre corto>" (punto azul),
+  "Llamó a <n.º> · <nombre>" (fila con fondo rojo suave), "En pausa" (ámbar) o "Libre" (verde).
+  No se construye: columna "Silla" (la app no tiene sillas).
+- Caja de hoy: total en 44 px, "El <día> pasado, todo el día: $ …", y filas Efectivo, Nequi,
+  Daviplata, "Transferencia y tarjeta" (sumadas) y "De eso, vitrina" en texto suave. Sale "N
+  servicios terminados".
+- Citas de hoy: hora · cliente · barbero y estado (Atendido verde, Llegó negrita, Pendiente suave).
+- Para recordar: hasta 4 personas, rótulo CUMPLE (cumpleaños de esta semana) o NO VUELVE (más de N
+  días) en versalitas suaves, nombre en negrita · "el sábado" / "hace 2 meses" y "Escribirle" (abre
+  WhatsApp como en Recordar). "Ver todos" lleva a Recordar.
+- Ingresos de la semana: "$ … hasta hoy"; barras de lunes a hoy con su cifra en miles encima; hoy
+  en azul marino; los días que no han llegado, raya y "—".
+- Celular (390): cabecera azul; "Piden tu atención" en bloque rojo suave arriba (si hay); Fila en
+  vivo con el número de esperando en 48 px y filas "● <barbero> · <n.º> · N min · N en fila"; Caja
+  con "Daviplata · transf. · tarjeta" sumados; Citas; Para recordar (1–2); dos botones fijos
+  "Cerrar caja" y "Nueva venta" sobre el menú (sale "Fila", ya está en el menú).
+- Tablet (768): dos columnas, alertas y fila a la izquierda, caja, citas y recordar a la derecha;
+  los tres botones fijos abajo.
+
+**Fila del dueño (T-174).**
+- Escritorio: título "Fila · N esperando · N con "el primero libre"" y a la derecha "Ver pantalla
+  del televisor" (contorno) y "Agregar cliente" (principal). Sale la hilera de chips de presentes:
+  el estado va en el encabezado de cada carril ("Silla" no se construye: "<nombre>" y "N en fila";
+  "en pausa" en ámbar). Carriles de igual ancho con `grid-template-columns: repeat(N, minmax(0, 1fr))`
+  y `min-width: 0` (arregla "El primero libre" aplastado). Bloque fijo de 40 px bajo el
+  encabezado: "Atiende A11 · Ana M. · 22 min", "Llamó a A14 · Juan P. · 1 min" (rojo suave),
+  "Almuerzo · desde 3:18 p. m." (ámbar) o "Libre". Filas de 52 px: número en negrita, nombre, a la
+  derecha "Cita 4:15" en recuadro o "nuevo" en ámbar, y "⋯" que abre las acciones que ya existen
+  (Subir/Bajar, Llamar con, pasar a otro barbero, Cancelar turno…) en un menú flotante. "Cerrar fila
+  por hoy" pasa a ese mismo lugar de acciones de la página (contorno), no fija abajo.
+- Cobros pendientes: una fila "N cobros pendientes" sobre los carriles que abre la hoja con la
+  lista y "Cobrar" (como el barbero, REQ-078.18).
+- Celular: cabecera azul "Fila · N esperando"; pestañas Todos / <barbero> N; el llamado arriba en
+  rojo suave; filas de 60 px con "⋯"; botón fijo "Llamar al siguiente de <barbero>" en la pestaña
+  de un barbero y "Agregar cliente" en "Todos".
+- No se construye: arrastrar para reordenar (siguen Subir/Bajar).
+
+**Caja (T-174).**
+- Junto al título: la fecha en un selector ("jue 6 nov. ▾", lleva a `/admin/caja/<fecha>`) y el
+  enlace "Cierres anteriores". Franja: Total del día, Efectivo, Nequi, Daviplata, "Transf. y
+  tarjeta", Vitrina.
+- Ventas (escritorio): buscador "Buscar cliente o concepto", "Todos los barberos ▾", "Todos los
+  medios ▾" y "N ventas · N anulada"; tabla con cabecera azul marino Hora · Concepto · Cliente ·
+  Barbero · Medio · Valor y "Anular" en texto rojo en la fila; anulada tachada; la nueva por tiempo
+  real en ámbar (REQ-078.12). Filtros y búsqueda en el navegador sobre las ventas ya cargadas;
+  "Mostrando 10 de N · Ver más". Celular: la lista actual.
+- Por barbero: tabla Barbero · Serv. · Comisión con fila Total y la nota de comisión de productos.
+
+**Semana (T-175).** Flechas, "Lun 3 – dom 9 de noviembre"; franja Ingresos (`sold`), Servicios,
+Comisiones (suma de `barbers[].commission` + comisión de productos), Queda al negocio (Ingresos −
+Comisiones); tabla Barbero · % · Servicios · Comisión serv. · Productos · Compras suyas (negativo) ·
+A pagar. Debajo, la ocupación que ya existe y los turnos perdidos. Celular: cifra de ingresos en
+grande y "A PAGAR" por barbero. No se construye: "Marcar pagado", "Descargar PDF".
+
+**Citas (T-175).** Encabezado "‹ Sábado 8 de noviembre › Hoy · N citas"; rejilla hora × barbero
+con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Ajustes al final.
+
+**Clientes, Fidelidad, Recordar, Membresías, Tarjetas de regalo (T-175).**
+- Clientes (escritorio): buscador, "Todos ▾", "Barbero: todos ▾", "N clientes"; tabla Nombre ·
+  Celular (`maskPhone`) · Última vez (ámbar si pasa de N días) · Barbero habitual · Cortes ·
+  Fidelidad (X/10) · Membresía (insignia). Si Fidelidad o Membresía no vienen en
+  `search_customers`, la tarea lo anota y propone la lectura antes de construirla.
+- Fidelidad y Recordar lado a lado; Recordar como tabla Cliente · Por qué · WhatsApp (enlace verde)
+  o "Escrito ayer".
+- Membresías y Tarjetas de regalo lado a lado, cada una como tabla (Familia · Usó · Cuota con
+  insignia; N.º · Para · Valor · Saldo). "Editar plan" abre el formulario del plan en una hoja.
+
+**Local y configuración (T-176).**
+- Limpieza: pestañas Por revisar · N / Fallas por barbero / Tareas periódicas / Historial y
+  "Descargar PDF" (ya existe); filas con miniatura 64 px, "<barbero> · apertura", insignia
+  "Falla", hora y "N de 5"; acciones "Ver foto", "Marcar falla", "Aprobar". No se construye:
+  "Hablar con <barbero>".
+- Productos: filtros por categoría, "Comisión de productos: N % · Cambiar" y "Nuevo producto" en
+  una hilera; rejilla de 5 columnas en escritorio con foto arriba, nombre, precio y "categoría ·
+  existencias" cuando la vitrina las tiene.
+- Inventario: pestañas Catálogo / Conteo / Orden de compra / Costo por servicio; buscador,
+  categoría, "Hacer conteo" y "Nuevo insumo"; tabla Insumo · Unidad · En bodega · En estaciones ·
+  Mínimo · Costo · Estado ("Pedir" ámbar, "Consumo raro" rojo).
+- Barberos y Servicios: tablas a todo el ancho con cabecera azul marino; Servicios con interruptor
+  "Visible al público" que hace lo mismo que "Activar/Desactivar".
+- Horario y QR lado a lado; Horario: día, "Abre" y "Cierra" con un selector propio en español
+  ("9:00 a. m.", cada 15 min) en vez de `input type=time`, interruptor "Abierto"; "Cerrado" en
+  texto suave cuando está apagado.
+- Mensajes, Negocio y Privacidad en tarjetas lado a lado (2 columnas desde 1024 px). No se
+  construye: logo del negocio, estado de plantillas de Meta, tabla de solicitudes de privacidad.

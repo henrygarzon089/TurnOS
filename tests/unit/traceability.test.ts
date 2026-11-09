@@ -19,7 +19,7 @@ describe("NFR-009 pruebas trazables", () => {
       "13",
       "14",
       "15",
-      // "16" vuelve con T-171: REQ-078.16…20 (ADR-051) se prueban en T-169…T-171
+      // "16" vuelve con la última de T-169…T-176: REQ-078.16…27 (ADR-051, ADR-052)
     ]) {
       const out = execFileSync(
         "node_modules/.bin/tsx",
