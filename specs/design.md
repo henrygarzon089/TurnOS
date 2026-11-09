@@ -2516,6 +2516,9 @@ aparece.
   quita `?…` y `#…`, y cambia el segmento del token por el patrón en `/t/`, `/c/`, `/regalo/` e
   `/invitacion/` (`/t/abc123?x=1` → `/t/[token]`). Cualquier otra ruta pasa sin el query.
 - Se revisa en Vercel → Speed Insights, filtrando por `/[slug]` y `/app/fila` (pantallas de NFR-001).
+- ADR-054 (2026-11-09): Speed Insights queda sin activar por costo. El componente sigue en el código y
+  no envía nada mientras no se active; la referencia de velocidad es Lighthouse móvil del CI
+  (`lighthouserc.json`).
 - Descartada (ADR-043): `useReportWebVitals` hacia una tabla propia en Supabase.
 
 ### 19.3 Región

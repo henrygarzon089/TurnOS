@@ -979,3 +979,23 @@
   solicitudes de privacidad, "Anular" de tarjetas de regalo, "Hablar con <barbero>" de limpieza.
 - Consecuencias: REQ-078.27…REQ-078.33, design §22.8, tareas T-177…T-181 (dueño). T-168 espera
   también estas tareas. Henry autorizó empezar el código al terminar la spec (2026-11-08).
+
+## ADR-054 · Speed Insights apagado por costo; Lighthouse móvil del CI como referencia
+
+- Fecha: 2026-11-09. Estado: aceptada (Henry).
+- Contexto: el Hito 14 (ADR-043, ADR-044) dejó listo el código de Speed Insights
+  (`VitalsReporter` con `redactVitalsUrl`) y faltaba que Henry lo activara en Vercel. Activarlo
+  tiene costo en el plan, y por ahora el negocio no va a pagarlo. T-168 pedía "Speed Insights sin
+  empeorar respecto al Hito 14" para cerrar el Hito 16, y no habría datos para comparar.
+- Decisión:
+  - Speed Insights queda **sin activar** en Vercel. El componente se queda en el código: sin
+    activación no envía nada (no hay cookies ni datos), y si un día se paga solo hace falta
+    activarlo.
+  - REQ-075.3 (métricas de usuarios reales por ruta) queda **en pausa en producción**: sus pruebas
+    (`redactVitalsUrl`) siguen y el criterio sigue cubierto en la matriz, pero no hay datos de
+    campo.
+  - La referencia de velocidad mientras tanto es **Lighthouse móvil del CI** (`lighthouserc.json`:
+    `/la-33` y `/entrar`, rendimiento ≥ 0,8 y accesibilidad ≥ 0,9). T-168 cierra con "Lighthouse
+    móvil del CI sin empeorar respecto al Hito 14".
+- Consecuencias: T-132 y la operación del Hito 14 ya no esperan la activación; T-168 cambia su
+  criterio; design §19.2 lo anota. Se retoma con un ADR nuevo si el negocio decide pagarlo.
