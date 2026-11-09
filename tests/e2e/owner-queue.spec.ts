@@ -104,11 +104,35 @@ test.describe("REQ-012 vista del dueño sobre la fila", () => {
   test("REQ-010.6 / REQ-016.4 el dueño marca a un barbero presente o ausente desde la fila", async ({
     page,
   }) => {
-    const mateo = page.getByRole("button", { name: /^Mateo ·/ });
-    const before = (await mateo.textContent()) ?? "";
-    await mateo.click();
-    await expect(mateo).not.toHaveText(before);
-    await mateo.click();
-    await expect(mateo).toHaveText(before);
+    // Sin hilera de chips (REQ-078.30): "<barbero> no vino hoy" y "No están hoy: <barbero>"
+    const db = adminDb();
+    const { data: mateo } = await db
+      .from("barbers")
+      .select("id, status")
+      .eq("display_name", "Mateo")
+      .single();
+    try {
+      await db.from("barbers").update({ status: "available" }).eq("id", mateo!.id);
+      const back = page.getByRole("button", { name: "Marcar a Mateo presente" });
+
+      // Escritorio: en el "⋯" del encabezado del carril
+      await page.setViewportSize({ width: 1280, height: 900 });
+      await page.reload();
+      await page.getByRole("button", { name: "Acciones de Mateo" }).click();
+      await page.getByRole("button", { name: "Mateo no vino hoy" }).click();
+      await expect(page.getByRole("region", { name: "Carril de Mateo" })).toBeHidden();
+      await back.click();
+      await expect(page.getByRole("region", { name: "Carril de Mateo" })).toBeVisible();
+
+      // Celular: en la pestaña del barbero
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.getByRole("tab", { name: /^Mateo \d+$/ }).click();
+      await page.getByRole("button", { name: "Mateo no vino hoy" }).click();
+      await expect(page.getByRole("tab", { name: /^Mateo \d+$/ })).toBeHidden();
+      await back.click();
+      await expect(page.getByRole("tab", { name: /^Mateo \d+$/ })).toBeVisible();
+    } finally {
+      await db.from("barbers").update({ status: mateo!.status }).eq("id", mateo!.id);
+    }
   });
 });

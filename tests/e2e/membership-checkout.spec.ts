@@ -118,7 +118,8 @@ test.describe("REQ-047 / REQ-048 membresía en el cobro, la fila y Mi turno", ()
       await expect(row).toBeVisible({ timeout: 15_000 });
       await expect(row.getByText("Membresía", { exact: true })).toBeVisible();
 
-      await row.getByRole("button", { name: new RegExp(name) }).click();
+      // Las acciones van en el menú "⋯" del turno (REQ-078.30)
+      await row.getByRole("button", { name: `Acciones para ${name}` }).click();
       const select = row.getByLabel("Llamar con");
       await select.selectOption(
         (await select.locator("option", { hasText: "Juan" }).getAttribute("value"))!,

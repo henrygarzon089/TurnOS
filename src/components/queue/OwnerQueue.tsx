@@ -558,6 +558,19 @@ function LaneColumn({
             </li>
           );
         })}
+        {/* Celular: en la pestaña del barbero, marcarlo ausente (en escritorio va en el "⋯") */}
+        {b && b.status !== "off" && tab === lane.id && (
+          <li style={{ order: 100000 }} className="lg:hidden">
+            <button
+              type="button"
+              disabled={menu.busy}
+              onClick={() => presence(b.id, false)}
+              className="text-brand min-h-12 px-4 text-sm font-semibold underline underline-offset-4"
+            >
+              {b.name} no vino hoy
+            </button>
+          </li>
+        )}
         {queued.map((t) => (
           <li
             key={t.id}
@@ -574,6 +587,12 @@ function LaneColumn({
                 <span className="lg:hidden">{t.customerName}</span>
                 <span className="hidden lg:inline">{shortName(t.customerName)}</span>
               </span>
+              {/* REQ-048.2 la marca "Membresía" sigue en la fila */}
+              {t.isMember && (
+                <span className="shrink-0 [&>span]:m-0">
+                  <MemberBadge />
+                </span>
+              )}
               {t.scheduledAt ? (
                 <span className="shrink-0">
                   <AppointmentBadge scheduledAt={t.scheduledAt} />

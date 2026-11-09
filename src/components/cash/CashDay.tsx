@@ -219,7 +219,7 @@ export function CashDay({
                   onChange={(e) => setFilter({ ...filter, query: e.target.value })}
                 />
                 <select
-                  className="input hidden w-auto! flex-none lg:block"
+                  className="input hidden h-12 w-auto! flex-none lg:block"
                   aria-label="Barbero"
                   value={filter.barber ?? ""}
                   onChange={(e) => setFilter({ ...filter, barber: e.target.value || undefined })}
@@ -232,7 +232,7 @@ export function CashDay({
                   ))}
                 </select>
                 <select
-                  className="input w-auto! flex-none"
+                  className="input h-12 w-auto! flex-none"
                   aria-label="Medio de pago"
                   value={filter.method ?? ""}
                   onChange={(e) => setFilter({ ...filter, method: e.target.value || undefined })}

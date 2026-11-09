@@ -349,13 +349,15 @@ test.describe("T-165 fila y caja del dueño con el sistema visual (REQ-078)", ()
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/admin/fila");
     const second = page.getByRole("listitem").filter({ hasText: "Menu S." });
-    const before = (await second.boundingBox())!.y;
+    // Posición en la página (no en la pantalla): abrir el menú puede desplazar la vista
+    const top = () => second.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+    const before = await top();
     const menu = await menuOf(page, "Menu Primero");
     for (const action of ["Subir un puesto", "Bajar un puesto", "Llamar", "Cancelar turno"])
       await expect(menu.getByRole("button", { name: action })).toBeVisible();
     await expect(menu.getByLabel("Pasar a otro barbero")).toBeVisible();
     await expect(menu.getByLabel("Llamar con")).toBeVisible();
-    expect((await second.boundingBox())!.y).toEqual(before);
+    expect(await top()).toEqual(before);
     await page.keyboard.press("Escape");
     await expect(menu).toBeHidden();
   });
@@ -363,8 +365,10 @@ test.describe("T-165 fila y caja del dueño con el sistema visual (REQ-078)", ()
   test("REQ-078.30 los cobros pendientes van en una sola fila que abre la lista y no empuja la fila", async ({
     page,
   }) => {
+    // Nombre único: los cobros pendientes de otra corrida (otro proyecto) siguen en la lista
+    const cobro = `Pendiente Visual Cobro ${Date.now() % 100000}`;
     await addTicket("Pendiente Visual Espera");
-    await pendingPayment("Pendiente Visual Cobro");
+    await pendingPayment(cobro);
     await loginAsOwner(page);
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/admin/fila");
@@ -372,10 +376,10 @@ test.describe("T-165 fila y caja del dueño con el sistema visual (REQ-078)", ()
     await expect(row).toBeVisible();
     expect((await row.boundingBox())!.height).toBeLessThanOrEqual(64);
     // La lista no está en la página: solo la fila
-    await expect(page.getByText("Pendiente Visual Cobro")).toHaveCount(0);
+    await expect(page.getByText(cobro)).toHaveCount(0);
     await row.click();
     const sheet = page.getByRole("dialog", { name: "Cobros pendientes" });
-    const item = sheet.getByRole("listitem").filter({ hasText: "Pendiente Visual Cobro" });
+    const item = sheet.getByRole("listitem").filter({ hasText: cobro });
     await expect(item.getByRole("button", { name: "Cobrar" })).toBeVisible();
   });
 
