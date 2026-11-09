@@ -16,7 +16,7 @@ async function takeTicket(page: Page, name: string, cel: string) {
   await waitForContent(page);
   await page.getByLabel("Tu nombre").fill(name);
   await page.getByLabel("Tu celular").fill(cel);
-  await page.getByRole("radio", { name: /Corte · 20 min/ }).check();
+  await page.getByRole("radio", { name: /^Corte\s+\$/ }).check();
   // REQ-002.4: si este navegador ya aceptó la versión vigente, la casilla no aparece
   const box = page.getByRole("checkbox", { name: /Acepto el aviso/ });
   await expect(box.or(page.getByText("Ya aceptaste nuestra política de datos."))).toBeVisible();
@@ -34,7 +34,7 @@ test.describe("Hito 1 · flujo del cliente", () => {
     await page.goto(`/${SEED.slug}`);
     await expect(page.getByRole("heading", { name: "Barbería La 33" })).toBeVisible();
     await expect(page.getByText(/Abierto|Cerrado/)).toBeVisible();
-    await expect(page.getByText(/personas? en la fila/)).toBeVisible();
+    await expect(page.getByRole("region", { name: "Fila en vivo" })).toContainText("esperando");
   });
 
   test("REQ-001.5 slug inexistente → Negocio no encontrado", async ({ page }) => {

@@ -20,7 +20,7 @@ import {
 import { barbersForService, serviceAvailability } from "@/lib/domain/barber-services";
 import { MONTH_NAMES } from "@/lib/domain/birthday";
 import { formatCOP } from "@/lib/domain/money";
-import { formatPhoneCO, normalizePhoneCO } from "@/lib/domain/phone";
+import { formatPhoneCO, formatPhoneTyping, normalizePhoneCO } from "@/lib/domain/phone";
 import { estimateNewTicket } from "@/lib/domain/queue-estimate";
 import { mediaUrl } from "@/lib/media/paths";
 import type { PublicBusiness } from "@/lib/queue/public-queue";
@@ -53,6 +53,7 @@ export function JoinForm({ business, now, canBook = false }: Props) {
   );
   const [barberId, setBarberId] = useState<string | null>(null);
   const pickedByUser = useRef(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const pickBarber = (id: string | null) => {
     pickedByUser.current = true;
     setBarberId(id);
@@ -108,11 +109,19 @@ export function JoinForm({ business, now, canBook = false }: Props) {
 
   // REQ-003.7 / REQ-002.4: prellenar desde el navegador
   useEffect(() => {
+    // En un celular lento se alcanza a escribir antes de hidratar: el campo controlado lo borraría
+    // en el siguiente render. Lo escrito se pasa al estado y gana sobre lo guardado.
+    const field = (n: string) =>
+      (formRef.current?.elements.namedItem(n) as HTMLInputElement | null)?.value.trim() ?? "";
+    const typedName = field("name");
+    const typedPhone = field("phone");
+    if (typedName) setName(typedName);
+    if (typedPhone) setPhone(formatPhoneTyping(typedPhone));
     // Tras hidratar (evita desajuste servidor/cliente): leer el navegador en el siguiente frame
     const id = requestAnimationFrame(() => {
       const p = readPrefs();
-      if (p.name) setName(p.name);
-      if (p.phone) {
+      if (p.name && !typedName) setName(p.name);
+      if (p.phone && !typedPhone) {
         setPhone(formatPhoneCO(p.phone));
         // REQ-022.1: preseleccionar su barbero preferido si atiende hoy (si no, "El que esté libre")
         void getPreferredBarber(business.slug, p.phone).then((id) => {
@@ -209,7 +218,12 @@ export function JoinForm({ business, now, canBook = false }: Props) {
   const cutsBarber = shownBarberId ? barbers.find((b) => b.id === shownBarberId) : undefined;
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-5 pb-34 lg:pb-0" aria-label="Tomar turno">
+    <form
+      ref={formRef}
+      onSubmit={submit}
+      className="flex flex-col gap-5 pb-34 lg:pb-0"
+      aria-label="Tomar turno"
+    >
       <fieldset className="min-w-0">
         <legend className="mb-2 text-sm font-semibold">¿Qué te vas a hacer?</legend>
         <div className="grid grid-cols-2 gap-2">

@@ -73,7 +73,7 @@ test.describe("Hito 1 · criterios de interfaz", () => {
     await c.goto(`/${SEED.slug}`);
     await c.getByLabel("Tu nombre").fill("Detalle Fila");
     await c.getByLabel("Tu celular").fill(phone());
-    await c.getByRole("radio", { name: /Barba · 15 min/ }).check();
+    await c.getByRole("radio", { name: /^Barba\s+\$/ }).check();
     await c.getByRole("radio", { name: "Pedro" }).click();
     await c.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
     await c.getByRole("button", { name: "Tomar turno" }).click();

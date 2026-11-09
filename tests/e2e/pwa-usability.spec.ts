@@ -122,17 +122,11 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
   test("REQ-032.2 / NFR-008 portada y formulario del cliente: botones ≥ 48 px abajo, fuente 16 px, zoom 200 %", async ({
     page,
   }) => {
-    await page.goto(`/${SEED.slug}`);
-    await expectThumbButton(page, page.getByRole("link", { name: "Tomar turno" }));
-    await expectAllTargets48(page);
-    await expectBaseFont16(page);
-    await expectZoom200(page);
-
-    // La portada se relee en vivo (ADR-008): esperar a que termine antes de navegar (WebKit)
-    await page.waitForLoadState("networkidle");
+    // Portada y formulario son una sola pantalla (T-173, ADR-052)
     await page.goto(`/${SEED.slug}`);
     await expectThumbButton(page, page.getByRole("button", { name: "Tomar turno" }));
     await expectAllTargets48(page);
+    await expectBaseFont16(page);
     await expectZoom200(page);
   });
 

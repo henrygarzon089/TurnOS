@@ -13,7 +13,7 @@ async function fillJoinForm(page: Page, name: string) {
   await page.goto(`/${SEED.slug}`);
   await page.getByLabel("Tu nombre").fill(name);
   await page.getByLabel("Tu celular").fill(phone());
-  await page.getByRole("radio", { name: /Corte · 20 min/ }).check();
+  await page.getByRole("radio", { name: /^Corte\s+\$/ }).check();
 }
 
 async function takeTicket(ctx: BrowserContext, name: string, drink?: string) {
