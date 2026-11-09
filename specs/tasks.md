@@ -2387,13 +2387,39 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   las de la caja de cada día (prueba de Comisiones y Queda al negocio); tabla de clientes con
   `maskPhone`.
 
-### [ ] T-181 · Dueño: Local y Configuración como el tablero
+### [x] T-181 · Dueño: Local y Configuración como el tablero
 - REQ: REQ-078.33, REQ-078.20, REQ-078.16
 - Archivos: `src/app/(staff)/admin/{limpieza,productos,inventario,barberos,servicios,horario,qr,mensajes,negocio,privacidad}/**`,
   `src/components/admin/{HoursForm,CatalogLists,QrCard,...}.tsx`, `tests/e2e/visual-dueno-config.spec.ts`.
 - Terminado: como Dueno-Local y Dueno-Config (captura en el PR); horas en español con selector
   propio (también en crear negocio); `pnpm trace --hito=16` sin huecos y el hito 16 de vuelta en el
   loop si es la última de T-169…T-181.
+- Nota (2026-11-09): hecho; capturas en `docs/diseno/capturas/T-181/` (1440 y 390 px). Horario con
+  `TimeSelect` (un `select` con las horas en español cada 15 min más "11:59 p. m.", `hourOptions` en
+  `src/lib/domain/hours.ts`; una hora guardada fuera de los cuartos se agrega para no perderla) e
+  interruptor `Switch` "Abierto"; apagado dice "Cerrado" y guarda las horas en campos ocultos.
+  `HoursForm` usa consultas de contenedor, así se ve bien en crear negocio. Barberos y Servicios en
+  una tarjeta con su botón en la cabecera; "Visible al público" llama a `toggleService`, igual que
+  Activar/Desactivar. Mensajes, Negocio y Privacidad en 2 columnas desde 1024 px. Inventario:
+  `inventoryCatalogRows` y `filterCatalogRows` (pruebas unitarias); "Pedir" con la misma regla que
+  la alerta de "Hoy" y "Consumo raro" si el último conteo lo marcó. **Desvíos:** (1) Horario y QR
+  son dos entradas del menú: las dos pantallas muestran las dos tarjetas lado a lado; la de la
+  pantalla abierta va primero en el celular y solo su botón es relleno (REQ-078.4). (2) Barberos sin
+  "Silla" (la app no tiene sillas) y con la columna "Hoy" que ya existía. El interruptor de
+  Servicios solo va en escritorio; en el celular sigue "Desactivado" en la línea y el botón en la
+  hoja. (3) Productos lee `inventory_overview` para "categoría · existencias" y "quedan N" (ámbar)
+  cuando el producto está en la vitrina con mínimo; es una lectura más en esa pantalla. (4)
+  Inventario pierde la pestaña "Resumen": sus bloques (pendientes y movimientos lado a lado, después
+  rendimiento y stock por sitio) van debajo de la tabla del Catálogo. La edición de ítems sigue en
+  `/admin/inventario/catalogo` ("Nuevo insumo" la abre con `?nuevo=1`). Los envíos de Movimientos
+  quedan en contorno: el botón principal es "Nuevo insumo". (5) Limpieza: la app registra una
+  apertura, un cierre y una profunda por negocio, no por barbero, y no tiene "Aprobar" ni "Descargar
+  PDF" (la spec dice que el PDF ya existe, pero no está). No se inventan. Las pestañas toman los
+  nombres del tablero donde la app hace lo mismo: Revisión → "Fallas por barbero", Tareas →
+  "Tareas periódicas"; "Hoy" y "Listas" se quedan. En "Hoy", el dueño ve filas con miniatura de 64 px
+  (primera foto), "<quién> · apertura", "Incompleta"/"Tarde", "N de M", "Ver foto" y "Marcar falla"
+  (lleva a Fallas por barbero). El barbero (`/app/limpieza`) no cambia. No es la última de
+  T-169…T-181: faltan los CA de T-169…T-171 y T-178…T-180, así que el hito 16 todavía no vuelve al loop.
 
 ### [ ] T-168 · Validación Hito 16
 - REQ: REQ-078

@@ -2,14 +2,16 @@ import { PageHeader } from "@/components/admin/PageHeader";
 import { SectionTabs } from "@/components/admin/SectionTabs";
 
 const TABS = [
-  { href: "/admin/inventario", label: "Resumen" },
-  { href: "/admin/inventario/catalogo", label: "Catálogo" },
+  { href: "/admin/inventario", label: "Catálogo" },
   { href: "/admin/inventario/conteo", label: "Conteo" },
   { href: "/admin/inventario/compra", label: "Orden de compra" },
-  { href: "/admin/inventario/costos", label: "Costos" },
+  { href: "/admin/inventario/costos", label: "Costo por servicio" },
 ];
 
-/** Encabezado y pestañas de /admin/inventario (design.md §18.6, tablero Dueno-Local). */
+/**
+ * Encabezado y pestañas de /admin/inventario como el tablero Dueno-Local (design §22.8): Catálogo
+ * (la tabla, y su edición en /admin/inventario/catalogo), Conteo, Orden de compra y Costo por servicio.
+ */
 export function InventoryNav({ current }: { current: string }) {
   return (
     <>

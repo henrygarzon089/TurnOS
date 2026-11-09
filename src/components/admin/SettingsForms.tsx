@@ -94,33 +94,36 @@ export function TemplatesForm({
 
   return (
     <form action={action} className="mt-4 flex flex-col gap-4">
-      {(Object.keys(TEMPLATE_META) as TemplateKey[]).map((key) => (
-        <div key={key} className="border-line bg-card flex flex-col gap-2 rounded-md border p-4">
-          <label htmlFor={key} className="font-semibold">
-            {TEMPLATE_META[key].title}
-          </label>
-          <p className="text-muted text-sm">{TEMPLATE_META[key].help}</p>
-          <textarea
-            id={key}
-            name={key}
-            rows={3}
-            maxLength={1000}
-            required
-            value={values[key] ?? ""}
-            onChange={(e) => setValues({ ...values, [key]: e.target.value })}
-            className="input min-h-24 py-2"
-          />
-          <p className="text-muted text-sm">
-            Variables: {TEMPLATE_META[key].vars ?? "{nombre} {negocio} {tiempo} {enlace}"}
-          </p>
-          <div
-            className="bg-surface border-line rounded-sm border p-2 text-base"
-            aria-label="Vista previa"
-          >
-            {renderTemplate(values[key], sample)}
+      {/* Tarjetas lado a lado desde 1024 px (tablero Dueno-Config, design §22.8) */}
+      <div data-two-up className="grid items-start gap-4 lg:grid-cols-2">
+        {(Object.keys(TEMPLATE_META) as TemplateKey[]).map((key) => (
+          <div key={key} className="border-line bg-card flex flex-col gap-2 rounded-md border p-4">
+            <label htmlFor={key} className="font-semibold">
+              {TEMPLATE_META[key].title}
+            </label>
+            <p className="text-muted text-sm">{TEMPLATE_META[key].help}</p>
+            <textarea
+              id={key}
+              name={key}
+              rows={3}
+              maxLength={1000}
+              required
+              value={values[key] ?? ""}
+              onChange={(e) => setValues({ ...values, [key]: e.target.value })}
+              className="input min-h-24 py-2"
+            />
+            <p className="text-muted text-sm">
+              Variables: {TEMPLATE_META[key].vars ?? "{nombre} {negocio} {tiempo} {enlace}"}
+            </p>
+            <div
+              className="bg-surface border-line rounded-sm border p-2 text-base"
+              aria-label="Vista previa"
+            >
+              {renderTemplate(values[key], sample)}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
       {state?.error && <ErrorText>{state.error}</ErrorText>}
       {state?.ok && <p className="text-ok text-sm font-medium">Plantillas guardadas.</p>}
       <button
