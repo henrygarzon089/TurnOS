@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
-import { loginAsBarber, loginAsOwner, SEED } from "./helpers";
+import { loginAsBarber, loginAsOwner, SEED, tapNewSale } from "./helpers";
 
 /** T-044 · REQ-023.4, REQ-024.1–24.3. Los montos se verifican en la base con service_role. */
 function db() {
@@ -39,7 +39,7 @@ async function lastSale() {
 }
 
 async function openNewSale(page: Page) {
-  await page.getByRole("button", { name: "+ Nueva venta" }).click();
+  await tapNewSale(page);
   const sheet = page.getByRole("dialog", { name: "Nueva venta" });
   await expect(sheet).toBeVisible();
   await expect(sheet.getByTestId("checkout-total")).toHaveText("$ 0");

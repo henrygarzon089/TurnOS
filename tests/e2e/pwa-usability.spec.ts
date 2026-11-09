@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { loginAsBarber, loginAsOwner, SEED } from "./helpers";
+import { CALL, loginAsBarber, loginAsOwner, SEED } from "./helpers";
 
 /**
  * T-029 · REQ-032.1 (instalable), REQ-032.2 y NFR-008 (botones ≥ 48 px abajo, fuente ≥ 16 px,
@@ -150,7 +150,7 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
     page,
   }) => {
     await loginAsBarber(page, 0);
-    await expectThumbButton(page, page.getByRole("button", { name: "Llamar al siguiente" }));
+    await expectThumbButton(page, page.getByRole("button", { name: CALL }));
     await expectAllTargets48(page);
     await expectBaseFont16(page);
     await expectZoom200(page);
@@ -169,7 +169,14 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
     const register = sheet.getByRole("button", { name: /^Registrar/ });
     await register.scrollIntoViewIfNeeded();
     await expectThumbButton(page, register);
-    for (const m of ["Efectivo", "Nequi", "Daviplata", "Transferencia", "Tarjeta", "Tarjeta de regalo"]) {
+    for (const m of [
+      "Efectivo",
+      "Nequi",
+      "Daviplata",
+      "Transferencia",
+      "Tarjeta",
+      "Tarjeta de regalo",
+    ]) {
       const box = (await sheet.getByRole("radio", { name: m, exact: true }).boundingBox())!;
       expect(box.height, `${m} ≥ 48 px`).toBeGreaterThanOrEqual(48);
     }

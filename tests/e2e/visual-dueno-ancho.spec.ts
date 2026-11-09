@@ -99,3 +99,25 @@ test.describe("T-177 Salir en el celular", () => {
     await expect(page).toHaveURL(/\/entrar/);
   });
 });
+
+test.describe("T-177 una sola cabecera azul en el celular", () => {
+  test.use({ serviceWorkers: "block" });
+
+  test("REQ-078.27 si la pantalla trae su cabecera, la barra del negocio se oculta por debajo de 1024 px", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await loginAsOwner(page);
+    const bar = page.locator("body header").first();
+    await expect(bar).toBeVisible();
+    // Contrato de design §22.8: la cabecera propia de la pantalla lleva `data-screen-header`
+    await page.evaluate(() => {
+      const h = document.createElement("div");
+      h.setAttribute("data-screen-header", "");
+      document.querySelector("main")!.prepend(h);
+    });
+    await expect(bar).toBeHidden();
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await expect(bar).toBeVisible();
+  });
+});

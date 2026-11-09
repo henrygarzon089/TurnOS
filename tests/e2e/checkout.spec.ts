@@ -103,8 +103,8 @@ async function serveUntilFinished(owner: Page, barber: Page, name: string, phone
   ).toBeVisible({
     timeout: 15_000,
   });
-  await barber.getByRole("button", { name: "Ya está en la silla" }).click();
-  await barber.getByRole("button", { name: "Terminado" }).click();
+  await barber.getByRole("button", { name: "Empezar corte" }).click();
+  await barber.getByRole("button", { name: "Terminar y cobrar" }).click();
   return barber.getByRole("dialog", { name: "Registrar cobro" });
 }
 
@@ -163,8 +163,15 @@ test.describe("REQ-023 panel de cobro", () => {
       const sheet = await serveUntilFinished(owner, barber, name, `316${uid()}`);
       await sheet.getByRole("button", { name: "Cobrar después" }).click();
       await expect(sheet).toBeHidden();
-      await expect(barber.getByRole("region", { name: "Cobros pendientes" })).toContainText(name);
-      await expectLegiblePendingRow(pendingRow(barber, name), name);
+      // T-169: en Mi fila los pendientes van en una fila que abre la lista
+      await barber.getByRole("button", { name: /^\d+ cobros? pendientes?$/ }).click();
+      const barberList = barber.getByRole("dialog", { name: "Cobros pendientes" });
+      await expect(barberList).toContainText(name);
+      await expectLegiblePendingRow(
+        barberList.getByRole("listitem").filter({ hasText: name }),
+        name,
+      );
+      await barber.keyboard.press("Escape");
 
       await owner.goto("/admin/fila");
       const ownerRow = pendingRow(owner, name);
