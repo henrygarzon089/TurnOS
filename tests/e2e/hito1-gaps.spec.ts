@@ -94,8 +94,12 @@ test.describe("Hito 1 · criterios de interfaz", () => {
     await loginAsOwner(page);
     await page.goto("/admin/fila");
     await expect(page.getByRole("heading", { name: "Fila" })).toBeVisible();
+    // REQ-078.24: el estado va en el encabezado de cada carril (escritorio) o en "No están hoy"
+    await page.setViewportSize({ width: 1280, height: 900 });
     for (const b of SEED.barbers) {
-      await expect(page.getByRole("button", { name: new RegExp(`^${b.name} ·`) })).toBeVisible();
+      const lane = page.getByRole("region", { name: `Carril de ${b.name}` });
+      const absent = page.getByRole("button", { name: `Marcar a ${b.name} presente` });
+      await expect(lane.or(absent)).toBeVisible();
     }
     // REQ-012.5: el dueño puede operar también como barbero cuando tiene silla; en el seed no la
     // tiene, así que /app/fila lo redirige a la fila del negocio.

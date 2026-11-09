@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { CheckoutSheet } from "@/components/cash/CheckoutSheet";
 import { CourtesyLine } from "@/components/queue/CourtesyLine";
 import { MemberBadge } from "@/components/queue/MemberBadge";
@@ -8,11 +8,12 @@ import { AppointmentBadge, TodayAppointments } from "@/components/queue/TodayApp
 import { Button } from "@/components/ui/Button";
 import { ConnectionBanner, LastUpdated } from "@/components/ui/ConnectionBanner";
 import { FlashRow } from "@/components/ui/FlashRow";
+import { Icon } from "@/components/ui/Icon";
 import { Sheet } from "@/components/ui/Sheet";
-import { StatusChip } from "@/components/ui/StatusChip";
 import { setBarberPresent } from "@/lib/actions/admin";
 import {
   addManualTicket,
+  callNextFor,
   callTicket,
   cancelTicket,
   finishService,
@@ -29,8 +30,17 @@ import {
   type OwnerQueueView,
   type QueueTicket,
 } from "@/lib/actions/queue";
+import {
+  buildLanes,
+  FREE_LANE,
+  laneNow,
+  laneOf,
+  type Lane,
+  type LaneNowTone,
+} from "@/lib/domain/owner-queue";
 import { maskPhone } from "@/lib/domain/phone";
 import { minutesBetween } from "@/lib/domain/time";
+import { shortName } from "@/lib/domain/today";
 import { withRetry } from "@/lib/net/retry";
 import { useQueueSubscription } from "@/lib/realtime/use-queue-subscription";
 
@@ -40,9 +50,25 @@ const STATUS = {
   paused: "En pausa",
   off: "No está",
 } as const;
-/** Carril de "el que esté libre" (tablero Dueno-Fila). */
-const FREE = "free";
 
+/** Bloque fijo de 40 px bajo el encabezado del carril (tablero Dueno-Fila). */
+const TONE: Record<LaneNowTone, string> = {
+  serving: "bg-surface text-ink",
+  called: "bg-accent-soft text-danger font-semibold",
+  paused: "bg-warn-soft text-warn",
+  free: "bg-ok-soft text-ok",
+  off: "bg-surface text-muted",
+};
+
+type Run = (a: () => Promise<ActionResult>) => void;
+
+/**
+ * REQ-012 fila del dueño con la estructura del tablero Dueno-Fila (REQ-078.24, design §22.7).
+ * Escritorio: un carril de igual ancho por barbero presente y "El primero libre", cada uno con su
+ * estado en el encabezado, el bloque fijo de lo que pasa ahora y los turnos en espera con "⋯".
+ * Celular: pestañas Todos / <barbero> N sobre una sola lista (los carriles con `display: contents`
+ * y `order`), con "Agregar cliente" o "Llamar al siguiente de <barbero>" fijo abajo.
+ */
 export function OwnerQueue({
   initial,
   top,
@@ -56,8 +82,10 @@ export function OwnerQueue({
   const [busy, setBusy] = useState(false);
   /** REQ-023.6: el dueño cobra cualquier turno pendiente (REQ-023.7). */
   const [checkout, setCheckout] = useState<string | null>(null);
-  const [openTicket, setOpenTicket] = useState<string | null>(null);
+  const [pendingOpen, setPendingOpen] = useState(false);
   const [manual, setManual] = useState(false);
+  /** Pestaña del celular: "all" o el id del barbero. */
+  const [tab, setTab] = useState<string>("all");
   /** REQ-078.3: cancelar un turno y cerrar la fila se confirman en una hoja. */
   const [cancelling, setCancelling] = useState<QueueTicket | null>(null);
   const [closingQueue, setClosingQueue] = useState(false);
@@ -85,7 +113,7 @@ export function OwnerQueue({
   }, []);
   const { online, lastUpdated } = useQueueSubscription(view.business.id, reload);
 
-  function run(action: () => Promise<ActionResult>) {
+  const run: Run = (action) => {
     setError(null);
     setBusy(true);
     startTransition(async () => {
@@ -96,41 +124,57 @@ export function OwnerQueue({
         setError("No se pudo guardar. Revisa tu conexión.");
       } finally {
         setBusy(false);
-        setOpenTicket(null);
         await reload();
       }
     });
-  }
+  };
+  const presence = (barberId: string, present: boolean) =>
+    run(() =>
+      setBarberPresent(barberId, present).then((r) =>
+        r?.error ? { ok: false, error: r.error } : { ok: true },
+      ),
+    );
 
   const now = new Date();
   const waiting = view.active.filter((t) => t.status === "waiting");
   const activeBarbers = view.barbers.filter((b) => b.isActive);
-  const laneOf = (t: QueueTicket) => t.assignedBarberId ?? t.preferredBarberId ?? FREE;
-  // Un carril por barbero presente (o con turnos) y "El primero libre" al final (tablero Dueno-Fila)
-  const lanes = [
-    ...activeBarbers
-      .filter((b) => b.status !== "off" || view.active.some((t) => laneOf(t) === b.id))
-      .map((b) => ({ id: b.id, label: `Carril de ${b.name}`, title: b.name, barber: b })),
-    { id: FREE, label: "El primero libre", title: "El primero libre", barber: null },
-  ];
-  const freeWaiting = waiting.filter((t) => laneOf(t) === FREE).length;
+  const lanes = buildLanes(view.barbers, view.active);
+  const absent = activeBarbers.filter((b) => !lanes.some((l) => l.id === b.id));
+  const waitingIn = (id: string) => waiting.filter((t) => laneOf(t) === id).length;
+  // Si el barbero de la pestaña se fue (sin turnos y ausente), vuelve a "Todos"
+  const tabLane = lanes.find((l) => l.id === tab && l.barber);
+  const current = tabLane ? tabLane.id : "all";
+  const shown = view.active.filter((t) => current === "all" || laneOf(t) === current);
+  const pending = view.pendingPayments.length;
+  const menu = { view, now, busy, run, waiting, onCancel: setCancelling };
 
   return (
     <main data-wide className="pb-24">
       <ConnectionBanner online={online} lastSeen={lastUpdated} />
       {top}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <h1 className="text-[28px] leading-tight font-bold">Fila</h1>
+        <p className="text-muted text-sm">
+          <strong className="text-ink tabular-nums">{waiting.length}</strong> esperando ·{" "}
+          <strong className="text-ink tabular-nums">{waitingIn(FREE_LANE)}</strong> con &quot;el
+          primero libre&quot;
+        </p>
         <span
           className={`rounded-xs px-2 py-0.5 text-sm font-semibold ${view.business.isOpen ? "text-ok bg-ok-soft" : "text-danger bg-accent-soft"}`}
         >
           {view.business.isOpen ? "Abierta" : "Cerrada"}
         </span>
-        <p className="text-muted w-full text-sm">
-          <strong className="text-ink tabular-nums">{waiting.length}</strong> esperando ·{" "}
-          <strong className="text-ink tabular-nums">{freeWaiting}</strong> con &quot;el primero
-          libre&quot;
-        </p>
+        <div className="ml-auto hidden flex-wrap gap-2 lg:flex">
+          <PageActions view={view} busy={busy} run={run} onClose={() => setClosingQueue(true)} />
+          <button
+            type="button"
+            className="btn-primary w-auto px-5"
+            disabled={busy}
+            onClick={() => setManual(true)}
+          >
+            Agregar cliente
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -142,28 +186,86 @@ export function OwnerQueue({
         </p>
       )}
 
-      <section className="mt-3" aria-label="Barberos">
-        <div className="flex flex-wrap gap-2">
-          {activeBarbers.map((b) => (
+      {/* REQ-078.24: una sola fila que abre la lista; no empuja los carriles */}
+      {pending > 0 && (
+        <button
+          type="button"
+          className="border-warn bg-warn-soft text-ink mt-3 flex min-h-[60px] w-full items-center justify-between gap-3 rounded-md border px-4 text-left font-semibold"
+          onClick={() => setPendingOpen(true)}
+        >
+          <span>
+            <span className="tabular-nums">{pending}</span>{" "}
+            {pending === 1 ? "cobro pendiente" : "cobros pendientes"}
+          </span>
+          <Icon name="next" className="size-5 shrink-0" />
+        </button>
+      )}
+
+      <div
+        role="tablist"
+        aria-label="Barberos"
+        className="border-line mt-3 flex [scrollbar-width:none] overflow-x-auto border-b lg:hidden"
+      >
+        {[{ id: "all", label: "Todos" }, ...lanes.filter((l) => l.barber)].map((l) => {
+          const label = "title" in l ? `${l.title} ${waitingIn(l.id)}` : l.label;
+          const selected = current === l.id;
+          return (
+            <button
+              key={l.id}
+              type="button"
+              role="tab"
+              aria-selected={selected}
+              onClick={() => setTab(l.id)}
+              className={`min-h-12 shrink-0 px-3 text-sm whitespace-nowrap ${selected ? "border-brand text-ink border-b-2 font-bold" : "text-muted font-medium"}`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
+      <section className="mt-3 lg:mt-4" aria-label="Turnos activos">
+        {shown.length === 0 && (
+          <p className="text-muted py-4 lg:hidden">
+            No hay turnos activos. Los que lleguen por el QR salen aquí.
+          </p>
+        )}
+        <div
+          className={`max-lg:border-line max-lg:bg-card flex flex-col max-lg:overflow-visible max-lg:rounded-md max-lg:border ${shown.length === 0 && current === "all" ? "max-lg:hidden" : ""} lg:grid lg:grid-cols-[repeat(var(--lanes),minmax(0,1fr))] lg:gap-3`}
+          style={{ "--lanes": lanes.length } as React.CSSProperties}
+        >
+          {lanes.map((lane) => (
+            <LaneColumn
+              key={lane.id}
+              lane={lane}
+              tab={current}
+              tickets={view.active.filter((t) => laneOf(t) === lane.id)}
+              fresh={fresh}
+              allBarbers={activeBarbers}
+              presence={presence}
+              {...menu}
+            />
+          ))}
+        </div>
+      </section>
+
+      {absent.length > 0 && (
+        <p className="text-muted mt-3 flex flex-wrap items-center gap-x-1 text-sm">
+          No están hoy:
+          {absent.map((b) => (
             <button
               key={b.id}
               type="button"
               disabled={busy}
-              onClick={() =>
-                run(() =>
-                  setBarberPresent(b.id, b.status === "off").then((r) =>
-                    r?.error ? { ok: false, error: r.error } : { ok: true },
-                  ),
-                )
-              }
-              className={`min-h-12 rounded-sm border px-3 text-sm font-semibold ${b.status === "off" ? "border-line text-muted bg-card" : b.status === "paused" ? "border-warn bg-warn-soft text-warn" : b.status === "busy" ? "border-brand bg-brand-soft text-ink" : "border-ok bg-ok-soft text-ok"}`}
-              title="Tocar para marcar presente / ausente"
+              onClick={() => presence(b.id, true)}
+              aria-label={`Marcar a ${b.name} presente`}
+              className="text-brand min-h-12 px-1 font-semibold underline underline-offset-4"
             >
-              {b.name} · {STATUS[b.status]}
+              {b.name}
             </button>
           ))}
-        </div>
-      </section>
+        </p>
+      )}
 
       <div className="mt-4">
         <TodayAppointments
@@ -175,82 +277,30 @@ export function OwnerQueue({
         />
       </div>
 
-      <section className="mt-4" aria-label="Turnos activos">
-        {view.active.length === 0 ? (
-          <p className="text-muted">No hay turnos activos. Los que lleguen por el QR salen aquí.</p>
-        ) : (
-          // Celular: una sola lista en el orden de la fila (`order` sobre los carriles con
-          // `display: contents`). Escritorio: un carril por barbero, lado a lado (REQ-078.15).
-          <div
-            className="flex flex-col gap-2 lg:grid lg:grid-cols-[repeat(var(--lanes),minmax(11rem,1fr))] lg:items-start lg:gap-3 lg:overflow-x-auto lg:pb-2"
-            style={{ "--lanes": lanes.length } as React.CSSProperties}
-          >
-            {lanes.map((lane) => {
-              const tickets = view.active.filter((t) => laneOf(t) === lane.id);
-              const b = lane.barber;
-              return (
-                <section
-                  key={lane.id}
-                  aria-label={lane.label}
-                  className={`lg:bg-card max-lg:contents lg:min-h-40 lg:rounded-md lg:border ${lane.id === FREE ? "lg:border-line-strong lg:border-dashed" : tickets.some((t) => t.status === "called") ? "lg:border-accent" : "lg:border-line"}`}
-                >
-                  <header className="border-line hidden border-b px-3 py-2 lg:block">
-                    <p className="truncate font-bold">{lane.title}</p>
-                    <p className="text-muted text-sm">
-                      {b ? `${STATUS[b.status]} · ` : "Va con quien se desocupe · "}
-                      <span className="tabular-nums">
-                        {tickets.filter((t) => t.status === "waiting").length}
-                      </span>{" "}
-                      en fila
-                    </p>
-                  </header>
-                  <ol className="max-lg:contents lg:flex lg:flex-col">
-                    {tickets.map((t) => (
-                      <TicketRow
-                        key={t.id}
-                        ticket={t}
-                        order={view.active.indexOf(t)}
-                        flash={fresh.has(t.id)}
-                        open={openTicket === t.id}
-                        onToggle={() => setOpenTicket(openTicket === t.id ? null : t.id)}
-                        view={view}
-                        now={now}
-                        busy={busy}
-                        run={run}
-                        waiting={waiting}
-                        barbers={canDo(view, t.serviceId, activeBarbers)}
-                        onCancel={() => setCancelling(t)}
-                      />
-                    ))}
-                    {tickets.length === 0 && (
-                      <li className="text-muted hidden px-3 py-3 text-sm lg:block">Libre</li>
-                    )}
-                  </ol>
-                </section>
-              );
-            })}
-          </div>
-        )}
-      </section>
+      <div className="mt-4 hidden lg:block">
+        <LastUpdated at={lastUpdated} />
+      </div>
 
-      {view.pendingPayments.length > 0 && (
-        <section className="mt-4" aria-label="Cobros pendientes">
-          <h2 className="text-muted text-xs font-semibold tracking-wide uppercase">
-            Cobros pendientes
-          </h2>
-          <ul className="mt-1 flex flex-col gap-2 lg:grid lg:grid-cols-2">
+      {/* Celular: lo que en escritorio va junto al título, al final y en contorno */}
+      <div className="mt-6 flex flex-col gap-2 lg:hidden">
+        <PageActions view={view} busy={busy} run={run} onClose={() => setClosingQueue(true)} />
+      </div>
+
+      <Sheet open={pendingOpen} onClose={() => setPendingOpen(false)} title="Cobros pendientes">
+        <section aria-label="Cobros pendientes">
+          <ul className="divide-line divide-y">
             {view.pendingPayments.map((t) => (
-              <li
-                key={t.id}
-                className="border-warn bg-warn-soft flex items-center justify-between gap-3 rounded-md border p-3 text-sm"
-              >
+              <li key={t.id} className="flex items-center justify-between gap-3 py-2 text-base">
                 <span className="min-w-0 truncate font-semibold">
                   {t.customerName} · {t.serviceName}
                 </span>
                 <button
                   type="button"
                   className="btn-secondary w-auto shrink-0 px-4"
-                  onClick={() => setCheckout(t.id)}
+                  onClick={() => {
+                    setPendingOpen(false);
+                    setCheckout(t.id);
+                  }}
                 >
                   Cobrar
                 </button>
@@ -258,7 +308,7 @@ export function OwnerQueue({
             ))}
           </ul>
         </section>
-      )}
+      </Sheet>
 
       {checkout && (
         <CheckoutSheet
@@ -331,37 +381,28 @@ export function OwnerQueue({
         </div>
       </Sheet>
 
-      {/* Encima de la barra del menú en el celular (REQ-077.1); en escritorio, a la derecha del lateral */}
-      <div className="bg-surface border-line fixed inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] z-10 border-t p-4 lg:bottom-0 lg:left-60">
-        <div className="mx-auto flex max-w-md gap-2 lg:max-w-6xl lg:justify-end">
-          {/* REQ-017.2: cerrada por horario o a mano, el dueño la abre por el resto del día */}
-          {!view.business.isOpen ? (
+      {/* Celular: encima de la barra del menú (REQ-077.1) */}
+      <div className="bg-surface border-line fixed inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] z-10 border-t p-4 lg:hidden">
+        <div className="mx-auto max-w-md">
+          {tabLane?.barber ? (
             <button
               type="button"
-              className="btn-secondary lg:w-auto"
+              className="btn-primary"
               disabled={busy}
-              onClick={() => run(() => setQueueOverride("open"))}
+              onClick={() => run(() => callNextFor(tabLane.id))}
             >
-              Abrir fila hoy
+              Llamar al siguiente de {tabLane.title}
             </button>
           ) : (
             <button
               type="button"
-              className="btn-secondary lg:w-auto"
+              className="btn-primary"
               disabled={busy}
-              onClick={() => setClosingQueue(true)}
+              onClick={() => setManual(true)}
             >
-              Cerrar fila por hoy
+              Agregar cliente
             </button>
           )}
-          <button
-            type="button"
-            className="btn-primary lg:w-auto"
-            disabled={busy}
-            onClick={() => setManual(true)}
-          >
-            Agregar cliente
-          </button>
         </div>
         <LastUpdated at={lastUpdated} />
       </div>
@@ -369,95 +410,263 @@ export function OwnerQueue({
   );
 }
 
-/**
- * Un turno de la fila: número, nombre, estado, servicio y celular enmascarado (REQ-078.6). Tocarlo
- * abre sus acciones debajo. `order` lo deja en su puesto de la fila en el celular.
- */
-function TicketRow({
-  ticket: t,
-  order,
-  flash,
-  open,
-  onToggle,
+/** "Ver pantalla del televisor" y "Cerrar fila por hoy" / "Abrir fila hoy", en contorno. */
+function PageActions({
   view,
-  now,
   busy,
   run,
-  waiting,
-  barbers,
-  onCancel,
+  onClose,
 }: {
-  ticket: QueueTicket;
-  order: number;
-  flash: boolean;
-  open: boolean;
-  onToggle: () => void;
+  view: OwnerQueueView;
+  busy: boolean;
+  run: Run;
+  onClose: () => void;
+}) {
+  return (
+    <>
+      <a
+        href={`/${view.business.slug}/pantalla`}
+        target="_blank"
+        rel="noreferrer"
+        className="btn-secondary lg:w-auto lg:px-4"
+      >
+        Ver pantalla del televisor
+      </a>
+      {/* REQ-017.2: cerrada por horario o a mano, el dueño la abre por el resto del día */}
+      {!view.business.isOpen ? (
+        <button
+          type="button"
+          className="btn-secondary lg:w-auto lg:px-4"
+          disabled={busy}
+          onClick={() => run(() => setQueueOverride("open"))}
+        >
+          Abrir fila hoy
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="btn-secondary lg:w-auto lg:px-4"
+          disabled={busy}
+          onClick={onClose}
+        >
+          Cerrar fila por hoy
+        </button>
+      )}
+    </>
+  );
+}
+
+type MenuProps = {
   view: OwnerQueueView;
   now: Date;
   busy: boolean;
-  run: (a: () => Promise<ActionResult>) => void;
+  run: Run;
   waiting: QueueTicket[];
-  barbers: OwnerQueueView["barbers"];
-  onCancel: () => void;
+  /** Abre la hoja de confirmación (REQ-078.3). */
+  onCancel: (t: QueueTicket) => void;
+};
+
+/**
+ * Un carril. En escritorio es una columna (`min-width: 0` para que todas midan lo mismo y ningún
+ * nombre se parta, REQ-078.24); en el celular sus filas se mezclan en la lista con `order`.
+ */
+function LaneColumn({
+  lane,
+  tab,
+  tickets,
+  fresh,
+  allBarbers,
+  presence,
+  ...menu
+}: MenuProps & {
+  lane: Lane;
+  tab: string;
+  tickets: QueueTicket[];
+  fresh: ReadonlySet<string>;
+  allBarbers: OwnerQueueView["barbers"];
+  presence: (barberId: string, present: boolean) => void;
 }) {
-  const barber = view.barbers.find((b) => b.id === (t.assignedBarberId ?? t.preferredBarberId));
+  const b = lane.barber;
+  const free = lane.id === FREE_LANE;
+  const inTab = tab === "all" || tab === lane.id;
+  const now = laneNow(b, tickets, menu.now, allBarbers);
+  const serving = tickets.filter((t) => t.status === "called" || t.status === "in_service");
+  const queued = tickets.filter((t) => t.status === "waiting");
+  const called = serving.some((t) => t.status === "called");
   return (
-    <li
-      style={{ order }}
-      className={`border-line bg-card rounded-md border lg:rounded-none lg:border-0 lg:border-b lg:last:border-b-0 ${t.status === "called" ? "max-lg:border-accent" : ""}`}
+    <section
+      aria-label={free ? "El primero libre" : `Carril de ${lane.title}`}
+      className={`${inTab ? "max-lg:contents" : "max-lg:hidden"} lg:bg-card lg:flex lg:min-h-80 lg:min-w-0 lg:flex-col lg:rounded-md lg:border ${free ? "lg:border-line-strong lg:border-dashed" : called ? "lg:border-accent" : "lg:border-line"}`}
     >
-      <FlashRow flash={flash} className="p-3">
-        <button
-          type="button"
-          className="flex min-h-12 w-full items-start justify-between gap-2 text-left"
-          onClick={onToggle}
-          aria-expanded={open}
-        >
-          <div className="min-w-0">
-            <p className="font-semibold break-words">
-              <span className="tabular-nums">{t.displayNumber}</span>. {t.customerName}
-            </p>
-            <AppointmentBadge scheduledAt={t.scheduledAt} />
-            {t.isMember && <MemberBadge />}
-            <p className="text-muted text-sm">
-              {t.serviceName} ·{" "}
-              {t.assignedBarberId
-                ? `con ${barber?.name}`
-                : t.preferredBarberId
-                  ? `prefiere ${barber?.name}`
-                  : "el que esté libre"}{" "}
-              · hace {minutesBetween(new Date(t.createdAt), now)}&apos;
-              {t.customerPhone && (
-                <>
-                  {" "}
-                  · <span className="tabular-nums">{maskPhone(t.customerPhone)}</span>
-                </>
+      <header className="hidden min-h-14 items-center gap-1 py-1 pr-1 pl-3 lg:flex">
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-bold">{lane.title}</p>
+          <p className="text-muted truncate text-xs">
+            {b ? (
+              <>
+                <span className="tabular-nums">{queued.length}</span> en fila
+                {b.status === "paused" && (
+                  <span className="text-warn font-semibold"> · en pausa</span>
+                )}
+                {b.status === "off" && " · no está hoy"}
+              </>
+            ) : (
+              "Va con quien se desocupe"
+            )}
+          </p>
+        </div>
+        {b && (
+          <Kebab label={`Acciones de ${b.name}`}>
+            {(close) => (
+              <>
+                {serving.map((t) => (
+                  <TicketActions key={t.id} ticket={t} close={close} withTitle {...menu} />
+                ))}
+                <MenuItem
+                  disabled={menu.busy}
+                  onClick={() => {
+                    close();
+                    presence(b.id, b.status === "off");
+                  }}
+                >
+                  {b.status === "off" ? `Marcar a ${b.name} presente` : `${b.name} no vino hoy`}
+                </MenuItem>
+              </>
+            )}
+          </Kebab>
+        )}
+      </header>
+      <ol className="max-lg:contents lg:flex lg:flex-col">
+        {now.map((line, i) => {
+          const t = serving[i];
+          // Celular: en "Todos" solo el llamado, arriba en rojo suave; en la pestaña, siempre
+          const mobile = tab === lane.id || line.tone === "called" ? "" : "max-lg:hidden";
+          return (
+            <li
+              key={t?.id ?? line.text}
+              style={{ order: -1 }}
+              className={`border-line flex items-center gap-2 border-b text-sm max-lg:min-h-12 max-lg:pl-4 lg:h-10 lg:px-3 ${TONE[line.tone]} ${mobile}`}
+            >
+              <span className="min-w-0 flex-1 truncate">{line.text}</span>
+              {t && (
+                <span className="lg:hidden">
+                  <Kebab label={`Acciones para ${t.customerName}`}>
+                    {(close) => <TicketActions ticket={t} close={close} {...menu} />}
+                  </Kebab>
+                </span>
               )}
-            </p>
-          </div>
-          <StatusChip status={t.status} />
-        </button>
-        {t.courtesyName && (
-          <CourtesyLine
-            name={t.courtesyName}
-            served={t.courtesyServed}
-            disabled={busy}
-            onServe={() => run(() => markCourtesyServed(t.id))}
-          />
-        )}
-        {open && (
-          <TicketMenu
-            ticket={t}
-            waiting={waiting}
-            barbers={barbers}
-            allBarbers={view.barbers}
-            busy={busy}
-            run={run}
-            onCancel={onCancel}
-          />
-        )}
-      </FlashRow>
-    </li>
+            </li>
+          );
+        })}
+        {queued.map((t) => (
+          <li
+            key={t.id}
+            style={{ order: menu.view.active.indexOf(t) }}
+            className="border-line border-b lg:last:border-b-0"
+          >
+            <FlashRow
+              flash={fresh.has(t.id)}
+              className="flex items-center gap-2 pl-4 max-lg:min-h-[60px] lg:h-[52px] lg:gap-1.5 lg:pl-3"
+            >
+              <span className="shrink-0 font-bold tabular-nums">{t.displayNumber}</span>
+              {/* Escritorio: nombre corto como el tablero ("Ana M."); celular: completo */}
+              <span className="min-w-0 flex-1 truncate" title={t.customerName}>
+                <span className="lg:hidden">{t.customerName}</span>
+                <span className="hidden lg:inline">{shortName(t.customerName)}</span>
+              </span>
+              {t.scheduledAt ? (
+                <span className="shrink-0">
+                  <AppointmentBadge scheduledAt={t.scheduledAt} />
+                </span>
+              ) : (
+                <span className="text-muted max-w-[40%] shrink-0 truncate text-sm lg:hidden">
+                  {t.serviceName}
+                </span>
+              )}
+              {t.courtesyName && !t.courtesyServed && (
+                <span aria-label={`Cortesía: ${t.courtesyName}`} className="shrink-0">
+                  🥤
+                </span>
+              )}
+              <Kebab label={`Acciones para ${t.customerName}`}>
+                {(close) => <TicketActions ticket={t} close={close} {...menu} />}
+              </Kebab>
+            </FlashRow>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+/** "⋯": menú flotante encima de la fila; no la empuja (tablero Dueno-Fila). */
+function Kebab({
+  label,
+  children,
+}: {
+  label: string;
+  children: (close: () => void) => React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const outside = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("pointerdown", outside);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("pointerdown", outside);
+      document.removeEventListener("keydown", esc);
+    };
+  }, [open]);
+  return (
+    <div ref={ref} className="relative shrink-0">
+      <button
+        type="button"
+        aria-label={label}
+        aria-expanded={open}
+        aria-haspopup="true"
+        onClick={() => setOpen(!open)}
+        className={`text-muted grid h-12 w-12 place-items-center rounded-sm lg:w-8 ${open ? "bg-brand-soft text-ink" : ""}`}
+      >
+        <Icon name="more" className="size-6" />
+      </button>
+      {open && (
+        <div
+          role="group"
+          aria-label={label}
+          className="bg-card border-line shadow-overlay text-ink absolute top-full right-0 z-30 mt-1 flex w-72 max-w-[calc(100vw-2rem)] flex-col rounded-md border p-1 text-base font-normal"
+        >
+          {children(() => setOpen(false))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MenuItem({
+  danger = false,
+  disabled,
+  onClick,
+  children,
+}: {
+  danger?: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      className={`hover:bg-surface flex min-h-12 w-full items-center rounded-sm px-3 text-left disabled:opacity-50 ${danger ? "text-danger font-semibold" : ""}`}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -471,39 +680,71 @@ function canDo<B extends { id: string }>(
   return s ? barbers.filter((b) => s.barberIds.includes(b.id)) : barbers;
 }
 
-function TicketMenu({
+/**
+ * Las acciones que ya existían sobre un turno (REQ-012.2): llamar con, subir/bajar, pasar a otro
+ * barbero, en la silla, no llegó, devolver, terminado y cancelar. Arriba, el detalle del turno con
+ * el celular enmascarado (REQ-078.6) y la bebida de cortesía (REQ-038.5).
+ */
+function TicketActions({
   ticket: t,
-  waiting,
-  barbers,
-  allBarbers,
+  view,
+  now,
   busy,
   run,
+  waiting,
   onCancel,
-}: {
-  ticket: QueueTicket;
-  waiting: QueueTicket[];
-  barbers: OwnerQueueView["barbers"];
-  allBarbers: OwnerQueueView["barbers"];
-  busy: boolean;
-  run: (a: () => Promise<ActionResult>) => void;
-  /** Abre la hoja de confirmación (REQ-078.3). */
-  onCancel: () => void;
-}) {
+  close,
+  withTitle = false,
+}: MenuProps & { ticket: QueueTicket; close: () => void; withTitle?: boolean }) {
+  const activeBarbers = view.barbers.filter((b) => b.isActive);
+  const barbers = canDo(view, t.serviceId, activeBarbers);
   const [callWith, setCallWith] = useState<string>(
     barbers.find((b) => b.status === "available")?.id ?? "",
   );
   const wIndex = waiting.findIndex((w) => w.id === t.id);
+  const barber = view.barbers.find((b) => b.id === (t.assignedBarberId ?? t.preferredBarberId));
+  const act = (a: () => Promise<ActionResult>) => {
+    close();
+    run(a);
+  };
   return (
-    <div
-      className="border-line mt-3 flex flex-col gap-2 border-t pt-3"
-      role="group"
-      aria-label={`Acciones para ${t.customerName}`}
-    >
+    <div className="border-line flex flex-col border-b pb-1 last:border-b-0 last:pb-0">
+      <div className="px-3 py-2 text-sm">
+        {withTitle && (
+          <p className="text-base font-semibold">
+            <span className="tabular-nums">{t.displayNumber}</span> · {t.customerName}
+          </p>
+        )}
+        <p className="text-muted">
+          {t.serviceName} ·{" "}
+          {t.assignedBarberId
+            ? `con ${barber?.name}`
+            : t.preferredBarberId
+              ? `prefiere ${barber?.name}`
+              : "el que esté libre"}{" "}
+          · hace {minutesBetween(new Date(t.createdAt), now)}&apos;
+          {t.customerPhone && (
+            <>
+              {" "}
+              · <span className="tabular-nums">{maskPhone(t.customerPhone)}</span>
+            </>
+          )}
+        </p>
+        {t.isMember && <MemberBadge />}
+        {t.courtesyName && (
+          <CourtesyLine
+            name={t.courtesyName}
+            served={t.courtesyServed}
+            disabled={busy}
+            onServe={() => act(() => markCourtesyServed(t.id))}
+          />
+        )}
+      </div>
       {t.status === "waiting" && (
         <>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 px-1 pb-1">
             <select
-              className="input min-w-0 flex-[1_1_8rem]"
+              className="input min-w-0 flex-1"
               value={callWith}
               onChange={(e) => setCallWith(e.target.value)}
               aria-label="Llamar con"
@@ -519,19 +760,32 @@ function TicketMenu({
             </select>
             <button
               type="button"
-              className="btn-secondary flex-[1_1_5rem] px-4"
+              className="btn-secondary w-auto shrink-0 px-4"
               disabled={busy || !callWith}
-              onClick={() => run(() => callTicket(t.id, callWith))}
+              onClick={() => act(() => callTicket(t.id, callWith))}
             >
               Llamar
             </button>
           </div>
-          <div className="flex gap-2">
+          <MenuItem
+            disabled={busy || wIndex <= 0}
+            onClick={() => act(() => moveTicket(t.id, wIndex >= 2 ? waiting[wIndex - 2].id : null))}
+          >
+            Subir un puesto
+          </MenuItem>
+          <MenuItem
+            disabled={busy || wIndex < 0 || wIndex >= waiting.length - 1}
+            onClick={() => act(() => moveTicket(t.id, waiting[wIndex + 1].id))}
+          >
+            Bajar un puesto
+          </MenuItem>
+          <label className="text-muted flex flex-col gap-1 px-1 py-1 text-sm">
+            <span className="px-2">Pasar a otro barbero</span>
             <select
-              className="input"
-              aria-label="Reasignar a"
+              className="input text-ink"
+              aria-label="Pasar a otro barbero"
               defaultValue={t.preferredBarberId ?? ""}
-              onChange={(e) => run(() => reassignTicket(t.id, e.target.value || null))}
+              onChange={(e) => act(() => reassignTicket(t.id, e.target.value || null))}
               disabled={busy}
             >
               <option value="">El que esté libre</option>
@@ -543,74 +797,41 @@ function TicketMenu({
               {/* REQ-035.12: el preferido que ya tenía se ve aunque ya no haga el servicio */}
               {t.preferredBarberId && !barbers.some((b) => b.id === t.preferredBarberId) && (
                 <option value={t.preferredBarberId} disabled>
-                  {allBarbers.find((b) => b.id === t.preferredBarberId)?.name ?? "Barbero"}
+                  {view.barbers.find((b) => b.id === t.preferredBarberId)?.name ?? "Barbero"}
                 </option>
               )}
             </select>
-          </div>
-          <div className="flex flex-wrap gap-2 [&>*]:flex-[1_1_6rem]">
-            <button
-              type="button"
-              className="btn-secondary"
-              disabled={busy || wIndex <= 0}
-              onClick={() =>
-                run(() => moveTicket(t.id, wIndex >= 2 ? waiting[wIndex - 2].id : null))
-              }
-            >
-              Subir
-            </button>
-            <button
-              type="button"
-              className="btn-secondary"
-              disabled={busy || wIndex < 0 || wIndex >= waiting.length - 1}
-              onClick={() => run(() => moveTicket(t.id, waiting[wIndex + 1].id))}
-            >
-              Bajar
-            </button>
-          </div>
+          </label>
         </>
       )}
       {t.status === "called" && (
-        <div className="flex flex-wrap gap-2 [&>*]:flex-[1_1_8rem]">
-          <button
-            type="button"
-            className="btn-secondary"
-            disabled={busy}
-            onClick={() => run(() => startService(t.id))}
-          >
+        <>
+          <MenuItem disabled={busy} onClick={() => act(() => startService(t.id))}>
             En la silla
-          </button>
-          <button
-            type="button"
-            className="btn-secondary"
-            disabled={busy}
-            onClick={() => run(() => markNoShow(t.id))}
-          >
+          </MenuItem>
+          <MenuItem disabled={busy} onClick={() => act(() => markNoShow(t.id))}>
             No llegó
-          </button>
-          <button
-            type="button"
-            className="btn-secondary"
-            disabled={busy}
-            onClick={() => run(() => uncallTicket(t.id))}
-          >
+          </MenuItem>
+          <MenuItem disabled={busy} onClick={() => act(() => uncallTicket(t.id))}>
             Devolver a la fila
-          </button>
-        </div>
+          </MenuItem>
+        </>
       )}
       {t.status === "in_service" && (
-        <button
-          type="button"
-          className="btn-secondary"
-          disabled={busy}
-          onClick={() => run(() => finishService(t.id))}
-        >
+        <MenuItem disabled={busy} onClick={() => act(() => finishService(t.id))}>
           Terminado
-        </button>
+        </MenuItem>
       )}
-      <button type="button" className="btn-danger" disabled={busy} onClick={onCancel}>
-        Cancelar turno
-      </button>
+      <MenuItem
+        danger
+        disabled={busy}
+        onClick={() => {
+          close();
+          onCancel(t);
+        }}
+      >
+        Cancelar turno…
+      </MenuItem>
     </div>
   );
 }
@@ -626,7 +847,7 @@ function ManualTicketSheet({
   view: OwnerQueueView;
   busy: boolean;
   onClose: () => void;
-  run: (a: () => Promise<ActionResult>) => void;
+  run: Run;
 }) {
   return (
     <Sheet open={open} onClose={onClose} title="Agregar cliente a la fila">
@@ -645,7 +866,7 @@ function ManualTicketForm({
   view: OwnerQueueView;
   busy: boolean;
   onClose: () => void;
-  run: (a: () => Promise<ActionResult>) => void;
+  run: Run;
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { CashDay } from "@/components/cash/CashDay";
+import { CashDayPicker } from "@/components/cash/CashDayPicker";
 import { getCashDay } from "@/lib/actions/cash";
 import { getStaffSession } from "@/lib/auth/session";
 import { businessDayBogota, formatDayCO } from "@/lib/domain/time";
@@ -26,13 +27,21 @@ export default async function PastCashPage({ params }: { params: Promise<{ fecha
         isToday={false}
         heading={
           <>
+            <h1 className="text-[28px] leading-tight font-bold">Caja del {formatDayCO(fecha)}</h1>
+            {/* REQ-078.25: la fecha y "Cierres anteriores" junto al título */}
+            <CashDayPicker day={fecha} today={businessDayBogota()} />
+            <Link
+              href="/admin/caja#cierres"
+              className="text-brand flex min-h-12 items-center font-semibold underline underline-offset-4"
+            >
+              Cierres anteriores
+            </Link>
             <Link
               href="/admin/caja"
-              className="text-brand flex min-h-12 items-center text-base font-semibold"
+              className="text-brand flex min-h-12 items-center font-semibold underline underline-offset-4"
             >
-              ← Caja de hoy
+              Caja de hoy
             </Link>
-            <h1 className="text-[28px] leading-tight font-bold">Caja del {formatDayCO(fecha)}</h1>
           </>
         }
       />

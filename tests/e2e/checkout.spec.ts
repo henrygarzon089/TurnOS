@@ -167,6 +167,8 @@ test.describe("REQ-023 panel de cobro", () => {
       await expectLegiblePendingRow(pendingRow(barber, name), name);
 
       await owner.goto("/admin/fila");
+      // REQ-078.24: una sola fila "N cobros pendientes" abre la lista
+      await owner.getByRole("button", { name: /cobros? pendientes?$/ }).click();
       const ownerRow = pendingRow(owner, name);
       await expect(ownerRow).toBeVisible({ timeout: 15_000 });
       await expectLegiblePendingRow(ownerRow, name);

@@ -65,7 +65,8 @@ test.describe("REQ-027.1 / REQ-026.1 caja de hoy", () => {
     await dialog.getByRole("button", { name: "Anular venta" }).click();
     await expect(dialog).toBeHidden();
     await expect(row).toContainText("Anulada: Prueba E2E");
-    await expect(row.locator(".line-through").first()).toBeVisible();
+    // La fila trae la celda del celular y las de escritorio (REQ-078.25): vale la que se ve
+    await expect(row.locator(".line-through:visible").first()).toBeVisible();
     await expect(page.getByTestId("method-nequi")).toHaveText(cop(nequi0));
     await expect(page.getByTestId("cash-total")).toHaveText(cop(total0));
   });

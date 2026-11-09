@@ -2274,13 +2274,37 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: escritorio, celular y tablet como Dueno-Hoy y Dueno-Hoy-Movil (captura en el PR);
   "Para recordar" con personas y "Escribirle"; "en vivo · <hora>".
 
-### [ ] T-174 · Dueño: Fila y Caja como el tablero
+### [x] T-174 · Dueño: Fila y Caja como el tablero
 - REQ: REQ-078.24, REQ-078.25, REQ-078.16
 - Archivos: `src/components/queue/OwnerQueue.tsx`, `src/components/cash/*` del dueño,
   `src/app/(staff)/admin/{fila,caja}/**`, `tests/e2e/visual-dueno-fila-caja.spec.ts`.
 - Terminado: carriles de igual ancho sin nombres partidos (prueba con un nombre largo en "El primero
   libre"); sin chips de presentes; "N cobros pendientes" en una fila; menú "⋯"; caja con fecha,
   "Cierres anteriores", tabla con buscador y filtros (prueba unitaria del filtro).
+- Hecho (2026-11-09). Lógica pura en `src/lib/domain/owner-queue.ts` (carriles y bloque de 40 px) y
+  `src/lib/domain/cash-sales.ts` (filtros y fecha corta), con pruebas unitarias; E2E en
+  `visual-dueno-fila-caja.spec.ts`; capturas en `docs/diseno/capturas/T-174`. Notas y desvíos
+  (ADR-052: lo que la app no tiene no se inventa; lo que hace y el tablero no muestra se conserva):
+  - El llamado y el que está en la silla salen del carril y van al bloque fijo de 40 px. Sus
+    acciones (En la silla, No llegó, Devolver a la fila, Terminado, Cancelar) están en el "⋯" del
+    encabezado del carril en escritorio (un botón de 48 px no cabe en 40 px) y en el "⋯" de la línea
+    roja en el celular.
+  - Presentes: sin la hilera de chips, el dueño marca a un barbero ausente con "No están hoy:
+    <nombre>" debajo de los carriles, y "<barbero> no vino hoy" en el "⋯" del encabezado (también
+    sigue en Barberos, REQ-016.4).
+  - En escritorio la fila muestra el nombre corto ("Ana M.") como el tablero; en el celular, el
+    nombre completo. El detalle del turno (servicio, preferencia, minutos, celular enmascarado,
+    membresía, bebida) pasa al "⋯"; en la fila queda el 🥤 si la bebida no se ha servido.
+  - "Llamar al siguiente de <barbero>" usa `call_next` con el barbero (acción nueva
+    `callNextFor`, solo dueño); sin migración.
+  - No se construye: "Silla N", "nuevo", "Saltar (pasa de primero)" como acción aparte (siguen
+    Subir/Bajar) ni arrastrar. La cabecera azul por pantalla en el celular queda para T-172.
+  - Caja: "Cierres anteriores" lleva a la lista que ya estaba al final (ahora siempre visible, con
+    "Todavía no hay cierres anteriores."); el selector de fecha es un `input type=date` invisible
+    bajo el texto "lun 9 nov. ▾". La franja suma "Transf. y tarjeta" y agrega "Vitrina" (productos).
+    En la tabla, la fila del celular es una celda propia (una sola fila por venta en el DOM); "Ver
+    más" solo en escritorio. "Por barbero" conserva "vendido · negocio" y la línea de productos bajo
+    el nombre (oculta en 768 px) y la nota dice que la comisión de productos va aparte.
 
 ### [ ] T-175 · Dueño: Semana, Citas y Clientes como el tablero
 - REQ: REQ-078.26, REQ-078.27, REQ-078.16
