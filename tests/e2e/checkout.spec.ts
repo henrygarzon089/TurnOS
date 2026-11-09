@@ -75,7 +75,8 @@ async function expectLegiblePendingRow(row: Locator, name: string) {
   const rowBox = (await row.boundingBox())!;
   expect(labelBox.width).toBeGreaterThan(100);
   expect(buttonBox.x + buttonBox.width).toBeLessThanOrEqual(rowBox.x + rowBox.width);
-  expect(buttonBox.height).toBeGreaterThanOrEqual(48);
+  // Redondeo: el iPhone mide a veces 47,99998 px un botón de 48 px.
+  expect(Math.round(buttonBox.height)).toBeGreaterThanOrEqual(48);
 }
 
 /** El dueño agrega el turno para Juan y lo llama; Juan lo pone en la silla y toca "Terminado". */

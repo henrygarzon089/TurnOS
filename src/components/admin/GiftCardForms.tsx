@@ -217,6 +217,23 @@ const STATUS_TONE: Record<GiftCardRow["status"], "ok" | "warn" | "muted"> = {
   voided: "muted",
 };
 
+/** Estado de la tarjeta, o "WhatsApp" para enviarla si está vigente y la lista es completa. */
+function GiftCardStatus({
+  card,
+  view,
+  limit,
+}: {
+  card: GiftCardRow;
+  view: GiftCardsView;
+  limit?: number;
+}) {
+  return card.status === "active" && !limit ? (
+    <SendButton card={card} view={view} compact />
+  ) : (
+    <Tag tone={STATUS_TONE[card.status]}>{giftCardStatusLabel(card.status)}</Tag>
+  );
+}
+
 /**
  * REQ-059.3: tarjetas con saldo y estado, y "Saldo por usar" de las vigentes. Quien compra sale
  * con el celular enmascarado (REQ-078.6); el enlace de WhatsApp sí lleva el número. REQ-078.33
@@ -247,7 +264,7 @@ export function GiftCardList({ view, limit }: { view: GiftCardsView; limit?: num
             <th className="px-3 py-2 font-bold">Para</th>
             <th className="hidden px-3 py-2 text-right font-bold sm:table-cell">Valor</th>
             <th className="px-3 py-2 text-right font-bold">Saldo</th>
-            <th className={`px-4 py-2 font-bold ${limit ? "max-sm:hidden" : ""}`}>
+            <th className="px-4 py-2 font-bold max-sm:hidden">
               <span className="sr-only">Estado</span>
             </th>
           </tr>
@@ -262,13 +279,11 @@ export function GiftCardList({ view, limit }: { view: GiftCardsView; limit?: num
                 </td>
                 <td className="min-w-0 px-3 py-2">
                   <p className={voided ? "line-through" : ""}>{c.recipientName ?? c.buyerName}</p>
-                  {/* En el resumen de Membresías a 360 px el estado va bajo el nombre: con su
-                      columna la tabla no cabía (REQ-078.15). */}
-                  {limit && (
-                    <span className="mt-1 inline-block sm:hidden">
-                      <Tag tone={STATUS_TONE[c.status]}>{giftCardStatusLabel(c.status)}</Tag>
-                    </span>
-                  )}
+                  {/* En el celular el estado (o "WhatsApp") va bajo el nombre: con su propia
+                      columna la tabla no cabía a 360 px (REQ-078.15). */}
+                  <span className="mt-1 inline-block sm:hidden">
+                    <GiftCardStatus card={c} view={view} limit={limit} />
+                  </span>
                   {!limit && (
                     <p className="text-muted text-xs">
                       {c.buyerName} · {maskPhone(c.buyerPhone)} · vence el{" "}
@@ -282,12 +297,8 @@ export function GiftCardList({ view, limit }: { view: GiftCardsView; limit?: num
                   {formatCOP(c.amount)}
                 </td>
                 <td className="px-3 py-2 text-right">{voided ? "—" : formatCOP(c.balance)}</td>
-                <td className={`px-3 py-1 text-right sm:px-4 ${limit ? "max-sm:hidden" : ""}`}>
-                  {c.status === "active" && !limit ? (
-                    <SendButton card={c} view={view} compact />
-                  ) : (
-                    <Tag tone={STATUS_TONE[c.status]}>{giftCardStatusLabel(c.status)}</Tag>
-                  )}
+                <td className="px-3 py-1 text-right max-sm:hidden sm:px-4">
+                  <GiftCardStatus card={c} view={view} limit={limit} />
                 </td>
               </tr>
             );
