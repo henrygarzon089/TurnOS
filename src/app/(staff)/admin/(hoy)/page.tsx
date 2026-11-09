@@ -25,7 +25,7 @@ export default async function TodayPage() {
   const session = (await getStaffSession())!;
   const day = businessDayBogota();
   return (
-    <main data-wide className="pb-6">
+    <main className="pb-6">
       <LiveRefresh businessId={session.business.id} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-baseline gap-3">
