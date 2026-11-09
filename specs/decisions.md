@@ -757,6 +757,20 @@
   `requirements.md` §6). La aprobación del hito será ADR-044 (reservado). Número: ADR-043 es el primero libre
   después de ADR-042 (Hito 13).
 
+## ADR-044 · Aprobación del Hito 14 (rendimiento percibido y medición)
+- Estado: **aceptada** (Henry, 2026-11-09)
+- Contexto: REQ-075 implementado en T-130…T-133 (PRs #110, #112, #113 y #131): esqueletos de carga en
+  `/[slug]`, `/t/[token]`, `/app/fila`, `/admin/fila` y `/admin/caja` (la sesión del personal se
+  espera dentro de un `Suspense`), y Speed Insights anónimo con `redactVitalsUrl`. `pnpm trace
+  --hito=14` sin huecos; la E2E `loading.spec.ts` en verde en Pixel 7 y iPhone 13. Región verificada
+  (T-133): Supabase en `us-east-1` y las funciones de Vercel en `iad1`, misma zona. Sin migraciones.
+- Decisión: Henry aprueba el Hito 14 con sus palabras: "dale doy authorizacion para poder avanzar
+  realiza todo lo que sea necesario para avanzar".
+- Consecuencias: T-133 cerrada. Queda como operación de Henry, no como condición del hito: activar
+  Speed Insights en el proyecto de Vercel, revisar la cuota de su plan y mirar los datos de `/[slug]`
+  y `/app/fila` (NFR-001) después de unos días de uso. Número: ADR-044 (estaba reservado desde
+  ADR-043).
+
 ## ADR-045 · Daviplata como medio de pago
 - Estado: **aceptada** (Henry, 2026-11-06, en el chat de coordinación)
 - Contexto: el plan operativo de Gamma acepta Daviplata además de efectivo, Nequi, transferencia y

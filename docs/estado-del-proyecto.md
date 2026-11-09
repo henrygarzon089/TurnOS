@@ -361,7 +361,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   6. ~~Aprobación del hito~~ hecho (ADR-042, 2026-11-05; Henry aprobó antes de la prueba en Filo,
      que queda como operación: pasos 3 a 5).
 
-### Hito 14 — rendimiento percibido y medición (**spec aprobada**, ADR-043, 2026-11-06)
+### Hito 14 — rendimiento percibido y medición (**aprobado**, ADR-044, 2026-11-09)
 
 - Spec aprobada por Henry (PR #109, `claude/h14-spec-rendimiento`): REQ-075 (esqueletos en `/[slug]`, `/t/[token]`,
   `/app/fila`, `/admin/fila`, `/admin/caja`; velocidad de usuarios reales sin tokens ni cookies),
@@ -374,8 +374,10 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   E2E `tests/e2e/loading.spec.ts`.
 - T-132 hecha (PR #113, 2026-11-06): Speed Insights con `redactVitalsUrl`. Pendiente de Henry: activarlo en
   el proyecto de Vercel y revisar la cuota de su plan.
-- Siguiente: T-133. Pendiente de Henry: confirmar la región de Supabase y de las funciones de Vercel.
-- ADR-043 aceptada; la aprobación del hito terminado será ADR-044 (reservado).
+- T-133 hecha (PR #131, 2026-11-08): región verificada, Supabase `us-east-1` y Vercel `iad1`; `pnpm trace
+  --hito=14` sin huecos.
+- Henry aprueba el Hito 14 (ADR-044, 2026-11-09). Queda como operación: activar Speed Insights en el
+  proyecto de Vercel, revisar la cuota del plan y mirar los datos de `/[slug]` y `/app/fila`.
 
 ### Hito 15 — inicio "Hoy" y menú del dueño (**spec aprobada**, ADR-046, 2026-11-06)
 
