@@ -54,6 +54,7 @@ export default async function TodayPage() {
       <LiveRefresh businessId={session.business.id} />
       <header
         data-testid="today-mobile-header"
+        data-screen-header
         className="bg-brand text-brand-ink -mx-4 -mt-6 flex h-14 items-center gap-3 px-4 lg:hidden"
       >
         <h1 className="text-lg font-bold">Hoy</h1>

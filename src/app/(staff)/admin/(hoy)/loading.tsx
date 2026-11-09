@@ -8,7 +8,10 @@ import { SkeletonBlock } from "@/components/ui/Skeleton";
 export default function TodayLoading() {
   return (
     <main data-wide data-tablet className="pb-6">
-      <div className="bg-brand text-brand-ink -mx-4 -mt-6 flex h-14 items-center px-4 lg:hidden">
+      <div
+        data-screen-header
+        className="bg-brand text-brand-ink -mx-4 -mt-6 flex h-14 items-center px-4 lg:hidden"
+      >
         <span className="text-lg font-bold">Hoy</span>
       </div>
       <SkeletonBlock className="h-9 w-48 max-lg:hidden" />
