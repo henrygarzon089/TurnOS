@@ -247,7 +247,7 @@ export function GiftCardList({ view, limit }: { view: GiftCardsView; limit?: num
             <th className="px-3 py-2 font-bold">Para</th>
             <th className="hidden px-3 py-2 text-right font-bold sm:table-cell">Valor</th>
             <th className="px-3 py-2 text-right font-bold">Saldo</th>
-            <th className="px-4 py-2 font-bold">
+            <th className={`px-4 py-2 font-bold ${limit ? "max-sm:hidden" : ""}`}>
               <span className="sr-only">Estado</span>
             </th>
           </tr>
@@ -262,6 +262,13 @@ export function GiftCardList({ view, limit }: { view: GiftCardsView; limit?: num
                 </td>
                 <td className="min-w-0 px-3 py-2">
                   <p className={voided ? "line-through" : ""}>{c.recipientName ?? c.buyerName}</p>
+                  {/* En el resumen de Membresías a 360 px el estado va bajo el nombre: con su
+                      columna la tabla no cabía (REQ-078.15). */}
+                  {limit && (
+                    <span className="mt-1 inline-block sm:hidden">
+                      <Tag tone={STATUS_TONE[c.status]}>{giftCardStatusLabel(c.status)}</Tag>
+                    </span>
+                  )}
                   {!limit && (
                     <p className="text-muted text-xs">
                       {c.buyerName} · {maskPhone(c.buyerPhone)} · vence el{" "}
@@ -275,7 +282,7 @@ export function GiftCardList({ view, limit }: { view: GiftCardsView; limit?: num
                   {formatCOP(c.amount)}
                 </td>
                 <td className="px-3 py-2 text-right">{voided ? "—" : formatCOP(c.balance)}</td>
-                <td className="px-3 py-1 text-right sm:px-4">
+                <td className={`px-3 py-1 text-right sm:px-4 ${limit ? "max-sm:hidden" : ""}`}>
                   {c.status === "active" && !limit ? (
                     <SendButton card={c} view={view} compact />
                   ) : (
