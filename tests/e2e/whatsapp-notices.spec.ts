@@ -1,5 +1,14 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED, cancelMyTicket } from "./helpers";
+import {
+  CALL,
+  adminDb,
+  loginAsBarber,
+  loginAsOwner,
+  resetQueue,
+  SEED,
+  cancelMyTicket,
+  openTicketSheet,
+} from "./helpers";
 
 /**
  * Hito 6 (design.md §12.7): el servidor corre con WHATSAPP_FAKE_CHANNEL=1 (playwright.config.ts y
@@ -147,7 +156,7 @@ test.describe("REQ-041 / REQ-042 / REQ-043 aviso por WhatsApp activo", () => {
     if (await here.isVisible()) await here.click();
     const back = page.getByRole("button", { name: "Volver" });
     if (await back.isVisible()) await back.click();
-    await page.getByRole("button", { name: "Llamar al siguiente" }).click();
+    await page.getByRole("button", { name: CALL }).click();
 
     const db = adminDb();
     await expect
@@ -164,8 +173,12 @@ test.describe("REQ-041 / REQ-042 / REQ-043 aviso por WhatsApp activo", () => {
       )
       .toBe("sent");
 
-    const row = page.getByRole("listitem").filter({ hasText: "Con Aviso" });
-    await expect(row.getByRole("link", { name: "Avisado ✓" })).toBeVisible({ timeout: 10_000 });
+    // T-169: el estado y el botón manual están en la hoja del turno
+    await expect(page.getByTestId("waiting-row").filter({ hasText: "Con Aviso" })).toBeVisible();
+    // La hoja se actualiza con la fila en vivo
+    const sheet = await openTicketSheet(page, "Con Aviso");
+    await expect(sheet.getByText("Avisado ✓")).toBeVisible({ timeout: 10_000 });
+    await expect(sheet.getByRole("link", { name: "Avisar por WhatsApp" })).toBeVisible();
   });
 
   test("REQ-041.4 el turno manual no deja marcar el permiso por el cliente", async ({ page }) => {

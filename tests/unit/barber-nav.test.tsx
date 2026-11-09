@@ -4,7 +4,12 @@ import { BarberNav } from "@/components/staff/BarberNav";
 import { BARBER_MORE, BARBER_TABS, isBarberMoreActive } from "@/lib/domain/barber-nav";
 
 const nav = vi.hoisted(() => ({ pathname: "/app/fila" }));
-vi.mock("next/navigation", () => ({ usePathname: () => nav.pathname }));
+vi.mock("next/navigation", () => ({
+  usePathname: () => nav.pathname,
+  useRouter: () => ({ refresh: () => {} }),
+}));
+vi.mock("@/lib/actions/auth", () => ({ signOut: async () => {} }));
+vi.mock("@/components/cash/CheckoutSheet", () => ({ CheckoutSheet: () => null }));
 
 describe("T-163 menú del barbero (tablero Barbero-Fila)", () => {
   it("REQ-078.5 barra con Mi fila, Clientes, Números, Limpieza y Más; nada se pierde", () => {
@@ -30,5 +35,13 @@ describe("T-163 menú del barbero (tablero Barbero-Fila)", () => {
     expect(h).toMatch(/<button[^>]*h-14[^>]*>[\s\S]*?Más/);
     expect(h).toContain('aria-label="Mis números"');
     expect(h).toContain("env(safe-area-inset-bottom)");
+  });
+
+  it("REQ-078.16 cada destino lleva su ícono encima y Limpieza su punto si falta la apertura", () => {
+    nav.pathname = "/app/fila";
+    const h = renderToStaticMarkup(<BarberNav cleaningDot={<i data-testid="dot" />} />);
+    expect(h.match(/<svg/g)).toHaveLength(5);
+    expect(h).toMatch(/Limpieza<\/a>/);
+    expect(h).toMatch(/data-testid="dot"[\s\S]*?Limpieza/);
   });
 });
