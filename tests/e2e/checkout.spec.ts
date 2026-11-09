@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Browser, type Locator, type Page } from "@playwright/test";
-import { loginAsBarber, loginAsOwner, SEED } from "./helpers";
+import { loginAsBarber, loginAsOwner, SEED, addProduct } from "./helpers";
 
 /**
  * T-043 · REQ-023.1–23.3, REQ-023.6, REQ-019.4. Turnos agregados por el dueño (sin depender del
@@ -105,7 +105,7 @@ async function serveUntilFinished(owner: Page, barber: Page, name: string, phone
   });
   await barber.getByRole("button", { name: "Empezar corte" }).click();
   await barber.getByRole("button", { name: "Terminar y cobrar" }).click();
-  return barber.getByRole("dialog", { name: "Registrar cobro" });
+  return barber.getByRole("dialog", { name: /^Cobrar a / });
 }
 
 async function contexts(browser: Browser) {
@@ -137,13 +137,13 @@ test.describe("REQ-023 panel de cobro", () => {
       await expect(sheet.getByLabel("Servicio", { exact: true })).toContainText("Corte · $ 25.000");
       await expect(sheet.getByTestId("checkout-total")).toHaveText("$ 25.000");
       // REQ-023.2 agregar un producto al mismo cobro
-      await sheet.getByRole("button", { name: "Agregar un Gaseosa" }).click();
+      await addProduct(sheet, "Gaseosa");
       await expect(sheet.getByTestId("checkout-total")).toHaveText("$ 29.000");
       await sheet.getByRole("button", { name: "Quitar un Gaseosa" }).click();
       await sheet.getByRole("radio", { name: "Nequi" }).click();
-      await sheet.getByRole("button", { name: "Registrar $ 25.000" }).click();
+      await sheet.getByRole("button", { name: "Cobrar $ 25.000" }).click();
       await expect(
-        barber.getByRole("status").filter({ hasText: "Cobro registrado: $ 25.000" }),
+        barber.getByRole("status").filter({ hasText: "Cobrado · $ 25.000" }),
       ).toBeVisible();
       await expect(sheet).toBeHidden();
       await expect(
@@ -179,9 +179,9 @@ test.describe("REQ-023 panel de cobro", () => {
       await expectLegiblePendingRow(ownerRow, name);
       // REQ-023.7 el dueño cobra cualquier turno pendiente
       await ownerRow.getByRole("button", { name: "Cobrar" }).click();
-      const ownerSheet = owner.getByRole("dialog", { name: "Registrar cobro" });
+      const ownerSheet = owner.getByRole("dialog", { name: /^Cobrar a / });
       await ownerSheet.getByRole("radio", { name: "Efectivo" }).click();
-      await ownerSheet.getByRole("button", { name: "Registrar $ 25.000" }).click();
+      await ownerSheet.getByRole("button", { name: "Cobrar $ 25.000" }).click();
       await expect(ownerSheet).toBeHidden();
       await expect(ownerRow).toBeHidden({ timeout: 15_000 });
     } finally {
@@ -224,13 +224,11 @@ test.describe("REQ-023 panel de cobro", () => {
         )
         .toBe(true);
       const sheet = await sheetPromise;
-      await sheet.getByRole("button", { name: "Aplicar premio" }).click();
+      await sheet.getByRole("checkbox", { name: /Corte gratis/ }).check();
       await expect(sheet.getByTestId("checkout-total")).toHaveText("$ 0");
       await expect(sheet.getByRole("radiogroup", { name: "Medio de pago" })).toHaveCount(0);
-      await sheet.getByRole("button", { name: "Registrar $ 0" }).click();
-      await expect(
-        barber.getByRole("status").filter({ hasText: "Cobro registrado: $ 0" }),
-      ).toBeVisible();
+      await sheet.getByRole("button", { name: "Cobrar $ 0" }).click();
+      await expect(barber.getByRole("status").filter({ hasText: "Cobrado · $ 0" })).toBeVisible();
     } finally {
       await close();
     }

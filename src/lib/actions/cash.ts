@@ -37,6 +37,9 @@ export type CheckoutView = {
   isOwner: boolean;
   ticket: {
     id: string;
+    /** "A14 · terminó 4:21 p. m." bajo "Cobrar a …" (tablero Barbero-Cobro). */
+    displayNumber: string;
+    finishedAt: string | null;
     customerName: string;
     serviceId: string;
     serviceName: string;
@@ -132,7 +135,7 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
       ? supabase
           .from("tickets")
           .select(
-            "id, customer_id, customer_name, service_id, service_name, service_price, assigned_barber_id, status, payment_status",
+            "id, display_number, finished_at, customer_id, customer_name, service_id, service_name, service_price, assigned_barber_id, status, payment_status",
           )
           .eq("id", ticketId)
           .maybeSingle()
@@ -170,6 +173,8 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
 
   const t = ticketRes.data as {
     id: string;
+    display_number: number;
+    finished_at: string | null;
     customer_id: string | null;
     customer_name: string;
     service_id: string;
@@ -212,6 +217,8 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
     ticket: t
       ? {
           id: t.id,
+          displayNumber: String(t.display_number),
+          finishedAt: t.finished_at,
           customerName: t.customer_name,
           serviceId: t.service_id,
           serviceName: t.service_name,
