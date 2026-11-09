@@ -2337,6 +2337,9 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   (primera foto), "<quién> · apertura", "Incompleta"/"Tarde", "N de M", "Ver foto" y "Marcar falla"
   (lleva a Fallas por barbero). El barbero (`/app/limpieza`) no cambia. No es la última de
   T-169…T-181: faltan los CA de T-169…T-171 y T-178…T-180, así que el hito 16 todavía no vuelve al loop.
+  "Stock por sitio" (una columna por estación) se cortaba en 1280 px en la CI de T-177 (#141) con
+  los barberos que crean las E2E: desde 1024 px va con columnas fijas (`lg:table-fixed`) y los
+  nombres se parten, así cabe con 15 estaciones (REQ-078.27).
 
 ### [ ] T-168 · Validación Hito 16
 - REQ: REQ-078
