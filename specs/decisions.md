@@ -887,6 +887,45 @@
   `supabase db push`.
 
 
+## ADR-052 · El cliente fiel al tablero; una sola pantalla para tomar turno; CSS publicado vigilado
+- Fecha: 2026-11-08 · Estado: **aceptada** (Henry, 2026-11-08: "Sí, escribe la spec" y "apenas
+  termines puedes empezar con los cambios").
+- Contexto: Henry revisó producción y el cliente no se parece al lienzo. Dos causas:
+  1. **Producción servía el CSS de antes del Hito 16.** El HTML del despliegue (`b6a8533`) traía las
+     clases nuevas (`bg-brand`…), pero el CSS publicado era el viejo (`accent` azul `#1d4ed8`,
+     esquinas `.375rem`, sin `.bg-brand`, `called` amarillo). El build arrancó con "Restored build
+     cache from previous deployment" y Turbopack reusó el CSS. Un preview con `vercel deploy --force`
+     (sin caché) sale bien. Así se veía mal **todo**: cliente, barbero y dueño.
+  2. **Con el CSS correcto, T-162 siguió la estructura vieja** (mismo error que ADR-051 con el
+     barbero): portada y formulario en dos pantallas, "Mi turno" sin la tarjeta del número, sin
+     "Vas de / Te toca en", sin la barra de pasos ni el bloque rojo arriba; "Terminado" sin la
+     tarjeta de cortes; cita en un formulario largo; TV sin franja "Llamando a" ni números.
+- Decisión:
+  - **ADR-051 aplica al cliente**: estructura, jerarquía y textos del tablero; lo que el tablero
+    muestra y la app no tiene **no se construye** (se anota); lo que la app tiene y el tablero no
+    muestra se conserva donde menos estorbe.
+  - **Tomar turno en una sola pantalla** (cambia el flujo; ADR-047 no lo permitía): la portada
+    `/[slug]` lleva la fila en vivo y el formulario; `/[slug]/turno` redirige a la portada (QR y
+    enlaces viejos siguen sirviendo). "Lo que vendemos" pasa a "Ver menú" (hoja).
+  - **Textos del cliente como el tablero**: "N esperando", "¿Qué te vas a hacer?", "¿Con quién?",
+    "El primero libre", "Tomar turno", "Vas de N.º", "Te toca en", "Quedaste bien, <nombre>.",
+    "¿Cómo te fue con <barbero>?", "Dejar reseña en Google", "Tomar otro turno", "Cancelar turno",
+    "No puedo ir: cancelar turno", "TU CITA", "Confirmar · <día>, <hora>", "Cancelar la cita".
+  - **Datos que faltan y sí se exponen** (sin columnas nuevas): `get_ticket_by_token` devuelve
+    `started_at` y `finished_at` ("Con Andrés desde 3:52 p. m.", "TERMINADO · 4:21 P. M."), y
+    `get_screen_queue` devuelve el número del turno y la hora de la cita (TV).
+  - **No se construye** (la app no lo tiene): "Silla N" (no hay sillas), prefijo "A" del número,
+    "vuelve 4:30 p. m." de la pausa, horas tomadas tachadas en la cita (solo llegan las libres),
+    "Ya llegué" del cliente (la llegada la marca el barbero o el dueño, REQ-052.2), "De parte de" y
+    "Mensaje" de la tarjeta de regalo (no existen, REQ-056.3), "Compartir por WhatsApp" en la
+    tarjeta, "Pedir que borren mis datos" (lo atiende el dueño, REQ-018.6), og:image de la tarjeta.
+  - **CSS publicado vigilado**: `pnpm check:deploy <url>` compara el CSS que sirve una URL con los
+    tokens de `globals.css` y falla si no coinciden. Henry vuelve a desplegar producción sin caché
+    (`vercel --prod --force`) y, si se repite, pone `VERCEL_FORCE_NO_BUILD_CACHE=1` en Producción.
+- Consecuencias: REQ-078.21…REQ-078.26; cambian los textos de REQ-003.1, REQ-004.1, REQ-013.4,
+  REQ-036.2 y REQ-038.2; design §22.7; tareas T-172…T-176; migración 0070 (solo funciones). Cada PR
+  lleva la captura de cada estado junto a su tablero (§22.5). Después: acceso y dueño.
+
 ## ADR-053 · El dueño fiel al tablero: ancho de escritorio y estructura de cada pantalla
 - Fecha: 2026-11-08 · Estado: **aceptada** (Henry, 2026-11-08: "Sí, escríbela").
 - Contexto: Henry revisó producción y el dueño "no se ve nada igual" al lienzo. Se comparó `main`

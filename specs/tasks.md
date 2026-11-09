@@ -2366,14 +2366,64 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   (lleva a Fallas por barbero). El barbero (`/app/limpieza`) no cambia. No es la última de
   T-169…T-181: faltan los CA de T-169…T-171 y T-178…T-180, así que el hito 16 todavía no vuelve al loop.
 
+### [x] T-172 · CSS publicado igual al del build
+- REQ: REQ-078.26 (ADR-052, design §22.7)
+- Archivos: `scripts/check-deploy.ts`, `src/lib/design/deploy-css.ts` (`compareDeployedCss`),
+  `tests/unit/deploy-css.test.ts`, `package.json` (`check:deploy`), `docs/estado-del-proyecto.md`.
+- Depende de Henry: `vercel --prod --force` (producción sin caché) y correr
+  `pnpm check:deploy https://turnos-smoky-nine.vercel.app`.
+- Terminado: la prueba unitaria falla con el CSS viejo (accent `#1d4ed8`, sin `.bg-brand`) y pasa con
+  el nuevo; el preview sin caché pasa `check:deploy`.
+- Hecho (2026-11-09). Notas y desvíos:
+  - La lógica va en `src/lib/design/deploy-css.ts` (junto a `lint-rules.ts`), no en
+    `src/lib/domain/`: es una regla del sistema visual, como `lint:design`.
+  - Tailwind publica solo los tokens que se usan y acorta los hex (`#fff`): se compara cada token
+    publicado con `globals.css` y se exigen `--color-brand` y la regla `.bg-brand`.
+  - `pnpm check:deploy https://turnos-smoky-nine.vercel.app` hoy falla (11 diferencias, sin
+    `--color-brand` ni `.bg-brand`); contra el servidor local pasa. Falta lo de Henry:
+    `vercel --prod --force` y volver a correrlo.
+
+### [ ] T-173 · Cliente: portada y tomar turno en una pantalla
+- REQ: REQ-078.16, REQ-078.21, REQ-003.1, REQ-038.2
+- Archivos: `src/app/(public)/[slug]/page.tsx`, `src/app/(public)/[slug]/turno/page.tsx` (redirige),
+  `src/components/queue/JoinForm.tsx`, `src/components/public/*` (bloque en vivo, hoja "Menú"),
+  `src/app/(public)/[slug]/loading.tsx`, E2E del cliente que entran por `/turno`.
+- Terminado: normal, guardando, error, sin conexión, esqueleto, cerrado y escritorio como
+  Cliente-Negocio y Cliente-Escritorio (captura junto al tablero en el PR).
+
+### [ ] T-174 · Cliente: Mi turno como el tablero
+- REQ: REQ-078.16, REQ-078.22, REQ-078.23, REQ-004.1, REQ-036.2
+- Archivos: `supabase/migrations/0070_public_ticket_times.sql`,
+  `supabase/tests/0070_public_ticket_times.sql`, `src/lib/queue/public-queue.ts`,
+  `src/components/queue/MyTicket.tsx`, `src/components/queue/CourtesyLine.tsx`,
+  `src/app/(public)/t/[token]/loading.tsx`, E2E de "Mi turno".
+- Terminado: en espera, sin conexión, cancelar, ¡Es tu turno!, en servicio, terminado y esqueleto
+  como Cliente-MiTurno (captura en el PR). La 0070 la sube Henry con `supabase db push`.
+
+### [ ] T-175 · Cliente: cita, Mi cita, tarjeta de regalo y privacidad
+- REQ: REQ-078.16, REQ-078.24
+- Archivos: `src/components/queue/AppointmentForm.tsx`, `src/components/queue/MyAppointment.tsx`,
+  `src/app/(public)/{[slug]/cita,c/[token],regalo/[token],[slug]/privacidad}/*`, E2E de citas y
+  regalos.
+- Terminado: reservar, vacío, Mi cita, tarjeta de regalo y privacidad como Cliente-Cita (captura en
+  el PR).
+
+### [ ] T-176 · Pantalla del televisor como el tablero
+- REQ: REQ-078.16, REQ-078.25, REQ-013.4
+- Archivos: `supabase/migrations/0071_screen_numbers.sql`, `supabase/tests/0071_screen_numbers.sql`,
+  `src/lib/actions/public.ts` (`getScreenQueue`), `src/components/queue/ScreenBoard.tsx`, E2E de la
+  pantalla.
+- Terminado: como Cliente-Pantalla en 1920×1080 (captura en el PR), llamado 30 s con la franja,
+  sin celulares; `pnpm trace --hito=16` sin huecos para REQ-078.21…26. La 0071 la sube Henry.
+
 ### [ ] T-168 · Validación Hito 16
 - REQ: REQ-078
 - Archivos: `scripts/traceability.ts` (`HITOS["16"] = [[78, 78]]`, ya desde el PR de la spec),
   `tests/unit/traceability.test.ts` (agregar "16" al loop), `docs/estado-del-proyecto.md`
 - Depende de Henry: recorrer cliente, barbero y dueño en su celular y en el computador, y una prueba
   en la barbería (PA-H16-2); aprobación del hito (ADR nuevo).
-- Depende también de T-169…T-171 (ADR-051), de T-177…T-181 (ADR-053) y de la revisión igual de
-  cliente y acceso.
+- Depende también de T-169…T-171 (ADR-051), T-172…T-176 (ADR-052), T-177…T-181 (ADR-053) y de la
+  revisión igual de acceso.
 - Terminado: `pnpm trace --hito=16` sin huecos; CI verde; Speed Insights sin empeorar respecto al
   Hito 14 (REQ-075.3).
 - Nota (2026-11-08): `pnpm trace --hito=16` con 0 sin prueba (423 criterios en total) y el hito 16
