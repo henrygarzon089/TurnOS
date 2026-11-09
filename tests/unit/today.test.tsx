@@ -318,6 +318,30 @@ describe("alertas, citas y recordar (T-152)", () => {
     expect(await html(TodayAlerts({ load: async () => null }))).toContain("No se pudo cargar");
   });
 
+  it("REQ-076.5 sin citas por llegar lo dice aunque se vea una que ya llegó", async () => {
+    const h = await html(
+      TodayAppointments({
+        load: async () => ({
+          remaining: 0,
+          next: [
+            {
+              id: "a",
+              startsAt: "2026-11-05T18:43:00Z",
+              customer: "Cita L.",
+              service: "Corte",
+              barber: "Juan",
+              arrived: true,
+            },
+          ],
+        }),
+      }),
+    );
+    expect(h).toContain("No quedan por llegar");
+    expect(h).toContain("Llegó");
+    const empty = await html(TodayAppointments({ load: async () => ({ remaining: 0, next: [] }) }));
+    expect(empty).toContain("No quedan citas hoy.");
+  });
+
   it("REQ-076.5 con citas apagadas el bloque no aparece", async () => {
     expect(await TodayAppointments({ load: async () => "off" })).toBeNull();
   });

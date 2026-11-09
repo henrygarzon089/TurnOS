@@ -34,10 +34,13 @@ export async function TodayAppointments({
       title="Citas de hoy"
       link={{ href: "/admin/citas", label: "Agenda" }}
       aside={
+        // Cuántas quedan (REQ-076.5); si no se ve ninguna cita, lo dice el cuerpo del bloque
         data &&
-        data.remaining > 0 && (
+        (data.remaining > 0 || data.next.length > 0) && (
           <p className="text-muted text-sm">
-            {data.remaining} {data.remaining === 1 ? "queda" : "quedan"}
+            {data.remaining === 0
+              ? "No quedan por llegar"
+              : `${data.remaining} ${data.remaining === 1 ? "queda" : "quedan"}`}
           </p>
         )
       }

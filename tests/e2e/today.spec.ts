@@ -124,8 +124,9 @@ test.describe("Hoy del dueño", () => {
       .getByRole("region", { name: "Fila en vivo" })
       .getByRole("list", { name: "Barberos" })
       .getByRole("listitem");
-    await expect(rows).toHaveCount(SEED.barbers.length);
-    for (const b of SEED.barbers) await expect(rows.filter({ hasText: b.name })).toBeVisible();
+    // Otras pruebas pueden crear barberos: basta con que estén los del seed
+    for (const b of SEED.barbers)
+      await expect(rows.filter({ hasText: b.name }).first()).toBeVisible();
     for (const row of await rows.all()) await expect(row).toContainText(/(\d+ en fila|0)$/);
   });
 
