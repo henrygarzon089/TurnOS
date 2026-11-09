@@ -55,7 +55,7 @@ export function QrCard({
       </figure>
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <p className="text-muted text-sm">
-          Lleva a la página <span className="text-ink font-bold">/{slug}</span>. Imprímelo en carta
+          Lleva a la página <span className="text-ink font-bold">/{slug}.</span> Imprímelo en carta
           y pégalo en la entrada y en cada espejo.
         </p>
         <p className="text-muted text-sm break-all">{url}</p>
