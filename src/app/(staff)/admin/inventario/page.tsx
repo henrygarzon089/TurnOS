@@ -132,15 +132,16 @@ export default async function InventoryPage() {
             Stock por sitio
           </h2>
           <div className="border-line bg-card mt-2 overflow-x-auto rounded-md border">
-            {/* Desde 1024 px la tabla cabe siempre (REQ-078.27): columnas fijas y nombres que se parten */}
+            {/* REQ-078.27: desde 1024 px cabe sin desplazarse con cualquier número de estaciones
+                (columnas fijas, encabezados que se parten); en el celular se desplaza dentro del marco */}
             <table className="w-full text-base lg:table-fixed">
               <thead>
                 <tr className="bg-brand text-brand-ink text-left text-sm">
-                  <th className="px-3 py-2 font-semibold lg:w-56">Ítem</th>
+                  <th className="px-3 py-2 font-semibold lg:w-1/4">Ítem</th>
                   {places.map((l) => (
                     <th
                       key={l.id}
-                      className="px-3 py-2 text-right font-semibold break-words whitespace-nowrap lg:whitespace-normal"
+                      className="px-3 py-2 text-right font-semibold whitespace-nowrap lg:px-2 lg:break-words lg:whitespace-normal"
                     >
                       {locationName(l)}
                     </th>
@@ -159,7 +160,7 @@ export default async function InventoryPage() {
                       return (
                         <td
                           key={l.id}
-                          className={`px-3 py-2 text-right tabular-nums ${qty < 0 ? "text-danger font-semibold" : ""}`}
+                          className={`px-3 py-2 text-right tabular-nums lg:px-2 ${qty < 0 ? "text-danger font-semibold" : ""}`}
                         >
                           {qty}
                         </td>
