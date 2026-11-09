@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { adminDb, loginAsBarber, loginAsOwner, SEED } from "./helpers";
+import { adminDb, loginAsBarber, loginAsOwner, SEED, tapNewSale } from "./helpers";
 
 /**
  * T-116 · T-117 · REQ-066, REQ-067, REQ-068: la vitrina en "Nueva venta" y en el cobro del turno,
@@ -63,7 +63,7 @@ async function lastSale() {
 }
 
 async function openNewSale(page: Page) {
-  await page.getByRole("button", { name: "+ Nueva venta" }).click();
+  await tapNewSale(page);
   const sheet = page.getByRole("dialog", { name: "Nueva venta" });
   await expect(sheet).toBeVisible();
   return sheet;
@@ -246,8 +246,8 @@ test.describe("Hito 12 · vitrina y comisión de productos", () => {
       await expect(
         barber.getByRole("article", { name: new RegExp(`Turno actual ${name}`) }),
       ).toBeVisible({ timeout: 15_000 });
-      await barber.getByRole("button", { name: "Ya está en la silla" }).click();
-      await barber.getByRole("button", { name: "Terminado" }).click();
+      await barber.getByRole("button", { name: "Empezar corte" }).click();
+      await barber.getByRole("button", { name: "Terminar y cobrar" }).click();
       const sheet = barber.getByRole("dialog", { name: "Registrar cobro" });
       await expect(sheet.getByTestId("checkout-total")).toHaveText("$ 25.000");
       await sheet.getByRole("button", { name: "Agregar un Gaseosa" }).click();

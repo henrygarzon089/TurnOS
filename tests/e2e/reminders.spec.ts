@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
-import { loginAsBarber, loginAsOwner, SEED, waitForContent } from "./helpers";
+import { loginAsBarber, loginAsOwner, openTicketSheet, SEED, waitForContent } from "./helpers";
 
 /**
  * Cada corrida "recuerda" clientes del seed y los saca de la lista 7 días: sin limpiar, la lista
@@ -126,9 +126,12 @@ test.describe("REQ-020 clientes para recordar", () => {
       await expect(active).toBeVisible({ timeout: 15_000 });
 
       await barber.goto("/app/fila");
-      const row = barber.getByRole("listitem").filter({ hasText: name });
-      await expect(row).toBeVisible({ timeout: 15_000 });
+      await expect(barber.getByRole("main").getByText(name).first()).toBeVisible({
+        timeout: 15_000,
+      });
+      const row = await openTicketSheet(barber, name);
       await expect(row.getByRole("link", { name: /Avisar/ })).toHaveCount(0);
+      await row.getByRole("button", { name: "Cerrar" }).click();
 
       // Limpieza: cancelar el turno y volver a permitir el contacto
       await active.getByRole("button", { name: new RegExp(name) }).click();
