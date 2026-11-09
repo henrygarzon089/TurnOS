@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Clientes para recordar" };
 export default async function RemindersPage() {
   const [view, birthdays] = await Promise.all([getInactiveCustomers(), getBirthdaysThisWeek()]);
   return (
-    <main data-wide className="pb-6">
+    <main className="pb-6">
       <ModuleHeader title="Clientes para recordar" subtitle="Cumpleaños e inactivos" />
       <div className="mt-4 grid gap-4 lg:grid-cols-2 lg:items-start">
         <Panel title="Cumplen esta semana">

@@ -25,7 +25,7 @@ export default async function WeekPage({
   const arrow =
     "border-line-strong text-ink inline-flex size-12 shrink-0 items-center justify-center rounded-md border";
   return (
-    <main data-wide className="pb-6">
+    <main className="pb-6">
       <ModuleHeader title="Semana" subtitle="Resumen y liquidación de comisiones" />
       <nav
         aria-label="Elegir semana"

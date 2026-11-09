@@ -1,3 +1,5 @@
+import type { OwnerAlert } from "./owner-alerts";
+
 /**
  * Menú del dueño por grupos (REQ-077, design §21.4): fuente única para la barra inferior, la hoja
  * "Más" y el menú lateral.
@@ -64,4 +66,55 @@ export function isActiveLink(pathname: string, link: AdminLink): boolean {
 
 export function isMoreActive(pathname: string): boolean {
   return !ADMIN_TABS.some((t) => isActiveLink(pathname, t));
+}
+
+/**
+ * REQ-078.27 insignias rojas del menú lateral: cuántas alertas de "Hoy" (REQ-076.6) son de
+ * Limpieza y cuántas de Inventario, para que el menú y "Hoy" digan lo mismo. Sin alertas, nada.
+ */
+export function navAlertCounts(alerts: OwnerAlert[] | null): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const a of alerts ?? []) {
+    const href =
+      a.kind === "cleaning"
+        ? "/admin/limpieza"
+        : a.kind === "inventory"
+          ? "/admin/inventario"
+          : null;
+    if (href) out[href] = (out[href] ?? 0) + 1;
+  }
+  return out;
+}
+
+const SMALL_WORDS = new Set(["la", "el", "los", "las", "de", "del", "y"]);
+
+/**
+ * REQ-078.27 lo que va en el cuadro blanco de la barra del dueño: el número si el nombre termina
+ * en uno ("Barbería La 33" → "33"); si no, la inicial de las dos primeras palabras que cuentan.
+ */
+export function businessInitials(name: string): string {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  const last = words.at(-1);
+  if (last && /^\d+$/.test(last)) return last.slice(0, 3);
+  const letters = words
+    .filter((w) => !SMALL_WORDS.has(w.toLowerCase()))
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join("");
+  return letters || "·";
+}
+
+/**
+ * REQ-078.27 números en texto suave del menú lateral: los que esperan en la fila y las citas de
+ * hoy que faltan por llegar, de la misma lectura de la fila del dueño. En cero, nada.
+ */
+export function navQueueCounts(
+  view: { active: { status: string }[]; appointments: unknown[] } | null,
+): Record<string, number> {
+  const out: Record<string, number> = {};
+  if (!view) return out;
+  const waiting = view.active.filter((t) => t.status === "waiting").length;
+  if (waiting > 0) out["/admin/fila"] = waiting;
+  if (view.appointments.length > 0) out["/admin/citas"] = view.appointments.length;
+  return out;
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useState } from "react";
 import { Sheet } from "@/components/ui/Sheet";
+import { signOut } from "@/lib/actions/auth";
 import {
   ADMIN_GROUPS,
   ADMIN_TABS,
@@ -15,10 +16,19 @@ import {
 /**
  * Menú del dueño (REQ-077, design §21.4). Celular: barra inferior fija con lo de todos los días y
  * "Más", que abre los grupos en una hoja. 1024 px o más: menú lateral fijo de 240 px con los mismos
- * grupos. Se monta una vez en el layout del personal, solo para el dueño. `todayBadge` es la
- * insignia de alertas de "Hoy" (REQ-077.6), un Server Component que llega por su cuenta.
+ * grupos, debajo de la barra azul de 56 px (REQ-078.27). Se monta una vez en el layout del
+ * personal, solo para el dueño. `todayBadge` es la insignia de alertas de "Hoy" (REQ-077.6) y
+ * `badges` lo que va a la derecha de cada destino del lateral (REQ-078.27): números de Fila y Citas e
+ * insignias rojas de Limpieza e Inventario, Server Components que llegan por su cuenta. En el celular,
+ * "Salir" va al final de "Más".
  */
-export function AdminNav({ todayBadge }: { todayBadge?: React.ReactNode } = {}) {
+export function AdminNav({
+  todayBadge,
+  badges = {},
+}: {
+  todayBadge?: React.ReactNode;
+  badges?: Partial<Record<string, React.ReactNode>>;
+} = {}) {
   const pathname = usePathname();
   const [more, setMore] = useState(false);
   const closeMore = useCallback(() => setMore(false), []);
@@ -28,7 +38,7 @@ export function AdminNav({ todayBadge }: { todayBadge?: React.ReactNode } = {}) 
     <>
       <nav
         aria-label="Menú del dueño"
-        className="border-line bg-card fixed inset-y-0 left-0 z-20 hidden w-60 flex-col gap-5 overflow-y-auto border-r px-3 py-5 lg:flex"
+        className="border-line bg-card fixed top-14 bottom-0 left-0 z-20 hidden w-60 flex-col gap-5 overflow-y-auto border-r px-3 py-5 lg:flex"
       >
         {ADMIN_GROUPS.map((group) => (
           <section key={group.label}>
@@ -49,6 +59,7 @@ export function AdminNav({ todayBadge }: { todayBadge?: React.ReactNode } = {}) 
                   >
                     {it.label}
                     {it.href === "/admin" && <span className="ml-auto">{todayBadge}</span>}
+                    {badges[it.href] && <span className="ml-auto">{badges[it.href]}</span>}
                   </Link>
                 </li>
               ))}
@@ -110,6 +121,11 @@ export function AdminNav({ todayBadge }: { todayBadge?: React.ReactNode } = {}) 
             </ul>
           </section>
         ))}
+        <form action={signOut}>
+          <button type="submit" className="text-muted min-h-12 w-full text-left text-base">
+            Salir
+          </button>
+        </form>
       </Sheet>
     </>
   );

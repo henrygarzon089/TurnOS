@@ -1,4 +1,4 @@
-# Estado del proyecto — traspaso (2026-11-07)
+# Estado del proyecto — traspaso (2026-11-09)
 
 Este documento resume la conversación en la que se construyó todo hasta aquí, para que cualquier
 persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `specs/`.
@@ -361,7 +361,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   6. ~~Aprobación del hito~~ hecho (ADR-042, 2026-11-05; Henry aprobó antes de la prueba en Filo,
      que queda como operación: pasos 3 a 5).
 
-### Hito 14 — rendimiento percibido y medición (**spec aprobada**, ADR-043, 2026-11-06)
+### Hito 14 — rendimiento percibido y medición (**aprobado**, ADR-044, 2026-11-09)
 
 - Spec aprobada por Henry (PR #109, `claude/h14-spec-rendimiento`): REQ-075 (esqueletos en `/[slug]`, `/t/[token]`,
   `/app/fila`, `/admin/fila`, `/admin/caja`; velocidad de usuarios reales sin tokens ni cookies),
@@ -374,8 +374,10 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   E2E `tests/e2e/loading.spec.ts`.
 - T-132 hecha (PR #113, 2026-11-06): Speed Insights con `redactVitalsUrl`. Pendiente de Henry: activarlo en
   el proyecto de Vercel y revisar la cuota de su plan.
-- Siguiente: T-133. Pendiente de Henry: confirmar la región de Supabase y de las funciones de Vercel.
-- ADR-043 aceptada; la aprobación del hito terminado será ADR-044 (reservado).
+- T-133 hecha (PR #131, 2026-11-08): región verificada, Supabase `us-east-1` y Vercel `iad1`; `pnpm trace
+  --hito=14` sin huecos.
+- Henry aprueba el Hito 14 (ADR-044, 2026-11-09). Queda como operación: activar Speed Insights en el
+  proyecto de Vercel, revisar la cuota del plan y mirar los datos de `/[slug]` y `/app/fila`.
 
 ### Hito 15 — inicio "Hoy" y menú del dueño (**spec aprobada**, ADR-046, 2026-11-06)
 
@@ -491,9 +493,34 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - CI de `main` en verde (E2E 479/479, run 42499277874) tras #129 y #132. **En producción desde el
   2026-11-08** (`vercel deploy --prod` de Henry desde `main`, sin migraciones).
 - Guía de prueba de los Hitos 8, 14, 15 y 16, con casillas: `docs/guia-de-prueba-hitos-8-14-15-16.md`.
+- **2026-11-08: producción servía el CSS de antes del Hito 16** (ADR-052). El despliegue de `b6a8533`
+  reusó la caché de build y publicó el HTML nuevo con el CSS viejo: por eso nada se parecía al
+  lienzo. Un preview con `vercel deploy --force` sale bien. **Falta de Henry**:
+  `vercel --prod --force` y después `pnpm check:deploy https://turnos-smoky-nine.vercel.app`
+  (T-172). Desde ahora ese chequeo va después de cada despliegue a producción.
+- Cliente fiel al tablero (ADR-052, design §22.7): spec en PR #137, tareas T-172…T-176 (portada y
+  tomar turno en una pantalla, Mi turno, cita/regalo/privacidad, TV; migraciones 0070 y 0071).
 - Falta de Henry: desplegar `main` cuando el CI esté en verde, recorrer cliente, barbero y dueño en
   el celular y el computador, la prueba en la barbería (PA-H16-2), comparar Speed Insights con el
   Hito 14 y aprobar (ADR-050, reservado).
+- 2026-11-09, **el dueño fiel al tablero** (ADR-053; spec en la PR #136, rama
+  `claude/spec-dueno-tablero`, renumerada a REQ-078.27…33, design §22.8, T-177…T-181 porque la spec
+  del cliente, PR #137, tomó ADR-052 y T-172…T-176). Cada tarea va en su propia PR con base
+  `claude/spec-dueno-tablero`: T-177 #141, T-178 #142 y T-179 #143; T-180 #147 y T-181 #146 van
+  sobre la rama de T-177. La fusión la hace Henry: primero la #136, luego la #141 y después las
+  demás.
+- T-177 hecha (PR #141, rama `claude/t-177-marco-dueno`): todas las pantallas del dueño usan
+  `lg:max-w-6xl` (sin `data-wide`; `data-tablet` sigue de 768 a 1023 px). Hay una barra azul de
+  56 px con iniciales, negocio, fecha larga y "<nombre> ▾" con "Salir"; en el celular "Salir" está
+  en "Más". Menú lateral bajo la barra: números de Fila (esperando) y Citas (de hoy, por llegar),
+  e insignias rojas de Limpieza e Inventario. Desvío aprobado por Henry: los números salen de
+  `getBusinessQueue` con `cache()` (`loadOwnerQueue`, compartido con "Hoy"), no de
+  `loadOwnerAlerts`. Una pantalla con cabecera propia en el celular la marca con
+  `data-screen-header` y el layout oculta la barra del negocio (ya lo hace "Hoy" en la #142).
+  "Stock por sitio" de Inventario cabe en escritorio con cualquier número de estaciones. La
+  #140 (numeración vieja) se cerró. Prueba desde el celular: entrar como dueño y ver la barra
+  azul; "Más" → "Salir". En el computador, Barberos y Servicios se ven completos y el menú
+  lateral muestra el número de la fila.
 
 ### Cambio · relectura al volver a primer plano (T-182, REQ-011.7, 2026-11-09)
 
@@ -616,6 +643,8 @@ Pendientes (H3): `/admin/caja`,
    (sensible), `NEXT_PUBLIC_APP_URL`. **Pendiente (Henry)**: conectar el repo de GitHub en
    Vercel (Settings → Git; el CLI no pudo: la app de Vercel no tiene acceso al repo) para que cada
    push a `main` despliegue solo. Mientras tanto: `vercel deploy --prod --scope henry-garzons-projects`.
+   Después de cada despliegue a producción: `pnpm check:deploy https://turnos-smoky-nine.vercel.app`
+   (REQ-078.26); si falla, `vercel --prod --force`.
 4. Correr `pnpm test:e2e` (y `E2E_SCREEN_KEY=<businesses.screen_key>` para la pantalla TV) y
    Lighthouse (`lighthouserc.json`) → pasar las `[~]` a `[x]` → T-030 demo con Henry → cerrar H1.
 5. CI (`.github/workflows/ci.yml`) nunca ha corrido: validar en el primer push.
