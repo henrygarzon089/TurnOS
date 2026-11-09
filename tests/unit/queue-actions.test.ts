@@ -120,6 +120,21 @@ describe("REQ-040.1 / REQ-040.5 toda acción de la fila llama afterQueueChange",
     });
   });
 
+  it("REQ-078.17 'Llamar a <número>' envía el turno que la pantalla muestra", async () => {
+    m.rpc.mockResolvedValue({ data: { business_id: "biz-1" }, error: null });
+    expect((await queueActions.callNext(TICKET)).ok).toBe(true);
+    expect(m.rpc).toHaveBeenCalledWith("call_next", { p_expected: TICKET });
+  });
+
+  it("REQ-078.17 si ese turno ya no es el primero, lo dice sin llamar a otro", async () => {
+    m.rpc.mockResolvedValue({ data: null, error: { code: "P0006", message: "NOT_NEXT" } });
+    expect(await queueActions.callNext(TICKET)).toEqual({
+      ok: false,
+      error: "Ese turno ya no es el siguiente.",
+      code: "P0006",
+    });
+  });
+
   it("REQ-052.2 'Llegó' tarde o repetido sale en español", async () => {
     m.rpc.mockResolvedValue({ data: null, error: { code: "P0004", message: "NOT_ARRIVABLE" } });
     expect(await queueActions.markAppointmentArrived("appointment-1")).toEqual({

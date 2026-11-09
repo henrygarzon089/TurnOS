@@ -1,10 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
-import { adminDb, loginAsBarber, SEED } from "./helpers";
+import { adminDb, loginAsBarber, SEED, tapNewSale } from "./helpers";
 
 /** T-095 · REQ-057: el barbero cobra con la tarjeta de regalo en "Nueva venta". */
 async function openNewSale(page: Page) {
-  await page.getByRole("button", { name: "+ Nueva venta" }).click();
+  await tapNewSale(page);
   const sheet = page.getByRole("dialog", { name: "Nueva venta" });
   await expect(sheet).toBeVisible();
   return sheet;

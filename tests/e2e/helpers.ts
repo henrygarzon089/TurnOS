@@ -3,6 +3,28 @@ import { createClient } from "@supabase/supabase-js";
 import { existsSync } from "node:fs";
 
 /** Credenciales del seed (supabase/seed.sql). */
+/** Botón de llamar de "Mi fila" (T-169): "Llamar a <número>" o, sin nadie, "Llamar al siguiente". */
+export const CALL = /^Llamar a(l siguiente| \d+)$/;
+
+/** "+ Nueva venta": en el barbero vive en "Más" (T-169); en el dueño, a la vista. */
+export async function tapNewSale(page: Page) {
+  const more = page.getByRole("navigation", { name: "Menú del barbero" }).getByRole("button", {
+    name: "Más",
+  });
+  if (await more.isVisible()) await more.click();
+  await page.getByRole("button", { name: "+ Nueva venta" }).click();
+}
+
+/** Abre la hoja de un turno de "Mi fila" (el de "Sigue" o uno de "Después", T-169). */
+export async function openTicketSheet(page: Page, name: string) {
+  await page
+    .getByRole("main")
+    .getByRole("button", { name: new RegExp(name) })
+    .first()
+    .click();
+  return page.getByRole("dialog", { name: new RegExp(name) });
+}
+
 export const SEED = {
   owner: { email: "dueno@la33.test", password: "turnos123" },
   barbers: [

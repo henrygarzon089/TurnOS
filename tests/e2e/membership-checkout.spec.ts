@@ -131,8 +131,8 @@ test.describe("REQ-047 / REQ-048 membresía en el cobro, la fila y Mi turno", ()
       const current = barber.getByRole("article", { name: new RegExp(`Turno actual ${name}`) });
       await expect(current).toBeVisible({ timeout: 15_000 });
       await expect(current.getByText("Membresía", { exact: true })).toBeVisible();
-      await barber.getByRole("button", { name: "Ya está en la silla" }).click();
-      await barber.getByRole("button", { name: "Terminado" }).click();
+      await barber.getByRole("button", { name: "Empezar corte" }).click();
+      await barber.getByRole("button", { name: "Terminar y cobrar" }).click();
 
       // REQ-047.1 "Usar membresía" marcado, el corte queda en $ 0 (REQ-047.3: el barbero puede)
       const sheet = barber.getByRole("dialog", { name: "Registrar cobro" });

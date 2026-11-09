@@ -62,6 +62,8 @@ export type BarberQueueView = {
   business: { id: string; name: string; slug: string; graceMinutes: number };
   current: QueueTicket | null;
   waiting: QueueTicket[];
+  /** REQ-078.17: el turno que "Llamar" llamaría ahora (puede no ser el primero si hay cita). */
+  nextId: string | null;
   /** Clientes en espera que lo eligieron a él (para la hoja de pausa, REQ-010.2). */
   mineWaiting: number;
   /** REQ-023.6 turnos que atendió y siguen con cobro pendiente. */
@@ -206,6 +208,7 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
     pendingRes,
     capRes,
     appointments,
+    nextRes,
   ] = await Promise.all([
     supabase.from("barbers").select("id, display_name, status").eq("id", session.barberId).single(),
     supabase.from("businesses").select("grace_minutes").eq("id", session.business.id).single(),
@@ -243,6 +246,7 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
       .select("barber_id, service_id")
       .eq("business_id", session.business.id),
     fetchTodayAppointments(supabase, session.business.id),
+    supabase.rpc("my_next_ticket"),
   ]);
 
   if (barberRes.error || !barberRes.data) return null;
@@ -310,6 +314,7 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
     business: { ...session.business, graceMinutes: bizRes.data?.grace_minutes ?? 5 },
     current: currentRow ? mark(toTicket(currentRow, 0, courtesyNames)) : null,
     waiting,
+    nextId: (nextRes.data as string | null) ?? null,
     mineWaiting: list.filter((r) => r.preferred_barber_id === session.barberId).length,
     pendingPayments: ((pendingRes.data ?? []) as TicketRow[]).map((r) => toTicket(r, 0)),
     template: tplRes.data?.body ?? "",
@@ -320,13 +325,17 @@ export async function getMyQueue(): Promise<BarberQueueView | null> {
 
 // ---------------------------------------------------------------- acciones ----
 
-/** REQ-007.1 */
-export async function callNext(): Promise<ActionResult> {
+/** REQ-007.1; REQ-078.17: con `expectedId` llama a ese turno o a nadie. */
+export async function callNext(expectedId?: string): Promise<ActionResult> {
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.rpc("call_next");
+  const { data, error } = expectedId
+    ? await supabase.rpc("call_next", { p_expected: expectedId })
+    : await supabase.rpc("call_next");
   // REQ-052.4: nadie cabe antes de su próxima cita
   if (error?.message?.includes("NEXT_APPOINTMENT"))
     return { ok: false, error: appointmentErrorMessage(error), code: error.code };
+  if (error?.message?.includes("NOT_NEXT"))
+    return { ok: false, error: "Ese turno ya no es el siguiente.", code: error.code };
   if (error) return mapError(error);
   afterQueueChange(data.business_id);
   return { ok: true };
