@@ -10,6 +10,7 @@ import {
 } from "@/lib/domain/customer-history";
 import { parseBirthday } from "@/lib/domain/birthday";
 import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
+import { maskPhone } from "@/lib/domain/phone";
 import { businessDayBogota } from "@/lib/domain/time";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -495,4 +496,107 @@ export async function saveInactiveDays(days: number): Promise<MergeResult> {
     .update({ inactive_days: days })
     .eq("id", session.business.id);
   return error ? { ok: false, error: "No se pudo guardar." } : { ok: true };
+}
+
+/**
+ * REQ-078.33 (T-180) resumen de la tarjeta de fidelidad para Recordar (lado a lado, como el
+ * tablero Dueno-Clientes). Lectura por RLS del dueño, sin consultas nuevas en SQL.
+ */
+export async function getLoyaltyOverview(): Promise<{
+  enabled: boolean;
+  visitsRequired: number;
+  rewardType: "free_service" | "discount";
+  rewardServiceName: string | null;
+  rewardAmount: number | null;
+} | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("loyalty_programs")
+    .select("enabled, visits_required, reward_type, reward_amount, services(name)")
+    .eq("business_id", session.business.id)
+    .maybeSingle();
+  const p = data as {
+    enabled: boolean;
+    visits_required: number;
+    reward_type: "free_service" | "discount";
+    reward_amount: number | null;
+    services: { name: string } | null;
+  } | null;
+  return {
+    enabled: p?.enabled ?? false,
+    visitsRequired: p?.visits_required ?? 10,
+    rewardType: p?.reward_type ?? "free_service",
+    rewardServiceName: p?.services?.name ?? null,
+    rewardAmount: p?.reward_amount ?? null,
+  };
+}
+
+export type OwnerCustomerRow = {
+  id: string;
+  name: string;
+  /** Enmascarado en el servidor ("300 *** 0001", REQ-078.33): el número completo no baja. */
+  phoneMasked: string;
+  lastVisitAt: string | null;
+  preferredBarberId: string | null;
+  visitsCount: number;
+};
+
+/**
+ * REQ-078.33 (T-180) clientes del dueño para la tabla: lo que ya trae `search_customers` (50 por
+ * búsqueda), con el celular enmascarado.
+ */
+export async function searchOwnerCustomers(q: string): Promise<OwnerCustomerRow[]> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return [];
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.rpc("search_customers", {
+    p_business_id: session.business.id,
+    p_q: q.trim().slice(0, 60),
+    p_limit: 50,
+  });
+  return ((data ?? []) as (CustomerRow & { preferred_barber_id: string | null })[]).map((c) => ({
+    id: c.id,
+    name: c.name,
+    phoneMasked: maskPhone(c.phone_e164),
+    lastVisitAt: c.last_visit_at,
+    preferredBarberId: c.preferred_barber_id,
+    visitsCount: c.visits_count,
+  }));
+}
+
+/** REQ-078.33 lo demás de la tabla: barberos (filtro y "Barbero habitual"), total y días de Recordar. */
+export async function getOwnerCustomersMeta(): Promise<{
+  total: number;
+  inactiveDays: number;
+  today: string;
+  barbers: { id: string; name: string }[];
+} | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  const supabase = await createSupabaseServerClient();
+  const biz = session.business.id;
+  const [countRes, bizRes, barbersRes] = await Promise.all([
+    supabase
+      .from("customers")
+      .select("id", { count: "exact", head: true })
+      .eq("business_id", biz)
+      .is("anonymized_at", null),
+    supabase.from("businesses").select("inactive_days").eq("id", biz).single(),
+    supabase
+      .from("barbers")
+      .select("id, display_name")
+      .eq("business_id", biz)
+      .order("display_name"),
+  ]);
+  return {
+    total: countRes.count ?? 0,
+    inactiveDays: bizRes.data?.inactive_days ?? 21,
+    today: businessDayBogota(),
+    barbers: ((barbersRes.data ?? []) as { id: string; display_name: string }[]).map((b) => ({
+      id: b.id,
+      name: b.display_name,
+    })),
+  };
 }

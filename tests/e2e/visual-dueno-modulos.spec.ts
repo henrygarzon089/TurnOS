@@ -61,8 +61,12 @@ async function createFamily(page: Page, holder: string, phone: string) {
   await form.getByLabel("Nombre").fill(holder);
   await form.getByLabel("Celular").fill(phone);
   await form.getByRole("button", { name: "Crear familia" }).click();
-  const card = page.getByRole("listitem", { name: `Familia de ${holder}` });
-  await expect(card).toBeVisible({ timeout: 15_000 });
+  // REQ-078.33: la familia es una fila de la tabla; su ficha se despliega al tocarla
+  await page
+    .getByRole("button", { name: `Ver la familia de ${holder}` })
+    .click({ timeout: 15_000 });
+  const card = page.getByRole("group", { name: `Familia de ${holder}` });
+  await expect(card).toBeVisible();
   return card;
 }
 
@@ -135,10 +139,10 @@ test.describe("T-166 operación y clientes del dueño con el sistema visual (REQ
       .single();
     try {
       const row = page
-        .getByRole("list", { name: "Tarjetas de regalo" })
-        .getByRole("listitem")
-        // el celular ya tiene ficha (la familia): quien compra sale con ese nombre
-        .filter({ hasText: `Para ${holder}` });
+        .getByRole("table", { name: "Tarjetas de regalo" })
+        .getByRole("row")
+        // REQ-078.33: "Para" es la columna; el celular de quien compra va debajo, enmascarado
+        .filter({ hasText: holder });
       await expect(row).toContainText(masked(phone), { timeout: 15_000 });
       await expect(row).not.toContainText(full(phone));
       // el enlace de WhatsApp sí lleva el número completo: es para escribirle

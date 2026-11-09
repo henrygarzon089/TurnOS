@@ -670,9 +670,12 @@ export async function getWeekDailyTotals(): Promise<{
 }
 
 /** REQ-028.1–28.4 resumen de la semana (lunes a domingo) y la anterior para comparar. */
-export async function getWeekSummary(
-  weekStart?: string,
-): Promise<{ current: WeekSummary; previous: WeekSummary } | null> {
+export async function getWeekSummary(weekStart?: string): Promise<{
+  current: WeekSummary;
+  previous: WeekSummary;
+  pcts: Record<string, number>;
+  purchases: Record<string, number>;
+} | null> {
   const session = await getStaffSession();
   if (session?.role !== "owner") return null;
   if (weekStart && !/^\d{4}-\d{2}-\d{2}$/.test(weekStart)) return null;
@@ -689,5 +692,23 @@ export async function getWeekSummary(
     p_business_id: session.business.id,
     p_week_start: prevDay.toISOString().slice(0, 10),
   });
-  return { current, previous: (prev.data as WeekSummary) ?? current };
+  // REQ-078.32: % de cada barbero y sus compras con descuento (REQ-068) de la semana, para la tabla
+  const [pctRes, buysRes] = await Promise.all([
+    supabase.from("barbers").select("id, commission_pct").eq("business_id", session.business.id),
+    supabase
+      .from("sales")
+      .select("staff_buyer_id, total")
+      .eq("business_id", session.business.id)
+      .eq("status", "active")
+      .not("staff_buyer_id", "is", null)
+      .gte("business_day", current.weekStart)
+      .lte("business_day", current.weekEnd),
+  ]);
+  const pcts: Record<string, number> = {};
+  for (const b of (pctRes.data ?? []) as { id: string; commission_pct: number }[])
+    pcts[b.id] = b.commission_pct;
+  const purchases: Record<string, number> = {};
+  for (const s of (buysRes.data ?? []) as { staff_buyer_id: string; total: number }[])
+    purchases[s.staff_buyer_id] = (purchases[s.staff_buyer_id] ?? 0) + s.total;
+  return { current, previous: (prev.data as WeekSummary) ?? current, pcts, purchases };
 }

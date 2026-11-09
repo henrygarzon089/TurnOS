@@ -2296,13 +2296,41 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   libre"); sin chips de presentes; "N cobros pendientes" en una fila; menú "⋯"; caja con fecha,
   "Cierres anteriores", tabla con buscador y filtros (prueba unitaria del filtro).
 
-### [ ] T-180 · Dueño: Semana, Citas y Clientes como el tablero
+### [x] T-180 · Dueño: Semana, Citas y Clientes como el tablero
 - REQ: REQ-078.32, REQ-078.33, REQ-078.16
 - Archivos: `src/app/(staff)/admin/{semana,citas,fidelidad,recordar,membresias,regalos}/**`,
   `src/app/(staff)/app/clientes/page.tsx` (vista del dueño), sus componentes y E2E de esos módulos.
 - Terminado: como Dueno-Operacion y Dueno-Clientes (captura en el PR); cifras de la semana iguales a
   las de la caja de cada día (prueba de Comisiones y Queda al negocio); tabla de clientes con
   `maskPhone`.
+- Nota (2026-11-09): hecho, sin SQL nuevo. **Semana:** rango "Lun 9 – dom 15 de noviembre" con
+  flechas; franja Ingresos (`sold`) · Servicios · Comisiones · Queda al negocio (`weekFigures`) y
+  tabla Barbero · % · Servicios · Comisión serv. · Productos · Compras suyas · A pagar
+  (`settlementRows`); en el celular "A PAGAR". El % sale de `barbers.commission_pct` y "Compras
+  suyas" de las ventas con `staff_buyer_id` de la semana (dos lecturas por RLS en
+  `getWeekSummary`). Debajo quedan la ocupación (total, por día y por barbero), clientes nuevos y
+  que repiten con su comparación (REQ-028), turnos perdidos y membresías/tarjetas. pgTAP
+  `0078_week_matches_cash.sql`: Ingresos, Comisiones y A pagar de la semana = la suma de la caja de
+  cada día. **Citas:** "Hoy" siempre junto a las flechas; la rejilla ya era la del tablero.
+  **Clientes del dueño:** tabla Nombre · Celular (`maskPhone`, enmascarado en el servidor) ·
+  Última vez (ámbar si pasa de los días de Recordar) · Barbero habitual · Cortes, con "Todos ▾",
+  "Barbero: todos ▾" y "N clientes"; en el celular, lista con lo mismo. La vista del barbero no
+  cambia. **Recordar:** una tabla Cliente · Por qué · WhatsApp (cumpleaños y "No viene hace N
+  días" con visitas y barbero, REQ-020.2); "No contactar" sigue en la fila. **Membresías:** tabla
+  Familia · Usó · Cuota; la ficha de cada familia se despliega en la fila; "Editar plan" abre el
+  plan en una hoja. **Tarjetas:** tabla N.º · Para · Valor · Saldo; anulada tachada. Fidelidad y
+  Recordar, y Membresías y Tarjetas, van lado a lado en las dos páginas de cada pareja (el menú
+  conserva sus entradas). **Desvíos:** (1) "Compras suyas" se muestra pero NO se resta del A pagar:
+  REQ-068.4 dice que la compra de un barbero no se descuenta de la liquidación (el tablero la
+  resta). (2) Clientes sin las columnas Fidelidad y Membresía: `search_customers` no las trae; la
+  lectura (loyalty_cards y membership_members por RLS, sin SQL nuevo) quedó propuesta y espera la
+  aprobación de Henry. (3) Sin "1–50 de N · Siguientes 50": `search_customers` no tiene
+  desplazamiento; se muestran 50 y se busca para ver a los demás. (4) "No trabaja" en la agenda no
+  se construye: la app no tiene días de trabajo por barbero (el estado `off` es "no ha llegado").
+  (5) No se construyen "Marcar pagado", "Descargar PDF", "Anular" de tarjetas ni el filtro "Esta
+  semana ▾" de Recordar; "Escrito ayer" queda como "Escrito hoy" al tocar WhatsApp (al recargar
+  sale de la lista 7 días, REQ-020.4). E2E: `week.spec.ts`, `visual-dueno-clientes.spec.ts` y los
+  de recordar, cumpleaños, membresías y tarjetas ajustados a las tablas.
 
 ### [ ] T-181 · Dueño: Local y Configuración como el tablero
 - REQ: REQ-078.33, REQ-078.20, REQ-078.16

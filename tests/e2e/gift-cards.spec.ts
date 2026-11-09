@@ -29,7 +29,7 @@ test.describe("REQ-055 / REQ-056 / REQ-059 Tarjetas de regalo del dueño", () =>
 
     await loginAsOwner(page);
     await page.goto("/admin/regalos");
-    await expect(page.getByRole("heading", { name: "Tarjetas de regalo" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Tarjetas de regalo", level: 1 })).toBeVisible();
 
     await page.getByRole("button", { name: "Vender tarjeta" }).click();
     const form = page.getByRole("form", { name: "Vender tarjeta" });
@@ -77,12 +77,13 @@ test.describe("REQ-055 / REQ-056 / REQ-059 Tarjetas de regalo del dueño", () =>
 
       // REQ-059.3 en la lista, con saldo, estado y "Saldo por usar"; REQ-056.4 se puede reenviar
       const row = page
-        .getByRole("list", { name: "Tarjetas de regalo" })
-        .getByRole("listitem")
+        .getByRole("table", { name: "Tarjetas de regalo" })
+        .getByRole("row")
         .filter({ hasText: buyer });
       await expect(row).toBeVisible();
-      await expect(row).toContainText("Vigente");
-      await expect(row).toContainText("Saldo $ 50.000 de $ 50.000");
+      // REQ-078.33: tabla N.º · Para · Valor · Saldo; la vigente lleva el enlace de WhatsApp
+      await expect(row.locator("td").nth(2)).toHaveText("$ 50.000"); // Valor (oculto en el celular)
+      await expect(row.locator("td").nth(3)).toHaveText("$ 50.000"); // Saldo
       await expect(row.getByRole("link", { name: /Enviar por WhatsApp/ })).toBeVisible();
       await expect(page.getByLabel("Saldo por usar")).toContainText("$");
     } finally {
