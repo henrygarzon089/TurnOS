@@ -8,15 +8,28 @@ select plan(6);
 create temp table ctx as
 select z.id as biz,
        'a0000000-0000-4000-8000-000000000001'::uuid as owner_u,
-       business_day_bogota(now()) - (extract(isodow from business_day_bogota(now()))::int - 1) as wk
+       business_day_bogota(now()) - (extract(isodow from business_day_bogota(now()))::int - 1) as wk,
+       (select id from services s where s.business_id = z.id and s.name = 'Corte') as corte,
+       (select id from products p where p.business_id = z.id and p.name = 'Gaseosa') as gaseosa,
+       (select id from barbers b where b.business_id = z.id and b.display_name = 'Juan') as juan,
+       (select id from barbers b where b.business_id = z.id and b.display_name = 'Pedro') as pedro
 from businesses z where z.slug = 'la-33';
 grant select on ctx to public;
+
+-- Ventas propias de hoy (la prueba no depende de lo que traiga el seed): dos barberos y un producto
+select register_sale((select biz from ctx), null, (select juan from ctx),
+  jsonb_build_array(jsonb_build_object('kind', 'service', 'ref_id', (select corte from ctx), 'qty', 1),
+                    jsonb_build_object('kind', 'product', 'ref_id', (select gaseosa from ctx), 'qty', 1)),
+  '[{"method": "cash", "amount": 29000}]'::jsonb);
+select register_sale((select biz from ctx), null, (select pedro from ctx),
+  jsonb_build_array(jsonb_build_object('kind', 'service', 'ref_id', (select corte from ctx), 'qty', 1)),
+  '[{"method": "nequi", "amount": 25000}]'::jsonb);
 
 select auth.test_login((select owner_u from ctx));
 
 create temp table res (wk date, week jsonb, days jsonb[]);
 grant all on res to public;
--- Esta semana y la anterior (el seed tiene ventas en las dos)
+-- Esta semana (con las ventas de arriba) y la anterior
 insert into res
 select w, weekly_summary((select biz from ctx), w),
        array(select cash_day_summary((select biz from ctx), w + d) from generate_series(0, 6) d order by d)
@@ -35,8 +48,8 @@ create function pg_temp.week_commissions(p_week jsonb) returns bigint language s
   from jsonb_array_elements(p_week -> 'barbers') b
 $$;
 
-select ok((select (week ->> 'sold')::int > 0 from res where wk = (select wk from ctx) - 7),
-          'REQ-078.32 la semana anterior del seed tiene ventas (la prueba no es vacía)');
+select ok((select (week ->> 'sold')::int >= 54000 from res where wk = (select wk from ctx)),
+          'REQ-078.32 la semana tiene ventas (la prueba no es vacía)');
 
 select is((select (week ->> 'sold')::bigint from res where wk = (select wk from ctx)),
           (select pg_temp.days_total(days) from res where wk = (select wk from ctx)),
