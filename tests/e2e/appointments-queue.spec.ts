@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { adminDb, appAlert, loginAsBarber, loginAsOwner, resetQueue, SEED } from "./helpers";
+import { CALL, adminDb, appAlert, loginAsBarber, loginAsOwner, resetQueue, SEED } from "./helpers";
 
 const phone = () => `+5730070${Math.floor(10000 + Math.random() * 89999)}`;
 
@@ -68,14 +68,12 @@ test.describe("REQ-052 Citas en la fila", () => {
       await expect(mine).toContainText("Cita Llega E2E");
       await mine.getByRole("button", { name: "Llegó Cita Llega E2E" }).click();
 
-      const next = page.getByRole("region", { name: "Siguen" });
-      await expect(next.getByRole("listitem").first()).toContainText("Cita Llega E2E", {
-        timeout: 15_000,
-      });
-      await expect(next.getByRole("listitem").first()).toContainText(/Cita \d{1,2}:\d{2}/);
+      const next = page.getByRole("region", { name: "Turno" });
+      await expect(next).toContainText("Cita Llega E2E", { timeout: 15_000 });
+      await expect(next).toContainText(/Cita \d{1,2}:\d{2}/);
       await expect(page.getByRole("region", { name: "Mis citas de hoy" })).toHaveCount(0);
 
-      await page.getByRole("button", { name: "Llamar al siguiente" }).click();
+      await page.getByRole("button", { name: CALL }).click();
       await expect(page.getByRole("article", { name: "Turno actual Cita Llega E2E" })).toBeVisible({
         timeout: 15_000,
       });
@@ -105,7 +103,7 @@ test.describe("REQ-052 Citas en la fila", () => {
       if (error) throw new Error(error.message);
 
       await loginAsBarber(page, 0);
-      await page.getByRole("button", { name: "Llamar al siguiente" }).click();
+      await page.getByRole("button", { name: CALL }).click();
       await expect(appAlert(page)).toContainText("Tu próxima cita es a las", { timeout: 15_000 });
     } finally {
       await cleanUp(businessId);

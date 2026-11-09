@@ -2725,6 +2725,9 @@ Mis fotos, Mi estación, "Nueva venta" y "Salir". No se construye: "Silla N" (la
 - "Llamar a <número>" manda el id del turno: `call_next(p_barber_id, p_expected uuid default null)`
   (migración `0069_call_expected`). Si `p_expected` no es null y el turno que tocaría es otro,
   levanta `NOT_NEXT` sin cambiar nada; la acción muestra "Ese turno ya no es el siguiente." y relee.
+- "Sigue" es el turno que `call_next` llamaría ahora: `my_next_ticket()` (0069) devuelve
+  `barber_next_ticket` (0046) del barbero en sesión, que salta a quien no cabe antes de una cita.
+  Tocar "Sigue" abre la misma hoja que las filas de "Después" (REQ-009.4).
 - No se construye: "7 de 10 cortes" en "Sigue" ni "le llegó el WhatsApp" (la fila no trae ese
   dato), la nota del cliente en "Atendiendo" (no hay notas de cliente).
 

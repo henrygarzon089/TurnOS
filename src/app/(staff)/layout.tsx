@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { TodayBadge } from "@/components/admin/today/TodayBadge";
+import { CleaningDot } from "@/components/cleaning/CleaningDot";
 import { BarberNav } from "@/components/staff/BarberNav";
 import { StaffHeader } from "@/components/staff/StaffHeader";
 import { SkeletonBlock, SkeletonScreen } from "@/components/ui/Skeleton";
@@ -14,7 +15,8 @@ import { getStaffSession } from "@/lib/auth/session";
  * link directo se vea el esqueleto y no una pantalla en blanco.
  * El dueño tiene su menú (REQ-077) en todas sus pantallas, también en /app/clientes: barra
  * inferior en el celular (el contenido deja 56 px más abajo) y menú lateral desde 1024 px. El
- * barbero, su barra inferior (T-163) en todos los tamaños. `data-wide` ensancha la página desde
+ * barbero, su barra inferior (T-163) en todos los tamaños y sin encabezado: cada pantalla empieza
+ * con su título y Mi fila trae su franja azul (T-169, ADR-051). `data-wide` ensancha la página desde
  * 1024 px y `data-tablet` desde 768 px (la caja en tablet, REQ-078.15).
  */
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
@@ -33,13 +35,21 @@ async function StaffGate({ children }: { children: React.ReactNode }) {
   const owner = session.role === "owner";
   return (
     <div className={`flex flex-1 flex-col ${owner ? "lg:pl-60" : ""}`}>
-      <StaffHeader session={session} />
+      {owner && <StaffHeader session={session} />}
       <div
         className={`mx-auto flex w-full max-w-md flex-1 flex-col px-4 ${owner ? "pt-6 pb-40 md:has-[[data-tablet]]:max-w-3xl lg:pb-24 lg:has-[[data-wide]]:max-w-6xl" : "pb-28"}`}
       >
         {children}
       </div>
-      {session.role === "barber" && <BarberNav />}
+      {session.role === "barber" && (
+        <BarberNav
+          cleaningDot={
+            <Suspense fallback={null}>
+              <CleaningDot />
+            </Suspense>
+          }
+        />
+      )}
       {owner && (
         <AdminNav
           todayBadge={
