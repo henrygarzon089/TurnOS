@@ -2275,7 +2275,9 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   (trae `active` y `appointments`). Va en `loadOwnerQueue` con `cache()`, que comparte con "Fila
   en vivo" de "Hoy" (`NavCount`, `navQueueCounts`). No hay SQL nuevo, pero fuera de "Hoy" suma esa
   lectura en cada pantalla del dueño. Con número o insignia, el nombre accesible del enlace lo
-  incluye ("Fila 3 esperando"): se ajustó el E2E de REQ-077.2. Para T-180/T-181: Clientes es una
+  incluye ("Fila 3 esperando"): se ajustó el E2E de REQ-077.2 y el de REQ-030.1 ("Dueño ▾" es de
+  1024 px). "Stock por sitio" de Inventario tiene una columna por estación y en el CI se desplazaba:
+  desde 1024 px usa columnas fijas con encabezados que se parten (probado con 16 sitios). Para T-180/T-181: Clientes es una
   lista larga a todo el ancho (el tablero pide tabla) y en Inventario y Mensajes los campos se
   estiran a todo el ancho.
 
