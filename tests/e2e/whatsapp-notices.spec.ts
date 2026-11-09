@@ -37,15 +37,15 @@ async function consent(cel: string) {
 }
 
 async function fillForm(page: Page, name: string, cel: string) {
-  await page.goto(`/${SEED.slug}/turno`);
+  await page.goto(`/${SEED.slug}`);
   await page.getByLabel("Tu nombre").fill(name);
-  await page.getByLabel("Tu celular (WhatsApp)").fill(cel);
+  await page.getByLabel("Tu celular").fill(cel);
 }
 
 async function confirm(page: Page) {
-  const privacy = page.getByRole("checkbox", { name: /Acepto que/ });
+  const privacy = page.getByRole("checkbox", { name: /Acepto el aviso/ });
   if (await privacy.isVisible()) await privacy.check();
-  await page.getByRole("button", { name: "Confirmar turno" }).click();
+  await page.getByRole("button", { name: "Tomar turno" }).click();
   await expect(page).toHaveURL(/\/t\//, { timeout: 15_000 });
 }
 
@@ -83,7 +83,7 @@ test.describe("REQ-041 / REQ-042 / REQ-043 aviso por WhatsApp activo", () => {
     await fillForm(page, "Dos Celulares", phone());
     const box = page.getByRole("checkbox", { name: OPT_IN });
     await box.check();
-    await page.getByLabel("Tu celular (WhatsApp)").fill(phone());
+    await page.getByLabel("Tu celular").fill(phone());
     await expect(box).toBeVisible();
     await expect(box).not.toBeChecked();
   });
@@ -100,7 +100,7 @@ test.describe("REQ-041 / REQ-042 / REQ-043 aviso por WhatsApp activo", () => {
     await cancelMyTicket(page);
     await expect(page.getByText("Turno cancelado")).toBeVisible();
 
-    await page.goto(`/${SEED.slug}/turno`);
+    await page.goto(`/${SEED.slug}`);
     await expect(page.getByText(HAS_CONSENT)).toBeVisible();
     await expect(page.getByRole("checkbox", { name: OPT_IN })).toHaveCount(0);
   });
@@ -127,7 +127,7 @@ test.describe("REQ-041 / REQ-042 / REQ-043 aviso por WhatsApp activo", () => {
 
     await cancelMyTicket(page);
     await expect(page.getByText("Turno cancelado")).toBeVisible();
-    await page.goto(`/${SEED.slug}/turno`);
+    await page.goto(`/${SEED.slug}`);
     await expect(page.getByRole("checkbox", { name: OPT_IN })).toBeVisible();
     await expect(page.getByText(HAS_CONSENT)).toHaveCount(0);
   });
@@ -226,8 +226,8 @@ test.describe("REQ-043.3 interruptor del aviso", () => {
       whatsapp_contact_phone: "+573001234567",
     });
 
-    await page.goto(`/${SEED.slug}/turno`);
-    await page.getByLabel("Tu celular (WhatsApp)").fill(phone());
+    await page.goto(`/${SEED.slug}`);
+    await page.getByLabel("Tu celular").fill(phone());
     await expect(page.getByRole("checkbox", { name: OPT_IN })).toBeVisible();
   });
 

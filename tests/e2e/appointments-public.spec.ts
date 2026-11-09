@@ -18,7 +18,7 @@ test.describe("REQ-050 y REQ-051 Reservar cita y Mi cita", () => {
 
     try {
       await page.goto(`/${SEED.slug}`);
-      await page.getByRole("link", { name: "Reservar cita" }).click();
+      await page.getByRole("link", { name: "Reservar una cita" }).click();
       await expect(page.getByRole("heading", { name: "Reservar cita" })).toBeVisible();
 
       await page.getByRole("radio", { name: /Corte/ }).first().check();

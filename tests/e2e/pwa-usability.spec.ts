@@ -130,8 +130,8 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
 
     // La portada se relee en vivo (ADR-008): esperar a que termine antes de navegar (WebKit)
     await page.waitForLoadState("networkidle");
-    await page.goto(`/${SEED.slug}/turno`);
-    await expectThumbButton(page, page.getByRole("button", { name: "Confirmar turno" }));
+    await page.goto(`/${SEED.slug}`);
+    await expectThumbButton(page, page.getByRole("button", { name: "Tomar turno" }));
     await expectAllTargets48(page);
     await expectZoom200(page);
   });
@@ -169,7 +169,14 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
     const register = sheet.getByRole("button", { name: /^Registrar/ });
     await register.scrollIntoViewIfNeeded();
     await expectThumbButton(page, register);
-    for (const m of ["Efectivo", "Nequi", "Daviplata", "Transferencia", "Tarjeta", "Tarjeta de regalo"]) {
+    for (const m of [
+      "Efectivo",
+      "Nequi",
+      "Daviplata",
+      "Transferencia",
+      "Tarjeta",
+      "Tarjeta de regalo",
+    ]) {
       const box = (await sheet.getByRole("radio", { name: m, exact: true }).boundingBox())!;
       expect(box.height, `${m} ≥ 48 px`).toBeGreaterThanOrEqual(48);
     }

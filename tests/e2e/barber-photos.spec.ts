@@ -95,9 +95,9 @@ test.describe("T-062 fotos de cortes", () => {
 
     const ctx = await browser.newContext();
     const customer = await ctx.newPage();
-    await customer.goto(`/${SEED.slug}/turno`);
+    await customer.goto(`/${SEED.slug}`);
     await customer.getByLabel("Tu nombre").fill("Valentina Ríos");
-    await customer.getByLabel("Tu celular (WhatsApp)").fill("300 811 2233");
+    await customer.getByLabel("Tu celular").fill("300 811 2233");
     await customer.getByRole("radio", { name: "Juan" }).click();
 
     await customer.getByRole("button", { name: "Ver cortes de Juan" }).click();
@@ -112,7 +112,7 @@ test.describe("T-062 fotos de cortes", () => {
     // REQ-039.5: lo escrito sigue ahí
     await expect(sheet).toHaveCount(0);
     await expect(customer.getByLabel("Tu nombre")).toHaveValue("Valentina Ríos");
-    await expect(customer.getByLabel("Tu celular (WhatsApp)")).toHaveValue("300 811 2233");
+    await expect(customer.getByLabel("Tu celular")).toHaveValue("300 811 2233");
     await expect(customer.getByRole("radio", { name: "Juan" })).toHaveAttribute(
       "aria-checked",
       "true",
@@ -122,9 +122,12 @@ test.describe("T-062 fotos de cortes", () => {
 
   test("REQ-039.5 sin fotos no aparece Ver cortes", async ({ page }) => {
     await seedPhotos("Juan", 1);
-    await page.goto(`/${SEED.slug}/turno`);
+    await page.goto(`/${SEED.slug}`);
+    // T-173: "Ver cortes" va debajo de las fichas, para el barbero elegido
+    await page.getByRole("radio", { name: "Juan" }).click();
     await expect(page.getByRole("button", { name: "Ver cortes de Juan" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Ver cortes de Pedro" })).toHaveCount(0);
+    await page.getByRole("radio", { name: "Pedro" }).click();
+    await expect(page.getByRole("button", { name: /Ver cortes/ })).toHaveCount(0);
   });
 
   test("REQ-039.4 un archivo que no es imagen se rechaza", async ({ page }) => {
@@ -213,7 +216,8 @@ test.describe("T-062 fotos de cortes", () => {
   }) => {
     await seedPhotos("Mateo", 2);
     const { barber } = await ids("Mateo");
-    await page.goto(`/${SEED.slug}/turno`);
+    await page.goto(`/${SEED.slug}`);
+    await page.getByRole("radio", { name: "Mateo" }).click();
     const open = page.getByRole("button", { name: "Ver cortes de Mateo" });
     await expect(open).toBeVisible();
     try {

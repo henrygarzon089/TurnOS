@@ -67,3 +67,36 @@ export function publicBarberLines(
     };
   });
 }
+
+/** "40 min", "1 h 10 min", "2 h": la espera sin el "≈" de `formatMinutes`. */
+function minutes(n: number): string {
+  if (n < 60) return `${n} min`;
+  const h = Math.floor(n / 60);
+  const m = n % 60;
+  return m === 0 ? `${h} h` : `${h} h ${m} min`;
+}
+
+/**
+ * Lo que va a la derecha de cada barbero en el bloque en vivo del celular (REQ-078.21):
+ * "3 · ~ 40 min", "En pausa" o "Libre". Sin estimado, solo cuántos tiene.
+ */
+export function liveLineText(l: PublicBarberLine): string {
+  if (l.state === "paused") return "En pausa";
+  if (l.state === "free") return "Libre";
+  return l.waitMin === null ? String(l.waiting) : `${l.waiting} · ~ ${minutes(l.waitMin)}`;
+}
+
+/** Columnas Estado y Espera aprox. de la tabla de escritorio (Cliente-Escritorio). */
+export function deskLine(l: PublicBarberLine): { status: string; wait: string } {
+  if (l.state === "paused") return { status: "En pausa", wait: "—" };
+  if (l.state === "free") return { status: "Libre", wait: "ya" };
+  return { status: "Atendiendo", wait: l.waitMin === null ? "—" : minutes(l.waitMin) };
+}
+
+/** Máximo `max` líneas en el celular; el resto se cuenta ("y 2 más"). */
+export function capLines(
+  lines: PublicBarberLine[],
+  max = 5,
+): { shown: PublicBarberLine[]; more: number } {
+  return { shown: lines.slice(0, max), more: Math.max(0, lines.length - max) };
+}

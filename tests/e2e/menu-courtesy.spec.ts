@@ -10,9 +10,9 @@ const PNG = Buffer.from(
 );
 
 async function fillJoinForm(page: Page, name: string) {
-  await page.goto(`/${SEED.slug}/turno`);
+  await page.goto(`/${SEED.slug}`);
   await page.getByLabel("Tu nombre").fill(name);
-  await page.getByLabel("Tu celular (WhatsApp)").fill(phone());
+  await page.getByLabel("Tu celular").fill(phone());
   await page.getByRole("radio", { name: /Corte · 20 min/ }).check();
 }
 
@@ -20,8 +20,8 @@ async function takeTicket(ctx: BrowserContext, name: string, drink?: string) {
   const page = await ctx.newPage();
   await fillJoinForm(page, name);
   if (drink) await page.getByRole("radio", { name: drink }).check();
-  await page.getByRole("checkbox", { name: /Acepto que/ }).check();
-  await page.getByRole("button", { name: "Confirmar turno" }).click();
+  await page.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
+  await page.getByRole("button", { name: "Tomar turno" }).click();
   await expect(page).toHaveURL(/\/t\//);
   return page;
 }
@@ -61,7 +61,10 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     page,
   }) => {
     await page.goto(`/${SEED.slug}`);
-    const menu = page.getByRole("region", { name: "Lo que vendemos" });
+    await page.getByRole("button", { name: "Ver menú" }).click();
+    const menu = page
+      .getByRole("dialog", { name: "Menú" })
+      .getByRole("region", { name: "Lo que vendemos" });
     await expect(menu.getByText("Helado")).toBeVisible();
     await expect(menu.getByText("$ 3.000")).toBeVisible();
     await expect(menu.getByText("Tinto")).toHaveCount(0);
@@ -74,7 +77,7 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     await adminDb().from("products").update({ for_sale: false }).eq("business_id", biz!.id);
     try {
       await page.reload();
-      await expect(page.getByRole("heading", { name: "Lo que vendemos" })).toHaveCount(0);
+      await expect(page.getByRole("button", { name: "Ver menú" })).toHaveCount(0);
     } finally {
       await adminDb()
         .from("products")
@@ -196,12 +199,12 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
   }) => {
     await fillJoinForm(page, "Se Acabó E2E");
     await page.getByRole("radio", { name: "Tinto" }).check();
-    await page.getByRole("checkbox", { name: /Acepto que/ }).check();
+    await page.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
     await setProduct("Tinto", { is_active: false });
-    await page.getByRole("button", { name: "Confirmar turno" }).click();
+    await page.getByRole("button", { name: "Tomar turno" }).click();
     const group = page.getByRole("group", { name: "Bebida de cortesía" });
     await expect(group.getByText("Esa bebida ya no está disponible")).toBeVisible();
-    await expect(page).toHaveURL(/\/turno/);
+    await expect(page).not.toHaveURL(/\/t\//);
   });
 
   test("REQ-038.7 un producto desactivado deja de ofrecerse y el turno que lo tenía lo conserva", async ({
@@ -256,11 +259,12 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     const ctx = await browser.newContext();
     const customer = await ctx.newPage();
     await customer.goto(`/${SEED.slug}`);
+    await customer.getByRole("button", { name: "Ver menú" }).click();
     const menu = customer.getByRole("region", { name: "Lo que vendemos" });
     await expect(menu.getByText("Helado")).toBeVisible();
     await expect(menu.getByText("Agua")).toHaveCount(0);
     const form = await ctx.newPage();
-    await form.goto(`/${SEED.slug}/turno`);
+    await form.goto(`/${SEED.slug}`);
     await expect(form.getByRole("radio", { name: "Agua" })).toBeVisible();
     await ctx.close();
 
@@ -304,6 +308,7 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     const ctx = await browser.newContext();
     const customer = await ctx.newPage();
     await customer.goto(`/${SEED.slug}`);
+    await customer.getByRole("button", { name: "Ver menú" }).click();
     const img = customer.getByRole("region", { name: "Lo que vendemos" }).getByRole("img", {
       name: "Agua",
     });

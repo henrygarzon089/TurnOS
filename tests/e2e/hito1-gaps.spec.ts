@@ -9,11 +9,11 @@ test.describe("Hito 1 · criterios de interfaz", () => {
   test("REQ-002.1 el formulario muestra el aviso corto con enlace al completo y casilla desmarcada", async ({
     page,
   }) => {
-    await page.goto(`/${SEED.slug}/turno`);
-    const box = page.getByRole("checkbox", { name: /Acepto que/ });
+    await page.goto(`/${SEED.slug}`);
+    const box = page.getByRole("checkbox", { name: /Acepto el aviso/ });
     await expect(box).toBeVisible();
     await expect(box).not.toBeChecked();
-    await expect(page.getByRole("link", { name: "Ver aviso completo" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "aviso de privacidad" })).toHaveAttribute(
       "href",
       `/${SEED.slug}/privacidad`,
     );
@@ -35,11 +35,11 @@ test.describe("Hito 1 · criterios de interfaz", () => {
     page,
     browser,
   }) => {
-    await page.goto(`/${SEED.slug}/turno`);
+    await page.goto(`/${SEED.slug}`);
     await page.getByLabel("Tu nombre").fill("Cancelable");
-    await page.getByLabel("Tu celular (WhatsApp)").fill(phone());
-    await page.getByRole("checkbox", { name: /Acepto que/ }).check();
-    await page.getByRole("button", { name: "Confirmar turno" }).click();
+    await page.getByLabel("Tu celular").fill(phone());
+    await page.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
+    await page.getByRole("button", { name: "Tomar turno" }).click();
     await expect(page.getByRole("button", { name: "Cancelar mi turno" })).toBeVisible();
 
     const bctx = await browser.newContext();
@@ -62,13 +62,13 @@ test.describe("Hito 1 · criterios de interfaz", () => {
   }) => {
     const cctx = await browser.newContext();
     const c = await cctx.newPage();
-    await c.goto(`/${SEED.slug}/turno`);
+    await c.goto(`/${SEED.slug}`);
     await c.getByLabel("Tu nombre").fill("Detalle Fila");
-    await c.getByLabel("Tu celular (WhatsApp)").fill(phone());
+    await c.getByLabel("Tu celular").fill(phone());
     await c.getByRole("radio", { name: /Barba · 15 min/ }).check();
     await c.getByRole("radio", { name: "Pedro" }).click();
-    await c.getByRole("checkbox", { name: /Acepto que/ }).check();
-    await c.getByRole("button", { name: "Confirmar turno" }).click();
+    await c.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
+    await c.getByRole("button", { name: "Tomar turno" }).click();
 
     await loginAsBarber(page, 1); // Pedro
     const here = page.getByRole("button", { name: "Estoy aquí" });
@@ -116,11 +116,11 @@ test.describe("Hito 1 · criterios de interfaz", () => {
 
     const cctx = await browser.newContext();
     const c = await cctx.newPage();
-    await c.goto(`/${SEED.slug}/turno`);
+    await c.goto(`/${SEED.slug}`);
     await c.getByLabel("Tu nombre").fill("Pantalla Prueba");
-    await c.getByLabel("Tu celular (WhatsApp)").fill(phone());
-    await c.getByRole("checkbox", { name: /Acepto que/ }).check();
-    await c.getByRole("button", { name: "Confirmar turno" }).click();
+    await c.getByLabel("Tu celular").fill(phone());
+    await c.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
+    await c.getByRole("button", { name: "Tomar turno" }).click();
 
     const bctx = await browser.newContext();
     const barber = await bctx.newPage();
