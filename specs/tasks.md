@@ -1889,6 +1889,22 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ---
 
+## Cambio · Relectura al volver a primer plano (ADR-008)
+
+> Aprobado por Henry el 2026-11-09. Agrega REQ-011.7. Diseño en `design.md` (Lectura por
+> relectura). Origen: "Hoy" decía "3 esperando" y la Fila "2" porque una pantalla congelada en
+> segundo plano no releía al volver.
+
+### [x] T-182 · Relectura al volver a primer plano
+- REQ: REQ-011.7, ADR-008
+- Archivos: `src/lib/realtime/queue-subscription.ts`, `src/lib/realtime/use-queue-subscription.ts`,
+  `tests/unit/queue-subscription.test.ts`
+- Terminado: la prueba `REQ-011.7 …` oculta y muestra la pestaña (y dispara `pageshow`) y comprueba
+  una sola relectura; ocultarla no relee; al desmontar se quitan los listeners; `pnpm lint`,
+  `typecheck`, `test` y `trace` en verde.
+
+---
+
 ## Hito 15 — Inicio "Hoy" del dueño (ADR-046)
 
 > REQ-076, REQ-077 y ADR-046 aprobados por Henry (2026-11-06). Diseño en `design.md` §21. Sin

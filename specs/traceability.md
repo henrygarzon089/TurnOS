@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-08.
+> Generada por `scripts/traceability.ts` el 2026-11-09.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -60,12 +60,13 @@
 | REQ-010.4 | Barbero que se ausenta (pausa) | T-013 (hecha), T-016 (hecha), T-020 (hecha), T-023 (hecha), T-025 (hecha) | 0007_queue_ops.sql | cubierto |
 | REQ-010.5 | Barbero que se ausenta (pausa) | T-013 (hecha), T-016 (hecha), T-020 (hecha), T-023 (hecha), T-025 (hecha) | 0007_queue_ops.sql | cubierto |
 | REQ-010.6 | Barbero que se ausenta (pausa) | T-013 (hecha), T-016 (hecha), T-020 (hecha), T-023 (hecha), T-025 (hecha) | owner-queue.spec.ts, 0007_queue_ops.sql | cubierto |
-| REQ-011.1 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha) | customer-flow.spec.ts, queue-subscription.test.ts | cubierto |
-| REQ-011.2 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha) | queue-subscription.test.ts | cubierto |
-| REQ-011.3 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha) | barber-flow.spec.ts, retry.test.ts | cubierto |
-| REQ-011.4 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha) | 0004_invitations.sql, 0006_transitions.sql | cubierto |
-| REQ-011.5 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha) | 0012_hito1_gaps.sql | cubierto |
-| REQ-011.6 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha) | customer-flow.spec.ts | cubierto |
+| REQ-011.1 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha), T-182 (hecha) | customer-flow.spec.ts, queue-subscription.test.ts | cubierto |
+| REQ-011.2 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha), T-182 (hecha) | queue-subscription.test.ts | cubierto |
+| REQ-011.3 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha), T-182 (hecha) | barber-flow.spec.ts, retry.test.ts | cubierto |
+| REQ-011.4 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha), T-182 (hecha) | 0004_invitations.sql, 0006_transitions.sql | cubierto |
+| REQ-011.5 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha), T-182 (hecha) | 0012_hito1_gaps.sql | cubierto |
+| REQ-011.6 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha), T-182 (hecha) | customer-flow.spec.ts | cubierto |
+| REQ-011.7 | Pérdida de conexión | T-011 (hecha), T-012 (hecha), T-015 (hecha), T-017 (hecha), T-020 (hecha), T-022 (hecha), T-182 (hecha) | queue-subscription.test.ts | cubierto |
 | REQ-012.1 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-012.2 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | owner-queue.spec.ts, 0006_transitions.sql, 0007_queue_ops.sql, 0046_appointments_queue.sql | cubierto |
 | REQ-012.3 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | customers.spec.ts, google-review.spec.ts, loyalty-progress.spec.ts, owner-queue.spec.ts, 0005_queue.sql, 0007_queue_ops.sql | cubierto |
