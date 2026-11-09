@@ -1,5 +1,5 @@
 import { expect, test, type Browser } from "@playwright/test";
-import { adminDb, loginAsBarber, resetQueue, SEED } from "./helpers";
+import { CALL, adminDb, loginAsBarber, resetQueue, SEED } from "./helpers";
 
 /**
  * T-056 · REQ-035.9 / REQ-035.10: la fila del barbero y "Mi turno" según quién hace el servicio.
@@ -93,8 +93,8 @@ test.describe("REQ-035 fila del barbero según el servicio", () => {
       await expect(juan.page.getByText(name)).toHaveCount(0);
 
       await mateo.page.goto("/app/fila");
-      await expect(mateo.page.getByRole("listitem").filter({ hasText: name })).toBeVisible();
-      await mateo.page.getByRole("button", { name: "Llamar al siguiente" }).click();
+      await expect(mateo.page.getByRole("main").getByText(name).first()).toBeVisible();
+      await mateo.page.getByRole("button", { name: CALL }).click();
       await expect(mateo.page.getByRole("article", { name: /Turno actual/ })).toContainText(name);
     } finally {
       await juan.context.close();

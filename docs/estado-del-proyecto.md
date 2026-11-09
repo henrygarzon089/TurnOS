@@ -502,6 +502,17 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   el celular y el computador, la prueba en la barbería (PA-H16-2), comparar Speed Insights con el
   Hito 14 y aprobar (ADR-050, reservado).
 
+### Cambio · relectura al volver a primer plano (T-182, REQ-011.7, 2026-11-09)
+
+- Origen: mientras se hacía T-178, "Hoy" decía "3 esperando" y la Fila "2". Las dos cuentan lo
+  mismo; la que estaba mal era una pantalla congelada en segundo plano (celular bloqueado o pestaña
+  oculta) que no releía al volver.
+- REQ-011.7 aprobado por Henry el 2026-11-09. `subscribeToQueue` relee en `visibilitychange`
+  (solo al quedar visible) y en `pageshow`, por la misma espera de 300 ms que `queue_changed`.
+  Sin migraciones. PR #145.
+- Falta de Henry: desplegar `main` y probar en el celular (bloquear, cambiar la fila desde otro
+  equipo, desbloquear: el número cambia en menos de un segundo).
+
 ### Hito 4 — servicios por barbero (2026-10-28)
 
 - Origen: Filo (`/filo`, creado en producción el 2026-10-28 con `supabase/data/filo.sql`) tiene
