@@ -1851,6 +1851,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `src/components/ui/VitalsReporter.tsx` (el layout raíz es de servidor y no puede pasarle la función
   `beforeSend`). La ruta (`route`) ya sale como patrón desde Next; `redactVitalsUrl` limpia la `url`.
   Falta la parte de Henry: activar Speed Insights en el proyecto de Vercel y revisar los datos y la cuota.
+- Nota (2026-11-09, ADR-054): Speed Insights no se activa por costo. El código se queda (sin
+  activación no envía nada); la referencia de velocidad es Lighthouse móvil del CI.
 - REQ: REQ-075.3, REQ-075.4
 - Archivos: `package.json` (`@vercel/speed-insights`), `src/app/layout.tsx`,
   `src/lib/domain/vitals.ts` (`redactVitalsUrl`), `src/components/ui/VitalsReporter.tsx`,
@@ -2433,13 +2435,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   en la barbería (PA-H16-2); aprobación del hito (ADR nuevo).
 - Depende también de T-169…T-171 (ADR-051), T-172…T-176 (ADR-052), T-177…T-181 (ADR-053) y de la
   revisión igual de acceso.
-- Terminado: `pnpm trace --hito=16` sin huecos; CI verde; Speed Insights sin empeorar respecto al
-  Hito 14 (REQ-075.3).
+- Terminado: `pnpm trace --hito=16` sin huecos; CI verde; Lighthouse móvil del CI sin empeorar
+  respecto al Hito 14 (ADR-054: Speed Insights queda apagado por costo).
 - Nota (2026-11-08): `pnpm trace --hito=16` con 0 sin prueba (423 criterios en total) y el hito 16
   en el loop de `tests/unit/traceability.test.ts`. Las 15 PR del hito están en `main`; el E2E de
   `main` se arregló en la PR #129 (zoom 200 % con las fuentes de Linux, "Visto" de 48 px, prueba de
   acceso en WebKit). Queda `[ ]` hasta que Henry recorra cliente, barbero y dueño, haga la prueba en
-  la barbería y compare Speed Insights; la aprobación será ADR-050 (reservado).
+  la barbería y compare Lighthouse móvil del CI con el Hito 14 (ADR-054); la aprobación será ADR-050
+  (reservado).
 
 ---
 
