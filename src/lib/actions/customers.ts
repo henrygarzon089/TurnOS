@@ -10,6 +10,11 @@ import {
 } from "@/lib/domain/customer-history";
 import { parseBirthday } from "@/lib/domain/birthday";
 import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
+import {
+  customerBadges,
+  type CustomerBadges,
+  type MemberRead,
+} from "@/lib/domain/owner-tables";
 import { maskPhone } from "@/lib/domain/phone";
 import { businessDayBogota } from "@/lib/domain/time";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -541,11 +546,12 @@ export type OwnerCustomerRow = {
   lastVisitAt: string | null;
   preferredBarberId: string | null;
   visitsCount: number;
-};
+} & CustomerBadges;
 
 /**
  * REQ-078.33 (T-180) clientes del dueño para la tabla: lo que ya trae `search_customers` (50 por
- * búsqueda), con el celular enmascarado.
+ * búsqueda), con el celular enmascarado. Después, Fidelidad y Membresía de esos clientes con la
+ * sesión del dueño (RLS, sin cambios SQL; lectura aprobada por Henry, 2026-11-09).
  */
 export async function searchOwnerCustomers(q: string): Promise<OwnerCustomerRow[]> {
   const session = await getStaffSession();
@@ -556,13 +562,45 @@ export async function searchOwnerCustomers(q: string): Promise<OwnerCustomerRow[
     p_q: q.trim().slice(0, 60),
     p_limit: 50,
   });
-  return ((data ?? []) as (CustomerRow & { preferred_barber_id: string | null })[]).map((c) => ({
+  const rows = (data ?? []) as (CustomerRow & { preferred_barber_id: string | null })[];
+  const ids = rows.map((c) => c.id);
+  const [cardsRes, programRes, membersRes] = ids.length
+    ? await Promise.all([
+        supabase
+          .from("loyalty_cards")
+          .select("customer_id, stamps")
+          .in("status", ["active", "completed"])
+          .in("customer_id", ids),
+        supabase
+          .from("loyalty_programs")
+          .select("enabled, visits_required")
+          .eq("business_id", session.business.id)
+          .maybeSingle(),
+        supabase
+          .from("membership_members")
+          .select(
+            "customer_id, family_memberships(customers(name), membership_periods(ends_on, status))",
+          )
+          .is("removed_at", null)
+          .in("customer_id", ids),
+      ])
+    : [{ data: [] }, { data: null }, { data: [] }];
+  const program = programRes.data as { enabled: boolean; visits_required: number } | null;
+  const badges = customerBadges(
+    ids,
+    (cardsRes.data ?? []) as { customer_id: string; stamps: number }[],
+    program?.enabled ? program.visits_required : null,
+    (membersRes.data ?? []) as unknown as MemberRead[],
+    businessDayBogota(),
+  );
+  return rows.map((c) => ({
     id: c.id,
     name: c.name,
     phoneMasked: maskPhone(c.phone_e164),
     lastVisitAt: c.last_visit_at,
     preferredBarberId: c.preferred_barber_id,
     visitsCount: c.visits_count,
+    ...badges[c.id],
   }));
 }
 

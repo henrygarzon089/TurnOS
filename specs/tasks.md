@@ -2322,9 +2322,12 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   Recordar, y Membresías y Tarjetas, van lado a lado en las dos páginas de cada pareja (el menú
   conserva sus entradas). **Desvíos:** (1) "Compras suyas" se muestra pero NO se resta del A pagar:
   REQ-068.4 dice que la compra de un barbero no se descuenta de la liquidación (el tablero la
-  resta). (2) Clientes sin las columnas Fidelidad y Membresía: `search_customers` no las trae; la
-  lectura (loyalty_cards y membership_members por RLS, sin SQL nuevo) quedó propuesta y espera la
-  aprobación de Henry. (3) Sin "1–50 de N · Siguientes 50": `search_customers` no tiene
+  resta); queda como dato, sin signo menos, y A pagar = `toPay`. (2) Fidelidad y Membresía de
+  Clientes no vienen en `search_customers`: se leen después con la sesión del dueño (RLS, sin SQL
+  nuevo) — `loyalty_cards` abierta + `loyalty_programs.visits_required` ("7/10") y
+  `membership_members` activos → `family_memberships` + el último `membership_periods.ends_on`
+  vigente ("Familia <titular>", "Vence en N días" en ámbar a 7 días o menos, o raya); lectura
+  aprobada por Henry, 2026-11-09 (`customerBadges`, prueba unitaria). (3) Sin "1–50 de N · Siguientes 50": `search_customers` no tiene
   desplazamiento; se muestran 50 y se busca para ver a los demás. (4) "No trabaja" en la agenda no
   se construye: la app no tiene días de trabajo por barbero (el estado `off` es "no ha llegado").
   (5) No se construyen "Marcar pagado", "Descargar PDF", "Anular" de tarjetas ni el filtro "Esta

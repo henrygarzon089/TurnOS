@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { searchOwnerCustomers, type OwnerCustomerRow } from "@/lib/actions/customers";
+import { Tag } from "@/components/admin/ModulePage";
 import { lastSeen } from "@/lib/domain/owner-tables";
 
 type Meta = {
@@ -16,7 +17,8 @@ type Meta = {
  * REQ-078.33 (T-180) clientes del dueño como el tablero Dueno-Clientes: buscador "Nombre o
  * celular", "Todos ▾", "Barbero: todos ▾" y "N clientes"; en escritorio tabla Nombre · Celular
  * (enmascarado) · Última vez (ámbar si pasa de los días de Recordar) · Barbero habitual · Cortes;
- * en el celular, lista con lo mismo en una línea. La búsqueda va al servidor (REQ-018.3); los
+ * Fidelidad (X/10) · Membresía (familia o "Vence en N días" en ámbar); en el celular, lista con lo
+ * mismo en una línea. La búsqueda va al servidor (REQ-018.3); los
  * filtros, sobre lo ya cargado. La ficha (nombre) muestra el celular completo.
  */
 export function OwnerCustomerTable({ initial, meta }: { initial: OwnerCustomerRow[]; meta: Meta }) {
@@ -112,7 +114,9 @@ export function OwnerCustomerTable({ initial, meta }: { initial: OwnerCustomerRo
                 <th className="px-3 py-2 font-bold">Celular</th>
                 <th className="px-3 py-2 font-bold">Última vez</th>
                 <th className="px-3 py-2 font-bold">Barbero habitual</th>
-                <th className="px-4 py-2 text-right font-bold">Cortes</th>
+                <th className="px-3 py-2 text-right font-bold">Cortes</th>
+                <th className="px-3 py-2 text-right font-bold">Fidelidad</th>
+                <th className="px-4 py-2 font-bold">Membresía</th>
               </tr>
             </thead>
             <tbody className="divide-line divide-y">
@@ -131,7 +135,15 @@ export function OwnerCustomerTable({ initial, meta }: { initial: OwnerCustomerRo
                     {c.seen.label}
                   </td>
                   <td className="px-3 py-2">{barberName(c.preferredBarberId)}</td>
-                  <td className="px-4 py-2 text-right tabular-nums">{c.visitsCount}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{c.visitsCount}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{c.loyalty}</td>
+                  <td className="px-4 py-2">
+                    {c.membership ? (
+                      <Tag tone={c.membership.tone}>{c.membership.label}</Tag>
+                    ) : (
+                      <span className="text-muted">—</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -153,8 +165,12 @@ export function OwnerCustomerTable({ initial, meta }: { initial: OwnerCustomerRo
                       {c.preferredBarberId ? ` · ${barberName(c.preferredBarberId)}` : ""}
                     </span>
                   </span>
-                  <span className="text-muted shrink-0 text-xs tabular-nums">
-                    {c.visitsCount} {c.visitsCount === 1 ? "corte" : "cortes"}
+                  <span className="flex shrink-0 flex-col items-end gap-1 text-xs">
+                    <span className="text-muted tabular-nums">
+                      {c.visitsCount} {c.visitsCount === 1 ? "corte" : "cortes"}
+                      {c.loyalty !== "—" ? ` · ${c.loyalty}` : ""}
+                    </span>
+                    {c.membership && <Tag tone={c.membership.tone}>{c.membership.label}</Tag>}
                   </span>
                 </Link>
               </li>

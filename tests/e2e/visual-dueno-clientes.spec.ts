@@ -36,7 +36,15 @@ test.describe("T-180 clientes del dueño como el tablero (REQ-078.33)", () => {
       "Última vez",
       "Barbero habitual",
       "Cortes",
+      "Fidelidad",
+      "Membresía",
     ]);
+    // Fidelidad X/10 de la tarjeta abierta (lectura aprobada por Henry, 2026-11-09)
+    const stamps = await page
+      .getByRole("table", { name: "Tabla de clientes" })
+      .locator("tbody tr td:nth-child(6)")
+      .allTextContents();
+    expect(stamps.some((t) => /^\d+\/\d+$/.test(t))).toBe(true);
     const phones = await page
       .getByRole("table", { name: "Tabla de clientes" })
       .locator("tbody tr td:nth-child(2)")

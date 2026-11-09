@@ -140,3 +140,52 @@ export function familyQuota(
     return { label: `Vence ${shortDay(current.endsOn, true)}`, tone: "warn" };
   return { label: "Al día", tone: "ok" };
 }
+
+export type MemberRead = {
+  customer_id: string;
+  family_memberships: {
+    customers: { name: string } | null;
+    membership_periods: { ends_on: string; status: string }[];
+  } | null;
+};
+
+export type CustomerBadges = {
+  loyalty: string;
+  membership: { label: string; tone: Tone } | null;
+};
+
+/**
+ * REQ-078.33 columnas Fidelidad y Membresía de Clientes (lectura aprobada por Henry, 2026-11-09):
+ * sellos de la tarjeta abierta sobre los cortes del premio, y la familia activa con el último
+ * periodo vigente (no anulado, que no haya pasado). Sin programa, raya en Fidelidad.
+ */
+export function customerBadges(
+  ids: string[],
+  cards: { customer_id: string; stamps: number }[],
+  visitsRequired: number | null,
+  members: MemberRead[],
+  today: string,
+): Record<string, CustomerBadges> {
+  const stamps = new Map(cards.map((c) => [c.customer_id, c.stamps]));
+  const family = new Map(members.map((m) => [m.customer_id, m.family_memberships]));
+  return Object.fromEntries(
+    ids.map((id) => {
+      const f = family.get(id);
+      const endsOn =
+        f?.membership_periods
+          .filter((p) => p.status === "active" && p.ends_on >= today)
+          .map((p) => p.ends_on)
+          .sort()
+          .at(-1) ?? null;
+      return [
+        id,
+        {
+          loyalty: loyaltyLabel(stamps.get(id) ?? null, visitsRequired),
+          membership: f
+            ? membershipBadge({ holderName: f.customers?.name ?? null, endsOn }, today)
+            : null,
+        },
+      ];
+    }),
+  );
+}

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   familyQuota,
   familyUsed,
+  customerBadges,
   lastSeen,
   loyaltyLabel,
   membershipBadge,
@@ -100,5 +101,49 @@ describe("REQ-078.33 tablas del dueño como el tablero Dueno-Clientes (T-180)", 
   it("REQ-078.33 día corto del tablero ('dom. 15', '16 oct.')", () => {
     expect(shortDay("2026-11-15", true)).toBe("dom. 15");
     expect(shortDay("2026-10-16")).toBe("16 oct.");
+  });
+
+  it("REQ-078.33 insignias de Clientes: sellos de la tarjeta abierta y la familia con su último periodo vigente", () => {
+    const b = customerBadges(
+      ["a", "b", "c", "d"],
+      [
+        { customer_id: "a", stamps: 7 },
+        { customer_id: "c", stamps: 10 },
+      ],
+      10,
+      [
+        {
+          customer_id: "a",
+          family_memberships: {
+            customers: { name: "Ana Restrepo" },
+            membership_periods: [
+              { ends_on: "2026-11-01", status: "active" }, // ya pasó
+              { ends_on: "2026-11-12", status: "active" },
+              { ends_on: "2026-12-30", status: "voided" }, // anulado
+            ],
+          },
+        },
+        {
+          customer_id: "b",
+          family_memberships: {
+            customers: { name: "Luis Gómez" },
+            membership_periods: [{ ends_on: "2026-10-01", status: "active" }],
+          },
+        },
+      ],
+      TODAY,
+    );
+    expect(b.a).toEqual({
+      loyalty: "7/10",
+      membership: { label: "Vence en 3 días", tone: "warn" },
+    });
+    // sin periodo vigente: la familia en gris
+    expect(b.b).toEqual({ loyalty: "—", membership: { label: "Familia Gómez", tone: "muted" } });
+    expect(b.c).toEqual({ loyalty: "10/10", membership: null });
+    expect(b.d).toEqual({ loyalty: "—", membership: null });
+    // programa apagado: sin sellos
+    expect(customerBadges(["a"], [{ customer_id: "a", stamps: 7 }], null, [], TODAY).a.loyalty).toBe(
+      "—",
+    );
   });
 });
