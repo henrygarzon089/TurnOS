@@ -81,6 +81,10 @@ Principios de la arquitectura:
 - **Lectura por relectura.** Realtime solo transporta una señal `queue_changed` por negocio; cada
   pantalla recarga su vista completa (ADR-008). Así la reconexión y los eventos perdidos se
   resuelven con el mismo código (REQ-011.2).
+  Con el celular bloqueado o la pestaña en segundo plano el navegador congela el socket y el
+  reloj; por eso `subscribeToQueue` también relee en `visibilitychange` (solo al quedar `visible`)
+  y en `pageshow` (restaurada desde la caché del navegador), por la misma espera de 300 ms que
+  `queue_changed`: varios avisos juntos dan una sola relectura (REQ-011.7).
 - **Reglas en la base de datos.** Transiciones de estado, unicidad de turno activo por celular,
   cálculo de comisión y cierre de caja son funciones SQL con pruebas (ADR-011).
 - **Lógica pura en TypeScript** para lo que se calcula al vuelo y se muestra: posición, tiempo
