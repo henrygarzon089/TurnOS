@@ -29,7 +29,7 @@
 | H9 | Tarjetas de regalo (ADR-034) | T-090…T-097 | REQ-055…REQ-059 |
 | H11 | Limpieza y bioseguridad (ADR-037) | T-100…T-109 | REQ-060…REQ-064 |
 | H13 | Inventario de insumos y vitrina (ADR-039) | T-120…T-129 | REQ-070…REQ-074 |
-| H14 | Rendimiento percibido y medición (ADR-043) | T-130…T-133 | REQ-075 |
+| H14 | Rendimiento percibido y medición (ADR-043) — **aprobado** (ADR-044) | T-130…T-133 | REQ-075 |
 | H15 | Inicio "Hoy" y menú del dueño (ADR-046) | T-150…T-154 | REQ-076, REQ-077 |
 | H16 | Sistema visual nuevo (ADR-047) | T-160…T-168 | REQ-078 |
 
@@ -1859,7 +1859,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   una ruta sin token; Henry activa Speed Insights en el proyecto de Vercel y ve datos de `/[slug]` al
   día siguiente, revisando la cuota de su plan.
 
-### [ ] T-133 · Región y validación Hito 14
+### [x] T-133 · Región y validación Hito 14 — 2026-11-09
 - REQ: REQ-075
 - Archivos: `scripts/traceability.ts` (`HITOS["14"] = [[75, 75]]`, ya desde el PR de la spec),
   `tests/unit/traceability.test.ts` (agregar "14" al loop), `docs/estado-del-proyecto.md`
@@ -1869,6 +1869,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Nota (2026-11-08): región verificada con la CLI (solo lectura). Supabase `uucjmxdssnmvznibrafc`
   en `us-east-1` (N. Virginia) y las funciones de Vercel (`turnos`) en `iad1` (Washington, misma
   zona): coinciden, no hay que cambiar nada. Queda `[ ]` hasta la aprobación de Henry (ADR-044).
+- Nota (2026-11-09): `pnpm trace --hito=14` con 0 sin prueba; Speed Insights activo en Vercel y con
+  datos. Henry aprueba el Hito 14 (ADR-044).
 
 ---
 

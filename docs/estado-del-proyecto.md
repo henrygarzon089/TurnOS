@@ -361,21 +361,22 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   6. ~~Aprobación del hito~~ hecho (ADR-042, 2026-11-05; Henry aprobó antes de la prueba en Filo,
      que queda como operación: pasos 3 a 5).
 
-### Hito 14 — rendimiento percibido y medición (**spec aprobada**, ADR-043, 2026-11-06)
+### Hito 14 — rendimiento percibido y medición (**aprobado**, ADR-044, 2026-11-09; ADR-043)
 
 - Spec aprobada por Henry (PR #109, `claude/h14-spec-rendimiento`): REQ-075 (esqueletos en `/[slug]`, `/t/[token]`,
   `/app/fila`, `/admin/fila`, `/admin/caja`; velocidad de usuarios reales sin tokens ni cookies),
-  design §19, T-130…T-133, sin migraciones. Sin código todavía.
+  design §19, T-130…T-133, sin migraciones.
 - Medición: Henry eligió Speed Insights anónimo y el cambio de texto de NFR-005 (2026-11-06).
 - T-130 hecha (rama `claude/t-130-esqueletos-dd66c5`, 2026-11-06): `Skeleton.tsx` y `loading.tsx` en
   `/[slug]` y `/t/[token]`; prueba `tests/unit/skeleton.test.tsx` (REQ-075.1 y .2 con prueba escrita).
 - T-131 hecha (rama `claude/t-131-esqueletos-personal`, 2026-11-06): `StaffGate` dentro de `Suspense`
   en `(staff)/layout.tsx` y `admin/layout.tsx`, `loading.tsx` en `/app/fila`, `/admin/fila` y `/admin/caja`;
   E2E `tests/e2e/loading.spec.ts`.
-- T-132 hecha (PR #113, 2026-11-06): Speed Insights con `redactVitalsUrl`. Pendiente de Henry: activarlo en
-  el proyecto de Vercel y revisar la cuota de su plan.
-- Siguiente: T-133. Pendiente de Henry: confirmar la región de Supabase y de las funciones de Vercel.
-- ADR-043 aceptada; la aprobación del hito terminado será ADR-044 (reservado).
+- T-132 hecha (PR #113, 2026-11-06): Speed Insights con `redactVitalsUrl`; activo en Vercel y con datos.
+- T-133 hecha (2026-11-09): región igual (Supabase `us-east-1`, Vercel `iad1`), `pnpm trace --hito=14`
+  sin huecos. Henry aprobó el hito (ADR-044).
+- Pendiente de Henry (operación): revisar la cuota de Speed Insights de su plan y mirar `/[slug]` y
+  `/app/fila` con datos de campo.
 
 ### Hito 15 — inicio "Hoy" y menú del dueño (**spec aprobada**, ADR-046, 2026-11-06)
 
