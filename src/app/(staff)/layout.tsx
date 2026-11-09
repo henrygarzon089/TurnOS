@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { NavAlertBadge } from "@/components/admin/today/NavAlertBadge";
 import { TodayBadge } from "@/components/admin/today/TodayBadge";
 import { BarberNav } from "@/components/staff/BarberNav";
 import { StaffHeader } from "@/components/staff/StaffHeader";
@@ -13,9 +14,10 @@ import { getStaffSession } from "@/lib/auth/session";
  * REQ-075.1 (design §19.1): la espera de la sesión va dentro de un Suspense para que al abrir el
  * link directo se vea el esqueleto y no una pantalla en blanco.
  * El dueño tiene su menú (REQ-077) en todas sus pantallas, también en /app/clientes: barra
- * inferior en el celular (el contenido deja 56 px más abajo) y menú lateral desde 1024 px. El
- * barbero, su barra inferior (T-163) en todos los tamaños. `data-wide` ensancha la página desde
- * 1024 px y `data-tablet` desde 768 px (la caja en tablet, REQ-078.15).
+ * inferior en el celular (el contenido deja 56 px más abajo) y menú lateral desde 1024 px, debajo
+ * de su barra azul (REQ-078.27). Desde 1024 px todas sus pantallas usan el ancho de escritorio
+ * (`lg:max-w-6xl`, ADR-053); `data-tablet` ensancha desde 768 px (la caja, REQ-078.15).
+ * El barbero, su barra inferior (T-163) en todos los tamaños.
  */
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -32,12 +34,14 @@ async function StaffGate({ children }: { children: React.ReactNode }) {
   }
   const owner = session.role === "owner";
   return (
-    <div className={`flex flex-1 flex-col ${owner ? "lg:pl-60" : ""}`}>
+    <div className="flex flex-1 flex-col">
       <StaffHeader session={session} />
-      <div
-        className={`mx-auto flex w-full max-w-md flex-1 flex-col px-4 ${owner ? "pt-6 pb-40 md:has-[[data-tablet]]:max-w-3xl lg:pb-24 lg:has-[[data-wide]]:max-w-6xl" : "pb-28"}`}
-      >
-        {children}
+      <div className={`flex flex-1 flex-col ${owner ? "lg:pl-60" : ""}`}>
+        <div
+          className={`mx-auto flex w-full max-w-md flex-1 flex-col px-4 ${owner ? "pt-6 pb-40 md:max-lg:has-[[data-tablet]]:max-w-3xl lg:max-w-6xl lg:pb-24" : "pb-28"}`}
+        >
+          {children}
+        </div>
       </div>
       {session.role === "barber" && <BarberNav />}
       {owner && (
@@ -47,6 +51,14 @@ async function StaffGate({ children }: { children: React.ReactNode }) {
               <TodayBadge />
             </Suspense>
           }
+          badges={Object.fromEntries(
+            ["/admin/limpieza", "/admin/inventario"].map((href) => [
+              href,
+              <Suspense key={href} fallback={null}>
+                <NavAlertBadge href={href} testId={`nav-badge-${href.split("/").at(-1)}`} />
+              </Suspense>,
+            ]),
+          )}
         />
       )}
     </div>

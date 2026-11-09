@@ -2264,6 +2264,16 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: en 1280 px las 19 pantallas del dueño miden lo mismo de ancho y ninguna tabla se corta
   (prueba que mide `scrollWidth` de cada tabla); barra azul con negocio, fecha y "Salir" en el menú
   del dueño; conteos de Fila y Citas e insignias de Limpieza e Inventario iguales a las de "Hoy".
+- Nota (2026-11-09): queda `[ ]` solo por los conteos de Fila y Citas (abajo). Hecho el ancho (`lg:max-w-6xl` para todo el dueño, sin `data-wide`; `data-tablet`
+  queda solo en la caja y vale de 768 a 1023 px), la barra azul (iniciales, negocio, fecha larga,
+  "<nombre> ▾" con "Salir"; en el celular la barra solo lleva iniciales y negocio, y "Salir" está al
+  final de "Más") y el menú lateral bajo la barra con las insignias rojas de Limpieza e Inventario
+  (`NavAlertBadge`, mismas alertas de "Hoy" por tipo vía `navAlertCounts`). El E2E recorre las 20
+  entradas del menú (19 módulos + "Hoy"). **Desvío pendiente de aprobación:** el número de esperando
+  en Fila y de citas de hoy en Citas no sale de `loadOwnerAlerts` (no tiene esos datos);
+  `AdminNav` ya acepta `counts`, pero no se conectan hasta que Henry apruebe de dónde leerlos (ver
+  PR). Para T-180/T-181: Clientes es una lista larga a todo el ancho (el tablero pide tabla) y en
+  Inventario y Mensajes los campos se estiran a todo el ancho.
 
 ### [ ] T-178 · Dueño: "Hoy" como el tablero
 - REQ: REQ-078.28, REQ-078.29, REQ-078.16

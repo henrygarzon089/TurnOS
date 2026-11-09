@@ -24,6 +24,7 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/admin",
 }));
 // Las acciones reales no se llaman: cada bloque recibe su carga en la prueba
+vi.mock("@/lib/actions/auth", () => ({ signOut: vi.fn() }));
 vi.mock("@/lib/actions/queue", () => ({ getBusinessQueue: vi.fn() }));
 vi.mock("@/lib/actions/cash", () => ({
   getCashDay: vi.fn(),
