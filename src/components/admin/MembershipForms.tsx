@@ -21,6 +21,7 @@ import {
 } from "@/lib/actions/memberships";
 import type { FamilyRow } from "@/lib/domain/membership";
 import { formatCOP } from "@/lib/domain/money";
+import { familyQuota, familyUsed } from "@/lib/domain/owner-tables";
 import { maskPhone } from "@/lib/domain/phone";
 import { formatDayCO } from "@/lib/domain/time";
 import { buildRenewalLink } from "@/lib/notifications/reminder";
@@ -390,7 +391,7 @@ export function FamilyCard({ family, plan }: { family: FamilyRow; plan: Membersh
 
   const title = family.holderName ?? "Familia sin titular";
   return (
-    <li aria-label={`Familia de ${title}`} className="flex flex-col gap-3 px-4 py-4">
+    <div role="group" aria-label={`Familia de ${title}`} className="flex flex-col gap-3 px-4 py-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-bold">Familia de {title}</p>
@@ -457,12 +458,17 @@ export function FamilyCard({ family, plan }: { family: FamilyRow; plan: Membersh
           No, dejarlo
         </Button>
       </Sheet>
-    </li>
+    </div>
   );
 }
 
-/** Lista de familias, o qué hacer si no hay ninguna (REQ-078.11). */
+/**
+ * REQ-078.33 (T-180) familias como la tabla del tablero Dueno-Clientes: Familia · Usó · Cuota.
+ * Tocar la familia despliega debajo su ficha (miembros, agregar, quitar, cobrar cuota); o qué
+ * hacer si no hay ninguna (REQ-078.11).
+ */
 export function FamilyList({ view }: { view: MembershipsView }) {
+  const [openId, setOpenId] = useState<string | null>(null);
   if (view.families.length === 0) {
     return (
       <EmptyState
@@ -472,11 +478,89 @@ export function FamilyList({ view }: { view: MembershipsView }) {
       />
     );
   }
+  // Rejilla con roles de tabla y no <table>: la ficha abre hojas (<dialog>) que dentro de un <td>
+  // se arman mal en el celular.
+  const cols = "grid grid-cols-[minmax(0,1fr)_3.5rem_auto] items-center";
   return (
-    <ul aria-label="Familias" className="divide-line divide-y">
-      {view.families.map((f) => (
-        <FamilyCard key={f.id} family={f} plan={view.plan} />
-      ))}
-    </ul>
+    <div role="table" aria-label="Familias" className="text-sm">
+      <div role="rowgroup" className="bg-brand text-brand-ink text-xs">
+        <div role="row" className={cols}>
+          <span role="columnheader" className="px-4 py-2 font-bold">
+            Familia
+          </span>
+          <span role="columnheader" className="px-3 py-2 text-right font-bold">
+            Usó
+          </span>
+          <span role="columnheader" className="px-4 py-2 font-bold">
+            Cuota
+          </span>
+        </div>
+      </div>
+      <div role="rowgroup" className="divide-line divide-y">
+        {view.families.map((f) => {
+          const quota = familyQuota(f.current, view.today);
+          const open = openId === f.id;
+          const title = f.holderName ?? "Familia sin titular";
+          return (
+            <div key={f.id} className={open ? "bg-surface" : ""}>
+              <div role="row" className={cols}>
+                <span role="cell" className="min-w-0 px-2">
+                  <button
+                    type="button"
+                    aria-expanded={open}
+                    aria-label={`Ver la familia de ${title}`}
+                    onClick={() => setOpenId(open ? null : f.id)}
+                    className="flex min-h-12 w-full min-w-0 items-center gap-2 px-2 text-left"
+                  >
+                    <Icon
+                      name="next"
+                      className={`text-muted size-4 transition-transform ${open ? "rotate-90" : ""}`}
+                    />
+                    <span className="min-w-0 truncate">
+                      <strong>{title}</strong>
+                      <span className="text-muted">
+                        {" "}
+                        · {f.members.length} {f.members.length === 1 ? "persona" : "personas"}
+                      </span>
+                    </span>
+                  </button>
+                </span>
+                <span role="cell" className="px-3 py-2 text-right tabular-nums">
+                  {familyUsed(f.current)}
+                </span>
+                <span role="cell" className="px-4 py-2">
+                  <Tag tone={quota.tone}>{quota.label}</Tag>
+                </span>
+              </div>
+              {open && <FamilyCard family={f} plan={view.plan} />}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/** REQ-078.33 "Editar plan" abre el formulario del plan en una hoja (design §22.8). */
+export function EditPlanButton({
+  plan,
+  services,
+}: {
+  plan: MembershipsView["plan"];
+  services: MembershipsView["services"];
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button variant="secondary" className="text-base" onClick={() => setOpen(true)}>
+        Editar plan
+      </Button>
+      <Sheet open={open} onClose={() => setOpen(false)} title="Plan familiar">
+        <MembershipPlanForm plan={plan} services={services} />
+        <Button variant="text" className="mx-auto" onClick={() => setOpen(false)}>
+          Cerrar
+        </Button>
+      </Sheet>
+    </>
   );
 }
