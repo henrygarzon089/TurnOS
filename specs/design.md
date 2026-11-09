@@ -2780,7 +2780,8 @@ tablero lo muestra y la app no tiene el dato o la función.
 `--color-*` y `--radius-*` del `@theme` de `src/app/globals.css` aparezca con su valor y que exista la
 regla `.bg-brand{`. Sale con código 1 y la lista de lo que falta. Se corre después de cada despliegue
 a producción (paso en `docs/estado-del-proyecto.md` y en la guía de despliegue). La lógica que
-compara (`compareDeployedCss(themeCss, servedCss)`) es pura y tiene prueba unitaria.
+compara (`compareDeployedCss(themeCss, servedCss)`, `src/lib/design/deploy-css.ts`) es pura y
+tiene prueba unitaria.
 
 **Portada y tomar turno en una pantalla (T-173).** `/[slug]` (celular, de arriba abajo):
 1. `PublicHeader`: marca 48×48 en `brand`, nombre (20 px negrita) y "Abierto hasta <hora>" en

@@ -2250,14 +2250,22 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   inglés; `pnpm trace --hito=16` sin huecos y el hito 16 de vuelta en el loop de
   `tests/unit/traceability.test.ts`.
 
-### [ ] T-172 · CSS publicado igual al del build
+### [x] T-172 · CSS publicado igual al del build
 - REQ: REQ-078.26 (ADR-052, design §22.7)
-- Archivos: `scripts/check-deploy.ts`, `src/lib/domain/deploy-css.ts` (`compareDeployedCss`),
+- Archivos: `scripts/check-deploy.ts`, `src/lib/design/deploy-css.ts` (`compareDeployedCss`),
   `tests/unit/deploy-css.test.ts`, `package.json` (`check:deploy`), `docs/estado-del-proyecto.md`.
 - Depende de Henry: `vercel --prod --force` (producción sin caché) y correr
   `pnpm check:deploy https://turnos-smoky-nine.vercel.app`.
 - Terminado: la prueba unitaria falla con el CSS viejo (accent `#1d4ed8`, sin `.bg-brand`) y pasa con
   el nuevo; el preview sin caché pasa `check:deploy`.
+- Hecho (2026-11-09). Notas y desvíos:
+  - La lógica va en `src/lib/design/deploy-css.ts` (junto a `lint-rules.ts`), no en
+    `src/lib/domain/`: es una regla del sistema visual, como `lint:design`.
+  - Tailwind publica solo los tokens que se usan y acorta los hex (`#fff`): se compara cada token
+    publicado con `globals.css` y se exigen `--color-brand` y la regla `.bg-brand`.
+  - `pnpm check:deploy https://turnos-smoky-nine.vercel.app` hoy falla (11 diferencias, sin
+    `--color-brand` ni `.bg-brand`); contra el servidor local pasa. Falta lo de Henry:
+    `vercel --prod --force` y volver a correrlo.
 
 ### [ ] T-173 · Cliente: portada y tomar turno en una pantalla
 - REQ: REQ-078.16, REQ-078.21, REQ-003.1, REQ-038.2
