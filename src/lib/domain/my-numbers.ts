@@ -55,3 +55,40 @@ export function summarizeMyNumbers(rows: MyNumbersRow[], today: string, weekStar
     detail: [...week].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)),
   };
 }
+
+/** Línea de venta que lee "Mis números" para el desglose (REQ-078.16). */
+export type BreakdownItem = {
+  kind: "service" | "product";
+  name: string;
+  qty: number;
+  line_total: number;
+  is_reward: boolean;
+};
+
+/**
+ * REQ-078.16 desglose del tablero Barbero-Otros: cortes gratis dados, productos vendidos (cantidad y
+ * plata) y lo atendido por servicio, sin las ventas anuladas.
+ */
+export function myBreakdown(rows: { status: "active" | "voided"; items: BreakdownItem[] }[]) {
+  const items = rows.filter((r) => r.status === "active").flatMap((r) => r.items);
+  const byService = new Map<string, { name: string; qty: number; amount: number }>();
+  for (const i of items.filter((x) => x.kind === "service")) {
+    const s = byService.get(i.name) ?? { name: i.name, qty: 0, amount: 0 };
+    s.qty += i.qty;
+    s.amount += i.line_total;
+    byService.set(i.name, s);
+  }
+  const products = items.filter((x) => x.kind === "product");
+  return {
+    rewards: items
+      .filter((x) => x.kind === "service" && x.is_reward)
+      .reduce((n, x) => n + x.qty, 0),
+    products: {
+      qty: products.reduce((n, x) => n + x.qty, 0),
+      amount: products.reduce((n, x) => n + x.line_total, 0),
+    },
+    byService: [...byService.values()].sort(
+      (a, b) => b.qty - a.qty || a.name.localeCompare(b.name),
+    ),
+  };
+}

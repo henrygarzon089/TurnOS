@@ -60,9 +60,12 @@ test.describe("REQ-063 Revisión del dueño", () => {
 
     // REQ-063.4 el barbero no ve revisiones ni fallas (/entrar con sesión redirige: salir primero)
     await page.context().clearCookies();
+    // Sin sesión, la página del dueño se recarga sola hacia /entrar: se deja antes de entrar
+    await page.goto("about:blank");
     await loginAsBarber(page, 0);
     await page.goto("/app/limpieza");
-    await expect(page.getByRole("region", { name: "Apertura de hoy" })).toBeVisible();
+    // T-171 la limpieza va en pestañas (Apertura / Cierre / Profunda)
+    await expect(page.getByRole("tablist", { name: "Limpieza" })).toBeVisible();
     await expect(page.getByText("Silla 1 con pelo")).toHaveCount(0);
     await expect(page.getByText("Revisión")).toHaveCount(0);
     await page.goto("/admin/limpieza?pestana=revision");

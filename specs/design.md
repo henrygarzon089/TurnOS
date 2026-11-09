@@ -2759,25 +2759,38 @@ Mis fotos, Mi estación, "Nueva venta" y "Salir". No se construye: "Silla N" (la
 
 **Las demás del barbero (T-171).**
 - Clientes: buscador con lupa ("Buscar por nombre o celular"); una lista a todo el ancho: nombre en
-  negrita, celular enmascarado · "hace N semanas", a la derecha "X/10" de fidelidad e insignia
-  "Familia" si tiene membresía. Los de hoy en la fila primero, sin tarjetas.
+  negrita, "*** <últimos 4>" · "hace N semanas", a la derecha "X/10" de fidelidad e insignia
+  "Familia" si tiene membresía. Los de hoy en la fila primero, sin tarjetas. `barber_customers`
+  (0070) trae `stamps`, `stamps_required` y `has_membership`; sin los 3 primeros dígitos del
+  tablero (REQ-018.4: el barbero solo ve los últimos 4).
 - Detalle del cliente: "‹ Clientes", nombre y celular completo; filas Fidelidad ("X de 10 · faltan
-  N"), Cumpleaños y Membresía; "ÚLTIMOS CORTES" con fecha · servicio · barbero y precio. No se
-  construye: "Nota para el próximo".
-- Mis números: pestañas "Hoy" y "Semana" (control segmentado); "Tu comisión hoy/de la semana" en
-  grande (54 px) y "de $ X en servicios · N %"; filas Servicios, Cortes gratis dados, Productos
-  vendidos ("n · $ X") y Compras tuyas con descuento (en rojo, negativo); "POR SERVICIO" con nombre,
-  cantidad y plata; "VENTAS" (lo que hoy son tarjetas) como filas. No se construye: "Mes".
+  N"), Cumpleaños y Membresía; "NOTA PARA EL PRÓXIMO" (las notas de la ficha, REQ-018.4) con
+  "Editar" que abre una hoja con nota, preferido y cumpleaños; "ÚLTIMOS CORTES" con fecha ·
+  servicio · barbero y precio (precio solo de los suyos; los no terminados dicen "No llegó" o
+  "Cancelado", REQ-018.2). El dueño conserva su ficha de siempre.
+- Mis números: pestañas "Hoy", "Semana" y "Mes" (control segmentado, una sola consulta desde el
+  día 1 o el lunes, lo que sea antes); "Tu comisión hoy/de la semana/del mes" en grande (54 px) y
+  "de $ X en servicios · N %"; filas Servicios, Comisión de servicios (REQ-069.5), Cortes gratis
+  dados, Productos vendidos ("n · $ comisión de productos") y Compras tuyas con descuento (en rojo,
+  negativo, solo si hay); "POR SERVICIO" con nombre, cantidad y plata; "VENTAS DE LA SEMANA" como
+  filas. Las compras con descuento las lee `my_staff_purchases(p_from)` (0070): el RLS de `sales`
+  no se las deja ver porque la venta va sin barbero.
 - Mis fotos: rejilla de 3 columnas con casillas cuadradas numeradas (`aspect-ratio`), botón
   principal fijo "Subir foto" (un `<label>` sobre un `input type=file` oculto, REQ-078.20), "N de 12"
-  y la ayuda para ordenar y borrar.
+  y "Toca una foto para borrarla" (confirma en un diálogo, no en el del navegador). La foto escogida
+  se confirma en la hoja "Nueva foto" (REQ-039.3). No se construye: ordenar arrastrando (las fotos
+  no tienen orden guardado). `/admin/barberos` usa el mismo componente sin el botón fijo.
 - Limpieza: control segmentado Apertura / Cierre / Profunda; lista con casillas de 48 px; "FOTO DE LA
   ESTACIÓN" con recuadro punteado de 150 px "Tomar foto" que se vuelve la vista previa; botón fijo
-  "Enviar (faltan N y la foto)" deshabilitado hasta completar.
-- Mi estación: filas a todo el ancho con el insumo y "1 envase · 500 ml"; la fila en ámbar "En
-  camino · Pediste reposición <hora>" cuando aplica; la ayuda "Entrega el envase vacío en la caja".
-  Reposiciones y último conteo como filas. No se construye: botón "Se acabó" (la reposición la
-  registra el dueño, REQ-071.4).
+  "Enviar (faltan N y la foto)" deshabilitado (gris) hasta completar. Los puntos empiezan sin
+  marcar; para mandar uno sin hacer (REQ-061.3) se toca "No se hizo" y se escribe "¿Por qué?": ese
+  ya no cuenta como faltante. "la foto" solo falta en el cierre (REQ-061.4: en apertura y profunda
+  es opcional). Arranca en la primera que falta; las hechas dicen quién y a qué hora. La lista es
+  la misma para el dueño en `/admin/limpieza`.
+- Mi estación: filas a todo el ancho con el insumo y "N de M <unidad>" (en ámbar "Por reponer" si
+  tiene menos de su dotación); la ayuda "Cuando se te acabe algo, entrega el envase vacío en la
+  caja"; reposiciones y último conteo como filas. No se construye: botón "Se acabó" ni la fila "En
+  camino" (la reposición la registra el dueño al recibir el envase, REQ-071.4; no hay pedidos).
 
 ### 22.7 Cliente fiel al tablero (ADR-052, REQ-078.21…26)
 
