@@ -55,6 +55,9 @@ async function barberReady(page: Page) {
     const b = page.getByRole("button", { name });
     if (await b.isVisible()) await b.click();
   }
+  // Si estaba en pausa, la pantalla se redibuja al volver: un toque antes caería en otro botón
+  await expect(page.getByRole("banner").getByRole("button", { name: "Pausar" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
 }
 
 test.describe("T-169 barbero fiel al tablero (ADR-051)", () => {
