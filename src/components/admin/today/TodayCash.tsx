@@ -1,6 +1,7 @@
 import { getCashDay, type CashDaySummary } from "@/lib/actions/cash";
 import { formatCOP } from "@/lib/domain/money";
 import { lastWeekLabel, sameDayLastWeek } from "@/lib/domain/time";
+import { cashMethodRows } from "@/lib/domain/today";
 import { TodayBlockError } from "./TodayBlockError";
 import { TodayCard } from "./TodayCard";
 
@@ -14,15 +15,13 @@ async function loadTodayCash(): Promise<Data | null> {
   return { today, lastWeek };
 }
 
-const METHODS: { key: keyof CashDaySummary["byMethod"]; label: string }[] = [
-  { key: "cash", label: "Efectivo" },
-  { key: "nequi", label: "Nequi" },
-  { key: "daviplata", label: "Daviplata" },
-  { key: "transfer", label: "Transferencia" },
-  { key: "card", label: "Tarjeta" },
-];
+const SHOW = { all: "", wide: "max-lg:hidden", compact: "lg:hidden" } as const;
 
-/** REQ-076.4 caja de hoy: total, por medio de pago, vitrina y servicios terminados. */
+/**
+ * REQ-076.4, REQ-078.28 caja de hoy como el tablero: total grande, el mismo día de la semana pasada
+ * y los medios de pago (Transferencia y tarjeta sumadas; en el celular, también Daviplata), con
+ * "De eso, vitrina" en texto suave.
+ */
 export async function TodayCash({
   load = loadTodayCash,
 }: { load?: () => Promise<Data | null> } = {}) {
@@ -40,34 +39,33 @@ export async function TodayCash({
     );
   }
   const { today, lastWeek } = data;
-  const services = today.barbers.reduce((n, b) => n + b.services, 0);
   return (
     <TodayCard title="Caja de hoy" link={{ href: "/admin/caja", label: "Ver caja" }}>
-      <div className="px-4 pt-3 pb-3">
-        <p data-testid="today-total" className="text-4xl font-bold tabular-nums">
+      <div className="px-4 pt-4 pb-3">
+        <p
+          data-testid="today-total"
+          className="text-[44px] leading-none font-bold tracking-tight tabular-nums"
+        >
           {formatCOP(today.total)}
         </p>
-        <p className="text-muted mt-1 text-sm">
+        <p className="text-muted mt-2 text-sm">
           {lastWeekLabel(today.day)}:{" "}
           {lastWeek ? <b className="text-ink">{formatCOP(lastWeek.total)}</b> : "sin datos"}
         </p>
-        <p className="text-muted mt-1 text-sm">
-          {services} {services === 1 ? "servicio terminado" : "servicios terminados"}
-        </p>
       </div>
       <dl>
-        {METHODS.map((m) => (
+        {cashMethodRows(today.byMethod).map((m) => (
           <div
             key={m.key}
-            className="border-line flex min-h-12 items-center justify-between border-t px-4"
+            className={`border-line flex min-h-12 items-center justify-between border-t px-4 lg:min-h-10 ${SHOW[m.show]}`}
           >
             <dt>{m.label}</dt>
             <dd data-testid={`today-method-${m.key}`} className="tabular-nums">
-              {formatCOP(today.byMethod[m.key] ?? 0)}
+              {formatCOP(m.amount)}
             </dd>
           </div>
         ))}
-        <div className="border-line text-muted flex min-h-12 items-center justify-between border-t px-4">
+        <div className="border-line text-muted flex min-h-12 items-center justify-between border-t px-4 lg:min-h-10">
           <dt>De eso, vitrina</dt>
           <dd className="tabular-nums">{formatCOP(today.products)}</dd>
         </div>

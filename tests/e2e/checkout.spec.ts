@@ -75,7 +75,8 @@ async function expectLegiblePendingRow(row: Locator, name: string) {
   const rowBox = (await row.boundingBox())!;
   expect(labelBox.width).toBeGreaterThan(100);
   expect(buttonBox.x + buttonBox.width).toBeLessThanOrEqual(rowBox.x + rowBox.width);
-  expect(buttonBox.height).toBeGreaterThanOrEqual(48);
+  // Redondeo: el iPhone mide a veces 47,99998 px un botón de 48 px.
+  expect(Math.round(buttonBox.height)).toBeGreaterThanOrEqual(48);
 }
 
 /** El dueño agrega el turno para Juan y lo llama; Juan lo pone en la silla y toca "Terminado". */
@@ -174,6 +175,8 @@ test.describe("REQ-023 panel de cobro", () => {
       await barber.keyboard.press("Escape");
 
       await owner.goto("/admin/fila");
+      // REQ-078.30: una sola fila "N cobros pendientes" abre la lista
+      await owner.getByRole("button", { name: /cobros? pendientes?$/ }).click();
       const ownerRow = pendingRow(owner, name);
       await expect(ownerRow).toBeVisible({ timeout: 15_000 });
       await expectLegiblePendingRow(ownerRow, name);

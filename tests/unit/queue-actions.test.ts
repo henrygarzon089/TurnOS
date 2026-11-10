@@ -52,6 +52,7 @@ const TICKET = "ticket-1";
 
 const QUEUE_CHANGES: Record<string, () => Promise<{ ok: boolean }>> = {
   callNext: () => queueActions.callNext(),
+  callNextFor: () => queueActions.callNextFor("barber-1"),
   startService: () => queueActions.startService(TICKET),
   finishService: () => queueActions.finishService(TICKET),
   markNoShow: () => queueActions.markNoShow(TICKET),

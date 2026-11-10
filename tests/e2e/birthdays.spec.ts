@@ -87,9 +87,11 @@ test.describe("REQ-037 cumpleaños", () => {
     try {
       await loginAsOwner(page);
       await page.goto("/admin/recordar");
-      const list = page.getByRole("list", { name: "Cumplen esta semana" });
-      const row = list.getByRole("listitem").filter({ hasText: CUSTOMER.name });
-      await expect(row).toContainText("Mañana");
+      const list = page
+        .getByRole("table", { name: "Para recordar" })
+        .locator('tbody tr[data-kind="birthday"]');
+      const row = list.filter({ hasText: CUSTOMER.name });
+      await expect(row).toContainText("Cumple mañana");
       const link = row.getByRole("link", { name: /Saludar por WhatsApp/ });
       const href = await link.getAttribute("href");
       expect(href).toMatch(/^https:\/\/wa\.me\/57\d{10}\?text=/);
@@ -107,11 +109,11 @@ test.describe("REQ-037 cumpleaños", () => {
     try {
       await loginAsOwner(page);
       await page.goto("/admin/recordar");
-      await expect(page.getByRole("heading", { name: "Cumplen esta semana" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Recordar", exact: true })).toBeVisible();
       await expect(
         page
-          .getByRole("list", { name: "Cumplen esta semana" })
-          .getByRole("listitem")
+          .getByRole("table", { name: "Para recordar" })
+          .locator('tbody tr[data-kind="birthday"]')
           .filter({ hasText: CUSTOMER.name }),
       ).toHaveCount(0);
     } finally {
@@ -136,7 +138,8 @@ test.describe("REQ-037 cumpleaños", () => {
 
       await page.goto("/admin/recordar");
       const href = await page
-        .getByRole("list", { name: "Cumplen esta semana" })
+        .getByRole("table", { name: "Para recordar" })
+        .locator('tbody tr[data-kind="birthday"]')
         .getByRole("link", { name: /Saludar por WhatsApp/ })
         .first()
         .getAttribute("href");

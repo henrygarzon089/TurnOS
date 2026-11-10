@@ -20,7 +20,8 @@ test.describe("REQ-044 / REQ-045 / REQ-046 / REQ-048 Membresías del dueño", ()
     await page.goto("/admin/membresias");
     await expect(page.getByRole("heading", { name: "Membresía familiar" })).toBeVisible();
 
-    // REQ-044.2 sin servicios no se activa
+    // REQ-044.2 sin servicios no se activa (REQ-078.33: el plan se edita en una hoja)
+    await page.getByRole("button", { name: "Editar plan" }).click();
     await page.getByLabel("Membresía activa").check();
     await page.getByLabel("Precio de la cuota").fill("80.000");
     await page.getByLabel("Cortes por periodo").fill("4");
@@ -35,7 +36,10 @@ test.describe("REQ-044 / REQ-045 / REQ-046 / REQ-048 Membresías del dueño", ()
     await page.getByRole("button", { name: "Guardar plan" }).click();
     await expect(page.getByRole("status")).toContainText("Plan guardado");
     await page.reload();
+    await page.getByRole("button", { name: "Editar plan" }).click();
     await expect(page.getByLabel("Membresía activa")).toBeChecked();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog", { name: "Plan familiar" })).toBeHidden();
 
     try {
       // REQ-046.2 nueva familia por celular
@@ -44,8 +48,12 @@ test.describe("REQ-044 / REQ-045 / REQ-046 / REQ-048 Membresías del dueño", ()
       await form.getByLabel("Nombre").fill(holder);
       await form.getByLabel("Celular").fill(phone);
       await form.getByRole("button", { name: "Crear familia" }).click();
-      const card = page.getByRole("listitem", { name: `Familia de ${holder}` });
-      await expect(card).toBeVisible({ timeout: 15_000 });
+      // REQ-078.33: la familia es una fila de la tabla; su ficha se despliega al tocarla
+      await page
+        .getByRole("button", { name: `Ver la familia de ${holder}` })
+        .click({ timeout: 15_000 });
+      const card = page.getByRole("group", { name: `Familia de ${holder}` });
+      await expect(card).toBeVisible();
       await expect(card.getByText("Titular", { exact: true })).toBeVisible();
       await expect(card.getByText("Sin periodo vigente.")).toBeVisible();
 

@@ -24,12 +24,14 @@ async function blockWhatsApp(page: Page) {
   await page.context().route("https://wa.me/**", (r) => r.abort());
 }
 
-const list = (page: Page) => page.getByRole("list", { name: "Clientes para recordar" });
+/** REQ-078.33: Recordar es una tabla; las filas de inactivos llevan data-kind="inactive". */
+const rows = (page: Page) =>
+  page.getByRole("table", { name: "Para recordar" }).locator('tbody tr[data-kind="inactive"]');
 
 async function firstRowName(page: Page): Promise<string> {
-  const first = list(page).getByRole("listitem").first();
+  const first = rows(page).first();
   await expect(first).toBeVisible();
-  return (await first.locator("p").first().textContent())!.trim();
+  return (await first.locator("td").first().textContent())!.trim();
 }
 
 test.describe("REQ-020 clientes para recordar", () => {
@@ -41,9 +43,9 @@ test.describe("REQ-020 clientes para recordar", () => {
     await page.goto("/admin/recordar");
     await waitForContent(page);
     await expect(page.getByLabel("Días sin venir")).toHaveValue("21");
-    const texts = await list(page).getByRole("listitem").locator("p.text-muted").allTextContents();
+    const texts = await rows(page).locator("td:nth-child(2)").allTextContents();
     expect(texts.length).toBeGreaterThan(0);
-    const days = texts.map((t) => Number(t.match(/(\d+) días/)![1]));
+    const days = texts.map((t) => Number(t.match(/hace (\d+) días/)![1]));
     expect(days.every((d) => d > 21)).toBe(true);
     expect([...days].sort((a, b) => b - a)).toEqual(days);
     // REQ-020.2 muestra visitas y barbero preferido
@@ -57,7 +59,7 @@ test.describe("REQ-020 clientes para recordar", () => {
     await blockWhatsApp(page);
     await page.goto("/admin/recordar");
     const name = await firstRowName(page);
-    const row = list(page).getByRole("listitem").filter({ hasText: name });
+    const row = rows(page).filter({ hasText: name });
     const link = row.getByRole("link", { name: /Recordar por WhatsApp/ });
     const href = await link.getAttribute("href");
     expect(href).toMatch(/^https:\/\/wa\.me\/57\d{10}\?text=/);
@@ -67,10 +69,10 @@ test.describe("REQ-020 clientes para recordar", () => {
     const popup = page.context().waitForEvent("page");
     await link.click();
     await (await popup).close();
-    await expect(row).toBeHidden();
+    await expect(row).toContainText("Escrito hoy"); // REQ-078.33: como el tablero
     await page.waitForLoadState("networkidle"); // el registro del envío termina en el servidor
     await page.reload();
-    await expect(list(page).getByRole("listitem").filter({ hasText: name })).toHaveCount(0);
+    await expect(rows(page).filter({ hasText: name })).toHaveCount(0);
   });
 
   test("REQ-020.5 'No contactar' lo excluye aquí y del aviso en la fila del barbero", async ({
@@ -88,8 +90,7 @@ test.describe("REQ-020 clientes para recordar", () => {
 
       await owner.goto("/admin/recordar");
       const name = await firstRowName(owner);
-      await list(owner)
-        .getByRole("listitem")
+      await rows(owner)
         .filter({ hasText: name })
         .getByRole("button", { name: "No contactar" })
         .click();
@@ -97,9 +98,9 @@ test.describe("REQ-020 clientes para recordar", () => {
         .getByRole("dialog", { name: /No volver a contactar/ })
         .getByRole("button", { name: "Sí, no contactar" })
         .click();
-      await expect(list(owner).getByRole("listitem").filter({ hasText: name })).toHaveCount(0);
+      await expect(rows(owner).filter({ hasText: name })).toHaveCount(0);
       await owner.reload();
-      await expect(list(owner).getByRole("listitem").filter({ hasText: name })).toHaveCount(0);
+      await expect(rows(owner).filter({ hasText: name })).toHaveCount(0);
 
       // Su celular, desde la ficha
       await owner.goto("/app/clientes");
