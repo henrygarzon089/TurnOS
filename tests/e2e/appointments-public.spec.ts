@@ -21,7 +21,8 @@ test.describe("REQ-050 y REQ-051 Reservar cita y Mi cita", () => {
       await page.goto(`/${SEED.slug}/cita`);
       await expect(page.getByRole("heading", { name: "Reservar una cita" })).toBeVisible();
 
-      await expect(page.getByTestId("row-service")).toContainText("Corte");
+      // El primer servicio va elegido (en CI puede no ser "Corte": otras pruebas crean servicios)
+      await expect(page.getByTestId("row-service")).toContainText(/^Servicio\S.+Cambiar$/);
       // Un día con horas que no sea hoy: hoy puede no tener horas a 1 hora de ahora
       const days = page.getByRole("radiogroup", { name: "Día" });
       await expect(days.getByRole("radio", { disabled: false }).first()).toBeAttached({
