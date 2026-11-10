@@ -119,13 +119,14 @@ test.describe("Hito 1 · criterios de interfaz", () => {
     await expect(page.getByRole("link", { name: "Ir a la fila del negocio" })).toBeVisible();
   });
 
-  test("REQ-013.4 / REQ-013.5 la pantalla resalta al llamar y no exige sesión", async ({
+  test("REQ-013.4 / REQ-013.5 la pantalla muestra la franja del llamado 30 s y no exige sesión", async ({
     browser,
   }) => {
     test.skip(!process.env.E2E_SCREEN_KEY, "E2E_SCREEN_KEY no definida");
     const tv = await (
       await browser.newContext({ viewport: { width: 1920, height: 1080 } })
     ).newPage();
+    await tv.clock.install(); // el reloj corre normal; fastForward salta los 30 s
     await tv.goto(`/${SEED.slug}/pantalla?k=${process.env.E2E_SCREEN_KEY}`);
     await expect(tv.getByRole("heading", { name: "Barbería La 33" })).toBeVisible();
     await expect(tv).not.toHaveURL(/entrar/); // sin login
@@ -144,8 +145,15 @@ test.describe("Hito 1 · criterios de interfaz", () => {
     const here = barber.getByRole("button", { name: "Estoy aquí" });
     if (await here.isVisible()) await here.click();
     await barber.getByRole("button", { name: CALL }).click();
-    await expect(tv.getByText(/Pasa a la silla de/)).toBeVisible({ timeout: 5000 });
-    await expect(tv.getByText("Pantalla P.")).toBeVisible();
+    const banner = tv.locator('[data-call-slot="full"]');
+    await expect(banner).toBeVisible({ timeout: 5000 });
+    await expect(banner).toContainText("LLAMANDO A");
+    await expect(banner).toContainText("Pantalla P.");
+    await expect(banner).toContainText(`→ ${SEED.barbers[2].name}`);
+    await expect(banner).not.toContainText(/\+57|300 \d{3}/);
+    await tv.clock.fastForward(31_000);
+    await expect(banner).toHaveCount(0);
+    await expect(tv.locator('[data-call-slot="empty"]')).toHaveCount(1);
     await barber.getByRole("button", { name: "No vino" }).click();
     await bctx.close();
     await cctx.close();

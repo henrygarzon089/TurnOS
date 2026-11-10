@@ -13,7 +13,7 @@ insert into tickets (business_id, customer_name, customer_phone_e164, service_id
 select biz, 'Camilo Restrepo', '+573005558001', corte from ctx;
 
 select is(get_screen_queue('la-33', 'clave-mala'), null, 'REQ-013.1 clave incorrecta → null');
-select is((get_screen_queue('la-33', (select key from ctx))) -> 'anyone' ->> 0, 'Camilo R.', 'REQ-013.2 nombre abreviado en la pantalla');
+select is((get_screen_queue('la-33', (select key from ctx))) -> 'anyone' -> 0 ->> 'name', 'Camilo R.', 'REQ-013.2 nombre abreviado en la pantalla');
 select is(position('+57300' in (get_screen_queue('la-33', (select key from ctx)))::text), 0, 'P6 la pantalla nunca lleva celulares');
 select * from finish();
 rollback;
