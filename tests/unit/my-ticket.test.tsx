@@ -297,6 +297,20 @@ describe("Mi turno como el tablero (T-174)", () => {
     expect(v).not.toContain("Dejar reseña en Google");
   });
 
+  it("REQ-048.1 la membresía se ve también en servicio y terminado", () => {
+    const membership = { cutsTotal: 4, cutsLeft: 3, endsOn: "2026-12-01", discountPct: 0 };
+    for (const status of ["in_service", "done"] as const) {
+      const h = render({ status, assignedBarberName: "Andrés", estimate: null, membership });
+      expect(h, status).toContain('data-testid="my-membership"');
+      expect(visible(h), status).toContain("quedan 3 de 4 cortes");
+    }
+  });
+
+  it('REQ-019.7 terminado: "Tus cortes" es la tarjeta de fidelidad', () => {
+    const h = render({ status: "done", assignedBarberName: "Andrés", estimate: null });
+    expect(h).toMatch(/aria-label="Tarjeta de fidelidad"[^>]*>[\s\S]*Tus cortes/);
+  });
+
   it("REQ-036.4 cancelado: el encabezado nuevo, sin reseña y Tomar un turno nuevo", () => {
     const v = visible(render({ status: "cancelled", cancelReason: "customer", estimate: null }));
     expect(v).toContain("Barbería La 33");

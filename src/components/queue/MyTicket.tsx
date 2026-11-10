@@ -126,6 +126,16 @@ export function MyTicket({
     });
   }
 
+  // REQ-048.1: la membresía se ve en todos los estados del turno
+  const membership = ticket.membership && (
+    <p
+      className="bg-brand-soft text-brand rounded-md p-3 text-sm font-semibold"
+      data-testid="my-membership"
+    >
+      {membershipTicketLine(ticket.membership)}
+    </p>
+  );
+
   const extras = (
     <>
       {alreadyHad && ticket.status === "waiting" && (
@@ -140,14 +150,7 @@ export function MyTicket({
       )}
       <Courtesy ticket={ticket} token={token} initialOptions={courtesies} onChanged={reload} />
       <WhatsappOptOut ticket={ticket} token={token} onChanged={reload} />
-      {ticket.membership && (
-        <p
-          className="bg-brand-soft text-brand rounded-md p-3 text-sm font-semibold"
-          data-testid="my-membership"
-        >
-          {membershipTicketLine(ticket.membership)}
-        </p>
-      )}
+      {membership}
     </>
   );
 
@@ -228,10 +231,16 @@ export function MyTicket({
               </button>
             )}
             <WhatsappOptOut ticket={ticket} token={token} onChanged={reload} />
+            {membership}
           </>
         )}
 
-        {ticket.status === "done" && <DoneBlock ticket={ticket} />}
+        {ticket.status === "done" && (
+          <>
+            <DoneBlock ticket={ticket} />
+            {membership}
+          </>
+        )}
 
         {(ticket.status === "cancelled" || ticket.status === "no_show") && (
           <EndedCard ticket={ticket} />
@@ -531,7 +540,10 @@ function DoneBlock({ ticket }: { ticket: Ticket }) {
       </div>
 
       {l?.enabled && l.required > 0 && (
-        <section aria-label="Tus cortes" className="border-line bg-card rounded-md border p-4">
+        <section
+          aria-label="Tarjeta de fidelidad"
+          className="border-line bg-card rounded-md border p-4"
+        >
           <div className="flex items-baseline justify-between gap-2">
             <h3 className="font-bold">Tus cortes</h3>
             <p className="text-sm font-semibold tabular-nums">
