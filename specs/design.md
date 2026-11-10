@@ -2882,9 +2882,9 @@ tiene prueba unitaria.
   ayuda a que más vecinos nos encuentren. Toma un minuto." y "Dejar reseña en Google" (solo con
   enlace, REQ-036.3); "Tomar otro turno" como enlace. Cancelado y no vino: como hoy, con el
   encabezado nuevo.
-- Migración `0070_public_ticket_times.sql`: `get_ticket_by_token` agrega `startedAt` y `finishedAt`
-  (columnas que ya existen en `tickets`). Solo cambia la función; pgTAP en
-  `supabase/tests/0070_public_ticket_times.sql`.
+- Migración `0072_public_ticket_times.sql` (0070 la tomó T-171): `get_ticket_by_token` agrega
+  `startedAt`, `finishedAt` y `servicePrice` (columnas que ya existen en `tickets`). Solo cambia la
+  función; pgTAP en `supabase/tests/0072_public_ticket_times.sql`.
 - No se construye: prefijo "A" del número, "Silla 3" (sin sillas).
 
 **Cita, Mi cita, tarjeta de regalo y privacidad (T-175).**

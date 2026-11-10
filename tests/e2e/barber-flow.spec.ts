@@ -45,11 +45,11 @@ test.describe("Hito 1 · flujo del barbero", () => {
 
     await page.getByRole("button", { name: "Empezar corte" }).click();
     await expect(page.getByText(/^desde .+ · \d+ min$/)).toBeVisible();
-    await expect(customer.getByText("Te están atendiendo")).toBeVisible();
+    await expect(customer.getByText(/^Con .+ desde /)).toBeVisible();
 
     await page.getByRole("button", { name: "Terminar y cobrar" }).click();
     await expect(page.getByText("Nadie en tu fila por ahora")).toBeVisible();
-    await expect(customer.getByText("¡Gracias por venir!")).toBeVisible();
+    await expect(customer.getByText(/^Quedaste bien, /)).toBeVisible();
     await cctx.close();
   });
 
@@ -103,7 +103,7 @@ test.describe("Hito 1 · flujo del barbero", () => {
     await expect(page.getByRole("dialog", { name: "Pausar" })).toContainText("esperándote");
     await page.getByRole("button", { name: "Que los atienda el que esté libre" }).click();
     await expect(page.getByText("En pausa")).toBeVisible();
-    await expect(customer.getByText("El que esté libre")).toBeVisible();
+    await expect(customer.getByText("El primero libre")).toBeVisible();
     await page.getByRole("button", { name: "Volver" }).click();
     await expect(page.getByText("Disponible")).toBeVisible();
     await cctx.close();
