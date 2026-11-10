@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Tag } from "@/components/admin/ModulePage";
@@ -45,14 +46,22 @@ function SendButton({
   card,
   view,
   primary = false,
+  compact = false,
 }: {
   card: GiftCardRow;
   view: SendProps;
   primary?: boolean;
+  /** En la tabla: enlace verde "WhatsApp" de 48 px (REQ-078.33). */
+  compact?: boolean;
 }) {
   return (
     <a
-      className={`${primary ? "btn-primary" : "btn-secondary"} w-full text-base sm:w-auto`}
+      className={
+        compact
+          ? "text-ok inline-flex min-h-12 items-center font-bold whitespace-nowrap underline underline-offset-4"
+          : `${primary ? "btn-primary" : "btn-secondary"} w-full text-base sm:w-auto`
+      }
+      aria-label={compact ? `Enviar por WhatsApp la tarjeta de ${card.buyerName}` : undefined}
       href={buildGiftCardLink({
         phoneE164: card.buyerPhone,
         template: view.template,
@@ -65,7 +74,7 @@ function SendButton({
       target="_blank"
       rel="noopener"
     >
-      Enviar por WhatsApp
+      {compact ? "WhatsApp" : "Enviar por WhatsApp"}
     </a>
   );
 }
@@ -208,11 +217,30 @@ const STATUS_TONE: Record<GiftCardRow["status"], "ok" | "warn" | "muted"> = {
   voided: "muted",
 };
 
+/** Estado de la tarjeta, o "WhatsApp" para enviarla si está vigente y la lista es completa. */
+function GiftCardStatus({
+  card,
+  view,
+  limit,
+}: {
+  card: GiftCardRow;
+  view: GiftCardsView;
+  limit?: number;
+}) {
+  return card.status === "active" && !limit ? (
+    <SendButton card={card} view={view} compact />
+  ) : (
+    <Tag tone={STATUS_TONE[card.status]}>{giftCardStatusLabel(card.status)}</Tag>
+  );
+}
+
 /**
  * REQ-059.3: tarjetas con saldo y estado, y "Saldo por usar" de las vigentes. Quien compra sale
- * con el celular enmascarado (REQ-078.6); el enlace de WhatsApp sí lleva el número.
+ * con el celular enmascarado (REQ-078.6); el enlace de WhatsApp sí lleva el número. REQ-078.33
+ * (T-180): tabla N.º · Para · Valor · Saldo como el tablero Dueno-Clientes; anulada tachada.
+ * `limit` la deja corta, sin envío, para ponerla junto a Membresías.
  */
-export function GiftCardList({ view }: { view: GiftCardsView }) {
+export function GiftCardList({ view, limit }: { view: GiftCardsView; limit?: number }) {
   if (view.cards.length === 0) {
     return (
       <EmptyState
@@ -222,38 +250,69 @@ export function GiftCardList({ view }: { view: GiftCardsView }) {
       />
     );
   }
+  const cards = limit ? view.cards.slice(0, limit) : view.cards;
   return (
     <>
-      <p className="border-line border-b px-4 py-3 text-lg" aria-label="Saldo por usar">
+      <p className="border-line border-b px-4 py-3 text-base" aria-label="Saldo por usar">
         Saldo por usar:{" "}
         <span className="font-bold tabular-nums">{formatCOP(balanceToUse(view.cards))}</span>
       </p>
-      <ul aria-label="Tarjetas de regalo" className="divide-line divide-y">
-        {view.cards.map((c) => (
-          <li
-            key={c.id}
-            className={`flex flex-col gap-2 px-4 py-3 lg:flex-row lg:items-center lg:gap-4 ${
-              c.status === "active" ? "" : "text-muted"
-            }`}
-          >
-            <div className="flex min-w-0 flex-1 items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p className="font-bold tracking-widest">{formatGiftCardCode(c.code)}</p>
-                <p className="text-muted text-sm">
-                  {c.recipientName ? `Para ${c.recipientName} · ` : ""}
-                  {c.buyerName} · <span className="tabular-nums">{maskPhone(c.buyerPhone)}</span>
-                </p>
-              </div>
-              <Tag tone={STATUS_TONE[c.status]}>{giftCardStatusLabel(c.status)}</Tag>
-            </div>
-            <p className="text-sm tabular-nums lg:w-64 lg:text-right">
-              Saldo {formatCOP(c.balance)} de {formatCOP(c.amount)} · vence el{" "}
-              {giftCardDayLabel(c.expiresOn)}
-            </p>
-            {c.status === "active" && <SendButton card={c} view={view} />}
-          </li>
-        ))}
-      </ul>
+      <table className="w-full text-sm" aria-label="Tarjetas de regalo">
+        <thead className="bg-brand text-brand-ink text-left text-xs">
+          <tr>
+            <th className="px-3 py-2 font-bold sm:px-4">N.º</th>
+            <th className="px-3 py-2 font-bold">Para</th>
+            <th className="hidden px-3 py-2 text-right font-bold sm:table-cell">Valor</th>
+            <th className="px-3 py-2 text-right font-bold">Saldo</th>
+            <th className="px-4 py-2 font-bold max-sm:hidden">
+              <span className="sr-only">Estado</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-line divide-y tabular-nums">
+          {cards.map((c) => {
+            const voided = c.status === "voided";
+            return (
+              <tr key={c.id} className={c.status === "active" ? "" : "text-muted"}>
+                <td className="px-3 py-2 font-bold whitespace-nowrap sm:px-4 sm:tracking-wide">
+                  {formatGiftCardCode(c.code)}
+                </td>
+                <td className="min-w-0 px-3 py-2">
+                  <p className={voided ? "line-through" : ""}>{c.recipientName ?? c.buyerName}</p>
+                  {/* En el celular el estado (o "WhatsApp") va bajo el nombre: con su propia
+                      columna la tabla no cabía a 360 px (REQ-078.15). */}
+                  <span className="mt-1 inline-block sm:hidden">
+                    <GiftCardStatus card={c} view={view} limit={limit} />
+                  </span>
+                  {!limit && (
+                    <p className="text-muted text-xs">
+                      {c.buyerName} · {maskPhone(c.buyerPhone)} · vence el{" "}
+                      {giftCardDayLabel(c.expiresOn)}
+                    </p>
+                  )}
+                </td>
+                <td
+                  className={`hidden px-3 py-2 text-right sm:table-cell ${voided ? "line-through" : ""}`}
+                >
+                  {formatCOP(c.amount)}
+                </td>
+                <td className="px-3 py-2 text-right">{voided ? "—" : formatCOP(c.balance)}</td>
+                <td className="px-3 py-1 text-right max-sm:hidden sm:px-4">
+                  <GiftCardStatus card={c} view={view} limit={limit} />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      {limit && view.cards.length > limit && (
+        <Link
+          href="/admin/regalos"
+          className="border-line text-ink flex min-h-12 items-center justify-center border-t text-sm font-semibold underline underline-offset-4"
+        >
+          Ver las {view.cards.length}
+        </Link>
+      )}
     </>
   );
 }
