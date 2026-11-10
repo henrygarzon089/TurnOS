@@ -51,7 +51,7 @@ export function NewSaleButton({
           onClose={() => setOpen(false)}
           onDone={(msg) => {
             setOpen(false);
-            setNotice(msg.replace("Cobro registrado", "Venta registrada"));
+            setNotice(msg);
             onSaved?.();
             router.refresh();
           }}

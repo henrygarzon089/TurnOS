@@ -10,6 +10,9 @@ import {
 } from "@/lib/domain/customer-history";
 import { parseBirthday } from "@/lib/domain/birthday";
 import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
+import { toMembershipStatus, type MembershipStatus } from "@/lib/domain/membership";
+import { customerBadges, type CustomerBadges, type MemberRead } from "@/lib/domain/owner-tables";
+import { maskPhone } from "@/lib/domain/phone";
 import { businessDayBogota } from "@/lib/domain/time";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -22,6 +25,10 @@ export type CustomerListItem = {
   visitsCount: number;
   lastVisitAt: string | null;
   inQueueToday: boolean;
+  /** REQ-078.16 "7/10" en la lista del barbero; null con la fidelidad apagada (o para el dueño). */
+  stamps: number | null;
+  stampsRequired: number | null;
+  hasMembership: boolean;
 };
 
 export type CustomerView = {
@@ -46,6 +53,8 @@ export type CustomerView = {
   history: HistoryRow[];
   /** REQ-019.3 / REQ-019.7 tarjeta de fidelidad */
   loyalty: LoyaltyStatus | null;
+  /** REQ-078.16 fila "Membresía" del detalle (null: no tiene o el plan está apagado). */
+  membership: MembershipStatus | null;
 };
 
 export type CustomerFormState = { ok?: boolean; error?: string } | undefined;
@@ -100,6 +109,9 @@ export async function searchCustomers(q: string): Promise<CustomerListItem[]> {
       visitsCount: c.visits_count,
       lastVisitAt: c.last_visit_at,
       inQueueToday: false,
+      stamps: null,
+      stampsRequired: null,
+      hasMembership: false,
     }));
   }
 
@@ -112,6 +124,9 @@ export async function searchCustomers(q: string): Promise<CustomerListItem[]> {
       visits_count: number;
       last_visit_at: string | null;
       in_queue_today: boolean;
+      stamps: number | null;
+      stamps_required: number | null;
+      has_membership: boolean;
     }[]
   ).map((c) => ({
     id: c.id,
@@ -120,6 +135,9 @@ export async function searchCustomers(q: string): Promise<CustomerListItem[]> {
     visitsCount: c.visits_count,
     lastVisitAt: c.last_visit_at,
     inQueueToday: c.in_queue_today,
+    stamps: c.stamps,
+    stampsRequired: c.stamps_required,
+    hasMembership: c.has_membership,
   }));
 }
 
@@ -136,7 +154,7 @@ export async function getCustomer(id: string): Promise<CustomerView | null> {
     if (!allowed) return null;
   }
 
-  const [custRes, ticketsRes, barbersRes, loyaltyRes] = await Promise.all([
+  const [custRes, ticketsRes, barbersRes, loyaltyRes, membershipRes] = await Promise.all([
     supabase
       .from("customers")
       .select(
@@ -157,6 +175,10 @@ export async function getCustomer(id: string): Promise<CustomerView | null> {
       .eq("business_id", session.business.id)
       .order("sort_order"),
     supabase.rpc("customer_loyalty", { p_customer_id: id }),
+    supabase.rpc("membership_status", {
+      p_business_id: session.business.id,
+      p_customer_id: id,
+    }),
   ]);
 
   const c = custRes.data;
@@ -209,6 +231,7 @@ export async function getCustomer(id: string): Promise<CustomerView | null> {
     barbers: barbers.filter((b) => b.is_active).map((b) => ({ id: b.id, name: b.display_name })),
     history: toHistoryRows(tickets, viewer),
     loyalty: toLoyaltyStatus(loyaltyRes.data),
+    membership: toMembershipStatus(membershipRes.data),
   };
 }
 
@@ -313,6 +336,9 @@ export async function findMergeCandidates(
       visitsCount: c.visits_count,
       lastVisitAt: c.last_visit_at,
       inQueueToday: false,
+      stamps: null,
+      stampsRequired: null,
+      hasMembership: false,
       createdAt: c.created_at,
     }));
 }
@@ -495,4 +521,140 @@ export async function saveInactiveDays(days: number): Promise<MergeResult> {
     .update({ inactive_days: days })
     .eq("id", session.business.id);
   return error ? { ok: false, error: "No se pudo guardar." } : { ok: true };
+}
+
+/**
+ * REQ-078.33 (T-180) resumen de la tarjeta de fidelidad para Recordar (lado a lado, como el
+ * tablero Dueno-Clientes). Lectura por RLS del dueño, sin consultas nuevas en SQL.
+ */
+export async function getLoyaltyOverview(): Promise<{
+  enabled: boolean;
+  visitsRequired: number;
+  rewardType: "free_service" | "discount";
+  rewardServiceName: string | null;
+  rewardAmount: number | null;
+} | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("loyalty_programs")
+    .select("enabled, visits_required, reward_type, reward_amount, services(name)")
+    .eq("business_id", session.business.id)
+    .maybeSingle();
+  const p = data as {
+    enabled: boolean;
+    visits_required: number;
+    reward_type: "free_service" | "discount";
+    reward_amount: number | null;
+    services: { name: string } | null;
+  } | null;
+  return {
+    enabled: p?.enabled ?? false,
+    visitsRequired: p?.visits_required ?? 10,
+    rewardType: p?.reward_type ?? "free_service",
+    rewardServiceName: p?.services?.name ?? null,
+    rewardAmount: p?.reward_amount ?? null,
+  };
+}
+
+export type OwnerCustomerRow = {
+  id: string;
+  name: string;
+  /** Enmascarado en el servidor ("300 *** 0001", REQ-078.33): el número completo no baja. */
+  phoneMasked: string;
+  lastVisitAt: string | null;
+  preferredBarberId: string | null;
+  visitsCount: number;
+} & CustomerBadges;
+
+/**
+ * REQ-078.33 (T-180) clientes del dueño para la tabla: lo que ya trae `search_customers` (50 por
+ * búsqueda), con el celular enmascarado. Después, Fidelidad y Membresía de esos clientes con la
+ * sesión del dueño (RLS, sin cambios SQL; lectura aprobada por Henry, 2026-11-09).
+ */
+export async function searchOwnerCustomers(q: string): Promise<OwnerCustomerRow[]> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return [];
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.rpc("search_customers", {
+    p_business_id: session.business.id,
+    p_q: q.trim().slice(0, 60),
+    p_limit: 50,
+  });
+  const rows = (data ?? []) as (CustomerRow & { preferred_barber_id: string | null })[];
+  const ids = rows.map((c) => c.id);
+  const [cardsRes, programRes, membersRes] = ids.length
+    ? await Promise.all([
+        supabase
+          .from("loyalty_cards")
+          .select("customer_id, stamps")
+          .in("status", ["active", "completed"])
+          .in("customer_id", ids),
+        supabase
+          .from("loyalty_programs")
+          .select("enabled, visits_required")
+          .eq("business_id", session.business.id)
+          .maybeSingle(),
+        supabase
+          .from("membership_members")
+          .select(
+            "customer_id, family_memberships(customers(name), membership_periods(ends_on, status))",
+          )
+          .is("removed_at", null)
+          .in("customer_id", ids),
+      ])
+    : [{ data: [] }, { data: null }, { data: [] }];
+  const program = programRes.data as { enabled: boolean; visits_required: number } | null;
+  const badges = customerBadges(
+    ids,
+    (cardsRes.data ?? []) as { customer_id: string; stamps: number }[],
+    program?.enabled ? program.visits_required : null,
+    (membersRes.data ?? []) as unknown as MemberRead[],
+    businessDayBogota(),
+  );
+  return rows.map((c) => ({
+    id: c.id,
+    name: c.name,
+    phoneMasked: maskPhone(c.phone_e164),
+    lastVisitAt: c.last_visit_at,
+    preferredBarberId: c.preferred_barber_id,
+    visitsCount: c.visits_count,
+    ...badges[c.id],
+  }));
+}
+
+/** REQ-078.33 lo demás de la tabla: barberos (filtro y "Barbero habitual"), total y días de Recordar. */
+export async function getOwnerCustomersMeta(): Promise<{
+  total: number;
+  inactiveDays: number;
+  today: string;
+  barbers: { id: string; name: string }[];
+} | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "owner") return null;
+  const supabase = await createSupabaseServerClient();
+  const biz = session.business.id;
+  const [countRes, bizRes, barbersRes] = await Promise.all([
+    supabase
+      .from("customers")
+      .select("id", { count: "exact", head: true })
+      .eq("business_id", biz)
+      .is("anonymized_at", null),
+    supabase.from("businesses").select("inactive_days").eq("id", biz).single(),
+    supabase
+      .from("barbers")
+      .select("id, display_name")
+      .eq("business_id", biz)
+      .order("display_name"),
+  ]);
+  return {
+    total: countRes.count ?? 0,
+    inactiveDays: bizRes.data?.inactive_days ?? 21,
+    today: businessDayBogota(),
+    barbers: ((barbersRes.data ?? []) as { id: string; display_name: string }[]).map((b) => ({
+      id: b.id,
+      name: b.display_name,
+    })),
+  };
 }

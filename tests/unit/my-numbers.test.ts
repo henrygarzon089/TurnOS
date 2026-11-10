@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { summarizeMyNumbers, type MyNumbersRow } from "@/lib/domain/my-numbers";
+import { myBreakdown, summarizeMyNumbers, type MyNumbersRow } from "@/lib/domain/my-numbers";
 
 const row = (p: Partial<MyNumbersRow>): MyNumbersRow => ({
   id: "s",
@@ -85,5 +85,47 @@ describe("REQ-069.5 Mis números con la comisión de productos aparte", () => {
       total: 18500,
     });
     expect(n.week).toMatchObject({ commission: 15000, productCommission: 3900, total: 18900 });
+  });
+});
+
+describe("REQ-078.16 Mis números como el tablero: cortes gratis, productos y por servicio", () => {
+  const items = (
+    list: {
+      kind: "service" | "product";
+      name: string;
+      qty: number;
+      line_total: number;
+      is_reward?: boolean;
+    }[],
+  ) => list.map((i) => ({ is_reward: false, ...i }));
+
+  it("REQ-078.16 cuenta cortes gratis, productos vendidos y agrupa por servicio (sin anuladas)", () => {
+    const b = myBreakdown([
+      {
+        status: "active",
+        items: items([{ kind: "service", name: "Corte", qty: 1, line_total: 25000 }]),
+      },
+      {
+        status: "active",
+        items: items([
+          { kind: "service", name: "Corte", qty: 1, line_total: 0, is_reward: true },
+          { kind: "product", name: "Gaseosa", qty: 2, line_total: 8000 },
+        ]),
+      },
+      {
+        status: "active",
+        items: items([{ kind: "service", name: "Corte + barba", qty: 1, line_total: 35000 }]),
+      },
+      {
+        status: "voided",
+        items: items([{ kind: "service", name: "Corte", qty: 1, line_total: 25000 }]),
+      },
+    ]);
+    expect(b.rewards).toBe(1);
+    expect(b.products).toEqual({ qty: 2, amount: 8000 });
+    expect(b.byService).toEqual([
+      { name: "Corte", qty: 2, amount: 25000 },
+      { name: "Corte + barba", qty: 1, amount: 35000 },
+    ]);
   });
 });

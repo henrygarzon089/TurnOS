@@ -13,7 +13,7 @@ async function fillJoinForm(page: Page, name: string) {
   await page.goto(`/${SEED.slug}`);
   await page.getByLabel("Tu nombre").fill(name);
   await page.getByLabel("Tu celular").fill(phone());
-  await page.getByRole("radio", { name: /Corte · 20 min/ }).check();
+  await page.getByRole("radio", { name: /^Corte\s+\$/ }).check();
 }
 
 async function takeTicket(ctx: BrowserContext, name: string, drink?: string) {
@@ -136,9 +136,12 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     const ownerCtx = await browser.newContext();
     const owner = await ownerCtx.newPage();
     await loginAsOwner(owner);
-    const ownerRow = owner.getByRole("listitem").filter({ hasText: name });
-    await expect(ownerRow.getByText("Tinto", { exact: true })).toBeVisible({ timeout: 15_000 });
-    await expect(ownerRow.getByText("Servida ✓")).toBeVisible();
+    // La bebida se ve en el menú "⋯" del turno (REQ-078.30)
+    await owner.goto("/admin/fila");
+    await owner.getByRole("button", { name: `Acciones para ${name}` }).click({ timeout: 15_000 });
+    const ownerMenu = owner.getByRole("group", { name: `Acciones para ${name}` });
+    await expect(ownerMenu.getByText("Tinto", { exact: true })).toBeVisible();
+    await expect(ownerMenu.getByText("Servida ✓")).toBeVisible();
     await ownerCtx.close();
 
     // Termina el turno: en el cobro no aparecen las cortesías y no hay venta
@@ -148,6 +151,11 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     // Los botones van en la barra fija de abajo, fuera de la tarjeta (REQ-078.5)
     await page.getByRole("button", { name: "Empezar corte" }).click();
     await page.getByRole("button", { name: "Terminar y cobrar" }).click();
+    // T-170: la vitrina del cobro se abre con "+ Agregar producto"
+    await page
+      .getByRole("dialog", { name: /^Cobrar a / })
+      .getByRole("button", { name: "+ Agregar producto" })
+      .click();
     const products = page.getByRole("region", { name: "Productos" });
     await expect(products.getByText("Helado")).toBeVisible();
     await expect(products.getByText("Tinto")).toHaveCount(0);
@@ -161,11 +169,19 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     const name = `Aromática E2E ${Date.now().toString(36)}`;
     await takeTicket(context, name, "Aromática");
     await loginAsOwner(page);
+    await page.goto("/admin/fila");
+    // En la fila se ve el vaso; la bebida y "Servida ✓" van en el menú "⋯" (REQ-078.30)
     const row = page.getByRole("listitem").filter({ hasText: name });
-    await expect(row.getByText("Aromática", { exact: true })).toBeVisible({ timeout: 15_000 });
-    await row.getByRole("button", { name: "Servida ✓" }).click();
-    await expect(row.getByRole("button", { name: "Servida ✓" })).toHaveCount(0);
-    await expect(row.getByText("Servida ✓")).toBeVisible();
+    await expect(row.getByLabel("Cortesía: Aromática")).toBeVisible({ timeout: 15_000 });
+    const actions = page.getByRole("button", { name: `Acciones para ${name}` });
+    const menu = page.getByRole("group", { name: `Acciones para ${name}` });
+    await actions.click();
+    await expect(menu.getByText("Aromática", { exact: true })).toBeVisible();
+    await menu.getByRole("button", { name: "Servida ✓" }).click();
+    await expect(row.getByLabel("Cortesía: Aromática")).toBeHidden();
+    await actions.click();
+    await expect(menu.getByRole("button", { name: "Servida ✓" })).toHaveCount(0);
+    await expect(menu.getByText("Servida ✓")).toBeVisible();
   });
 
   test("REQ-038.4 en espera cambia o quita la bebida; ya llamado no", async ({ page, context }) => {
@@ -271,6 +287,10 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
 
     await page.goto("/admin/caja");
     await page.getByRole("button", { name: "+ Nueva venta" }).click();
+    await page
+      .getByRole("dialog", { name: "Nueva venta" })
+      .getByRole("button", { name: "+ Agregar producto" })
+      .click();
     const products = page.getByRole("region", { name: "Productos" });
     await expect(products.getByText("Helado")).toBeVisible();
     await expect(products.getByText("Agua")).toHaveCount(0);

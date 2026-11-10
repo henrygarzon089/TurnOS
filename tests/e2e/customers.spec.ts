@@ -66,25 +66,25 @@ test.describe("REQ-018 ficha de cliente", () => {
   }) => {
     await loginAsBarber(page, 0); // Juan
     await page.goto("/app/clientes");
-    await expect(page.getByRole("heading", { name: "Atendidos por ti" })).toBeVisible();
+    await expect(page.getByRole("list", { name: "Clientes" })).toBeVisible();
     await openCustomer(page, "mateo", MATEO);
-    const history = page.getByRole("list", { name: "Historial" });
+    // T-171 el barbero ve "Últimos cortes" (tablero Barbero-Otros)
+    const history = page.getByRole("list", { name: "Últimos cortes" });
     const pedro = history.getByRole("listitem").filter({ hasText: "Pedro" });
     await expect(pedro).toContainText("Barba");
     await expect(pedro).not.toContainText("$");
-    const own = history
-      .getByRole("listitem")
-      .filter({ hasText: "Juan" })
-      .filter({ hasText: "Terminado" });
+    const own = history.getByRole("listitem").filter({ hasText: "Juan" }).filter({ hasText: "$" });
     await expect(own.first()).toContainText("$ 25.000");
     // Puede editar notas, no el nombre
-    await expect(page.getByLabel("Nombre")).toHaveCount(0);
+    await page.getByRole("button", { name: "Editar datos del cliente" }).click();
+    const sheet = page.getByRole("dialog", { name: "Editar datos" });
+    await expect(sheet.getByLabel("Nombre")).toHaveCount(0);
     const note = `Prefiere máquina 2 · ${Date.now().toString(36)}`;
-    await page.getByLabel("Notas").fill(note);
-    await page.getByRole("button", { name: "Guardar" }).click();
-    await expect(page.getByText("Guardado")).toBeVisible();
+    await sheet.getByLabel("Notas").fill(note);
+    await sheet.getByRole("button", { name: "Guardar" }).click();
+    await expect(sheet.getByText("Guardado")).toBeVisible();
     await page.reload();
-    await expect(page.getByLabel("Notas")).toHaveValue(note);
+    await expect(page.getByText(note)).toBeVisible();
   });
 
   test("REQ-018.5 el dueño edita nombre y notas", async ({ page }) => {

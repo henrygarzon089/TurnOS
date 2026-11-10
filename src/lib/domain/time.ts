@@ -113,7 +113,28 @@ export function formatLongDayCO(day: string): string {
   return `${wd[0].toUpperCase()}${wd.slice(1)} ${d} de ${MONTHS_LONG[m - 1]}`;
 }
 
-/** REQ-076.4 (PA-H15-1): "El jueves pasado (todo el día)". */
+/** REQ-076.4 (PA-H15-1), como el tablero Dueno-Hoy: "El jueves pasado, todo el día". */
 export function lastWeekLabel(day: string): string {
-  return `El ${weekdayName(day)} pasado (todo el día)`;
+  return `El ${weekdayName(day)} pasado, todo el día`;
+}
+
+/**
+ * REQ-078.16 "hoy", "ayer", "hace 4 días", "hace 3 semanas", "hace 4 meses" (lista de clientes del
+ * barbero). Cuenta días del negocio en Bogotá, no horas.
+ */
+export function agoCO(iso: string, now: Date = new Date()): string {
+  const day = (d: Date) => Date.parse(`${businessDayBogota(d)}T00:00:00Z`);
+  const days = Math.round((day(now) - day(new Date(iso))) / 86_400_000);
+  if (days <= 0) return "hoy";
+  if (days === 1) return "ayer";
+  if (days < 7) return `hace ${days} días`;
+  if (days < 30) {
+    const w = Math.floor(days / 7);
+    return w === 1 ? "hace 1 semana" : `hace ${w} semanas`;
+  }
+  if (days < 365) {
+    const m = Math.floor(days / 30);
+    return m === 1 ? "hace 1 mes" : `hace ${m} meses`;
+  }
+  return "hace más de un año";
 }

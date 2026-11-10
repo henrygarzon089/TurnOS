@@ -1,6 +1,6 @@
 /**
- * "Hoy" del dueño: resumen de la fila en vivo (REQ-076.2, design §21.2). Función pura: entra lo
- * que devuelven las server actions, sale lo que se pinta. Nunca deja pasar celulares.
+ * "Hoy" del dueño (REQ-076, REQ-078.28, REQ-078.29; design §21.2, §22.8). Funciones puras: entra
+ * lo que devuelven las server actions, sale lo que se pinta. Nunca dejan pasar celulares.
  */
 import { formatCOP } from "./money";
 import { minutesBetween } from "./time";
@@ -18,6 +18,7 @@ export type TodayQueueInput = {
   active: {
     status: "waiting" | "called" | "in_service" | "done" | "cancelled" | "no_show";
     assignedBarberId: string | null;
+    preferredBarberId: string | null;
     customerName: string;
     customerPhone?: string | null;
     displayNumber: number;
@@ -28,10 +29,24 @@ export type TodayQueueInput = {
 
 export type TodayBarberState = "serving" | "called" | "paused" | "free" | "off";
 
+export type TodayBarberRow = {
+  id: string;
+  name: string;
+  state: TodayBarberState;
+  /** Columna "Ahora" del escritorio: "Atiende a 11 · Ana M.", "Llamó a 14 · Juan P.", "Libre". */
+  now: string;
+  /** Lo mismo, corto para el celular: "11 · 22 min", "Llamó a 14", "En pausa". */
+  short: string;
+  /** Columna "Desde": minutos atendiendo o desde el llamado; null si la app no lo sabe. */
+  sinceMin: number | null;
+  /** Columna "En su fila": esperando con él (asignado o pedido); "el primero libre" no cuenta. */
+  inLine: number;
+};
+
 export type TodayQueue = {
   waiting: number;
   nextWaitMin: number | null;
-  barbers: { id: string; name: string; state: TodayBarberState; text: string }[];
+  barbers: TodayBarberRow[];
 };
 
 /** "ana maría gómez" → "Ana M." (mismo resultado que `short_name` en SQL, 0011). */
@@ -47,29 +62,39 @@ export function buildTodayQueue(input: TodayQueueInput, now: Date): TodayQueue {
   const ago = (at: string | null) => Math.max(0, minutesBetween(new Date(at ?? now), now));
   const barbers = input.barbers
     .filter((b) => b.isActive)
-    .map((b) => {
+    .map((b): TodayBarberRow => {
       const mine = input.active.filter((t) => t.assignedBarberId === b.id);
       const serving = mine.find((t) => t.status === "in_service");
       const called = mine.find((t) => t.status === "called");
-      let state: TodayBarberState;
-      let text: string;
-      if (b.status === "off") {
-        state = "off";
-        text = "No vino hoy";
-      } else if (serving) {
-        state = "serving";
-        text = `Atendiendo a ${shortName(serving.customerName)} desde hace ${ago(serving.startedAt)} min`;
-      } else if (called) {
-        state = "called";
-        text = `Llamó a ${shortName(called.customerName)} hace ${ago(called.calledAt)} min`;
-      } else if (b.status === "paused") {
-        state = "paused";
-        text = "En pausa";
-      } else {
-        state = "free";
-        text = "Libre";
+      const inLine = input.active.filter(
+        (t) => t.status === "waiting" && (t.assignedBarberId ?? t.preferredBarberId) === b.id,
+      ).length;
+      const row = (
+        state: TodayBarberState,
+        text: string,
+        short = text,
+        sinceMin = null as number | null,
+      ) => ({ id: b.id, name: b.name, state, now: text, short, sinceMin, inLine });
+      if (b.status === "off") return row("off", "No vino hoy");
+      if (serving) {
+        const m = ago(serving.startedAt);
+        return row(
+          "serving",
+          `Atiende a ${serving.displayNumber} · ${shortName(serving.customerName)}`,
+          `${serving.displayNumber} · ${m} min`,
+          m,
+        );
       }
-      return { id: b.id, name: b.name, state, text };
+      if (called)
+        return row(
+          "called",
+          `Llamó a ${called.displayNumber} · ${shortName(called.customerName)}`,
+          `Llamó a ${called.displayNumber}`,
+          ago(called.calledAt),
+        );
+      // La app no guarda desde cuándo está en pausa o libre: "Desde" queda vacío (ADR-053)
+      if (b.status === "paused") return row("paused", "En pausa");
+      return row("free", "Libre");
     });
   return { waiting: input.waitingCount, nextWaitMin: input.estimatedWaitMin, barbers };
 }
@@ -122,4 +147,102 @@ export function buildWeekBars(
 export function barAmount(amount: number): { value: string; mil: boolean } {
   if (Math.abs(amount) < 1000) return { value: formatCOP(amount), mil: false };
   return { value: formatCOP(Math.round(amount / 1000)).replace("$ ", ""), mil: true };
+}
+
+export type CashMethodRow = {
+  key: string;
+  label: string;
+  amount: number;
+  /** "wide": solo desde 1024 px; "compact": solo en el celular y la tablet. */
+  show: "all" | "wide" | "compact";
+};
+
+/**
+ * REQ-078.28 medios de pago de "Caja de hoy" como el tablero: Transferencia y tarjeta van sumadas;
+ * en el celular, Daviplata también se suma a ellas (design §22.8).
+ */
+export function cashMethodRows(byMethod: Partial<Record<string, number>>): CashMethodRow[] {
+  const m = (k: string) => byMethod[k] ?? 0;
+  return [
+    { key: "cash", label: "Efectivo", amount: m("cash"), show: "all" },
+    { key: "nequi", label: "Nequi", amount: m("nequi"), show: "all" },
+    { key: "daviplata", label: "Daviplata", amount: m("daviplata"), show: "wide" },
+    {
+      key: "transfer-card",
+      label: "Transferencia y tarjeta",
+      amount: m("transfer") + m("card"),
+      show: "wide",
+    },
+    {
+      key: "others",
+      label: "Daviplata · transf. · tarjeta",
+      amount: m("daviplata") + m("transfer") + m("card"),
+      show: "compact",
+    },
+  ];
+}
+
+const WEEKDAYS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+/** REQ-078.29 fecha de la cabecera del celular: "2026-11-05" → "jue 5 nov.". */
+export function shortDayLabel(day: string): string {
+  const d = new Date(`${day}T00:00:00Z`);
+  return `${WEEKDAYS[d.getUTCDay()].slice(0, 3)} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]}.`;
+}
+
+/** Cuándo cumple, dentro de la semana: "hoy", "mañana", "el sábado". */
+export function birthdayWhen(celebratesOn: string, today: string): string {
+  const on = new Date(`${celebratesOn}T00:00:00Z`);
+  const days = Math.round((on.getTime() - new Date(`${today}T00:00:00Z`).getTime()) / 86_400_000);
+  if (days === 0) return "hoy";
+  if (days === 1) return "mañana";
+  return `el ${WEEKDAYS[on.getUTCDay()]}`;
+}
+
+/** Hace cuánto no viene: "hace 10 días", "hace 7 semanas", "hace 2 meses". */
+export function agoLabel(days: number): string {
+  if (days < 14) return `hace ${days} ${days === 1 ? "día" : "días"}`;
+  if (days < 60) return `hace ${Math.floor(days / 7)} semanas`;
+  return `hace ${Math.floor(days / 30)} meses`;
+}
+
+export type RemindPerson = {
+  id: string;
+  kind: "birthday" | "inactive";
+  name: string;
+  when: string;
+};
+
+/**
+ * REQ-078.28 "Para recordar": hasta `limit` personas, la mitad que cumple esta semana (la más
+ * cercana primero) y la mitad que no vuelve (como las ordena Recordar); si un lado no alcanza, el
+ * otro llena. Sale sin celulares: el enlace de WhatsApp lo arma el bloque.
+ */
+export function buildRemindPeople(
+  birthdays: { id: string; name: string; celebratesOn: string }[],
+  inactive: { id: string; name: string; daysSince: number }[],
+  today: string,
+  limit = 4,
+): RemindPerson[] {
+  const half = Math.ceil(limit / 2);
+  const nB = Math.min(birthdays.length, Math.max(half, limit - inactive.length));
+  const nI = Math.min(inactive.length, limit - nB);
+  return [
+    ...[...birthdays]
+      .sort((a, b) => a.celebratesOn.localeCompare(b.celebratesOn))
+      .slice(0, nB)
+      .map((c) => ({
+        id: c.id,
+        kind: "birthday" as const,
+        name: c.name,
+        when: birthdayWhen(c.celebratesOn, today),
+      })),
+    ...inactive.slice(0, nI).map((c) => ({
+      id: c.id,
+      kind: "inactive" as const,
+      name: c.name,
+      when: agoLabel(c.daysSince),
+    })),
+  ];
 }

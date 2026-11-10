@@ -376,8 +376,10 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   el proyecto de Vercel y revisar la cuota de su plan.
 - T-133 hecha (PR #131, 2026-11-08): región verificada, Supabase `us-east-1` y Vercel `iad1`; `pnpm trace
   --hito=14` sin huecos.
-- Henry aprueba el Hito 14 (ADR-044, 2026-11-09). Queda como operación: activar Speed Insights en el
-  proyecto de Vercel, revisar la cuota del plan y mirar los datos de `/[slug]` y `/app/fila`.
+- Henry aprueba el Hito 14 (ADR-044, 2026-11-09).
+- Speed Insights **apagado por costo** (ADR-054, 2026-11-09): no se activa en Vercel mientras el negocio
+  no lo pague. El código se queda y no envía nada; para retomarlo basta activarlo (con ADR nuevo). La
+  referencia de velocidad es Lighthouse móvil del CI.
 
 ### Hito 15 — inicio "Hoy" y menú del dueño (**spec aprobada**, ADR-046, 2026-11-06)
 
@@ -506,14 +508,22 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   tabla y tarjeta. Capturas en `docs/diseno/capturas/T-173/`. Sin migraciones. Siguen T-174 (Mi
   turno), T-175 (cita/regalo/privacidad) y T-176 (TV).
 - Falta de Henry: desplegar `main` cuando el CI esté en verde, recorrer cliente, barbero y dueño en
-  el celular y el computador, la prueba en la barbería (PA-H16-2), comparar Speed Insights con el
-  Hito 14 y aprobar (ADR-050, reservado).
+  el celular y el computador, la prueba en la barbería (PA-H16-2), comparar Lighthouse móvil del CI
+  con el Hito 14 (ADR-054) y aprobar (ADR-050, reservado).
 - 2026-11-09, **el dueño fiel al tablero** (ADR-053; spec en la PR #136, rama
   `claude/spec-dueno-tablero`, renumerada a REQ-078.27…33, design §22.8, T-177…T-181 porque la spec
-  del cliente, PR #137, tomó ADR-052 y T-172…T-176). Cada tarea va en su propia PR con base
-  `claude/spec-dueno-tablero`: T-177 #141, T-178 #142 y T-179 #143; T-180 #147 y T-181 #146 van
-  sobre la rama de T-177. La fusión la hace Henry: primero la #136, luego la #141 y después las
-  demás.
+  del cliente, PR #137, tomó ADR-052 y T-172…T-176). Cada tarea se hizo en su PR (T-177 #141,
+  T-178 #142, T-179 #143, T-180 #147, T-181 #146); la #146 ya está en `main` (2026-11-09) y con
+  ella la spec y T-177. Para no fusionar en cadena, todo quedó junto en **una sola PR, la #150**
+  (rama `claude/dueno-integracion`, trazabilidad regenerada una vez: 436 CA, solo REQ-078.19 sin
+  prueba, que es de T-170 #144). Al fusionar la #150, GitHub marca como fusionadas la #136, #141,
+  #142, #143 y #147. Sin migraciones. Después Henry despliega desde `main` con
+  `vercel deploy --prod --force --scope henry-garzons-projects` (el `--force` evita el CSS viejo
+  del caché) y verifica con `pnpm check:deploy https://turnos-smoky-nine.vercel.app`.
+- T-178 a T-181 hechas: "Hoy" de escritorio y celular (#142), Fila y Caja con buscar y filtrar
+  ventas (#143), Semana, Citas y Clientes con Fidelidad y Membresía de solo lectura (#147, sin
+  migración, aprobado por Henry), Local y configuración con tablas y horario en español (#146).
+  Prueba desde el celular: entrar como dueño y recorrer Hoy, Fila, Caja, Semana, Clientes y Más.
 - T-177 hecha (PR #141, rama `claude/t-177-marco-dueno`): todas las pantallas del dueño usan
   `lg:max-w-6xl` (sin `data-wide`; `data-tablet` sigue de 768 a 1023 px). Hay una barra azul de
   56 px con iniciales, negocio, fecha larga y "<nombre> ▾" con "Salir"; en el celular "Salir" está

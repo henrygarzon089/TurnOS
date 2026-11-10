@@ -38,8 +38,9 @@ pantalla y los mismos textos de siempre.
 - [ ] Entrar: seis casillas con puntos para el PIN; un PIN equivocado muestra el error en rojo.
 - [ ] Mi fila (T-169, como el tablero Barbero-Fila): franja azul con tu nombre, tu estado y
       "Pausar"; bloque "Sigue" con el número grande y "Después · N más" debajo.
-- [ ] "Llamar a <número>" → "Empezar corte" (o "No vino") → "Terminar y cobrar" → cobro con el
-      total y "Registrar" abajo.
+- [ ] "Llamar a <número>" → "Empezar corte" (o "No vino") → "Terminar y cobrar" → cobro a
+      pantalla completa (T-170): "Cobrar a <nombre>" con flecha, servicio en una fila, "+ Agregar
+      producto", medios en 3 columnas y "Cobrar $ …" abajo; en modo avión, "No quedó cobrado.".
 - [ ] Tocar un turno abre su hoja con "Avisar por WhatsApp".
 - [ ] "Cobrar después": queda la fila "1 cobro pendiente"; tocarla abre la lista con "Cobrar".
 - [ ] Modo avión: el botón de llamar queda deshabilitado con el motivo.

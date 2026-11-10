@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { searchCustomers, type CustomerListItem } from "@/lib/actions/customers";
-import { businessDayBogota, formatDayCO } from "@/lib/domain/time";
+import { Icon } from "@/components/ui/Icon";
+import { agoCO, businessDayBogota, formatDayCO } from "@/lib/domain/time";
 
-/** REQ-018.3 buscador (nombre o últimos dígitos) y REQ-018.4 secciones del barbero. */
+/** REQ-018.3 buscador (nombre o últimos dígitos) y REQ-018.4 / REQ-078.16 lista del barbero. */
 export function CustomerSearch({
   initial,
   role,
@@ -30,8 +31,75 @@ export function CustomerSearch({
     return () => clearTimeout(timer);
   }, [q]);
 
-  const inQueue = items.filter((c) => c.inQueueToday);
-  const served = items.filter((c) => !c.inQueueToday);
+  // Barbero (tablero Barbero-Otros, T-171): buscador con lupa y una sola lista a todo el ancho;
+  // los de hoy en su fila van primero (ya vienen en ese orden)
+  if (role === "barber") {
+    return (
+      <div className="-mx-4 mt-3 flex flex-col">
+        <label className="relative mx-4 block">
+          <span className="sr-only">Buscar cliente</span>
+          <Icon
+            name="search"
+            className="text-muted pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2"
+          />
+          <input
+            className="input !pl-11"
+            type="search"
+            inputMode="search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Buscar por nombre o celular"
+            autoComplete="off"
+          />
+        </label>
+        <p className="text-muted mx-4 min-h-5 text-xs" aria-live="polite">
+          {pending ? "Buscando…" : ""}
+        </p>
+        {items.length === 0 ? (
+          <p className="text-muted mx-4">
+            {q.trim()
+              ? "No encontramos clientes con esa búsqueda."
+              : "Todavía no has atendido clientes."}
+          </p>
+        ) : (
+          <ul aria-label="Clientes" className="border-line bg-card divide-line divide-y border-y">
+            {items.map((c) => (
+              <li key={c.id}>
+                <Link
+                  href={`/app/clientes/${c.id}`}
+                  className="flex min-h-14 items-center justify-between gap-3 px-4 py-2"
+                >
+                  <span className="min-w-0">
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="truncate font-semibold">{c.name}</span>
+                      {c.hasMembership && (
+                        <span className="border-ink rounded-sm border px-1.5 text-xs font-semibold">
+                          Familia
+                        </span>
+                      )}
+                    </span>
+                    <span className="text-muted block text-sm">
+                      *** {c.phoneLast4} ·{" "}
+                      {c.inQueueToday
+                        ? "hoy"
+                        : c.lastVisitAt
+                          ? agoCO(c.lastVisitAt)
+                          : "sin visitas"}
+                    </span>
+                  </span>
+                  {c.stamps !== null && c.stampsRequired !== null && (
+                    <span className="text-muted shrink-0 text-sm tabular-nums">
+                      {Math.min(c.stamps, c.stampsRequired)}/{c.stampsRequired}
+                    </span>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="mt-4 flex flex-col gap-4">
@@ -55,30 +123,12 @@ export function CustomerSearch({
         <p className="text-muted">
           {q.trim() ? "No encontramos clientes con esa búsqueda." : "No encontramos clientes."}
         </p>
-      ) : role === "owner" ? (
-        <CustomerList items={items} label="Clientes" />
       ) : (
-        <>
-          {inQueue.length > 0 && (
-            <section>
-              <h2 className="mb-2 font-semibold">Hoy en tu fila</h2>
-              <CustomerList items={inQueue} label="Hoy en tu fila" />
-            </section>
-          )}
-          <section>
-            <h2 className="mb-2 font-semibold">Atendidos por ti</h2>
-            {served.length ? (
-              <CustomerList items={served} label="Atendidos por ti" />
-            ) : (
-              <p className="text-muted text-sm">Todavía no has atendido clientes.</p>
-            )}
-          </section>
-        </>
+        <CustomerList items={items} label="Clientes" />
       )}
     </div>
   );
 }
-
 function CustomerList({ items, label }: { items: CustomerListItem[]; label: string }) {
   return (
     <ul aria-label={label} className="border-line bg-card divide-line divide-y rounded-md border">

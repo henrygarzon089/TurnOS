@@ -8,7 +8,8 @@ import { TodayCard } from "./TodayCard";
 /**
  * REQ-076.6 lo que pide acción, en el orden de `buildOwnerAlerts`, cada uno con su enlace. Raya
  * roja = atención ahora (caja, limpieza); ámbar = aviso (inventario, membresías). Sin alertas:
- * "Todo en orden".
+ * "Todo en orden" en escritorio; en el celular el bloque no se dibuja (REQ-078.29, design §22.8) y,
+ * si hay, va arriba en rojo suave como el tablero Dueno-Hoy-Movil.
  */
 export async function TodayAlerts({
   load = loadOwnerAlerts,
@@ -22,6 +23,9 @@ export async function TodayAlerts({
   return (
     <TodayCard
       title="Piden tu atención"
+      data-empty={alerts?.length === 0 || undefined}
+      className={alerts?.length === 0 ? "max-lg:hidden" : "max-lg:bg-accent-soft"}
+      titleClassName={alerts && alerts.length > 0 ? "max-lg:text-accent" : ""}
       badge={
         alerts && alerts.length > 0 ? <CountBadge count={alerts.length} label="alertas" /> : null
       }
@@ -39,7 +43,7 @@ export async function TodayAlerts({
             >
               <span
                 aria-hidden="true"
-                className={`h-6 w-1 shrink-0 rounded-xs ${a.urgent ? "bg-danger" : "bg-warn"}`}
+                className={`h-6 w-1 shrink-0 rounded-xs max-lg:hidden ${a.urgent ? "bg-danger" : "bg-warn"}`}
               />
               <p className="min-w-0 flex-1">
                 <b>{a.title}</b>

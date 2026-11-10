@@ -115,8 +115,8 @@ test.describe("T-163 pantallas del barbero con el sistema visual (REQ-078)", () 
     await page.getByRole("button", { name: CALL }).click();
     await page.getByRole("button", { name: "Empezar corte" }).click();
     await page.getByRole("button", { name: "Terminar y cobrar" }).click();
-    const sheet = page.getByRole("dialog", { name: "Registrar cobro" });
-    const pay = sheet.getByRole("button", { name: /^Registrar \$/ });
+    const sheet = page.getByRole("dialog", { name: /^Cobrar a / });
+    const pay = sheet.getByRole("button", { name: /^Cobrar \$/ });
     await expect(pay).toBeVisible({ timeout: 15_000 });
     await expect(sheet.getByText("Total", { exact: true })).toBeVisible();
     const viewport = page.viewportSize()!;

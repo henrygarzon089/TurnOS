@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { CALL, loginAsBarber, loginAsOwner, SEED } from "./helpers";
+import { CALL, loginAsBarber, loginAsOwner, SEED, addProduct } from "./helpers";
 
 /**
  * T-029 · REQ-032.1 (instalable), REQ-032.2 y NFR-008 (botones ≥ 48 px abajo, fuente ≥ 16 px,
@@ -122,18 +122,43 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
   test("REQ-032.2 / NFR-008 portada y formulario del cliente: botones ≥ 48 px abajo, fuente 16 px, zoom 200 %", async ({
     page,
   }) => {
-    await page.goto(`/${SEED.slug}`);
-    await expectThumbButton(page, page.getByRole("link", { name: "Tomar turno" }));
-    await expectAllTargets48(page);
-    await expectBaseFont16(page);
-    await expectZoom200(page);
-
-    // La portada se relee en vivo (ADR-008): esperar a que termine antes de navegar (WebKit)
-    await page.waitForLoadState("networkidle");
+    // Portada y formulario son una sola pantalla (T-173, ADR-052)
     await page.goto(`/${SEED.slug}`);
     await expectThumbButton(page, page.getByRole("button", { name: "Tomar turno" }));
     await expectAllTargets48(page);
+    await expectBaseFont16(page);
     await expectZoom200(page);
+  });
+
+  test("REQ-032.2 / NFR-008 portada con una fuente ancha (la de Linux en CI) también cabe con zoom 200 %", async ({
+    page,
+  }) => {
+    await page.goto(`/${SEED.slug}`);
+    await expect(page.getByRole("button", { name: "Tomar turno" })).toBeVisible();
+    // Sin la fuente del sistema del iPhone, WebKit cae en una más ancha: todo debe poder quebrar
+    await page.addStyleTag({
+      content: "* { font-family: Verdana, 'DejaVu Sans', sans-serif !important; }",
+    });
+    await expectZoom200(page);
+  });
+
+  test("REQ-032.2 / NFR-008 portada con citas encendidas: 'Reservar una cita' y 'Ver menú' caben con zoom 200 %", async ({
+    page,
+  }) => {
+    const { data: biz } = await db().from("businesses").select("id").eq("slug", SEED.slug).single();
+    await db().from("businesses").update({ appointments_enabled: true }).eq("id", biz!.id);
+    await db()
+      .from("barbers")
+      .update({ accepts_appointments: true })
+      .eq("business_id", biz!.id)
+      .eq("display_name", "Juan");
+    try {
+      await page.goto(`/${SEED.slug}`);
+      await expect(page.getByRole("link", { name: "Reservar una cita" })).toBeVisible();
+      await expectZoom200(page);
+    } finally {
+      await db().from("businesses").update({ appointments_enabled: false }).eq("id", biz!.id);
+    }
   });
 
   test("REQ-032.2 / NFR-008 Mi turno: cancelar ≥ 48 px abajo, zoom 200 %", async ({ page }) => {
@@ -159,27 +184,20 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
     await expectZoom200(page);
   });
 
-  test("NFR-008 / T-049 panel de cobro usable con una mano: botones ≥ 48 px, Registrar abajo, zoom 200 %", async ({
+  test("NFR-008 / T-049 panel de cobro usable con una mano: botones ≥ 48 px, Cobrar abajo, zoom 200 %", async ({
     page,
   }) => {
     await loginAsOwner(page);
     await page.goto("/admin/caja");
     await page.getByRole("button", { name: "+ Nueva venta" }).click();
     const sheet = page.getByRole("dialog", { name: "Nueva venta" });
-    await sheet.getByRole("button", { name: "Agregar un Helado" }).click();
+    await addProduct(sheet, "Helado");
     await sheet.getByRole("button", { name: "+ Agregar servicio" }).click();
     await expectAllTargets48(page);
-    const register = sheet.getByRole("button", { name: /^Registrar/ });
+    const register = sheet.getByRole("button", { name: /^Cobrar \$/ });
     await register.scrollIntoViewIfNeeded();
     await expectThumbButton(page, register);
-    for (const m of [
-      "Efectivo",
-      "Nequi",
-      "Daviplata",
-      "Transferencia",
-      "Tarjeta",
-      "Tarjeta de regalo",
-    ]) {
+    for (const m of ["Efectivo", "Nequi", "Daviplata", "Transferencia", "Tarjeta"]) {
       const box = (await sheet.getByRole("radio", { name: m, exact: true }).boundingBox())!;
       expect(box.height, `${m} ≥ 48 px`).toBeGreaterThanOrEqual(48);
     }

@@ -13,7 +13,14 @@ const COUNT_KIND_LABELS: Record<string, string> = {
 
 const dayOf = (iso: string) => businessDayBogota(new Date(iso));
 
-/** REQ-074.4 "Mi estación": dotación, stock, reposiciones y último conteo. Solo lectura, sin precios. */
+const ROW = "flex min-h-14 items-center justify-between gap-3 px-4 py-2";
+const LABEL = "text-muted px-4 pt-5 pb-2 text-xs font-semibold tracking-wide uppercase";
+
+/**
+ * REQ-074.4 "Mi estación": dotación, stock, reposiciones y último conteo. Solo lectura, sin precios.
+ * T-171 filas a todo el ancho como el tablero Barbero-Otros; la reposición es por envase vacío en la
+ * caja (REQ-071.4).
+ */
 export default async function MyStationPage() {
   const s = await getMyStation();
   if (!s || s.status === null) {
@@ -25,50 +32,53 @@ export default async function MyStationPage() {
     );
   }
   return (
-    <main className="flex flex-col gap-5 py-6">
-      <header>
+    <main className="-mx-4 flex flex-col pb-4">
+      <header className="border-line border-b px-4 pt-4 pb-3">
         <h1 className="text-2xl font-bold">Mi estación</h1>
         <p className="text-muted text-sm">
-          Lo que te entregó la barbería. Para reponer, lleva el envase vacío.
+          Lo que tienes asignado.
           {s.status === "closing" && " Tu estación está por cerrar: entrega lo que tienes."}
         </p>
       </header>
 
-      <section aria-labelledby="station-items">
-        <h2 id="station-items" className="mb-2 font-semibold">
-          Dotación
-        </h2>
+      <section aria-label="Dotación">
         {s.items.length === 0 ? (
-          <p className="text-muted text-sm">Todavía no tienes insumos asignados.</p>
+          <p className="text-muted px-4 py-4 text-sm">Todavía no tienes insumos asignados.</p>
         ) : (
-          <ul className="flex flex-col gap-2">
-            {s.items.map((i) => (
-              <li
-                key={i.itemId}
-                className="border-line bg-card flex min-h-12 items-center justify-between gap-3 rounded-md border px-4 py-2 text-sm"
-              >
-                <span className="font-semibold">{i.name}</span>
-                <span
-                  className={`shrink-0 tabular-nums ${i.stock < i.allowance ? "text-danger" : "text-muted"}`}
-                >
-                  {i.stock} de {i.allowance} {i.unitLabel}
-                </span>
-              </li>
-            ))}
+          <ul className="divide-line border-line divide-y border-b">
+            {s.items.map((i) => {
+              const low = i.stock < i.allowance;
+              return (
+                <li key={i.itemId} className={`${ROW} ${low ? "bg-warn-soft" : ""}`}>
+                  <span className="min-w-0">
+                    <span className="block font-medium">{i.name}</span>
+                    <span className={`block text-sm ${low ? "text-warn" : "text-muted"}`}>
+                      {i.stock} de {i.allowance} {i.unitLabel}
+                    </span>
+                  </span>
+                  {low && (
+                    <span className="text-warn shrink-0 text-sm font-semibold">Por reponer</span>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
+        <p className="text-muted px-4 pt-3 text-sm">
+          Cuando se te acabe algo, entrega el envase vacío en la caja. Te dan uno nuevo.
+        </p>
       </section>
 
-      <section aria-labelledby="station-refills">
-        <h2 id="station-refills" className="mb-2 font-semibold">
-          Reposiciones (30 días)
-        </h2>
+      <section aria-label="Reposiciones">
+        <h2 className={LABEL}>Reposiciones · 30 días</h2>
         {s.refills.length === 0 ? (
-          <p className="text-muted text-sm">Sin reposiciones en los últimos 30 días.</p>
+          <p className="text-muted border-line border-y px-4 py-4 text-sm">
+            Sin reposiciones en los últimos 30 días.
+          </p>
         ) : (
-          <ul className="flex flex-col gap-1 text-sm">
+          <ul className="divide-line border-line divide-y border-y text-sm">
             {s.refills.map((r, idx) => (
-              <li key={`${r.at}-${idx}`} className="flex justify-between gap-3">
+              <li key={`${r.at}-${idx}`} className={ROW}>
                 <span>
                   {r.itemName} · {r.qty}
                 </span>
@@ -81,38 +91,37 @@ export default async function MyStationPage() {
         )}
       </section>
 
-      <section aria-labelledby="station-count">
-        <h2 id="station-count" className="mb-2 font-semibold">
+      <section aria-label="Último conteo">
+        <h2 className={LABEL}>
           Último conteo
+          {s.lastCount &&
+            ` · ${formatDayCO(dayOf(s.lastCount.countedAt))} · ${
+              COUNT_KIND_LABELS[s.lastCount.kind] ?? "conteo"
+            }`}
         </h2>
         {!s.lastCount ? (
-          <p className="text-muted text-sm">Todavía no te han contado la estación.</p>
+          <p className="text-muted border-line border-y px-4 py-4 text-sm">
+            Todavía no te han contado la estación.
+          </p>
         ) : (
-          <>
-            <p className="text-muted text-sm">
-              {formatDayCO(dayOf(s.lastCount.countedAt))} ·{" "}
-              {COUNT_KIND_LABELS[s.lastCount.kind] ?? "conteo"}
-            </p>
-            <ul className="mt-2 flex flex-col gap-2">
-              {s.lastCount.lines.map((l) => (
-                <li
-                  key={l.itemId}
-                  className={`rounded-md border p-3 text-sm ${l.alert ? "border-danger text-danger" : "border-line bg-card"}`}
-                >
-                  <p className="font-semibold">
+          <ul className="divide-line border-line divide-y border-y text-sm">
+            {s.lastCount.lines.map((l) => (
+              <li key={l.itemId} className={`${ROW}`}>
+                <span className="min-w-0">
+                  <span className={`block font-medium ${l.alert ? "text-danger" : ""}`}>
                     {l.name}: {l.countedQty}
-                  </p>
+                  </span>
                   {l.realUse !== null && (
-                    <p>
+                    <span className={`block ${l.alert ? "text-danger" : "text-muted"}`}>
                       {l.services ?? 0} servicios · gastaste {l.realUse}
                       {l.measuring ? " · Midiendo" : ` · se esperaba ${l.expectedUse ?? 0}`}
                       {l.alert && " · Revisar con el dueño"}
-                    </p>
+                    </span>
                   )}
-                </li>
-              ))}
-            </ul>
-          </>
+                </span>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
     </main>

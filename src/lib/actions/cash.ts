@@ -13,7 +13,9 @@ import { toMembershipStatus, type MembershipStatus } from "@/lib/domain/membersh
 import { normalizePhoneCO } from "@/lib/domain/phone";
 import {
   MY_NUMBERS_COLUMNS,
+  myBreakdown,
   summarizeMyNumbers,
+  type BreakdownItem,
   type MyNumbersRow,
   type Totals,
 } from "@/lib/domain/my-numbers";
@@ -37,6 +39,9 @@ export type CheckoutView = {
   isOwner: boolean;
   ticket: {
     id: string;
+    /** "A14 · terminó 4:21 p. m." bajo "Cobrar a …" (tablero Barbero-Cobro). */
+    displayNumber: string;
+    finishedAt: string | null;
     customerName: string;
     serviceId: string;
     serviceName: string;
@@ -132,7 +137,7 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
       ? supabase
           .from("tickets")
           .select(
-            "id, customer_id, customer_name, service_id, service_name, service_price, assigned_barber_id, status, payment_status",
+            "id, display_number, finished_at, customer_id, customer_name, service_id, service_name, service_price, assigned_barber_id, status, payment_status",
           )
           .eq("id", ticketId)
           .maybeSingle()
@@ -170,6 +175,8 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
 
   const t = ticketRes.data as {
     id: string;
+    display_number: number;
+    finished_at: string | null;
     customer_id: string | null;
     customer_name: string;
     service_id: string;
@@ -212,6 +219,8 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
     ticket: t
       ? {
           id: t.id,
+          displayNumber: String(t.display_number),
+          finishedAt: t.finished_at,
           customerName: t.customer_name,
           serviceId: t.service_id,
           serviceName: t.service_name,
@@ -543,18 +552,27 @@ export async function getClosures(): Promise<
 
 // ================================================================ T-047: mis números ====
 
+export type MyPeriod = {
+  totals: Totals;
+  breakdown: ReturnType<typeof myBreakdown>;
+  /** REQ-068 lo que pagó el barbero por sus compras con descuento en el periodo. */
+  staffPurchases: number;
+};
+
 export type MyNumbersView = {
   barberName: string;
   commissionPct: number;
   today: Totals;
   week: Totals;
   weekStart: string;
+  /** REQ-078.16 Hoy / Semana / Mes del tablero Barbero-Otros. */
+  periods: { today: MyPeriod; week: MyPeriod; month: MyPeriod };
   detail: (MyNumbersRow & { items: string })[];
 };
 
 /**
- * REQ-025.5 / REQ-029.1 "Mis números": hoy y semana con el detalle de sus ventas. Sin filtro por
- * barbero a propósito: el RLS de sales solo devuelve las suyas (prueba en
+ * REQ-025.5 / REQ-029.1 "Mis números": hoy, semana y mes con el detalle de sus ventas. Sin filtro
+ * por barbero a propósito: el RLS de sales solo devuelve las suyas (prueba en
  * tests/integration/my-numbers.test.ts con la misma consulta).
  */
 export async function getMyNumbers(): Promise<MyNumbersView | null> {
@@ -563,20 +581,21 @@ export async function getMyNumbers(): Promise<MyNumbersView | null> {
   const supabase = await createSupabaseServerClient();
   const today = businessDayBogota();
   const weekStart = bogotaWeekStart();
-  const [salesRes, barberRes] = await Promise.all([
+  const monthStart = `${today.slice(0, 7)}-01`;
+  const from = weekStart < monthStart ? weekStart : monthStart;
+  const [salesRes, barberRes, purchasesRes] = await Promise.all([
     supabase
       .from("sales")
-      .select(`${MY_NUMBERS_COLUMNS}, sale_items(kind, name, qty, is_reward)`)
+      .select(`${MY_NUMBERS_COLUMNS}, sale_items(kind, name, qty, is_reward, line_total)`)
       .eq("business_id", session.business.id)
-      .gte("business_day", weekStart)
+      .gte("business_day", from)
       .order("created_at", { ascending: false })
-      .limit(500),
+      .limit(2000),
     supabase.from("barbers").select("commission_pct").eq("id", session.barberId).single(),
+    supabase.rpc("my_staff_purchases", { p_from: from }),
   ]);
-  type Row = Omit<MyNumbersRow, "has_service"> & {
-    sale_items: { kind: string; name: string; qty: number; is_reward: boolean }[];
-  };
-  const rows = ((salesRes.data ?? []) as unknown as Row[])
+  type Row = Omit<MyNumbersRow, "has_service"> & { sale_items: BreakdownItem[] };
+  const all = ((salesRes.data ?? []) as unknown as Row[])
     // El dueño que también atiende ve todo el negocio por RLS: aquí solo lo de su silla
     .filter((r) => r.barber_id === session.barberId)
     .map((r) => ({
@@ -586,14 +605,28 @@ export async function getMyNumbers(): Promise<MyNumbersView | null> {
         .map((i) => `${i.name}${i.qty > 1 ? ` ×${i.qty}` : ""}${i.is_reward ? " (premio)" : ""}`)
         .join(", "),
     }));
-  const n = summarizeMyNumbers(rows, today, weekStart);
+  const purchases = (purchasesRes.data ?? []) as { business_day: string; total: number }[];
+  const period = (start: string): MyPeriod => {
+    const rows = all.filter((r) => r.business_day >= start && r.business_day <= today);
+    return {
+      totals: summarizeMyNumbers(rows, today, start).week,
+      breakdown: myBreakdown(rows.map((r) => ({ status: r.status, items: r.sale_items }))),
+      staffPurchases: purchases
+        .filter((p) => p.business_day >= start && p.business_day <= today)
+        .reduce((n, p) => n + p.total, 0),
+    };
+  };
+  const n = summarizeMyNumbers(all, today, weekStart);
   return {
     barberName: session.barberName ?? "",
     commissionPct: barberRes.data?.commission_pct ?? 0,
     today: n.today,
     week: n.week,
     weekStart,
-    detail: n.detail as MyNumbersView["detail"],
+    periods: { today: period(today), week: period(weekStart), month: period(monthStart) },
+    // Las líneas ya están en `items` (texto): no viajan al cliente
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    detail: (n.detail as typeof all).map(({ sale_items, ...r }) => r),
   };
 }
 
@@ -670,9 +703,12 @@ export async function getWeekDailyTotals(): Promise<{
 }
 
 /** REQ-028.1–28.4 resumen de la semana (lunes a domingo) y la anterior para comparar. */
-export async function getWeekSummary(
-  weekStart?: string,
-): Promise<{ current: WeekSummary; previous: WeekSummary } | null> {
+export async function getWeekSummary(weekStart?: string): Promise<{
+  current: WeekSummary;
+  previous: WeekSummary;
+  pcts: Record<string, number>;
+  purchases: Record<string, number>;
+} | null> {
   const session = await getStaffSession();
   if (session?.role !== "owner") return null;
   if (weekStart && !/^\d{4}-\d{2}-\d{2}$/.test(weekStart)) return null;
@@ -689,5 +725,23 @@ export async function getWeekSummary(
     p_business_id: session.business.id,
     p_week_start: prevDay.toISOString().slice(0, 10),
   });
-  return { current, previous: (prev.data as WeekSummary) ?? current };
+  // REQ-078.32: % de cada barbero y sus compras con descuento (REQ-068) de la semana, para la tabla
+  const [pctRes, buysRes] = await Promise.all([
+    supabase.from("barbers").select("id, commission_pct").eq("business_id", session.business.id),
+    supabase
+      .from("sales")
+      .select("staff_buyer_id, total")
+      .eq("business_id", session.business.id)
+      .eq("status", "active")
+      .not("staff_buyer_id", "is", null)
+      .gte("business_day", current.weekStart)
+      .lte("business_day", current.weekEnd),
+  ]);
+  const pcts: Record<string, number> = {};
+  for (const b of (pctRes.data ?? []) as { id: string; commission_pct: number }[])
+    pcts[b.id] = b.commission_pct;
+  const purchases: Record<string, number> = {};
+  for (const s of (buysRes.data ?? []) as { staff_buyer_id: string; total: number }[])
+    purchases[s.staff_buyer_id] = (purchases[s.staff_buyer_id] ?? 0) + s.total;
+  return { current, previous: (prev.data as WeekSummary) ?? current, pcts, purchases };
 }

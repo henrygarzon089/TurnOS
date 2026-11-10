@@ -69,7 +69,7 @@ test.describe("REQ-035 formulario según quién hace cada servicio", () => {
     page,
   }) => {
     await page.goto(`/${SEED.slug}`);
-    await page.getByRole("radio", { name: /^Corte ·/ }).check();
+    await page.getByRole("radio", { name: /^Corte\s+\$/ }).check();
     const barberos = page.getByRole("group", { name: "¿Con quién?" });
     await barberos.getByRole("radio", { name: "Juan", exact: true }).click();
     await expect(barberos.getByRole("radio", { name: "Juan", exact: true })).toHaveAttribute(

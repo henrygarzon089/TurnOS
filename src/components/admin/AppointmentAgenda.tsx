@@ -175,11 +175,15 @@ export function AppointmentAgenda({
           >
             <Icon name="next" />
           </button>
-          {dayIndex > 0 && (
-            <Button variant="secondary" className="text-base" onClick={() => setDayIndex(0)}>
-              Hoy
-            </Button>
-          )}
+          {/* REQ-078.33 (T-180): "Hoy" siempre junto a las flechas, como el tablero */}
+          <Button
+            variant="secondary"
+            className="text-base"
+            aria-pressed={dayIndex === 0}
+            onClick={() => setDayIndex(0)}
+          >
+            Hoy
+          </Button>
           <p className="text-muted ml-auto hidden text-sm sm:block">
             <strong className="text-ink tabular-nums">{shown.items.length}</strong>{" "}
             {shown.items.length === 1 ? "cita" : "citas"}

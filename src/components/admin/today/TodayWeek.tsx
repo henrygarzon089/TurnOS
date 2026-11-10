@@ -7,9 +7,10 @@ import { TodayCard } from "./TodayCard";
 type Data = { weekStart: string; today: string; totals: Record<string, number> };
 
 /**
- * REQ-076.9 ingresos de la semana por día, solo desde 1024 px (la página lo oculta en el celular).
- * Cada barra es el total de la Caja de ese día; la suma es el "Vendido" de Semana (ADR-048). Hoy
- * va en azul marino; los días que no han llegado, con una raya.
+ * REQ-076.9, REQ-078.28 ingresos de la semana por día, solo desde 1024 px (la página lo oculta en
+ * el celular). Cada barra es el total de la Caja de ese día; la suma, junto al título, es el
+ * "Vendido" de Semana (ADR-048). Hoy va en azul marino; los días que no han llegado, con una raya
+ * y "—" (un día que ya pasó sin ventas sí dice $ 0).
  */
 export async function TodayWeek({
   load = getWeekDailyTotals,
@@ -20,28 +21,31 @@ export async function TodayWeek({
   } catch {
     data = null;
   }
+  const week = data && buildWeekBars(data.totals, data.weekStart, data.today);
   return (
-    <TodayCard title="Ingresos de la semana">
-      {!data ? (
-        <TodayBlockError />
-      ) : (
-        <WeekBars {...buildWeekBars(data.totals, data.weekStart, data.today)} />
-      )}
+    <TodayCard
+      title="Ingresos de la semana"
+      aside={
+        week && (
+          <p className="text-muted text-right">
+            <b className="text-ink tabular-nums" data-testid="today-week-sum">
+              {formatCOP(week.sum)}
+            </b>{" "}
+            hasta hoy
+          </p>
+        )
+      }
+    >
+      {!week ? <TodayBlockError /> : <WeekBars {...week} />}
     </TodayCard>
   );
 }
 
-function WeekBars({ bars, sum, max }: ReturnType<typeof buildWeekBars>) {
+function WeekBars({ bars, max }: ReturnType<typeof buildWeekBars>) {
   return (
-    // @container: con la tarjeta angosta (4 columnas, citas encendidas) las cifras van en miles
+    // @container: si la tarjeta queda angosta, las cifras van en miles con la nota
     <div className="@container px-4 pt-3 pb-4">
-      <p className="text-muted">
-        <b className="text-ink tabular-nums" data-testid="today-week-sum">
-          {formatCOP(sum)}
-        </b>{" "}
-        hasta hoy
-        <span className="text-xs @sm:hidden"> · Cifras en miles</span>
-      </p>
+      <p className="text-muted text-xs @sm:hidden">Cifras en miles</p>
       <ol className="mt-3 grid h-40 grid-cols-7 items-end gap-2">
         {bars.map((b) => (
           <li
