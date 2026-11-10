@@ -42,10 +42,16 @@ jobs:
   e2e:
     # REQ/NFR de punta a punta en Pixel 7 + iPhone 13 contra un Supabase LOCAL del CI (ADR-022):
     # las pruebas cambian datos (cancelan turnos, cierran la caja), nunca se corren contra producción.
-    name: E2E móvil (Pixel 7 + iPhone 13)
+    # Repartida en 4 partes en paralelo (T-010, 2026-11-10): cada parte levanta su propio Supabase
+    # local, así que las pruebas siguen sin pisarse; baja de ~30 a ~10 min por corrida.
+    name: E2E móvil · parte ${{ matrix.shard }} de 4
     runs-on: ubuntu-latest
     needs: quality
-    timeout-minutes: 45
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -81,14 +87,24 @@ jobs:
           pnpm start -p 3000 > /tmp/next.log 2>&1 &
           for i in $(seq 1 60); do curl -sf http://localhost:3000/salud >/dev/null && break; sleep 1; done
           curl -sf http://localhost:3000/salud
-      - run: pnpm test:e2e --workers=1
+      - run: pnpm test:e2e --workers=1 --shard=${{ matrix.shard }}/4
         env:
           CI: "true"
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.shard }}
           path: test-results
+
+  e2e-result:
+    # Un solo check con el nombre de siempre para la regla de protección de `main` (T-010): verde
+    # solo si las 4 partes pasaron.
+    name: E2E móvil (Pixel 7 + iPhone 13)
+    runs-on: ubuntu-latest
+    needs: e2e
+    if: always()
+    steps:
+      - run: test "${{ needs.e2e.result }}" = "success"
 
   lighthouse:
     # NFR-001 / REQ-032.2: Lighthouse móvil (rendimiento ≥ 80, accesibilidad ≥ 90) en /[slug],

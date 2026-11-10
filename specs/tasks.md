@@ -154,6 +154,10 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   `henrygarzon089/TurnOS`. Falta que Henry, con la cuenta `henrygarzon089`, cree la regla de `main`
   exigiendo los checks "Lint · typecheck · unit · pgTAP · integración", "E2E móvil (Pixel 7 +
   iPhone 13)" y "Lighthouse móvil", sin force push ni borrado.
+- Nota (2026-11-10): la E2E tardaba ~30 min por corrida (587 pruebas en serie) y frenaba cada PR.
+  Ahora corre en 4 partes en paralelo (`--shard=N/4`), cada una con su Supabase local; el check
+  "E2E móvil (Pixel 7 + iPhone 13)" sigue existiendo y queda verde solo si pasan las 4. La prueba
+  de la apertura tarde (REQ-061.8) ya no falla entre las 00:00 y las 00:30 de Bogotá.
 - REQ: REQ-032.1, NFR-009, NFR-012, NFR-006
 - Archivos: `.github/workflows/ci.yml`, `src/app/manifest.ts`, `public/icons/*`,
   `src/app/salud/route.ts`, `scripts/lint-texts.ts`, `scripts/traceability.ts`,
