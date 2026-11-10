@@ -44,16 +44,18 @@ test.describe("NFR del MVP", () => {
   });
 
   test("NFR-007 el flujo del cliente tiene ≤ 4 campos y 1 pantalla", async ({ page }) => {
-    await page.goto(`/${SEED.slug}/turno`);
+    await page.goto(`/${SEED.slug}`);
     const form = page.getByRole("form", { name: "Tomar turno" });
     // Campos: nombre, celular, servicio, barbero (+ la casilla de privacidad, REQ-002)
     await expect(form.getByRole("textbox")).toHaveCount(2); // nombre y celular
     await expect(form.getByLabel("Tu nombre")).toBeVisible();
-    await expect(form.getByLabel("Tu celular (WhatsApp)")).toBeVisible();
-    await expect(form.getByRole("group").filter({ hasText: "Servicio" })).toHaveCount(1);
-    await expect(form.getByRole("group").filter({ hasText: "Barbero" })).toHaveCount(1);
+    await expect(form.getByLabel("Tu celular")).toBeVisible();
+    await expect(form.getByRole("group").filter({ hasText: "¿Qué te vas a hacer?" })).toHaveCount(
+      1,
+    );
+    await expect(form.getByRole("group").filter({ hasText: "¿Con quién?" })).toHaveCount(1);
     // Una sola pantalla: el botón de confirmar está en el mismo formulario
-    await expect(form.getByRole("button", { name: "Confirmar turno" })).toBeVisible();
+    await expect(form.getByRole("button", { name: "Tomar turno" })).toBeVisible();
   });
 
   test("NFR-012 /salud confirma que la app y la base de datos responden", async ({ request }) => {

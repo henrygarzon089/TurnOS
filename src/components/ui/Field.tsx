@@ -62,7 +62,7 @@ export function Field({ label, hint, error, prefix, id, className = "", ...input
     <FieldFrame id={fid} label={label} hint={hint} error={error}>
       {prefix ? (
         <div
-          className={`bg-card focus-within:border-brand focus-within:ring-brand-soft flex min-h-12 items-stretch overflow-hidden rounded-md border focus-within:border-2 focus-within:ring-2 ${border}`}
+          className={`bg-card focus-within:border-brand focus-within:ring-brand-soft has-disabled:bg-surface flex min-h-12 items-stretch overflow-hidden rounded-md border focus-within:border-2 focus-within:ring-2 ${border}`}
         >
           <span className="text-ink border-line bg-surface flex items-center border-r px-3 text-base font-semibold">
             {prefix}
@@ -71,7 +71,7 @@ export function Field({ label, hint, error, prefix, id, className = "", ...input
             id={fid}
             aria-invalid={error ? true : undefined}
             aria-describedby={described}
-            className={`text-ink placeholder:text-muted w-full min-w-0 bg-transparent px-3 text-base outline-none ${className}`}
+            className={`text-ink placeholder:text-muted disabled:text-muted w-full min-w-0 bg-transparent px-3 text-base outline-none ${className}`}
             {...input}
           />
         </div>

@@ -17,8 +17,9 @@ test.describe("REQ-050 y REQ-051 Reservar cita y Mi cita", () => {
       .eq("display_name", "Juan");
 
     try {
-      // T-175: la portada lleva a /cita (el enlace lo prueba la E2E de la portada)
-      await page.goto(`/${SEED.slug}/cita`);
+      // La portada (T-173) lleva a /cita con lo que el cliente ya eligió
+      await page.goto(`/${SEED.slug}`);
+      await page.getByRole("link", { name: "Reservar una cita" }).click();
       await expect(page.getByRole("heading", { name: "Reservar una cita" })).toBeVisible();
 
       // El primer servicio va elegido (en CI puede no ser "Corte": otras pruebas crean servicios)

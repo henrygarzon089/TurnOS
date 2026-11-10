@@ -60,7 +60,7 @@ test.describe("REQ-012 vista del dueño sobre la fila", () => {
     const ctx = await browser.newContext();
     const pub = await ctx.newPage();
     await pub.goto(`/${SEED.slug}`);
-    await expect(pub.getByRole("link", { name: "Tomar turno" })).toBeHidden();
+    await expect(pub.getByRole("button", { name: "Tomar turno" })).toBeHidden();
     await expect(pub.getByText(/Cerrado/)).toBeVisible();
 
     await page.getByRole("button", { name: "Abrir fila hoy" }).click();
@@ -90,7 +90,7 @@ test.describe("REQ-012 vista del dueño sobre la fila", () => {
       const ctx = await browser.newContext();
       const pub = await ctx.newPage();
       await pub.goto(`/${SEED.slug}`);
-      await expect(pub.getByRole("link", { name: "Tomar turno" })).toBeVisible();
+      await expect(pub.getByRole("button", { name: "Tomar turno" })).toBeVisible();
       await ctx.close();
     } finally {
       await db.from("business_hours").update({ is_closed: false }).eq("business_id", biz!.id);

@@ -502,6 +502,11 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   (T-172). Desde ahora ese chequeo va después de cada despliegue a producción.
 - Cliente fiel al tablero (ADR-052, design §22.7): spec en PR #137, tareas T-172…T-176 (portada y
   tomar turno en una pantalla, Mi turno, cita/regalo/privacidad, TV; migraciones 0070 y 0071).
+- **T-173 (2026-11-09)**: la portada `/[slug]` lleva la fila en vivo y el formulario; `/[slug]/turno`
+  redirige a la portada. Textos del tablero ("N esperando", "¿Qué te vas a hacer?", "¿Con quién?",
+  "El primero libre", "Tomar turno"), privacidad en una línea, "Ver menú" en hoja, escritorio con
+  tabla y tarjeta. Capturas en `docs/diseno/capturas/T-173/`. Sin migraciones. Siguen T-174 (Mi
+  turno), T-175 (cita/regalo/privacidad) y T-176 (TV).
 - Falta de Henry: desplegar `main` cuando el CI esté en verde, recorrer cliente, barbero y dueño en
   el celular y el computador, la prueba en la barbería (PA-H16-2), comparar Lighthouse móvil del CI
   con el Hito 14 (ADR-054) y aprobar (ADR-050, reservado).
@@ -591,7 +596,7 @@ servicio y Mi estación.
 
 ### Pantallas
 
-Cliente: `/[slug]`, `/[slug]/turno`, `/t/[token]`, `/[slug]/privacidad`, `/[slug]/pantalla?k=`.
+Cliente: `/[slug]` (con el formulario; `/[slug]/turno` redirige ahí), `/t/[token]`, `/[slug]/privacidad`, `/[slug]/pantalla?k=`.
 Personal: `/entrar`, `/invitacion/[token]`, `/crear-negocio` (3 pasos), `/app/fila`,
 `/admin/{fila,servicios,productos,barberos,horario,qr,mensajes,negocio,privacidad}`.
 Personal (H2): `/app/clientes`, `/app/clientes/[id]`, `/admin/fidelidad`, `/admin/recordar`.

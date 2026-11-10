@@ -5,13 +5,13 @@ const phone = () => `300 8${Math.floor(100000 + Math.random() * 899999)}`;
 
 async function customerTakesTicket(ctx: BrowserContext, name: string, preferBarber?: string) {
   const page = await ctx.newPage();
-  await page.goto(`/${SEED.slug}/turno`);
+  await page.goto(`/${SEED.slug}`);
   await page.getByLabel("Tu nombre").fill(name);
-  await page.getByLabel("Tu celular (WhatsApp)").fill(phone());
-  await page.getByRole("radio", { name: /Corte · 20 min/ }).check();
+  await page.getByLabel("Tu celular").fill(phone());
+  await page.getByRole("radio", { name: /^Corte\s+\$/ }).check();
   if (preferBarber) await page.getByRole("radio", { name: preferBarber }).click();
-  await page.getByRole("checkbox", { name: /Acepto que/ }).check();
-  await page.getByRole("button", { name: "Confirmar turno" }).click();
+  await page.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
+  await page.getByRole("button", { name: "Tomar turno" }).click();
   await expect(page).toHaveURL(/\/t\//);
   return page;
 }

@@ -42,8 +42,8 @@ async function asReturningCustomer(page: Page) {
       JSON.stringify({ name: "Mateo Londoño", phone: "+573002000005" }),
     );
   });
-  await page.goto(`/${SEED.slug}/turno`);
-  await expect(page.getByLabel("Tu celular (WhatsApp)")).toHaveValue(/300 200 0005/);
+  await page.goto(`/${SEED.slug}`);
+  await expect(page.getByLabel("Tu celular")).toHaveValue(/300 200 0005/);
 }
 
 test.describe("REQ-022.1 barbero preferido preseleccionado", () => {
@@ -58,18 +58,18 @@ test.describe("REQ-022.1 barbero preferido preseleccionado", () => {
       "aria-checked",
       "true",
     );
-    await expect(page.getByRole("radio", { name: "El que esté libre" })).toHaveAttribute(
+    await expect(page.getByRole("radio", { name: "El primero libre" })).toHaveAttribute(
       "aria-checked",
       "false",
     );
   });
 
-  test("REQ-022.1 si su barbero está en pausa, queda 'El que esté libre'", async ({ page }) => {
+  test("REQ-022.1 si su barbero está en pausa, queda 'El primero libre'", async ({ page }) => {
     await setup("paused");
     await asReturningCustomer(page);
     // Esperar a que la consulta del preferido termine sin cambiar la selección
     await page.waitForLoadState("networkidle");
-    await expect(page.getByRole("radio", { name: "El que esté libre" })).toHaveAttribute(
+    await expect(page.getByRole("radio", { name: "El primero libre" })).toHaveAttribute(
       "aria-checked",
       "true",
     );
@@ -81,8 +81,8 @@ test.describe("REQ-022.1 barbero preferido preseleccionado", () => {
 
   test("REQ-022.1 un cliente nuevo no tiene preseleccionado a nadie", async ({ page }) => {
     await setup("available");
-    await page.goto(`/${SEED.slug}/turno`);
-    await expect(page.getByRole("radio", { name: "El que esté libre" })).toHaveAttribute(
+    await page.goto(`/${SEED.slug}`);
+    await expect(page.getByRole("radio", { name: "El primero libre" })).toHaveAttribute(
       "aria-checked",
       "true",
     );
