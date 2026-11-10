@@ -25,6 +25,8 @@ test.describe("Hito 1 · criterios de interfaz", () => {
       "href",
       `/${SEED.slug}/privacidad`,
     );
+    // La portada se relee en vivo (ADR-008): esperar a que termine antes de navegar (WebKit)
+    await page.waitForLoadState("networkidle");
     await page.goto(`/${SEED.slug}/privacidad`);
     await expect(page.getByRole("heading", { name: "Aviso de privacidad" })).toBeVisible();
     // El texto completo es el de la versión vigente (privacy.spec publica versiones nuevas)

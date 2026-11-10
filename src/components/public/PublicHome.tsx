@@ -68,7 +68,8 @@ export function LiveBlock({
     <section aria-label="Fila en vivo" aria-live="polite">
       {/* Celular */}
       <div className="border-line bg-card min-h-31 rounded-md border px-4 py-3 lg:hidden">
-        <div className="flex items-center gap-2">
+        {/* Con zoom 200 % o una fuente ancha, "en vivo" baja de línea en vez de salirse */}
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <span aria-hidden="true" className={`${dot} size-2 shrink-0 rounded-full`} />
           <span className="text-xl leading-none font-bold tabular-nums">{waiting}</span>
           <span className="font-semibold">esperando</span>
