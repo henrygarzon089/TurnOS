@@ -4,6 +4,7 @@ import {
   giftCardErrorMessage,
   giftCardStatusLabel,
   giftCardUrl,
+  giftCardUsedText,
   normalizeGiftCardCode,
   parseGiftCardForm,
   balanceToUse,
@@ -205,5 +206,12 @@ describe("REQ-059 lo que ve el dueño en la caja y la semana", () => {
     expect(giftCardErrorMessage({ message: "GIFT_CARD_IN_USE" })).toBe(
       "Esta tarjeta ya se usó: primero anula las ventas que la usaron.",
     );
+  });
+});
+
+describe("REQ-078.24 tarjeta de regalo como el tablero (T-175)", () => {
+  it("REQ-078.24 'usó $ …' solo cuando se gastó una parte", () => {
+    expect(giftCardUsedText({ amount: 70000, balance: 45000 })).toBe("usó $ 25.000");
+    expect(giftCardUsedText({ amount: 70000, balance: 70000 })).toBeNull();
   });
 });

@@ -4,6 +4,14 @@ import {
   appointmentMessage,
   appointmentStatusText,
   appointmentTag,
+  appointmentClock,
+  appointmentDayTitle,
+  confirmLabel,
+  dayStripParts,
+  nextDayHint,
+  noHoursTitle,
+  seeDayLabel,
+  slotsHeading,
   bookingDays,
   dayChipLabel,
   formatAppointmentWhen,
@@ -332,5 +340,46 @@ describe("REQ-054.1 rejilla de la agenda de un día (T-166, tablero Dueno-Operac
       ["Sebas", ["1", "3"]],
       ["Juli", ["2"]],
     ]);
+  });
+});
+
+describe("REQ-078.24 textos de reservar y Mi cita (T-175, tablero Cliente-Cita)", () => {
+  const today = "2026-11-05"; // jueves
+  const at = (iso: string) => new Date(iso).toISOString();
+
+  it("REQ-078.24 la tira de días: día abreviado arriba y número grande", () => {
+    expect(dayStripParts("2026-11-07")).toEqual({ weekday: "sáb", n: 7 });
+    expect(dayStripParts("2026-11-08")).toEqual({ weekday: "dom", n: 8 });
+  });
+
+  it("REQ-078.24 el título de la rejilla: 'Horas libres · sábado 7'", () => {
+    expect(slotsHeading("2026-11-07")).toBe("Horas libres · sábado 7");
+  });
+
+  it("REQ-078.24 el botón fijo dice 'Confirmar · sáb 7, 3:30 p. m.'", () => {
+    expect(confirmLabel(at("2026-11-07T15:30:00-05:00"))).toBe("Confirmar · sáb 7, 3:30 p. m.");
+  });
+
+  it("REQ-078.24 vacío: '<barbero> ya no tiene horas hoy' o 'el <día>'", () => {
+    expect(noHoursTitle("Sebas", today, today)).toBe("Sebas ya no tiene horas hoy");
+    expect(noHoursTitle("Sebas", "2026-11-09", today)).toBe("Sebas ya no tiene horas el lunes 9");
+    expect(noHoursTitle(null, today, today)).toBe("Ya no quedan horas hoy");
+  });
+
+  it("REQ-078.24 vacío: el próximo día con horas y el botón 'Ver el <día>'", () => {
+    const first = at("2026-11-06T09:00:00-05:00");
+    expect(nextDayHint("2026-11-06", today, 6, first)).toBe(
+      "Mañana viernes tiene 6 libres, desde las 9:00 a. m.",
+    );
+    expect(nextDayHint("2026-11-09", today, 1, at("2026-11-09T14:00:00-05:00"))).toBe(
+      "El lunes 9 tiene 1 libre, desde las 2:00 p. m.",
+    );
+    expect(seeDayLabel("2026-11-06")).toBe("Ver el viernes");
+  });
+
+  it("REQ-078.24 Mi cita: el día con mayúscula y la hora partida", () => {
+    const s = at("2026-11-07T15:30:00-05:00");
+    expect(appointmentDayTitle(s)).toBe("Sábado 7 de noviembre");
+    expect(appointmentClock(s)).toEqual({ time: "3:30", period: "p. m." });
   });
 });

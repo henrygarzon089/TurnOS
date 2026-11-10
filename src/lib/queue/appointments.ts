@@ -87,6 +87,24 @@ export async function getAppointmentSlots(
   }));
 }
 
+/**
+ * REQ-078.24 horas libres de varios días a la vez (la tira de días marca los que no tienen y el
+ * vacío ofrece el próximo que sí). Máximo los 8 días que se ofrecen (REQ-049.4).
+ */
+export async function getAppointmentWeek(
+  gw: Gateway,
+  slug: string,
+  serviceId: string,
+  barberId: string | null,
+  days: string[],
+): Promise<Record<string, Slot[]>> {
+  const valid = days.filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)).slice(0, 8);
+  const lists = await Promise.all(
+    valid.map((d) => getAppointmentSlots(gw, slug, serviceId, barberId, d)),
+  );
+  return Object.fromEntries(valid.map((d, i) => [d, lists[i]]));
+}
+
 // -------------------------------------------------------------- reservar ----
 
 /** REQ-050.2–050.5, 050.7. Devuelve el token de "Mi cita" (o el de la que ya tiene). */

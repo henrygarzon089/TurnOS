@@ -51,6 +51,71 @@ export function dayChipLabel(day: string, today: string): string {
   return `${WEEKDAYS[d.getUTCDay()].slice(0, 3)} ${d.getUTCDate()}`;
 }
 
+// ------------------------------------------- reservar y Mi cita (T-175) ----
+
+function weekdayOf(day: string): string {
+  return WEEKDAYS[new Date(`${day}T00:00:00Z`).getUTCDay()];
+}
+function dayNumber(day: string): number {
+  return Number(day.slice(8, 10));
+}
+
+/** REQ-078.24 casilla de la tira de días: "sáb" arriba y 8 grande. */
+export function dayStripParts(day: string): { weekday: string; n: number } {
+  return { weekday: weekdayOf(day).slice(0, 3), n: dayNumber(day) };
+}
+
+/** REQ-078.24 "Horas libres · sábado 8" (en mayúsculas por CSS). */
+export function slotsHeading(day: string): string {
+  return `Horas libres · ${weekdayOf(day)} ${dayNumber(day)}`;
+}
+
+/** REQ-078.24 botón fijo: "Confirmar · sáb 8, 3:30 p. m.". */
+export function confirmLabel(startsAt: Date | string): string {
+  const at = new Date(startsAt);
+  const { weekday, n } = dayStripParts(businessDayBogota(at));
+  return `Confirmar · ${weekday} ${n}, ${formatTimeBogota(at)}`;
+}
+
+/** REQ-078.24 vacío: "Sebas ya no tiene horas hoy" / "… el lunes 10". Sin barbero: "Ya no quedan…". */
+export function noHoursTitle(barberName: string | null, day: string, today: string): string {
+  const when = day === today ? "hoy" : `el ${weekdayOf(day)} ${dayNumber(day)}`;
+  return barberName ? `${barberName} ya no tiene horas ${when}` : `Ya no quedan horas ${when}`;
+}
+
+/** REQ-078.24 vacío: "Mañana viernes tiene 6 libres, desde las 9:00 a. m.". */
+export function nextDayHint(
+  day: string,
+  today: string,
+  count: number,
+  firstStartsAt: Date | string,
+): string {
+  const who =
+    day === addDays(today, 1)
+      ? `Mañana ${weekdayOf(day)}`
+      : `El ${weekdayOf(day)} ${dayNumber(day)}`;
+  const libres = count === 1 ? "1 libre" : `${count} libres`;
+  // la hora ya termina en punto ("a. m.")
+  return `${who} tiene ${libres}, desde las ${formatTimeBogota(new Date(firstStartsAt))}`;
+}
+
+/** REQ-078.24 "Ver el viernes". */
+export function seeDayLabel(day: string): string {
+  return `Ver el ${weekdayOf(day)}`;
+}
+
+/** REQ-078.24 Mi cita: "Sábado 8 de noviembre". */
+export function appointmentDayTitle(startsAt: Date | string): string {
+  const long = formatDateLong(businessDayBogota(new Date(startsAt)));
+  return long.charAt(0).toUpperCase() + long.slice(1);
+}
+
+/** REQ-078.24 Mi cita: "3:30" grande y "p. m." más pequeño. */
+export function appointmentClock(startsAt: Date | string): { time: string; period: string } {
+  const [time, ...rest] = formatTimeBogota(new Date(startsAt)).split(" ");
+  return { time, period: rest.join(" ") };
+}
+
 /** "jueves 6 de noviembre a las 10:30 a. m." */
 export function formatAppointmentWhen(startsAt: Date | string): string {
   const at = new Date(startsAt);
