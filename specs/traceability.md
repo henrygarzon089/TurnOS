@@ -72,11 +72,11 @@
 | REQ-012.3 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | customers.spec.ts, google-review.spec.ts, loyalty-progress.spec.ts, owner-queue.spec.ts, 0005_queue.sql, 0007_queue_ops.sql | cubierto |
 | REQ-012.4 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | owner-queue.spec.ts, 0008_public_fns.sql | cubierto |
 | REQ-012.5 | Vista del dueño sobre la fila | T-006 (hecha), T-012 (hecha), T-013 (hecha), T-025 (hecha) | hito1-gaps.spec.ts | cubierto |
-| REQ-013.1 | Pantalla pública para el televisor | T-027 (hecha), T-176 (pendiente) | screen.spec.ts, 0002_core.sql, 0011_screen.sql | prueba escrita |
-| REQ-013.2 | Pantalla pública para el televisor | T-027 (hecha), T-176 (pendiente) | screen.spec.ts, public-home.test.tsx, public-view.test.ts, 0011_screen.sql | prueba escrita |
-| REQ-013.3 | Pantalla pública para el televisor | T-027 (hecha), T-176 (pendiente) | helpers.ts, screen.spec.ts | prueba escrita |
-| REQ-013.4 | Pantalla pública para el televisor | T-027 (hecha), T-176 (pendiente) | hito1-gaps.spec.ts | prueba escrita |
-| REQ-013.5 | Pantalla pública para el televisor | T-027 (hecha), T-176 (pendiente) | hito1-gaps.spec.ts | prueba escrita |
+| REQ-013.1 | Pantalla pública para el televisor | T-027 (hecha), T-183 (hecha), T-176 (pendiente) | screen.spec.ts, 0002_core.sql, 0011_screen.sql | prueba escrita |
+| REQ-013.2 | Pantalla pública para el televisor | T-027 (hecha), T-183 (hecha), T-176 (pendiente) | screen.spec.ts, public-home.test.tsx, public-view.test.ts, 0011_screen.sql | prueba escrita |
+| REQ-013.3 | Pantalla pública para el televisor | T-027 (hecha), T-183 (hecha), T-176 (pendiente) | helpers.ts, screen.spec.ts | prueba escrita |
+| REQ-013.4 | Pantalla pública para el televisor | T-027 (hecha), T-183 (hecha), T-176 (pendiente) | hito1-gaps.spec.ts | prueba escrita |
+| REQ-013.5 | Pantalla pública para el televisor | T-027 (hecha), T-183 (hecha), T-176 (pendiente) | hito1-gaps.spec.ts | prueba escrita |
 | REQ-014.1 | Cierre automático de turnos al final del día | T-014 (hecha), T-020 (hecha), T-030 (hecha) | 0006_transitions.sql, 0008_public_fns.sql, 0020_close_expired_midnight.sql, 0029_override_open.sql | cubierto |
 | REQ-014.2 | Cierre automático de turnos al final del día | T-014 (hecha), T-020 (hecha), T-030 (hecha) | 0012_hito1_gaps.sql, 0020_close_expired_midnight.sql, 0029_override_open.sql | cubierto |
 | REQ-015.1 | Gestión de servicios | T-004 (hecha), T-008 (hecha) | admin-config.spec.ts, 0002_core.sql, 0003_rls_core.sql | cubierto |
