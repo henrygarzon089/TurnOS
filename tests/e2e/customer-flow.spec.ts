@@ -133,6 +133,9 @@ test.describe("Hito 1 · flujo del cliente", () => {
     context,
   }) => {
     await takeTicket(page, "Offline", phone());
+    // Mi turno cargado y quieto antes de cortar la red: si no, la navegación queda a medias
+    await expect(page.getByTestId("ticket-number")).toBeVisible();
+    await page.waitForLoadState("networkidle");
     await context.setOffline(true);
     await expect(page.getByRole("status").filter({ hasText: "Sin conexión" })).toBeVisible({
       timeout: 10000,
@@ -152,6 +155,9 @@ test.describe("Hito 1 · flujo del cliente", () => {
       server.onMessage((m) => void setTimeout(() => ws.send(m), 1500));
     });
     await takeTicket(page, "Offline tarde", phone());
+    // Mi turno cargado y quieto antes de cortar la red: si no, la navegación queda a medias
+    await expect(page.getByTestId("ticket-number")).toBeVisible();
+    await page.waitForLoadState("networkidle");
     await context.setOffline(true);
     const banner = page.getByRole("status").filter({ hasText: "Sin conexión" });
     await expect(banner).toBeVisible({ timeout: 10000 });

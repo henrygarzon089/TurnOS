@@ -177,7 +177,7 @@ test.describe("T-162 pantallas del cliente con el sistema visual (REQ-078)", () 
       "rgb(194, 30, 47)",
     );
     await cancel.click();
-    const sheet = page.getByRole("dialog", { name: /cancelar tu turno/ });
+    const sheet = page.getByRole("dialog", { name: /Cancelar tu turno/ });
     await expect(sheet).toBeVisible();
     await sheet.getByRole("button", { name: "No, seguir en la fila" }).click();
     await expect(sheet).toBeHidden();
@@ -190,7 +190,7 @@ test.describe("T-162 pantallas del cliente con el sistema visual (REQ-078)", () 
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(`/t/${await ticketToken()}`);
     await page.getByRole("button", { name: "Cancelar turno", exact: true }).click();
-    const sheet = page.getByRole("dialog", { name: /cancelar tu turno/ });
+    const sheet = page.getByRole("dialog", { name: /Cancelar tu turno/ });
     await expect(sheet).toBeVisible();
     const usesTransform = await sheet.evaluate((dialog) => {
       const names = new Set<string>();

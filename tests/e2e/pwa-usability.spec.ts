@@ -174,6 +174,44 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
     await db().rpc("cancel_ticket_by_token", { p_token: token }); // no dejar turnos en la fila
   });
 
+  test("REQ-078.15 / NFR-008 Mi turno con una fuente ancha (la de Linux en CI) cabe en 360 px y con zoom 200 %", async ({
+    page,
+  }) => {
+    const wide = "* { font-family: Verdana, 'DejaVu Sans', sans-serif !important; }";
+    const fits = async () => {
+      await page.setViewportSize({ width: 360, height: 780 });
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow, "scroll horizontal en 360 px").toBeLessThanOrEqual(1);
+      await expectZoom200(page);
+    };
+    const token = await newTicketToken();
+    try {
+      // En espera: tarjeta, celdas "Vas de" / "Te toca en", barbero y barra de pasos
+      await page.goto(`/t/${token}`);
+      await expect(page.getByText("Vas de", { exact: true })).toBeVisible();
+      await page.addStyleTag({ content: wide });
+      await fits();
+      // Terminado: "TERMINADO · <hora>", "Quedaste bien, <nombre>." y los 10 círculos
+      await db()
+        .from("tickets")
+        .update({ status: "done", finished_at: new Date().toISOString() })
+        .eq("public_token", token);
+      await page.waitForLoadState("networkidle");
+      await page.goto(`/t/${token}`);
+      await expect(page.getByText(/^Quedaste bien, /)).toBeVisible();
+      await page.addStyleTag({ content: wide });
+      await fits();
+    } finally {
+      await db()
+        .from("tickets")
+        .update({ status: "cancelled" })
+        .eq("public_token", token)
+        .eq("status", "waiting");
+    }
+  });
+
   test("REQ-032.2 / NFR-008 Mi fila del barbero: 'Llamar al siguiente' ≥ 48 px abajo, zoom 200 %", async ({
     page,
   }) => {

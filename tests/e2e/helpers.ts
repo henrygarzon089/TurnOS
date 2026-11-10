@@ -198,7 +198,7 @@ export async function resetQueue() {
 export async function cancelMyTicket(page: Page) {
   await page.getByRole("button", { name: "Cancelar turno", exact: true }).click();
   await page
-    .getByRole("dialog", { name: /cancelar tu turno/ })
+    .getByRole("dialog", { name: /Cancelar tu turno/ })
     .getByRole("button", { name: "Sí, cancelar turno" })
     .click();
 }
