@@ -2528,13 +2528,24 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: en espera, sin conexión, cancelar, ¡Es tu turno!, en servicio, terminado y esqueleto
   como Cliente-MiTurno (captura en el PR). La 0070 la sube Henry con `supabase db push`.
 
-### [ ] T-175 · Cliente: cita, Mi cita, tarjeta de regalo y privacidad
+### [x] T-175 · Cliente: cita, Mi cita, tarjeta de regalo y privacidad
 - REQ: REQ-078.16, REQ-078.24
 - Archivos: `src/components/queue/AppointmentForm.tsx`, `src/components/queue/MyAppointment.tsx`,
   `src/app/(public)/{[slug]/cita,c/[token],regalo/[token],[slug]/privacidad}/*`, E2E de citas y
   regalos.
 - Terminado: reservar, vacío, Mi cita, tarjeta de regalo y privacidad como Cliente-Cita (captura en
   el PR).
+- Nota (2026-11-09): hecha. Capturas en `docs/diseno/capturas/T-175/`. E2E en
+  `tests/e2e/visual-cliente-cita.spec.ts` (más `appointments-public` y `gift-card-page` al día).
+  Sin migración (la fecha del aviso es `published_at`, que ya existía). Desvíos (también en
+  design §22.7): la acción `getAppointmentWeek` pide las horas de los 8 días a la vez para
+  puntear los días sin horas y hallar el próximo; con "El primero libre" el vacío dice "Ya no
+  quedan horas <día>"; las horas ocupadas no salen tachadas (la función solo devuelve las libres);
+  no se construye "O toma turno en la fila: hoy van N antes que tú" (eso queda en el enlace
+  "Mejor tomar turno en la fila"); en Mi cita no va el texto de "Ya llegué" (no se construye) y
+  sí "Llega a tu hora…"; `StatusChip` acepta `label` para "Cita cancelada"; el aviso de privacidad
+  deja la línea del dueño tal cual (con sus dos puntos). El E2E entra por `/cita` directo: el
+  enlace "Reservar una cita" con `?servicio=&barbero=` es de la portada (T-173, PR #152).
 
 ### [ ] T-176 · Pantalla del televisor como el tablero
 - REQ: REQ-078.16, REQ-078.25, REQ-013.4

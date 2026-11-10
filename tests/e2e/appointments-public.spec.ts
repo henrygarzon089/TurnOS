@@ -17,29 +17,45 @@ test.describe("REQ-050 y REQ-051 Reservar cita y Mi cita", () => {
       .eq("display_name", "Juan");
 
     try {
+      // La portada (T-173) lleva a /cita con lo que el cliente ya eligió
       await page.goto(`/${SEED.slug}`);
       await page.getByRole("link", { name: "Reservar una cita" }).click();
-      await expect(page.getByRole("heading", { name: "Reservar cita" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Reservar una cita" })).toBeVisible();
 
-      await page.getByRole("radio", { name: /Corte/ }).first().check();
-      // Mañana o el siguiente día abierto: hoy puede no tener horas a 1 hora de ahora
-      await page.getByRole("radiogroup", { name: "Día" }).getByRole("radio").nth(1).click();
-      const hours = page.getByRole("radiogroup", { name: "Hora" }).getByRole("radio");
+      // El primer servicio va elegido (en CI puede no ser "Corte": otras pruebas crean servicios)
+      await expect(page.getByTestId("row-service")).toContainText(/^Servicio\S.+Cambiar$/);
+      // Un día con horas que no sea hoy: hoy puede no tener horas a 1 hora de ahora
+      const days = page.getByRole("radiogroup", { name: "Día" });
+      await expect(days.getByRole("radio", { disabled: false }).first()).toBeAttached({
+        timeout: 15_000,
+      });
+      // Espera a que lleguen las horas: los días sin horas quedan deshabilitados
+      await expect(
+        page
+          .getByRole("radiogroup", { name: "Hora" })
+          .or(page.getByText(/ya no tiene horas|Ya no quedan horas/)),
+      ).toBeVisible({ timeout: 15_000 });
+      await days
+        .locator("label")
+        .filter({ has: page.locator("input:not([disabled])") })
+        .last()
+        .click();
+      const hours = page.getByRole("radiogroup", { name: "Hora" }).locator("label");
       await expect(hours.first()).toBeVisible({ timeout: 15_000 });
       const hourText = (await hours.first().textContent())!.trim();
       await hours.first().click();
 
       await page.getByLabel("Tu nombre").fill("Cita E2E");
-      await page.getByLabel("Celular", { exact: true }).fill(phone());
-      const box = page.getByRole("checkbox", { name: /Acepto que/ });
+      await page.getByLabel("Tu celular").fill(phone());
+      const box = page.getByRole("checkbox", { name: /Acepto el aviso/ });
       if (await box.isVisible()) await box.check();
-      await page.getByRole("button", { name: "Reservar cita" }).click();
+      await page.getByRole("button", { name: /^Confirmar · / }).click();
 
       await expect(page).toHaveURL(/\/c\/[A-Za-z0-9_-]{16,}/, { timeout: 15_000 });
-      await expect(page.getByTestId("appointment-status")).toHaveText("Cita confirmada");
-      await expect(page.getByText(hourText)).toBeVisible();
+      await expect(page.getByText("Tu cita", { exact: true })).toBeVisible();
+      await expect(page.getByTestId("appointment-time")).toHaveText(hourText);
       await expect(page.getByText("te esperamos hasta 10 minutos")).toBeVisible();
-      await expect(page.getByText("Juan")).toBeVisible();
+      await expect(page.getByTestId("row-barbero")).toContainText("Juan");
       // REQ-051.6: nada del celular
       await expect(page.getByText(/\+57|300 8/)).toHaveCount(0);
 
@@ -52,7 +68,7 @@ test.describe("REQ-050 y REQ-051 Reservar cita y Mi cita", () => {
       expect(body).toContain("BEGIN:VEVENT");
       expect(body.replace(/\r\n /g, "")).toContain(page.url().split("?")[0].split("/c/")[1]);
 
-      await page.getByRole("button", { name: "Cancelar mi cita", exact: true }).click();
+      await page.getByRole("button", { name: "Cancelar la cita", exact: true }).click();
       await page
         .getByRole("dialog", { name: /cancelar tu cita/ })
         .getByRole("button", { name: "Sí, cancelar mi cita" })
