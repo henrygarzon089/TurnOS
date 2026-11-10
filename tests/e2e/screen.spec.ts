@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { SEED } from "./helpers";
+import { loginAsOwner, SEED } from "./helpers";
 
 // La clave de pantalla del seed se lee de la base; en E2E la pasa la variable E2E_SCREEN_KEY.
 const key = process.env.E2E_SCREEN_KEY;
@@ -50,5 +50,19 @@ test.describe("REQ-013 pantalla del televisor", () => {
     const box = await page.locator("[data-call-slot]").boundingBox();
     expect(Math.round(box!.height)).toBe(196);
     await ctx.close();
+  });
+
+  // T-183: el botón del dueño abría /<slug>/pantalla sin la clave → "Negocio no encontrado".
+  test("REQ-013.1 desde la fila del dueño, Ver pantalla del televisor abre la pantalla con su clave", async ({
+    page,
+  }) => {
+    test.skip(!key, "E2E_SCREEN_KEY no definida");
+    await loginAsOwner(page);
+    await page.goto("/admin/fila");
+    const link = page.getByRole("link", { name: "Ver pantalla del televisor" });
+    await expect(link).toHaveAttribute("href", `/${SEED.slug}/pantalla?k=${key}`);
+    const [screen] = await Promise.all([page.context().waitForEvent("page"), link.click()]);
+    await expect(screen.getByRole("heading", { name: "Barbería La 33" })).toBeVisible();
+    await expect(screen.getByRole("heading", { name: "Negocio no encontrado" })).toBeHidden();
   });
 });
