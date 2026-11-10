@@ -42,16 +42,19 @@ export default async function TicketPage({
     );
   }
 
-  // REQ-038.4: las opciones solo importan mientras el turno está en espera
-  const business =
-    ticket.status === "waiting" ? await getPublicBusiness(ticket.business.slug) : null;
+  // REQ-038.4: las opciones de bebida solo importan en espera; "Ver menú del local" (T-174) se
+  // ofrece mientras el turno sigue vivo (en espera, llamado o en servicio)
+  const business = ["waiting", "called", "in_service"].includes(ticket.status)
+    ? await getPublicBusiness(ticket.business.slug)
+    : null;
 
   return (
     <MyTicket
       token={token}
       initial={ticket}
       alreadyHad={sp.ya === "1"}
-      courtesies={business?.courtesies ?? []}
+      courtesies={ticket.status === "waiting" ? (business?.courtesies ?? []) : []}
+      menu={business ? { address: business.address, products: business.products } : null}
     />
   );
 }

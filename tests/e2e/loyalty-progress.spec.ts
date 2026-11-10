@@ -116,8 +116,9 @@ test.describe("REQ-019 progreso y premio de fidelidad", () => {
       );
       await serve(owner, barber, name);
       await customer.reload();
+      // Terminado: "Tus cortes · 1 de 2" (tablero Cliente-MiTurno, REQ-078.23)
       await expect(customer.getByRole("region", { name: "Tarjeta de fidelidad" })).toContainText(
-        "1 de 2 cortes",
+        "1 de 2",
       );
 
       // Turno 2: completa la tarjeta → premio visible para el cliente
@@ -125,7 +126,7 @@ test.describe("REQ-019 progreso y premio de fidelidad", () => {
       const t2 = await tokenFromBarber(barber, name);
       await serve(owner, barber, name);
       await customer.goto(`/t/${t2}`);
-      await expect(customer.getByText("¡Tu próximo corte es gratis!")).toBeVisible();
+      await expect(customer.getByText("Tu próximo corte es gratis.")).toBeVisible();
 
       // Turno 3: el barbero ve "Premio disponible" en su fila
       await ownerAdds(owner, name, phone);

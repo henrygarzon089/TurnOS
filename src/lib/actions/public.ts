@@ -194,7 +194,7 @@ export async function getPrivacyPolicy(slug: string) {
   const admin = createSupabaseAdminClient();
   const { data } = await admin
     .from("privacy_policy_versions")
-    .select("version, body, businesses:business_id!inner ( name, slug )")
+    .select("version, body, published_at, businesses:business_id!inner ( name, slug )")
     .eq("businesses.slug", slug)
     .order("version", { ascending: false })
     .limit(1)
@@ -204,6 +204,7 @@ export async function getPrivacyPolicy(slug: string) {
   return {
     version: data.version as number,
     body: data.body as string,
+    publishedAt: data.published_at as string,
     businessName: biz.name as string,
   };
 }

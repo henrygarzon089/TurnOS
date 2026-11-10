@@ -2882,9 +2882,9 @@ tiene prueba unitaria.
   ayuda a que más vecinos nos encuentren. Toma un minuto." y "Dejar reseña en Google" (solo con
   enlace, REQ-036.3); "Tomar otro turno" como enlace. Cancelado y no vino: como hoy, con el
   encabezado nuevo.
-- Migración `0070_public_ticket_times.sql`: `get_ticket_by_token` agrega `startedAt` y `finishedAt`
-  (columnas que ya existen en `tickets`). Solo cambia la función; pgTAP en
-  `supabase/tests/0070_public_ticket_times.sql`.
+- Migración `0072_public_ticket_times.sql` (0070 la tomó T-171): `get_ticket_by_token` agrega
+  `startedAt`, `finishedAt` y `servicePrice` (columnas que ya existen en `tickets`). Solo cambia la
+  función; pgTAP en `supabase/tests/0072_public_ticket_times.sql`.
 - No se construye: prefijo "A" del número, "Silla 3" (sin sillas).
 
 **Cita, Mi cita, tarjeta de regalo y privacidad (T-175).**
@@ -2914,6 +2914,11 @@ tiene prueba unitaria.
 - Privacidad: encabezado con flecha "Aviso de privacidad"; "Versión N · vigente desde <fecha>"
   (`published_at`); el texto del dueño con títulos en negrita cuando una línea termina en ":" o es
   una de las preguntas del tablero. No se construye: "Pedir que borren mis datos" (REQ-018.6).
+- Hecho en T-175 (2026-11-09), desvíos aceptados: horas de los 8 días con `getAppointmentWeek`
+  (la tira puntea los días sin horas y el vacío ofrece el próximo); con "El primero libre" el vacío
+  dice "Ya no quedan horas <día>"; las horas ocupadas no se muestran tachadas (solo hay libres);
+  sin "hoy van N antes que tú" en el vacío; Mi cita sin el texto de "Ya llegué"; `StatusChip` con
+  `label` opcional; las líneas del aviso se muestran tal cual (sin quitar ":").
 
 **Pantalla del televisor (T-176).** `ScreenBoard`, fondo `brand`, sin desplazamiento:
 1. Arriba: marca 80×80 (blanco con texto `brand`), nombre (56 px), a la derecha "● N esperando"

@@ -28,7 +28,9 @@ test.describe("REQ-056 / REQ-058 página pública de la tarjeta de regalo", () =
       await page.goto(`/regalo/${card.token}`);
       const box = page.getByRole("region", { name: "Tarjeta de regalo" });
       await expect(box).toContainText("Para Lucía");
-      await expect(box).toContainText("Saldo $ 30.000");
+      await expect(box).toContainText(/Vale por\s*\$\s?30\.000/);
+      // T-175: el saldo va en su fila debajo de la tarjeta (REQ-078.24)
+      await expect(page.getByTestId("row-saldo")).toContainText(/Saldo\s*\$\s?30\.000/);
       await expect(box).toContainText(`${card.code.slice(0, 4)}-${card.code.slice(4)}`);
       await expect(page.getByText(biz!.name).first()).toBeVisible();
       await expect(page.getByText("El saldo no se devuelve en efectivo.")).toBeVisible();

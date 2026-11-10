@@ -3,20 +3,24 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { PublicHeader } from "@/components/public/PublicHeader";
 import { Button } from "@/components/ui/Button";
 import { Sheet } from "@/components/ui/Sheet";
+import { StatusChip } from "@/components/ui/StatusChip";
 import { cancelAppointmentByToken } from "@/lib/actions/public-appointments";
 import {
   APPOINTMENT_TOLERANCE_MIN,
+  appointmentClock,
+  appointmentDayTitle,
   appointmentStatusText,
-  formatAppointmentWhen,
 } from "@/lib/domain/appointments";
 import { formatCOP } from "@/lib/domain/money";
 import type { PublicAppointment } from "@/lib/queue/appointments";
 
 /**
- * REQ-051: la cita reservada. Sin celular (REQ-051.6). T-162: cancelar en contorno rojo con hoja
- * de confirmación (REQ-078.3).
+ * REQ-051 y REQ-078.24 (tablero Cliente-Cita): "TU CITA", el día y la hora en grande y las filas
+ * Barbero, Servicio y Dónde. Sin celular (REQ-051.6). "Cancelar la cita" abre la hoja de
+ * confirmación (REQ-078.3). No se construye "Ya llegué" (REQ-052.2: lo marca el negocio).
  */
 export function MyAppointment({
   token,
@@ -32,6 +36,7 @@ export function MyAppointment({
   const [pending, startTransition] = useTransition();
   const pendingAppt = a.status === "booked" && !a.lapsed;
   const [confirming, setConfirming] = useState(false);
+  const clock = appointmentClock(a.startsAt);
 
   function cancel() {
     setConfirming(false);
@@ -44,76 +49,92 @@ export function MyAppointment({
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pb-44">
-      <header className="py-5">
-        <p className="text-muted text-sm">{a.business.name} · Mi cita</p>
-        <h1 className="text-2xl font-bold">Hola, {a.customerName.split(" ")[0]}</h1>
+    <div className="flex flex-1 flex-col">
+      <PublicHeader name={a.business.name} />
+      <main className="mx-auto flex w-full max-w-md flex-1 flex-col pb-40">
         {alreadyHad && pendingAppt && (
           <p
             role="status"
-            className="text-warn bg-warn-soft mt-2 rounded-md p-3 text-sm font-medium"
+            className="text-warn bg-warn-soft mx-4 mt-4 rounded-md p-3 text-sm font-medium"
           >
             Ya tienes una cita. Esta es.
           </p>
         )}
-      </header>
 
-      <section
-        aria-label="Estado de la cita"
-        className={`rounded-md p-5 ${pendingAppt ? "bg-card border-brand border" : "bg-card border-line border"}`}
-      >
-        <p className="text-lg font-bold" data-testid="appointment-status">
-          {appointmentStatusText(a.status, a.lapsed)}
-        </p>
-        <p className="mt-1 text-xl font-semibold first-letter:uppercase">
-          {formatAppointmentWhen(a.startsAt)}
-        </p>
+        <section aria-label="Tu cita" className="border-line border-b px-4 pt-6 pb-5">
+          <p className="text-muted text-xs font-semibold tracking-wider uppercase">Tu cita</p>
+          <p
+            data-testid="appointment-day"
+            className={`mt-1 text-[28px] leading-tight font-bold ${pendingAppt ? "" : "text-muted"}`}
+          >
+            {appointmentDayTitle(a.startsAt)}
+          </p>
+          <p
+            data-testid="appointment-time"
+            className={`leading-none font-bold tabular-nums ${pendingAppt ? "" : "text-muted line-through"}`}
+          >
+            <span className="text-[56px] tracking-tight">{clock.time}</span>{" "}
+            <span className="text-2xl">{clock.period}</span>
+          </p>
+          {!pendingAppt && (
+            <p className="mt-3" data-testid="appointment-status">
+              <StatusChip
+                status={a.status === "cancelled" ? "cancelled" : "no_show"}
+                label={appointmentStatusText(a.status, a.lapsed)}
+              />
+            </p>
+          )}
+          {a.status === "cancelled" && a.cancelReason === "business" && (
+            <p className="text-muted mt-2 text-sm">El negocio canceló la cita.</p>
+          )}
+        </section>
+
+        <dl className="bg-card border-line border-b">
+          <Row testId="row-barbero" label="Barbero">
+            {a.barberName}
+          </Row>
+          <Row
+            testId="row-servicio"
+            label="Servicio"
+            aside={<span className="text-muted tabular-nums">{formatCOP(a.price)}</span>}
+          >
+            {a.serviceName}
+          </Row>
+          {a.business.address && (
+            <Row testId="row-donde" label="Dónde">
+              <span className="font-normal">{a.business.address}</span>
+            </Row>
+          )}
+        </dl>
+
         {pendingAppt && (
-          <p className="text-muted mt-2 text-sm">
+          <p className="text-muted px-4 pt-4 text-sm">
             Llega a tu hora: te esperamos hasta {APPOINTMENT_TOLERANCE_MIN} minutos.
           </p>
         )}
-        {a.status === "cancelled" && a.cancelReason === "business" && (
-          <p className="text-muted mt-2 text-sm">El negocio canceló la cita.</p>
-        )}
-      </section>
 
-      <section className="mt-4 text-sm" aria-label="Tu cita">
-        <p>
-          <span className="text-muted">Servicio:</span> {a.serviceName} ({a.durationMin} min) ·{" "}
-          {formatCOP(a.price)}
-        </p>
-        <p>
-          <span className="text-muted">Barbero:</span> {a.barberName}
-        </p>
-        {a.business.address && (
-          <p>
-            <span className="text-muted">Dirección:</span> {a.business.address}
+        {error && (
+          <p role="alert" className="text-danger mx-4 mt-3 text-sm font-medium">
+            {error}
           </p>
         )}
-      </section>
-
-      {error && (
-        <p role="alert" className="text-danger mt-3 text-sm font-medium">
-          {error}
-        </p>
-      )}
+      </main>
 
       <div className="border-line bg-card fixed inset-x-0 bottom-0 border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-        <div className="mx-auto flex max-w-md flex-col gap-2">
+        <div className="mx-auto flex max-w-md flex-col items-stretch gap-1">
           {pendingAppt ? (
             <>
-              <a href={`/c/${token}/calendario`} className="btn-secondary" download>
+              <a href={`/c/${token}/calendario`} className="btn-primary" download>
                 Agregar al calendario
               </a>
               <Button
-                variant="danger"
-                className="w-full"
+                variant="text"
+                className="text-danger mx-auto underline"
                 onClick={() => setConfirming(true)}
                 pending={pending}
                 pendingText="Cancelando…"
               >
-                Cancelar mi cita
+                Cancelar la cita
               </Button>
             </>
           ) : (
@@ -137,6 +158,29 @@ export function MyAppointment({
           No, mantener la cita
         </Button>
       </Sheet>
-    </main>
+    </div>
+  );
+}
+
+function Row({
+  testId,
+  label,
+  aside,
+  children,
+}: {
+  testId: string;
+  label: string;
+  aside?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      data-testid={testId}
+      className="border-line flex min-h-14 items-center gap-3 border-b px-4 py-3 last:border-b-0"
+    >
+      <dt className="text-muted w-20 shrink-0">{label}</dt>
+      <dd className="min-w-0 flex-1 font-semibold">{children}</dd>
+      {aside}
+    </div>
   );
 }

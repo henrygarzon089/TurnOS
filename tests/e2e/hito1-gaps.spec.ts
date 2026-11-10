@@ -50,7 +50,7 @@ test.describe("Hito 1 · criterios de interfaz", () => {
     await page.getByLabel("Tu celular").fill(phone());
     await page.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
     await page.getByRole("button", { name: "Tomar turno" }).click();
-    await expect(page.getByRole("button", { name: "Cancelar mi turno" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Cancelar turno", exact: true })).toBeVisible();
 
     const bctx = await browser.newContext();
     const barber = await bctx.newPage();
@@ -59,10 +59,10 @@ test.describe("Hito 1 · criterios de interfaz", () => {
     if (await here.isVisible()) await here.click();
     await barber.getByRole("button", { name: CALL }).click();
     await barber.getByRole("button", { name: "Empezar corte" }).click();
-    await expect(page.getByRole("button", { name: "Cancelar mi turno" })).toBeHidden();
+    await expect(page.getByRole("button", { name: "Cancelar turno", exact: true })).toBeHidden();
     await barber.getByRole("button", { name: "Terminar y cobrar" }).click();
-    // REQ-004.4 estado final con agradecimiento
-    await expect(page.getByText("¡Gracias por venir!")).toBeVisible();
+    // REQ-004.4 estado final con agradecimiento ("Quedaste bien, <nombre>.", REQ-078.23)
+    await expect(page.getByText(/^Quedaste bien, /)).toBeVisible();
     await bctx.close();
   });
 

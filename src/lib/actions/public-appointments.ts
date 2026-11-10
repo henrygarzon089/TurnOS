@@ -26,6 +26,16 @@ export async function getAppointmentSlots(
   return appts.getAppointmentSlots(createAdminGateway(), slug, serviceId, barberId, day);
 }
 
+/** REQ-078.24 las horas libres de los días de la tira */
+export async function getAppointmentWeek(
+  slug: string,
+  serviceId: string,
+  barberId: string | null,
+  days: string[],
+) {
+  return appts.getAppointmentWeek(createAdminGateway(), slug, serviceId, barberId, days);
+}
+
 /** REQ-050.2–050.5, 050.7 */
 export async function bookAppointment(input: appts.BookInput) {
   return appts.bookAppointment(createAdminGateway(), input, await clientIp());

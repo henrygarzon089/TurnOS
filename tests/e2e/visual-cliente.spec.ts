@@ -172,12 +172,12 @@ test.describe("T-162 pantallas del cliente con el sistema visual (REQ-078)", () 
     const size = await number.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
     expect(size).toBeGreaterThanOrEqual(96);
 
-    const cancel = page.getByRole("button", { name: "Cancelar mi turno" });
+    const cancel = page.getByRole("button", { name: "Cancelar turno", exact: true });
     expect(await cancel.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe(
       "rgb(194, 30, 47)",
     );
     await cancel.click();
-    const sheet = page.getByRole("dialog", { name: /cancelar tu turno/ });
+    const sheet = page.getByRole("dialog", { name: /Cancelar tu turno/ });
     await expect(sheet).toBeVisible();
     await sheet.getByRole("button", { name: "No, seguir en la fila" }).click();
     await expect(sheet).toBeHidden();
@@ -189,8 +189,8 @@ test.describe("T-162 pantallas del cliente con el sistema visual (REQ-078)", () 
   }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(`/t/${await ticketToken()}`);
-    await page.getByRole("button", { name: "Cancelar mi turno" }).click();
-    const sheet = page.getByRole("dialog", { name: /cancelar tu turno/ });
+    await page.getByRole("button", { name: "Cancelar turno", exact: true }).click();
+    const sheet = page.getByRole("dialog", { name: /Cancelar tu turno/ });
     await expect(sheet).toBeVisible();
     const usesTransform = await sheet.evaluate((dialog) => {
       const names = new Set<string>();
@@ -242,7 +242,9 @@ test.describe("T-162 pantallas del cliente con el sistema visual (REQ-078)", () 
     await context.setOffline(true);
     try {
       await expect(page.getByText(/Sin conexión\. Mostrando lo último que vimos/)).toBeVisible();
-      await expect(page.getByRole("button", { name: "Cancelar mi turno" })).toBeDisabled();
+      await expect(
+        page.getByRole("button", { name: "Cancelar turno", exact: true }),
+      ).toBeDisabled();
       await expect(page.getByText("Para cancelar necesitas señal")).toBeVisible();
     } finally {
       await context.setOffline(false);
