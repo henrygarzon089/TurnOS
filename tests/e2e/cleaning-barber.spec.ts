@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { adminDb, appAlert, loginAsBarber, loginAsOwner, SEED } from "./helpers";
+import { adminDb, loginAsBarber, loginAsOwner, SEED } from "./helpers";
 
 /** T-104 · REQ-061/062. Juan es el barbero 0 del seed. La fila abre de 00:00 a 23:59 (global-setup). */
 const PNG = Buffer.from(
@@ -49,11 +49,19 @@ test.describe("REQ-061 / REQ-062 Limpieza del barbero", () => {
     // REQ-061.5 el aviso de la cámara
     await expect(form.getByText("Toma la foto del local vacío, sin personas")).toBeVisible();
 
+    // T-171: los puntos empiezan sin marcar y "Enviar" dice cuántos faltan (REQ-061.3)
+    const boxes = form.getByRole("checkbox");
+    const n = await boxes.count();
+    const send = form.getByRole("button", { name: /^Enviar/ });
+    await expect(send).toBeDisabled();
+    await expect(send).toHaveText(`Enviar (faltan ${n})`);
+    for (let i = 0; i < n; i++) await boxes.nth(i).check();
     await form.getByLabel("Ventilar").uncheck();
-    await form.getByRole("button", { name: "Enviar" }).click();
-    await expect(appAlert(page)).toHaveText("Escribe por qué no se hizo");
+    await expect(send).toHaveText("Enviar (falta 1)");
+    await form.getByRole("button", { name: "No se hizo: Ventilar" }).click();
     await form.getByLabel("¿Por qué?").fill("Estaba lloviendo");
-    await form.getByRole("button", { name: "Enviar" }).click();
+    await expect(send).toHaveText("Enviar");
+    await send.click();
 
     // Abre a las 00:00 (global-setup): siempre queda "tarde" (REQ-061.8)
     await expect(page.getByRole("status")).toHaveText(
@@ -77,15 +85,23 @@ test.describe("REQ-061 / REQ-062 Limpieza del barbero", () => {
     // El dueño registra el cierre a cualquier hora (REQ-061.7); así la prueba no depende de la hora
     await loginAsOwner(page);
     await page.goto("/app/limpieza");
-    await page.getByRole("button", { name: "Registrar cierre" }).click();
+    await page
+      .getByRole("tablist", { name: "Limpieza" })
+      .getByRole("tab", { name: "Cierre" })
+      .click();
     const form = page.getByRole("form", { name: "Cierre" });
-    await form.getByRole("button", { name: "Enviar" }).click();
-    await expect(appAlert(page)).toHaveText("Falta la foto del local");
+    const boxes = form.getByRole("checkbox");
+    for (let i = 0; i < (await boxes.count()); i++) await boxes.nth(i).check();
+    const send = form.getByRole("button", { name: /^Enviar/ });
+    // T-171 el cierre no se deja enviar sin la foto (REQ-061.4)
+    await expect(send).toHaveText("Enviar (falta la foto)");
+    await expect(send).toBeDisabled();
 
     await form
       .locator('input[type="file"]')
       .setInputFiles({ name: "local.png", mimeType: "image/png", buffer: PNG });
-    await form.getByRole("button", { name: "Enviar" }).click();
+    await expect(send).toHaveText("Enviar");
+    await send.click();
     await expect(page.getByRole("status")).toHaveText("Cierre registrado.", { timeout: 15_000 });
     await expect(page.getByRole("region", { name: "Cierre de hoy" })).toContainText(
       "Hecha por Dueño",
@@ -111,6 +127,10 @@ test.describe("REQ-061 / REQ-062 Limpieza del barbero", () => {
     );
     await loginAsBarber(page, 0);
     await page.goto("/app/limpieza");
+    await page
+      .getByRole("tablist", { name: "Limpieza" })
+      .getByRole("tab", { name: "Cierre" })
+      .click();
     await expect(page.getByRole("region", { name: "Cierre de hoy" })).toContainText(
       "El cierre se registra desde las 10:59 p. m.",
     );
