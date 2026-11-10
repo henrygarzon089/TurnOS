@@ -122,18 +122,43 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
   test("REQ-032.2 / NFR-008 portada y formulario del cliente: botones ≥ 48 px abajo, fuente 16 px, zoom 200 %", async ({
     page,
   }) => {
+    // Portada y formulario son una sola pantalla (T-173, ADR-052)
     await page.goto(`/${SEED.slug}`);
-    await expectThumbButton(page, page.getByRole("link", { name: "Tomar turno" }));
+    await expectThumbButton(page, page.getByRole("button", { name: "Tomar turno" }));
     await expectAllTargets48(page);
     await expectBaseFont16(page);
     await expectZoom200(page);
+  });
 
-    // La portada se relee en vivo (ADR-008): esperar a que termine antes de navegar (WebKit)
-    await page.waitForLoadState("networkidle");
-    await page.goto(`/${SEED.slug}/turno`);
-    await expectThumbButton(page, page.getByRole("button", { name: "Confirmar turno" }));
-    await expectAllTargets48(page);
+  test("REQ-032.2 / NFR-008 portada con una fuente ancha (la de Linux en CI) también cabe con zoom 200 %", async ({
+    page,
+  }) => {
+    await page.goto(`/${SEED.slug}`);
+    await expect(page.getByRole("button", { name: "Tomar turno" })).toBeVisible();
+    // Sin la fuente del sistema del iPhone, WebKit cae en una más ancha: todo debe poder quebrar
+    await page.addStyleTag({
+      content: "* { font-family: Verdana, 'DejaVu Sans', sans-serif !important; }",
+    });
     await expectZoom200(page);
+  });
+
+  test("REQ-032.2 / NFR-008 portada con citas encendidas: 'Reservar una cita' y 'Ver menú' caben con zoom 200 %", async ({
+    page,
+  }) => {
+    const { data: biz } = await db().from("businesses").select("id").eq("slug", SEED.slug).single();
+    await db().from("businesses").update({ appointments_enabled: true }).eq("id", biz!.id);
+    await db()
+      .from("barbers")
+      .update({ accepts_appointments: true })
+      .eq("business_id", biz!.id)
+      .eq("display_name", "Juan");
+    try {
+      await page.goto(`/${SEED.slug}`);
+      await expect(page.getByRole("link", { name: "Reservar una cita" })).toBeVisible();
+      await expectZoom200(page);
+    } finally {
+      await db().from("businesses").update({ appointments_enabled: false }).eq("id", biz!.id);
+    }
   });
 
   test("REQ-032.2 / NFR-008 Mi turno: cancelar ≥ 48 px abajo, zoom 200 %", async ({ page }) => {

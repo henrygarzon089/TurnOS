@@ -23,15 +23,15 @@ async function setBirthday(e164: string, on: Date | null) {
 }
 
 async function fillForm(page: Page, name: string, cel: string) {
-  await page.goto(`/${SEED.slug}/turno`);
+  await page.goto(`/${SEED.slug}`);
   await page.getByLabel("Tu nombre").fill(name);
-  await page.getByLabel("Tu celular (WhatsApp)").fill(cel);
+  await page.getByLabel("Tu celular").fill(cel);
 }
 
 async function confirm(page: Page) {
   const box = page.getByRole("checkbox");
   if (await box.isVisible()) await box.check();
-  await page.getByRole("button", { name: "Confirmar turno" }).click();
+  await page.getByRole("button", { name: "Tomar turno" }).click();
 }
 
 const bdayField = (page: Page) => page.getByRole("group", { name: /Cuándo cumples años/ });
@@ -54,9 +54,9 @@ test.describe("REQ-037 cumpleaños", () => {
     await expect(page.getByText("Turno cancelado")).toBeVisible();
 
     // Mismo navegador: el celular se prellena y el campo ya no está
-    await page.goto(`/${SEED.slug}/turno`);
+    await page.goto(`/${SEED.slug}`);
     await expect(page.getByLabel("Tu nombre")).toHaveValue("Cumple Nuevo");
-    await expect(page.getByLabel("Tu celular (WhatsApp)")).not.toHaveValue("");
+    await expect(page.getByLabel("Tu celular")).not.toHaveValue("");
     await page.waitForLoadState("networkidle");
     await expect(page.getByText("¿Cuándo cumples años? (opcional)")).toHaveCount(0);
   });
@@ -76,7 +76,7 @@ test.describe("REQ-037 cumpleaños", () => {
     await bdayField(page).getByLabel("Mes").selectOption({ label: "Abril" });
     await confirm(page);
     await expect(page.getByText("Esa fecha no existe")).toBeVisible();
-    await expect(page).toHaveURL(/\/turno/);
+    await expect(page).not.toHaveURL(/\/t\//);
   });
 
   test("REQ-037.4 la lista muestra al que cumple mañana con botón de WhatsApp", async ({

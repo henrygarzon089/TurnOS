@@ -10,16 +10,16 @@ test("REQ-002.5 una versión nueva del aviso hace que el cliente vuelva a ver la
   // Cliente acepta la versión vigente
   const cctx = await browser.newContext();
   const customer = await cctx.newPage();
-  await customer.goto(`/${SEED.slug}/turno`);
+  await customer.goto(`/${SEED.slug}`);
   await customer.getByLabel("Tu nombre").fill("Privacidad");
   await customer
-    .getByLabel("Tu celular (WhatsApp)")
+    .getByLabel("Tu celular")
     .fill(`300 7${Math.floor(100000 + Math.random() * 899999)}`);
-  await customer.getByRole("checkbox", { name: /Acepto que/ }).check();
-  await customer.getByRole("button", { name: "Confirmar turno" }).click();
+  await customer.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
+  await customer.getByRole("button", { name: "Tomar turno" }).click();
   await expect(customer).toHaveURL(/\/t\//);
   await cancelMyTicket(customer);
-  await customer.goto(`/${SEED.slug}/turno`);
+  await customer.goto(`/${SEED.slug}`);
   await expect(customer.getByText("Ya aceptaste nuestra política de datos.")).toBeVisible();
 
   // El dueño publica una versión nueva
@@ -36,6 +36,6 @@ test("REQ-002.5 una versión nueva del aviso hace que el cliente vuelva a ver la
 
   // El cliente vuelve a ver la casilla
   await customer.reload();
-  await expect(customer.getByRole("checkbox", { name: /Acepto que/ })).toBeVisible();
+  await expect(customer.getByRole("checkbox", { name: /Acepto el aviso/ })).toBeVisible();
   await cctx.close();
 });

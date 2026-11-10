@@ -12,16 +12,16 @@ import {
 const phone = () => `300 9${Math.floor(100000 + Math.random() * 899999)}`;
 
 async function takeTicket(page: Page, name: string, cel: string) {
-  await page.goto(`/${SEED.slug}/turno`);
+  await page.goto(`/${SEED.slug}`);
   await waitForContent(page);
   await page.getByLabel("Tu nombre").fill(name);
-  await page.getByLabel("Tu celular (WhatsApp)").fill(cel);
-  await page.getByRole("radio", { name: /Corte · 20 min/ }).check();
+  await page.getByLabel("Tu celular").fill(cel);
+  await page.getByRole("radio", { name: /^Corte\s+\$/ }).check();
   // REQ-002.4: si este navegador ya aceptó la versión vigente, la casilla no aparece
-  const box = page.getByRole("checkbox", { name: /Acepto que/ });
+  const box = page.getByRole("checkbox", { name: /Acepto el aviso/ });
   await expect(box.or(page.getByText("Ya aceptaste nuestra política de datos."))).toBeVisible();
   if (await box.isVisible()) await box.check();
-  await page.getByRole("button", { name: "Confirmar turno" }).click();
+  await page.getByRole("button", { name: "Tomar turno" }).click();
   await expect(page).toHaveURL(/\/t\/[A-Za-z0-9_-]{22}/);
 }
 
@@ -34,7 +34,7 @@ test.describe("Hito 1 · flujo del cliente", () => {
     await page.goto(`/${SEED.slug}`);
     await expect(page.getByRole("heading", { name: "Barbería La 33" })).toBeVisible();
     await expect(page.getByText(/Abierto|Cerrado/)).toBeVisible();
-    await expect(page.getByText(/personas? en la fila/)).toBeVisible();
+    await expect(page.getByRole("region", { name: "Fila en vivo" })).toContainText("esperando");
   });
 
   test("REQ-001.5 slug inexistente → Negocio no encontrado", async ({ page }) => {
@@ -43,10 +43,10 @@ test.describe("Hito 1 · flujo del cliente", () => {
   });
 
   test("REQ-002.2 sin aceptar privacidad no se puede confirmar", async ({ page }) => {
-    await page.goto(`/${SEED.slug}/turno`);
+    await page.goto(`/${SEED.slug}`);
     await page.getByLabel("Tu nombre").fill("Prueba");
-    await page.getByLabel("Tu celular (WhatsApp)").fill(phone());
-    await expect(page.getByRole("button", { name: "Confirmar turno" })).toBeDisabled();
+    await page.getByLabel("Tu celular").fill(phone());
+    await expect(page.getByRole("button", { name: "Tomar turno" })).toBeDisabled();
     await expect(page.getByText("Marca la casilla de privacidad para continuar.")).toBeVisible();
   });
 
@@ -60,11 +60,11 @@ test.describe("Hito 1 · flujo del cliente", () => {
   });
 
   test("REQ-003.2 celular inválido muestra error en español", async ({ page }) => {
-    await page.goto(`/${SEED.slug}/turno`);
+    await page.goto(`/${SEED.slug}`);
     await page.getByLabel("Tu nombre").fill("Prueba");
-    await page.getByLabel("Tu celular (WhatsApp)").fill("604 444 5555");
-    await page.getByRole("checkbox", { name: /Acepto que/ }).check();
-    await page.getByRole("button", { name: "Confirmar turno" }).click();
+    await page.getByLabel("Tu celular").fill("604 444 5555");
+    await page.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
+    await page.getByRole("button", { name: "Tomar turno" }).click();
     await expect(appAlert(page)).toContainText("celular colombiano");
   });
 
@@ -83,7 +83,7 @@ test.describe("Hito 1 · flujo del cliente", () => {
     const cel = phone();
     await takeTicket(page, "Memoria", cel);
     await cancelMyTicket(page);
-    await page.goto(`/${SEED.slug}/turno`);
+    await page.goto(`/${SEED.slug}`);
     await expect(page.getByLabel("Tu nombre")).toHaveValue("Memoria");
     await expect(page.getByText("Ya aceptaste nuestra política de datos.")).toBeVisible();
   });

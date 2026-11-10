@@ -111,7 +111,7 @@ test.describe("T-162 pantallas del cliente con el sistema visual (REQ-078)", () 
     page,
   }) => {
     test.setTimeout(120_000);
-    for (const path of [`/${SEED.slug}`, `/${SEED.slug}/turno`, `/${SEED.slug}/privacidad`])
+    for (const path of [`/${SEED.slug}`, `/${SEED.slug}/privacidad`])
       await noHorizontalScroll(page, path);
     await noHorizontalScroll(page, `/${SEED.slug}/pantalla`, [1280]);
   });
@@ -149,7 +149,6 @@ test.describe("T-162 pantallas del cliente con el sistema visual (REQ-078)", () 
     try {
       for (const path of [
         `/${SEED.slug}`,
-        `/${SEED.slug}/turno`,
         `/${SEED.slug}/privacidad`,
         `/t/${await ticketToken()}`,
         `/regalo/${gift.token}`,
@@ -219,13 +218,13 @@ test.describe("T-162 pantallas del cliente con el sistema visual (REQ-078)", () 
     page,
     context,
   }) => {
-    await page.goto(`/${SEED.slug}/turno`);
-    await page.getByRole("checkbox", { name: /Acepto que/ }).check();
-    await expect(page.getByRole("button", { name: "Confirmar turno" })).toBeEnabled();
+    await page.goto(`/${SEED.slug}`);
+    await page.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
+    await expect(page.getByRole("button", { name: "Tomar turno" })).toBeEnabled();
     await context.setOffline(true);
     try {
       await expect(page.getByText(/Sin conexión\. Mostrando lo último que vimos/)).toBeVisible();
-      await expect(page.getByRole("button", { name: "Confirmar turno" })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Tomar turno" })).toBeDisabled();
       await expect(
         page.getByText("Necesitas señal para tomar turno.", { exact: false }),
       ).toBeVisible();

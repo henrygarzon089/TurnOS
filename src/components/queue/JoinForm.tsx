@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { ErrorText } from "@/components/auth/LoginForm";
+import { MenuSheet } from "@/components/public/MenuSheet";
+import { JoinBar } from "@/components/public/PublicHome";
 import { BarberCutsSheet } from "@/components/queue/BarberCutsSheet";
-import { ConnectionBanner } from "@/components/ui/ConnectionBanner";
 import { Field } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/Icon";
 import { PhoneField } from "@/components/ui/PhoneField";
@@ -19,23 +20,29 @@ import {
 import { barbersForService, serviceAvailability } from "@/lib/domain/barber-services";
 import { MONTH_NAMES } from "@/lib/domain/birthday";
 import { formatCOP } from "@/lib/domain/money";
-import { formatPhoneCO, normalizePhoneCO } from "@/lib/domain/phone";
+import { formatPhoneCO, formatPhoneTyping, normalizePhoneCO } from "@/lib/domain/phone";
 import { estimateNewTicket } from "@/lib/domain/queue-estimate";
 import { mediaUrl } from "@/lib/media/paths";
 import type { PublicBusiness } from "@/lib/queue/public-queue";
 import { useBrowserOnline } from "@/lib/realtime/use-browser-online";
 import { readPrefs, writePrefs } from "@/lib/storage/customer-prefs";
 
-type Props = { business: PublicBusiness; now: string };
+type Props = {
+  business: PublicBusiness;
+  now: string;
+  /** REQ-050.1: citas encendidas con alguien que las reciba ("Reservar una cita" en la barra). */
+  canBook?: boolean;
+};
 
 /**
- * REQ-003.1 formulario de 4 campos + aviso de privacidad (REQ-002). Sistema visual de T-162
- * (tablero Cliente-Negocio): servicio y barbero primero, "Confirmar turno" en una barra fija abajo
- * que pasa a "Guardando…" (REQ-078.9) y se deshabilita sin señal diciendo por qué (REQ-078.10).
+ * REQ-003.1 formulario de 4 campos + aviso de privacidad (REQ-002), montado en la portada (T-173,
+ * ADR-052): "¿Qué te vas a hacer?" en rejilla de 2, "¿Con quién?" con "El primero libre" primero,
+ * nombre, celular, lo que la app tiene y el tablero no, la privacidad en una línea y "Tomar turno"
+ * en la barra fija, que pasa a "Guardando…" (REQ-078.9) y se deshabilita sin señal (REQ-078.10).
  */
-export function JoinForm({ business, now }: Props) {
+export function JoinForm({ business, now, canBook = false }: Props) {
   const router = useRouter();
-  const { online, since } = useBrowserOnline();
+  const { online } = useBrowserOnline();
   const [pending, startTransition] = useTransition();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -46,6 +53,7 @@ export function JoinForm({ business, now }: Props) {
   );
   const [barberId, setBarberId] = useState<string | null>(null);
   const pickedByUser = useRef(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const pickBarber = (id: string | null) => {
     pickedByUser.current = true;
     setBarberId(id);
@@ -101,11 +109,19 @@ export function JoinForm({ business, now }: Props) {
 
   // REQ-003.7 / REQ-002.4: prellenar desde el navegador
   useEffect(() => {
+    // En un celular lento se alcanza a escribir antes de hidratar: el campo controlado lo borraría
+    // en el siguiente render. Lo escrito se pasa al estado y gana sobre lo guardado.
+    const field = (n: string) =>
+      (formRef.current?.elements.namedItem(n) as HTMLInputElement | null)?.value.trim() ?? "";
+    const typedName = field("name");
+    const typedPhone = field("phone");
+    if (typedName) setName(typedName);
+    if (typedPhone) setPhone(formatPhoneTyping(typedPhone));
     // Tras hidratar (evita desajuste servidor/cliente): leer el navegador en el siguiente frame
     const id = requestAnimationFrame(() => {
       const p = readPrefs();
-      if (p.name) setName(p.name);
-      if (p.phone) {
+      if (p.name && !typedName) setName(p.name);
+      if (p.phone && !typedPhone) {
         setPhone(formatPhoneCO(p.phone));
         // REQ-022.1: preseleccionar su barbero preferido si atiende hoy (si no, "El que esté libre")
         void getPreferredBarber(business.slug, p.phone).then((id) => {
@@ -164,6 +180,7 @@ export function JoinForm({ business, now }: Props) {
     e.preventDefault();
     setError(null);
     startTransition(async () => {
+      // Sin respuesta de la acción (red caída, servidor): el recuadro de error, nunca un turno a medias
       const r = await joinQueue({
         slug: business.slug,
         name,
@@ -176,7 +193,7 @@ export function JoinForm({ business, now }: Props) {
         birthday: askBirthday ? { day: birthdayDay, month: birthdayMonth } : null,
         courtesyProductId: shownCourtesyId,
         whatsappOptIn,
-      });
+      }).catch(() => ({ ok: false as const, error: JOIN_FAILED, field: undefined }));
       if (!r.ok) {
         setError({ message: r.error, field: r.field });
         if (r.field === "courtesyProductId") router.refresh(); // REQ-038.6
@@ -194,11 +211,21 @@ export function JoinForm({ business, now }: Props) {
     });
   }
 
+  const citaQuery = new URLSearchParams({
+    ...(serviceId ? { servicio: serviceId } : {}),
+    ...(shownBarberId ? { barbero: shownBarberId } : {}),
+  }).toString();
+  const cutsBarber = shownBarberId ? barbers.find((b) => b.id === shownBarberId) : undefined;
+
   return (
-    <form onSubmit={submit} className="flex flex-col gap-5 pb-36" aria-label="Tomar turno">
-      <ConnectionBanner online={online} lastSeen={since} />
+    <form
+      ref={formRef}
+      onSubmit={submit}
+      className="flex flex-col gap-5 pb-34 lg:pb-0"
+      aria-label="Tomar turno"
+    >
       <fieldset className="min-w-0">
-        <legend className="mb-2 text-sm font-semibold">Servicio</legend>
+        <legend className="mb-2 text-sm font-semibold">¿Qué te vas a hacer?</legend>
         <div className="grid grid-cols-2 gap-2">
           {business.services.map((s) => {
             // REQ-035.7: en gris si hoy ninguno de los presentes lo hace
@@ -207,7 +234,8 @@ export function JoinForm({ business, now }: Props) {
             return (
               <label
                 key={s.id}
-                className={`has-[:focus-visible]:ring-brand relative flex min-h-16 flex-col justify-center rounded-md border px-3 py-2 has-[:focus-visible]:ring-2 ${nobody ? "border-line bg-surface text-muted cursor-not-allowed" : chosen ? "border-brand bg-brand-soft cursor-pointer border-2" : "border-line-strong bg-card cursor-pointer"}`}
+                title={`${s.name} · ${s.durationMin} min`}
+                className={`has-[:focus-visible]:ring-brand relative flex min-h-15 flex-col justify-center rounded-md px-3 py-2 has-[:focus-visible]:ring-2 lg:flex-row lg:items-center lg:justify-between lg:gap-2 ${nobody ? "border-line bg-surface text-muted cursor-not-allowed border" : chosen ? "border-brand bg-brand-soft cursor-pointer border-2" : "border-line-strong bg-card cursor-pointer border"}`}
               >
                 <input
                   type="radio"
@@ -216,18 +244,13 @@ export function JoinForm({ business, now }: Props) {
                   checked={chosen}
                   disabled={nobody || pending}
                   onChange={() => pickService(s.id)}
-                  // transparente sobre toda la tarjeta: se toca la tarjeta entera
+                  // transparente sobre toda la celda: se toca la celda entera
                   className="absolute inset-0 cursor-[inherit] appearance-none opacity-0"
                 />
-                <span className="font-semibold break-words">
-                  {s.name}{" "}
-                  <span className="text-muted text-sm font-normal">
-                    · {nobody ? "Hoy no hay quién lo haga" : `${s.durationMin} min`}
-                  </span>
+                <span className="leading-tight font-semibold break-words">{s.name}</span>
+                <span className="text-sm tabular-nums lg:shrink-0 lg:whitespace-nowrap">
+                  {nobody ? "Hoy no hay quién lo haga" : formatCOP(s.price)}
                 </span>
-                {!nobody && (
-                  <span className="text-sm font-semibold tabular-nums">{formatCOP(s.price)}</span>
-                )}
               </label>
             );
           })}
@@ -235,38 +258,38 @@ export function JoinForm({ business, now }: Props) {
         {error?.field === "serviceId" && <ErrorText>{error.message}</ErrorText>}
       </fieldset>
       <fieldset className="min-w-0">
-        <legend className="mb-2 text-sm font-semibold">Barbero</legend>
-        <div className="flex flex-wrap gap-2">
+        <legend className="mb-2 text-sm font-semibold">¿Con quién?</legend>
+        {/* Se desliza la fila de fichas, no la página (REQ-078.15) */}
+        <div className="-mx-4 flex [scrollbar-width:none] gap-2 overflow-x-auto px-4 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0">
           <Chip selected={shownBarberId === null} onClick={() => pickBarber(null)}>
-            El que esté libre
+            El primero libre
           </Chip>
           {barbers.map((b) => {
             const unavailable = b.status === "paused";
             return (
-              <span key={b.id} className="inline-flex items-center">
-                <Chip
-                  selected={shownBarberId === b.id}
-                  disabled={unavailable}
-                  onClick={() => pickBarber(b.id)}
-                >
-                  {b.name}
-                  {unavailable && <span className="text-muted ml-1 text-xs">(en pausa)</span>}
-                </Chip>
-                {/* REQ-039.5 */}
-                {business.photoCounts[b.id] > 0 && (
-                  <button
-                    type="button"
-                    aria-label={`Ver cortes de ${b.name}`}
-                    className="text-brand min-h-12 px-2 text-sm font-medium underline"
-                    onClick={() => setCutsOf(b)}
-                  >
-                    Ver cortes
-                  </button>
-                )}
-              </span>
+              <Chip
+                key={b.id}
+                selected={shownBarberId === b.id}
+                disabled={unavailable}
+                onClick={() => pickBarber(b.id)}
+              >
+                {b.name}
+                {unavailable && <span className="text-muted ml-1 text-xs">(en pausa)</span>}
+              </Chip>
             );
           })}
         </div>
+        {/* REQ-039.5: debajo de las fichas, para el elegido que tenga fotos */}
+        {cutsBarber && business.photoCounts[cutsBarber.id] > 0 && (
+          <button
+            type="button"
+            aria-label={`Ver cortes de ${cutsBarber.name}`}
+            className="text-brand min-h-12 text-sm font-medium underline"
+            onClick={() => setCutsOf(cutsBarber)}
+          >
+            Ver cortes
+          </button>
+        )}
         {error?.field === "preferredBarberId" && <ErrorText>{error.message}</ErrorText>}
       </fieldset>
       {cutsOf && (
@@ -288,7 +311,7 @@ export function JoinForm({ business, now }: Props) {
       <PhoneField
         id="phone"
         name="phone"
-        label="Tu celular (WhatsApp)"
+        label="Tu celular"
         value={phone}
         onChange={setPhone}
         required
@@ -306,6 +329,7 @@ export function JoinForm({ business, now }: Props) {
                 type="text"
                 inputMode="numeric"
                 maxLength={2}
+                disabled={pending}
                 value={birthdayDay}
                 onChange={(e) => setBirthdayDay(e.target.value)}
                 className="input"
@@ -317,6 +341,7 @@ export function JoinForm({ business, now }: Props) {
               <select
                 name="birthdayMonth"
                 value={birthdayMonth}
+                disabled={pending}
                 onChange={(e) => setBirthdayMonth(e.target.value)}
                 className="input"
                 aria-invalid={error?.field === "birthday"}
@@ -348,6 +373,7 @@ export function JoinForm({ business, now }: Props) {
                     type="radio"
                     name="courtesyProductId"
                     checked={shownCourtesyId === c.id}
+                    disabled={pending}
                     onChange={() => setCourtesyId(c.id)}
                     className="h-5 w-5 shrink-0"
                   />
@@ -382,6 +408,7 @@ export function JoinForm({ business, now }: Props) {
             type="checkbox"
             name="whatsappOptIn"
             checked={whatsappOptIn}
+            disabled={pending}
             onChange={(e) => setWhatsappOptInPhone(e.target.checked ? e164 : null)}
             className="mt-0.5 h-6 w-6 shrink-0"
           />
@@ -400,65 +427,69 @@ export function JoinForm({ business, now }: Props) {
           </Link>
         </p>
       ) : (
-        <label className="flex min-h-12 items-start gap-3 text-sm">
+        // REQ-002.1: texto corto y el enlace al aviso (ADR-052)
+        <label className="flex min-h-12 items-center gap-3 text-sm">
           <input
             type="checkbox"
             name="privacyAccepted"
             checked={privacy}
+            disabled={pending}
             onChange={(e) => setPrivacy(e.target.checked)}
-            className="mt-0.5 h-6 w-6 shrink-0"
+            className="accent-brand size-6 shrink-0"
           />
           <span>
-            Acepto que <strong>{business.name}</strong> use mi nombre y celular para gestionar mi
-            turno y contactarme por WhatsApp (Ley 1581 de 2012).{" "}
+            Acepto el{" "}
             <Link
               href={`/${business.slug}/privacidad`}
-              className="text-brand underline"
+              className="underline underline-offset-2"
               target="_blank"
             >
-              Ver aviso completo
-            </Link>
+              aviso de privacidad
+            </Link>{" "}
+            (Ley 1581)
           </span>
         </label>
       )}
       {error?.field === "privacyAccepted" && <ErrorText>{error.message}</ErrorText>}
-      {error && !error.field && (
-        <div
-          role="alert"
-          className="border-danger text-ink flex gap-2 rounded-md border-2 p-3 text-sm"
-        >
-          <Icon name="error" className="text-danger mt-0.5 size-5 shrink-0" />
-          <p>
-            <b className="text-danger">{error.message}</b> Tus datos siguen ahí.
-          </p>
-        </div>
-      )}
+      {error && !error.field && <JoinError message={error.message} />}
 
-      {/* Barra fija abajo (alto reservado con el pb del formulario) */}
-      <div className="border-line bg-card fixed inset-x-0 bottom-0 z-10 border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-        <div className="mx-auto max-w-md">
-          <button
-            type="submit"
-            className="btn-primary disabled:bg-skeleton disabled:text-muted disabled:opacity-100"
-            disabled={pending || !privacy || !online}
-          >
-            {pending ? "Guardando…" : "Confirmar turno"}
-          </button>
-          {!online ? (
-            <p className="text-muted mt-2 text-center text-sm">
-              Necesitas señal para tomar turno. Lo que escribiste no se borra.
-            </p>
-          ) : (
-            !privacy &&
-            !alreadyAccepted && (
-              <p className="text-muted mt-2 text-center text-sm">
-                Marca la casilla de privacidad para continuar.
-              </p>
-            )
-          )}
-        </div>
-      </div>
+      <JoinBar
+        slug={business.slug}
+        pending={pending}
+        disabled={pending || !privacy || !online}
+        online={online}
+        hint={
+          !privacy && !alreadyAccepted ? "Marca la casilla de privacidad para continuar." : null
+        }
+        canBook={canBook}
+        citaQuery={citaQuery}
+        menuTrigger={
+          business.products.length > 0 ? (
+            <MenuSheet address={business.address} products={business.products} />
+          ) : null
+        }
+      />
     </form>
+  );
+}
+
+/** Lo que dice el recuadro cuando la acción no respondió (red caída o error del servidor). */
+export const JOIN_FAILED = "No pudimos darte el turno.";
+
+/** Error sin campo, encima de la barra (REQ-078.21): qué pasó y que los datos siguen ahí. */
+export function JoinError({ message }: { message: string }) {
+  return (
+    <div
+      role="alert"
+      className="border-danger bg-accent-soft text-ink animate-enter flex gap-2 rounded-md border-2 p-3 text-sm"
+    >
+      <Icon name="error" className="text-danger mt-0.5 size-5 shrink-0" />
+      <p>
+        <b className="text-danger">{message}</b>
+        {message === JOIN_FAILED && " Revisa la señal y toca “Tomar turno” otra vez."} Tus datos
+        siguen ahí.
+      </p>
+    </div>
   );
 }
 
@@ -481,7 +512,7 @@ export function Chip({
       aria-disabled={disabled}
       disabled={disabled}
       onClick={onClick}
-      className={`text-ink min-h-12 rounded-md px-4 text-base font-medium ${
+      className={`text-ink min-h-12 shrink-0 rounded-md px-4 text-base font-medium whitespace-nowrap ${
         selected ? "border-brand bg-brand-soft border-2" : "border-line-strong bg-card border"
       } disabled:opacity-50`}
     >

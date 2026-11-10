@@ -58,26 +58,26 @@ test.describe("REQ-035 formulario según quién hace cada servicio", () => {
   test("REQ-035.6 al escoger el servicio solo aparecen los barberos que lo hacen", async ({
     page,
   }) => {
-    await page.goto(`/${SEED.slug}/turno`);
+    await page.goto(`/${SEED.slug}`);
     await page.getByRole("radio", { name: new RegExp(CEPILLADO) }).check();
-    const barberos = page.getByRole("group", { name: "Barbero" });
+    const barberos = page.getByRole("group", { name: "¿Con quién?" });
     await expect(barberos.getByRole("radio", { name: "Mateo", exact: true })).toBeVisible();
     await expect(barberos.getByRole("radio", { name: "Juan", exact: true })).toHaveCount(0);
   });
 
-  test("REQ-035.6 si el barbero escogido no hace el servicio nuevo, vuelve 'El que esté libre'", async ({
+  test("REQ-035.6 si el barbero escogido no hace el servicio nuevo, vuelve 'El primero libre'", async ({
     page,
   }) => {
-    await page.goto(`/${SEED.slug}/turno`);
-    await page.getByRole("radio", { name: /^Corte ·/ }).check();
-    const barberos = page.getByRole("group", { name: "Barbero" });
+    await page.goto(`/${SEED.slug}`);
+    await page.getByRole("radio", { name: /^Corte\s+\$/ }).check();
+    const barberos = page.getByRole("group", { name: "¿Con quién?" });
     await barberos.getByRole("radio", { name: "Juan", exact: true }).click();
     await expect(barberos.getByRole("radio", { name: "Juan", exact: true })).toHaveAttribute(
       "aria-checked",
       "true",
     );
     await page.getByRole("radio", { name: new RegExp(CEPILLADO) }).check();
-    await expect(barberos.getByRole("radio", { name: "El que esté libre" })).toHaveAttribute(
+    await expect(barberos.getByRole("radio", { name: "El primero libre" })).toHaveAttribute(
       "aria-checked",
       "true",
     );
@@ -86,7 +86,7 @@ test.describe("REQ-035 formulario según quién hace cada servicio", () => {
   test("REQ-035.7 un servicio que hoy nadie hace sale en gris y no se puede escoger", async ({
     page,
   }) => {
-    await page.goto(`/${SEED.slug}/turno`);
+    await page.goto(`/${SEED.slug}`);
     const tinte = page.getByRole("radio", { name: new RegExp(TINTE) });
     await expect(tinte).toBeDisabled();
     await expect(
