@@ -2606,6 +2606,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   acceso en WebKit). Queda `[ ]` hasta que Henry recorra cliente, barbero y dueño, haga la prueba en
   la barbería y compare Lighthouse móvil del CI con el Hito 14 (ADR-054); la aprobación será ADR-050
   (reservado).
+- Nota (2026-11-11): todo el hito en `main` y en producción (4c86cbc): dueño #150, barbero #144 y
+  #151, cliente #152, #153 y #155, televisor #156 (con T-183, #157); migraciones 0070, 0071 y 0072
+  aplicadas. `pnpm trace --hito=16`: 442 criterios, 0 sin prueba; "16" vuelve al loop de
+  `tests/unit/traceability.test.ts`. Lighthouse móvil del CI (una corrida, run 42920733394, contra la
+  aprobación del Hito 14, run 42703512604): portada 95 (era 98), Mi turno 94 (95), Mi fila 96 (95),
+  Caja 95 (97); accesibilidad 100 en las cuatro; LCP 2,5–2,7 s (era 2,4–2,7 s). Todo sobre el
+  mínimo (80/90); la baja de la portada es de 3 puntos en una sola corrida. Falta lo de Henry:
+  recorrido en celular y computador, prueba en la barbería y ADR-050.
 
 ---
 

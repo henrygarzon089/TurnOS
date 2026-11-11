@@ -375,7 +375,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - T-132 hecha (PR #113, 2026-11-06): Speed Insights con `redactVitalsUrl`. Pendiente de Henry: activarlo en
   el proyecto de Vercel y revisar la cuota de su plan.
 - T-133 hecha (PR #131, 2026-11-08): región verificada, Supabase `us-east-1` y Vercel `iad1`; `pnpm trace
-  --hito=14` sin huecos.
+--hito=14` sin huecos.
 - Henry aprueba el Hito 14 (ADR-044, 2026-11-09).
 - Speed Insights **apagado por costo** (ADR-054, 2026-11-09): no se activa en Vercel mientras el negocio
   no lo pague. El código se queda y no envía nada; para retomarlo basta activarlo (con ADR nuevo). La
@@ -536,6 +536,16 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   #140 (numeración vieja) se cerró. Prueba desde el celular: entrar como dueño y ver la barra
   azul; "Más" → "Salir". En el computador, Barberos y Servicios se ven completos y el menú
   lateral muestra el número de la fila.
+
+- 2026-11-11, **Hito 16 completo en producción** (`main` 4c86cbc): dueño (#150, T-177…T-181),
+  barbero (#144 T-170, #151 T-171), cliente (#152 T-173, #155 T-175, #153 T-174) y televisor (#156
+  T-176 con #157 T-183). Migraciones 0070, 0071 y 0072 aplicadas. `pnpm trace --hito=16` sin
+  huecos (442 criterios). Lighthouse móvil del CI dentro del mínimo y parecido al Hito 14 (detalle
+  en T-168). La CI ahora corre la E2E en 4 partes en paralelo (#158): ~12 min en vez de ~30.
+  Producción se despliega desde `~/Projects/turnOS-prod` (copia limpia de `main`, ya conectada a
+  Vercel y a Supabase), nunca desde la carpeta de trabajo. Falta lo de Henry para cerrar T-168:
+  recorrer cliente, barbero y dueño en el celular y el computador, la prueba en la barbería
+  (PA-H16-2) y aprobar el hito (ADR-050).
 
 ### Cambio · relectura al volver a primer plano (T-182, REQ-011.7, 2026-11-09)
 
