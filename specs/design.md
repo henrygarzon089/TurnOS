@@ -2628,6 +2628,8 @@ aparece.
 | `accent` / `accent-ink` | #C21E2F / #FFFFFF | **solo** atención ahora | 5,96 |
 | `accent-soft` | #FBEAEC | fondo de alerta | `danger` encima: 6,39 |
 | `accent-on-brand` | #FF5A68 | punto "en vivo" sobre azul marino | 5,44 |
+| `warn-on-brand` | #F2C46D | "En pausa" en el televisor (sobre azul marino, T-176) | 10,14 |
+| `ok-on-brand` | #7FD39A | "Libre" en el televisor (sobre azul marino, T-176) | 9,19 |
 | `called` | #C21E2F | "¡Es tu turno!" y turno llamado (antes era el amarillo #fef3c7) | 5,96 |
 | `danger` | #A8182A | texto y contorno destructivo, errores | 6,39 sobre `accent-soft` |
 | `ok` / `ok-soft` | #1E6B3A / #E6F2EA | terminado, cuadra | 6,52 |
@@ -2927,8 +2929,8 @@ tiene prueba unitaria.
    nombre corto y "→ <barbero>". Sin llamado reciente, el espacio queda vacío (no salta lo de
    abajo). Con movimiento reducido, sin parpadeo.
 3. Una columna por barbero (máx. 5): raya arriba (`accent-on-brand` si está llamando), "<BARBERO>"
-   en mayúsculas, estado (Atendiendo, Llamando en `accent-on-brand`, En pausa en `warn-soft`, Libre
-   en `ok-soft`), el número que atiende (72 px) o "—", y los siguientes como filas "Nombre P.
+   en mayúsculas, estado (Atendiendo, Llamando en `accent-on-brand`, En pausa en `warn-on-brand`,
+   Libre en `ok-on-brand`; los colores del tablero, decisión de Henry del 2026-11-11), el número que atiende (72 px) o "—", y los siguientes como filas "Nombre P.
    <número>" o "Cita <hora>". Libre sin fila: "Nadie en su fila. Escanea y pasas ya."
 4. "El primero libre": fila bajo las columnas con los siguientes sin barbero (REQ-013.1).
 5. Abajo: QR 120×120 en blanco, "Escanea para tomar turno" y "y espera en tu casa. Te avisamos por

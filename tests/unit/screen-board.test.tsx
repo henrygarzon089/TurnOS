@@ -99,6 +99,13 @@ describe("T-176 pantalla del televisor (REQ-078.25, REQ-013.4)", () => {
     expect(barberScreenState(VIEW.barbers[3])).toBe("Libre");
   });
 
+  it("REQ-078.25 En pausa y Libre con los colores del tablero sobre azul marino", () => {
+    const h = render(VIEW);
+    expect(h).toMatch(/class="[^"]*text-warn-on-brand[^"]*">En pausa</);
+    expect(h).toMatch(/class="[^"]*text-ok-on-brand[^"]*">Libre</);
+    expect(h).toMatch(/class="[^"]*text-accent-on-brand[^"]*">Llamando</);
+  });
+
   it('REQ-078.25 los siguientes van con su número o "Cita <hora>"', () => {
     expect(nextLabel({ name: "Tomás G.", number: 17, scheduledAt: null })).toBe("17");
     expect(nextLabel({ name: "Luis M.", number: 21, scheduledAt: "2026-11-09T21:15:00Z" })).toBe(

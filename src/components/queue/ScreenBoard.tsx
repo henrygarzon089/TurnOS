@@ -59,8 +59,8 @@ export function ScreenBoard({
 const STATE_CLASS: Record<BarberScreenState, string> = {
   Atendiendo: "text-brand-ink/80",
   Llamando: "text-accent-on-brand font-semibold",
-  "En pausa": "text-warn-soft font-semibold",
-  Libre: "text-ok-soft font-semibold",
+  "En pausa": "text-warn-on-brand font-semibold",
+  Libre: "text-ok-on-brand font-semibold",
 };
 
 /** Lo que se ve, sin estado: se prueba con `renderToStaticMarkup`. */
