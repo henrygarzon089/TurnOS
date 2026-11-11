@@ -553,9 +553,9 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - Origen: mientras se hacía T-176 (#156), el botón de la fila del dueño abría `/<slug>/pantalla`
   sin `?k=` y la pantalla decía "Negocio no encontrado". El fallo ya estaba en `main`.
 - `getBusinessQueue` lee `screen_key` con la sesión del dueño (RLS) y el enlace la lleva; ninguna
-  página pública la recibe. Sin migraciones. PR #157 (CI verde), que entra con la #156: al
-  fusionar la #156, GitHub marca la #157 como fusionada.
-- Falta de Henry: fusionar la #156, desplegar y tocar el botón desde la Fila en el celular.
+  página pública la recibe. Sin migraciones. PR #157, entró con la #156 (fusionada el
+  2026-11-11).
+- Falta de Henry: desplegar y tocar el botón desde la Fila en el celular.
 
 ### Hito 16 · Pantalla del televisor como el tablero (T-176, REQ-078.25, REQ-013.4, 2026-11-10)
 
@@ -565,8 +565,8 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   Capturas en `docs/diseno/capturas/T-176/`.
 - Migración `0071_screen_numbers.sql` (solo reemplaza `get_screen_queue`). La app acepta la forma
   vieja: si se despliega antes del `db push`, la pantalla sale sin números.
-- Falta de Henry: comparar las capturas con el tablero, fusionar la #156, subir la 0071 con
-  `supabase db push --include-all` y abrir `/<slug>/pantalla?k=<clave>` en el televisor.
+- PR #156 fusionada el 2026-11-11. Falta de Henry: subir la 0071 con `supabase db push
+  --include-all`, desplegar y abrir `/<slug>/pantalla?k=<clave>` en el televisor.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
