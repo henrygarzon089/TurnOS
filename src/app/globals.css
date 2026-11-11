@@ -21,6 +21,8 @@
   --color-accent-ink: #ffffff;
   --color-accent-soft: #fbeaec; /* fondo de alerta */
   --color-accent-on-brand: #ff5a68; /* punto "en vivo" sobre azul marino */
+  --color-warn-on-brand: #f2c46d; /* "En pausa" sobre azul marino (televisor) */
+  --color-ok-on-brand: #7fd39a; /* "Libre" sobre azul marino (televisor) */
   --color-called: #c21e2f; /* "¡Es tu turno!" y turno llamado */
   --color-danger: #a8182a; /* texto y contorno destructivo, errores */
   --color-ok: #1e6b3a; /* terminado, cuadra */

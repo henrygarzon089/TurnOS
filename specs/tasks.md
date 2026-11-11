@@ -2587,8 +2587,9 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   hasta entonces), y `supabase/tests/0011_screen.sql` lee `anyone -> 0 ->> 'name'`. (2) Medidas en
   `em` sobre `min(vw, vh)`: el tablero a 1920×1080 y sin desplazamiento en un televisor de 1280×720.
   (3) Con el local cerrado, "Cerrado" en lugar de "● N esperando" (lo hacía antes, se conserva).
-  (4) "En pausa" y "Libre" usan `warn-soft`/`ok-soft` como dice §22.7; en el tablero se ven
-  amarillo y verde más intensos (para que Henry lo compare). La 0071 la sube Henry.
+  (4) "En pausa" y "Libre" usaban `warn-soft`/`ok-soft` (§22.7); el 2026-11-11 Henry pidió los
+  colores del tablero: tokens nuevos `warn-on-brand` (#F2C46D) y `ok-on-brand` (#7FD39A), con su
+  contraste en `design-tokens.test.ts` y §22.1/§22.7 al día. La 0071 ya está en producción.
 
 ### [ ] T-168 · Validación Hito 16
 - REQ: REQ-078

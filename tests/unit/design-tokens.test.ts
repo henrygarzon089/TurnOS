@@ -17,6 +17,8 @@ const PAIRS: [string, string, number][] = [
   ["accent-ink", "accent", 4.5],
   ["accent-ink", "called", 4.5],
   ["accent-on-brand", "brand", 4.5],
+  ["warn-on-brand", "brand", 4.5], // "En pausa" en el televisor (T-176, tablero Cliente-Pantalla)
+  ["ok-on-brand", "brand", 4.5], // "Libre" en el televisor
   ["danger", "card", 4.5],
   ["danger", "accent-soft", 4.5],
   ["ok", "card", 4.5],
