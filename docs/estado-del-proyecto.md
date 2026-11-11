@@ -375,7 +375,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - T-132 hecha (PR #113, 2026-11-06): Speed Insights con `redactVitalsUrl`. Pendiente de Henry: activarlo en
   el proyecto de Vercel y revisar la cuota de su plan.
 - T-133 hecha (PR #131, 2026-11-08): región verificada, Supabase `us-east-1` y Vercel `iad1`; `pnpm trace
-  --hito=14` sin huecos.
+--hito=14` sin huecos.
 - Henry aprueba el Hito 14 (ADR-044, 2026-11-09).
 - Speed Insights **apagado por costo** (ADR-054, 2026-11-09): no se activa en Vercel mientras el negocio
   no lo pague. El código se queda y no envía nada; para retomarlo basta activarlo (con ADR nuevo). La
