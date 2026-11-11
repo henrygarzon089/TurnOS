@@ -537,6 +537,16 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   azul; "Más" → "Salir". En el computador, Barberos y Servicios se ven completos y el menú
   lateral muestra el número de la fila.
 
+- 2026-11-11, **Hito 16 completo en producción** (`main` 4c86cbc): dueño (#150, T-177…T-181),
+  barbero (#144 T-170, #151 T-171), cliente (#152 T-173, #155 T-175, #153 T-174) y televisor (#156
+  T-176 con #157 T-183). Migraciones 0070, 0071 y 0072 aplicadas. `pnpm trace --hito=16` sin
+  huecos (442 criterios). Lighthouse móvil del CI dentro del mínimo y parecido al Hito 14 (detalle
+  en T-168). La CI ahora corre la E2E en 4 partes en paralelo (#158): ~12 min en vez de ~30.
+  Producción se despliega desde `~/Projects/turnOS-prod` (copia limpia de `main`, ya conectada a
+  Vercel y a Supabase), nunca desde la carpeta de trabajo. Falta lo de Henry para cerrar T-168:
+  recorrer cliente, barbero y dueño en el celular y el computador, la prueba en la barbería
+  (PA-H16-2) y aprobar el hito (ADR-050).
+
 ### Cambio · relectura al volver a primer plano (T-182, REQ-011.7, 2026-11-09)
 
 - Origen: mientras se hacía T-178, "Hoy" decía "3 esperando" y la Fila "2". Las dos cuentan lo
