@@ -11,6 +11,7 @@ import * as giftCards from "@/lib/gift-cards/public-gift-card";
 import { barberEmailFromPhone } from "@/lib/auth/session";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { normalizeScreenView, type ScreenView } from "@/lib/domain/screen";
 
 type InvitationRow = {
   barber_id: string;
@@ -210,26 +211,13 @@ export async function getPrivacyPolicy(slug: string) {
 
 // ================================================================ T-027: pantalla TV ====
 
-export type ScreenView = {
-  id: string;
-  name: string;
-  slug: string;
-  isOpen: boolean;
-  waitingCount: number;
-  barbers: {
-    id: string;
-    name: string;
-    status: "available" | "busy" | "paused" | "off";
-    current: { name: string; status: "called" | "in_service"; calledAt: string | null } | null;
-    next: string[];
-  }[];
-  anyone: string[];
-};
+export type { ScreenView } from "@/lib/domain/screen";
 
 /** REQ-013.1: datos de la pantalla (clave en la URL). */
 export async function getScreenQueue(slug: string, key: string): Promise<ScreenView | null> {
   if (!/^[a-z0-9-]{3,40}$/.test(slug) || !/^[A-Za-z0-9_-]{8,64}$/.test(key)) return null;
   const admin = createSupabaseAdminClient();
   const { data } = await admin.rpc("get_screen_queue", { p_slug: slug, p_key: key });
-  return (data as ScreenView | null) ?? null;
+  // REQ-078.25: números y citas desde la 0071; antes, solo nombres (normalizeScreenView)
+  return data ? normalizeScreenView(data as Parameters<typeof normalizeScreenView>[0]) : null;
 }

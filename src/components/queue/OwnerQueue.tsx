@@ -425,7 +425,7 @@ function PageActions({
   return (
     <>
       <a
-        href={`/${view.business.slug}/pantalla`}
+        href={`/${view.business.slug}/pantalla?k=${encodeURIComponent(view.business.screenKey)}`}
         target="_blank"
         rel="noreferrer"
         className="btn-secondary lg:w-auto lg:px-4"

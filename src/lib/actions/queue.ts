@@ -421,6 +421,8 @@ export type OwnerQueueView = {
     slug: string;
     queueOverride: "auto" | "open" | "closed";
     isOpen: boolean;
+    /** REQ-013.1: clave de la pantalla del televisor; solo la ve el dueño (RLS), nunca una página pública. */
+    screenKey: string;
   };
   barbers: OwnerBarber[];
   active: QueueTicket[]; // waiting + called + in_service, en orden
@@ -443,7 +445,7 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
     await Promise.all([
       supabase
         .from("businesses")
-        .select("queue_override, queue_override_day")
+        .select("queue_override, queue_override_day, screen_key")
         .eq("id", biz)
         .single(),
       supabase
@@ -500,7 +502,12 @@ export async function getBusinessQueue(): Promise<OwnerQueueView | null> {
       : "auto";
 
   return {
-    business: { ...session.business, queueOverride: override, isOpen: Boolean(openRes.data) },
+    business: {
+      ...session.business,
+      queueOverride: override,
+      isOpen: Boolean(openRes.data),
+      screenKey: bizRes.data?.screen_key ?? "",
+    },
     barbers: (barbersRes.data ?? []).map((b) => ({
       id: b.id,
       name: b.display_name,

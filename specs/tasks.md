@@ -1906,6 +1906,18 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   una sola relectura; ocultarla no relee; al desmontar se quitan los listeners; `pnpm lint`,
   `typecheck`, `test` y `trace` en verde.
 
+### [x] T-183 · "Ver pantalla del televisor" con la clave
+- REQ: REQ-013.1
+- Archivos: `src/lib/actions/queue.ts` (`getBusinessQueue`, `OwnerQueueView.business.screenKey`),
+  `src/components/queue/OwnerQueue.tsx` (`PageActions`), `tests/e2e/screen.spec.ts`
+- Terminado: la E2E `REQ-013.1 desde la fila del dueño…` entra como dueño, revisa que el enlace sea
+  `/<slug>/pantalla?k=<screen_key>` y que la pestaña nueva muestre la pantalla y no "Negocio no
+  encontrado"; `pnpm lint`, `typecheck`, `lint:texts` y `test` en verde.
+- Nota (2026-11-10): fallo en `main` encontrado durante T-176 (PR #156). El enlace del dueño no
+  llevaba `?k=` y `getScreenQueue` exige la clave (REQ-013.1), así que la pantalla respondía "Negocio
+  no encontrado". La clave se lee con la sesión del dueño (RLS sobre `businesses`) y solo viaja a la
+  fila del dueño; ninguna página pública la recibe. Sin migraciones.
+
 ---
 
 ## Hito 15 — Inicio "Hoy" del dueño (ADR-046)
@@ -2557,13 +2569,22 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   deja la línea del dueño tal cual (con sus dos puntos). El E2E entra por `/cita` directo: el
   enlace "Reservar una cita" con `?servicio=&barbero=` es de la portada (T-173, PR #152).
 
-### [ ] T-176 · Pantalla del televisor como el tablero
+### [x] T-176 · Pantalla del televisor como el tablero
 - REQ: REQ-078.16, REQ-078.25, REQ-013.4
 - Archivos: `supabase/migrations/0071_screen_numbers.sql`, `supabase/tests/0071_screen_numbers.sql`,
   `src/lib/actions/public.ts` (`getScreenQueue`), `src/components/queue/ScreenBoard.tsx`, E2E de la
   pantalla.
 - Terminado: como Cliente-Pantalla en 1920×1080 (captura en el PR), llamado 30 s con la franja,
   sin celulares; `pnpm trace --hito=16` sin huecos para REQ-078.21…26. La 0071 la sube Henry.
+- Nota (2026-11-10): hecha; capturas en `docs/diseno/capturas/T-176/` (1920×1080 con y sin franja,
+  y 1280×720). Desvíos: (1) `next` y `anyone` de `get_screen_queue` pasan de texto a objetos
+  (`{name, number, scheduledAt}`); la app acepta las dos formas (`normalizeScreenView`,
+  `src/lib/domain/screen.ts`) para no caerse mientras la 0071 no esté en producción (sin números
+  hasta entonces), y `supabase/tests/0011_screen.sql` lee `anyone -> 0 ->> 'name'`. (2) Medidas en
+  `em` sobre `min(vw, vh)`: el tablero a 1920×1080 y sin desplazamiento en un televisor de 1280×720.
+  (3) Con el local cerrado, "Cerrado" en lugar de "● N esperando" (lo hacía antes, se conserva).
+  (4) "En pausa" y "Libre" usan `warn-soft`/`ok-soft` como dice §22.7; en el tablero se ven
+  amarillo y verde más intensos (para que Henry lo compare). La 0071 la sube Henry.
 
 ### [ ] T-168 · Validación Hito 16
 - REQ: REQ-078
