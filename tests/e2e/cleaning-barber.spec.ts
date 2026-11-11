@@ -61,11 +61,13 @@ test.describe("REQ-061 / REQ-062 Limpieza del barbero", () => {
     await form.getByRole("button", { name: "No se hizo: Ventilar" }).click();
     await form.getByLabel("¿Por qué?").fill("Estaba lloviendo");
     await expect(send).toHaveText("Enviar");
+    const late = lateNowBogota();
     await send.click();
 
-    // Abre a las 00:00 (global-setup): siempre queda "tarde" (REQ-061.8)
+    // Abre a las 00:00 (global-setup): es "tarde" pasados 30 min (REQ-061.8). Entre las 00:00 y
+    // las 00:30 de Bogotá todavía no lo es, y el CI también corre de madrugada.
     await expect(page.getByRole("status")).toHaveText(
-      "Apertura registrada como incompleta (tarde).",
+      `Apertura registrada como incompleta${late ? " (tarde)" : ""}.`,
       {
         timeout: 15_000,
       },
@@ -136,3 +138,18 @@ test.describe("REQ-061 / REQ-062 Limpieza del barbero", () => {
     );
   });
 });
+
+/** REQ-061.8: la apertura es tarde si se registra más de 30 min después de abrir (00:00). */
+function lateNowBogota(): boolean {
+  const [h, m, sec] = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "America/Bogota",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  })
+    .format(new Date())
+    .split(":")
+    .map(Number);
+  return h * 3600 + m * 60 + sec > 30 * 60;
+}
