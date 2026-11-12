@@ -999,3 +999,32 @@
     móvil del CI sin empeorar respecto al Hito 14".
 - Consecuencias: T-132 y la operación del Hito 14 ya no esperan la activación; T-168 cambia su
   criterio; design §19.2 lo anota. Se retoma con un ADR nuevo si el negocio decide pagarlo.
+
+## ADR-035 · Aprobación del Hito 8 (citas a hora fija)
+- Estado: **aceptada** (Henry, 2026-11-11)
+- Contexto: REQ-049…REQ-054 construidos (T-078…T-086) y en producción con `0045`…`0049`.
+  `pnpm trace --hito=8` sin huecos. Henry recorrió la sección 4 de
+  `docs/guia-de-prueba-hitos-8-14-15-16.md` en producción (`main` 16f69e1): encender citas en Filo,
+  reservar, agregar al calendario, "Llegó" y cancelar desde "Mi cita" y desde la agenda.
+- Decisión: Henry aprueba el Hito 8 ("ya están", 2026-11-11, sin fallas reportadas). T-087 cerrada.
+- Consecuencias: si la operación diaria de citas en Filo pide cambios, van con su propio requisito.
+  Número: ADR-035, reservado desde ADR-033.
+
+## ADR-049 · Aprobación del Hito 15 ("Hoy" y menú del dueño)
+- Estado: **aceptada** (Henry, 2026-11-11)
+- Contexto: REQ-076 y REQ-077 construidos (T-150…T-153) y en producción. `pnpm trace --hito=15` sin
+  huecos. Henry recorrió la sección 2 de la guía de prueba: "Hoy" en celular y computador, cambio en
+  vivo con otro celular (REQ-076.3, < 3 s) e "Ingresos de la semana" contra la Caja de cada día.
+- Decisión: Henry aprueba el Hito 15 ("ya están", 2026-11-11, sin fallas reportadas). T-154 cerrada.
+- Consecuencias: ninguna pendiente de código. Número: ADR-049, reservado desde ADR-046.
+
+## ADR-050 · Aprobación del Hito 16 (sistema visual nuevo)
+- Estado: **aceptada** (Henry, 2026-11-11)
+- Contexto: REQ-078 completo (T-160…T-183) en producción (`main` 16f69e1, con los colores del
+  televisor de #161); migraciones `0070`…`0072` aplicadas. `pnpm trace --hito=16` sin huecos (442
+  criterios). Lighthouse móvil del CI sobre el mínimo y parecido al Hito 14 (ADR-054). Henry
+  recorrió la sección 1 de la guía de prueba: cliente, barbero, dueño y televisor en celular y
+  computador, y la prueba en la barbería (PA-H16-2).
+- Decisión: Henry aprueba el Hito 16 ("ya están", 2026-11-11, sin fallas reportadas). T-168 cerrada.
+- Consecuencias: los ajustes visuales que salgan del uso diario van como cambios con su propio
+  requisito o ADR. Número: ADR-050, reservado desde ADR-047.

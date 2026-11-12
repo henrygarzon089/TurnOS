@@ -27,15 +27,14 @@ comisión, venta de helados y bebidas). Dueño del producto: Henry Garzón.
 Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 …'`.
 `scripts/traceability.ts` las encuentra así. `--hito=N` falla si falta alguna.
 
-## Estado actual (2026-11-07)
+## Estado actual (2026-11-11)
 
-- **Hito 16 (sistema visual nuevo, REQ-078, ADR-047)** spec aprobada: tokens nuevos (acción en
-  `brand` azul marino, `accent` rojo solo para "atención ahora"), componentes base y cada superficie
-  en su PR (T-160…T-168). Diseño en el lienzo y en `docs/diseno/tableros/`. Va primero T-160 y
-  T-161, luego el Hito 15 ("Hoy", spec aprobada, ADR-046), luego el resto.
-- **Hito 8 (citas a hora fija, REQ-049…054, ADR-033)** construido, falta aprobación de Henry
-  (ADR-035): reservar, "Mi cita", citas en la fila y agenda; migraciones 0045–0049 (se suben con
-  `supabase db push --include-all`). Falta encender citas en Filo y la prueba real.
+- **Hito 16 (sistema visual nuevo, REQ-078, ADR-047)** aprobado (ADR-050, 2026-11-11): tokens nuevos
+  (acción en `brand` azul marino, `accent` rojo solo para "atención ahora"), componentes base y
+  cliente, barbero, dueño y televisor fieles a los tableros (T-160…T-183); migraciones 0070–0072.
+- **Hito 15 ("Hoy" y menú del dueño, REQ-076…077, ADR-046)** aprobado (ADR-049, 2026-11-11).
+- **Hito 8 (citas a hora fija, REQ-049…054, ADR-033)** aprobado (ADR-035, 2026-11-11): reservar, "Mi
+  cita", citas en la fila y agenda; migraciones 0045–0049 en producción.
 - **Hito 11 (limpieza y bioseguridad, REQ-060…064, ADR-037)** aprobado (ADR-041, 2026-11-06):
   apertura, cierre y profunda con foto, aviso en la fila, revisión del dueño con fallas por barbero,
   tareas periódicas con PDF e historial; fotos en el bucket privado `cleaning`, borradas a los 90
