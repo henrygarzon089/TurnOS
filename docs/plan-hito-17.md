@@ -92,7 +92,7 @@ Dos escritores nunca tocan el mismo archivo en la misma ola. Los archivos de cad
 
 - Ola 1: `modules.ts` con sus pruebas en `main`; E2E y Lighthouse corren con
   `TURNOS_MODULES=todos` y siguen verdes; `scripts/delete-business.sql` con pgTAP verde y guía.
-- Ola 2: en modo esencial, 13 destinos del dueño y 4 del barbero; "Hoy" sin citas, recordar ni
+- Ola 2: en modo esencial, 14 destinos del dueño y 4 del barbero; "Hoy" sin citas, recordar ni
   alertas de limpieza; cada ruta apagada lleva al inicio.
 - Ola 3: `/` lleva a `/gamma-club`; `/crear-negocio` lleva a `/entrar`.
 - Ola 4: `pnpm trace --hito=17` sin huecos; revisión de código sin hallazgos abiertos; guía de
