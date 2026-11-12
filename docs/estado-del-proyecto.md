@@ -646,15 +646,21 @@ en `/admin/negocio` y `/app/estacion` (barbero).
 Pendientes (H3): `/admin/caja`,
 `/admin/semana`, `/app/mis-numeros`.
 
-### Hito 17 — modo esencial y un solo negocio, Gamma Club (**spec aprobada**, ADR-055, 2026-11-12)
+### Hito 17 — modo esencial y un solo negocio, Gamma Club (**construido, falta Henry**, ADR-055, 2026-11-12)
 
 - Henry validó la app y la encontró muy cargada para salir: ahora importan barberos y caja, y por
   ahora TurnOS se usa solo en su barbería, **Gamma Club** (negocio nuevo, enlace `gamma-club`; Filo
   se borra).
-- Spec: REQ-079 (módulos encendidos fijos en código, sin migración) y REQ-080 (un solo negocio),
-  `design.md` §23, T-184…T-191. Aprobada por Henry; no hay código todavía.
-- Plan para el arnés y los agentes, con olas, modelos y lo que le toca a Henry:
-  `docs/plan-hito-17.md`.
+- Construido el 2026-11-12: lista de módulos en `src/lib/domain/modules.ts` (T-184, PR #165),
+  procedimiento para borrar un negocio (T-190, #166), rutas apagadas que redirigen (T-188, #167),
+  "Hoy" sin lo apagado (T-187, #168), menús del dueño (14 destinos) y del barbero (4) (T-185 y
+  T-186, #169), un solo negocio: `/` lleva a `/gamma-club` y `/crear-negocio` a `/entrar` (T-189,
+  #170). Sin migraciones. Trazabilidad: `pnpm trace --hito=17` sin huecos.
+- El CI (E2E y Lighthouse) corre con `TURNOS_MODULES=todos`; producción no define la variable.
+- Falta (Henry, en este orden; detalle en `docs/guia-prueba-hito-17.md`): 1) borrar Filo
+  (`docs/guia-borrar-negocio.md`); 2) crear Gamma Club en `/crear-negocio` **antes** de desplegar; 3) desplegar `main`; 4) cargar Gamma Club (barberos y PIN, servicios, comisión, horario,
+  fidelidad, productos, privacidad); 5) prueba en el celular como dueño y como barbero; 6) imprimir el QR; 7) aprobar (ADR-056); 8) otro día, el inventario.
+- Plan para el arnés y los agentes: `docs/plan-hito-17.md`.
 
 ## Desvíos registrados respecto a la spec (todos explícitos)
 

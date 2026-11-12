@@ -27,8 +27,14 @@ comisión, venta de helados y bebidas). Dueño del producto: Henry Garzón.
 Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 …'`.
 `scripts/traceability.ts` las encuentra así. `--hito=N` falla si falta alguna.
 
-## Estado actual (2026-11-11)
+## Estado actual (2026-11-12)
 
+- **Hito 17 (modo esencial y un solo negocio, REQ-079…080, ADR-055)** construido (T-184…T-190,
+  2026-11-12), falta lo de Henry (T-191): solo **Gamma Club** (`/gamma-club`), Filo por borrar con
+  `docs/guia-borrar-negocio.md`. La lista de módulos encendidos vive en `src/lib/domain/modules.ts`
+  (14 destinos del dueño, 4 del barbero; sin migraciones); `TURNOS_MODULES=todos` enciende todo y
+  es lo que usan el CI (E2E y Lighthouse) y, si algo falla, Vercel. Pasos y prueba en
+  `docs/guia-prueba-hito-17.md`.
 - **Hito 16 (sistema visual nuevo, REQ-078, ADR-047)** aprobado (ADR-050, 2026-11-11): tokens nuevos
   (acción en `brand` azul marino, `accent` rojo solo para "atención ahora"), componentes base y
   cliente, barbero, dueño y televisor fieles a los tableros (T-160…T-183); migraciones 0070–0072.
@@ -117,34 +123,41 @@ a `0005`, PIN `111111` a `555555`. 30 clientes con historial, fidelidad activa (
 En un proyecto real: `pnpm seed:users` crea los usuarios de Auth antes de aplicar `supabase/seed.sql`.
 
 <!-- agent-kit:start -->
+
 ## Seguridad
+
 - Nunca leer, imprimir ni pegar `.env*`, llaves, tokens, dumps de BD ni datos reales de clientes (barberos, clientes de la fila, PINs). `.claude/settings.json` bloquea la lectura de `.env*`.
 - Comandos destructivos (`rm -rf`, `git push --force`, migraciones, SQL en producción, deploys a prod) requieren confirmación explícita de Henry.
 - Supabase/Vercel: solo branches y previews desde el agente. Producción la ejecuta Henry.
 
 ## Git
+
 - Sin atribución de IA en commits, PRs ni issues. Staging por rutas explícitas; nunca `git add -A`.
 - Una sesión = una tarea = una rama/PR.
 
 ## Documentación (dónde vive cada cosa en este repo)
+
 - Estado: `docs/estado-del-proyecto.md` (es el ESTADO de este repo). Actualízalo al cerrar cada sesión.
 - Decisiones: `specs/decisions.md` (ADR-NNN). Requisitos y tareas: `specs/requirements.md`, `specs/tasks.md`.
 - Glosario: `CONTEXT.md`. Términos del dominio (fila, turno, barbero, dueño, cierre de caja, liquidación…).
+
 <!-- agent-kit:end -->
 
 <!-- skills-flow:start -->
+
 ## Flujo de skills
 
 Propón la skill en el momento indicado; si Henry dice que no, sigue sin ella. El método SDD de este repo manda: las skills lo apoyan, no lo reemplazan.
 
-| Fase | Skill | Cuándo proponerla |
-|---|---|---|
-| Idea / decisión | `/abogado-del-diablo` | Antes de un ADR nuevo o una decisión cara (precios, pagos, datos de clientes) |
-| Diseño | `/grill-with-docs` | Requisito nuevo o ambiguo, antes de escribirlo en `specs/requirements.md` |
-| Construcción | `/tdd` | Cada tarea de `specs/tasks.md`, test primero |
-| Construcción | `/caveman` | Sesiones largas de código; apagar para grills, reviews y textos para el cliente |
-| Bugs | `/diagnosing-bugs` | Tras dos intentos fallidos con un bug |
-| Revisión | `/code-review` | Antes de abrir o fusionar un PR |
-| Cierre | `/handoff` | Al terminar: `docs/estado-del-proyecto.md` al día |
-| Cualquiera | `/wait-what` | Si Henry no entendió una respuesta |
+| Fase            | Skill                 | Cuándo proponerla                                                               |
+| --------------- | --------------------- | ------------------------------------------------------------------------------- |
+| Idea / decisión | `/abogado-del-diablo` | Antes de un ADR nuevo o una decisión cara (precios, pagos, datos de clientes)   |
+| Diseño          | `/grill-with-docs`    | Requisito nuevo o ambiguo, antes de escribirlo en `specs/requirements.md`       |
+| Construcción    | `/tdd`                | Cada tarea de `specs/tasks.md`, test primero                                    |
+| Construcción    | `/caveman`            | Sesiones largas de código; apagar para grills, reviews y textos para el cliente |
+| Bugs            | `/diagnosing-bugs`    | Tras dos intentos fallidos con un bug                                           |
+| Revisión        | `/code-review`        | Antes de abrir o fusionar un PR                                                 |
+| Cierre          | `/handoff`            | Al terminar: `docs/estado-del-proyecto.md` al día                               |
+| Cualquiera      | `/wait-what`          | Si Henry no entendió una respuesta                                              |
+
 <!-- skills-flow:end -->
