@@ -30,8 +30,8 @@
 | H11 | Limpieza y bioseguridad (ADR-037) | T-100…T-109 | REQ-060…REQ-064 |
 | H13 | Inventario de insumos y vitrina (ADR-039) | T-120…T-129 | REQ-070…REQ-074 |
 | H14 | Rendimiento percibido y medición (ADR-043) | T-130…T-133 | REQ-075 |
-| H15 | Inicio "Hoy" y menú del dueño (ADR-046) | T-150…T-154 | REQ-076, REQ-077 |
-| H16 | Sistema visual nuevo (ADR-047, ADR-051, ADR-053) | T-160…T-181 | REQ-078 |
+| H15 | Inicio "Hoy" y menú del dueño (ADR-046) — **aprobado** (ADR-049) | T-150…T-154 | REQ-076, REQ-077 |
+| H16 | Sistema visual nuevo (ADR-047, ADR-051, ADR-053) — **aprobado** (ADR-050) | T-160…T-181 | REQ-078 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -1545,7 +1545,7 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   cita", guarda, y en `/admin/citas` toca "Recordar" en una cita de mañana: WhatsApp abre con el
   texto nuevo.
 
-### [~] T-087 · Validación Hito 8
+### [x] T-087 · Validación Hito 8 — 2026-11-11
 - REQ: REQ-049…REQ-054
 - Archivos: `scripts/traceability.ts` (`HITOS["8"] = [[49, 54]]`, ya puesto con la spec),
   `tests/unit/traceability.test.ts`, `docs/estado-del-proyecto.md`
@@ -1560,6 +1560,8 @@ Cada hito cierra con su tarea de validación (matriz de trazabilidad).
   llave de `appointments` a `customers` de 0045, que no tenía acción y hacía fallar
   `merge_customers` y borrar una ficha con cita. Ahora es `on delete set null (customer_id)`: la
   cita sigue con su nombre y celular. No redefine funciones (las de 0050–0055 no se tocan).
+- Nota (2026-11-11): Henry recorrió la guía de prueba en producción (`main` 16f69e1) sin fallas y aprueba el
+  Hito 8 (ADR-035).
 
 T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una tarea).
 
@@ -1995,7 +1997,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: "Nueva venta", "Fila" y "Cerrar caja" llevan a su lugar; en 1280 px se ven las barras de
   la semana con las mismas cifras de "Semana"; en el celular no aparecen.
 
-### [ ] T-154 · Validación Hito 15
+### [x] T-154 · Validación Hito 15 — 2026-11-11
 - REQ: REQ-076, REQ-077
 - Archivos: `scripts/traceability.ts` (`HITOS["15"] = [[76, 77]]`, ya desde el PR de la spec),
   `tests/unit/traceability.test.ts` (agregar "15" al loop), `docs/estado-del-proyecto.md`
@@ -2009,6 +2011,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   tiempo es el render de desarrollo. Las pruebas de < 3 s (REQ-076.3) fallan a veces en local por
   eso. El < 3 s se confirma en producción, en el celular de Henry. Queda `[ ]` hasta que Henry
   pruebe y apruebe; la aprobación será ADR-049 (reservado).
+- Nota (2026-11-11): Henry recorrió la guía de prueba en producción (`main` 16f69e1) sin fallas y aprueba el
+  Hito 15 (ADR-049).
 
 ---
 
@@ -2591,7 +2595,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   colores del tablero: tokens nuevos `warn-on-brand` (#F2C46D) y `ok-on-brand` (#7FD39A), con su
   contraste en `design-tokens.test.ts` y §22.1/§22.7 al día. La 0071 ya está en producción.
 
-### [ ] T-168 · Validación Hito 16
+### [x] T-168 · Validación Hito 16 — 2026-11-11
 - REQ: REQ-078
 - Archivos: `scripts/traceability.ts` (`HITOS["16"] = [[78, 78]]`, ya desde el PR de la spec),
   `tests/unit/traceability.test.ts` (agregar "16" al loop), `docs/estado-del-proyecto.md`
@@ -2615,6 +2619,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   Caja 95 (97); accesibilidad 100 en las cuatro; LCP 2,5–2,7 s (era 2,4–2,7 s). Todo sobre el
   mínimo (80/90); la baja de la portada es de 3 puntos en una sola corrida. Falta lo de Henry:
   recorrido en celular y computador, prueba en la barbería y ADR-050.
+- Nota (2026-11-11): Henry recorrió la guía de prueba en producción (`main` 16f69e1) sin fallas y aprueba el
+  Hito 16 (ADR-050), con la prueba en la barbería.
 
 ---
 

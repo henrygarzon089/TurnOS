@@ -211,7 +211,10 @@ Ninguno lo puede hacer el agente. En este orden:
 Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `supabase db push` aplicó
 0041–0044 y `vercel deploy --prod` publicó `a50342d`. Lo que sigue sin marcar es operación en Filo.
 
-### Hito 8 — citas a hora fija (construido, falta aprobación de Henry; ADR-033)
+### Hito 8 — citas a hora fija (**aprobado**, ADR-035, 2026-11-11; ADR-033)
+
+- 2026-11-11: Henry recorrió la guía de prueba en producción (`main` 16f69e1) sin fallas y aprobó el
+  hito (ADR-035, T-087).
 
 - 2026-11-03: grill con Henry (todas las respuestas recomendadas). Escritos REQ-049…REQ-054 (§5f),
   `design.md` §14, ADR-033 y tareas T-078…T-087. Va en paralelo con el Hito 9: los números saltan a
@@ -381,7 +384,10 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   no lo pague. El código se queda y no envía nada; para retomarlo basta activarlo (con ADR nuevo). La
   referencia de velocidad es Lighthouse móvil del CI.
 
-### Hito 15 — inicio "Hoy" y menú del dueño (**spec aprobada**, ADR-046, 2026-11-06)
+### Hito 15 — inicio "Hoy" y menú del dueño (**aprobado**, ADR-049, 2026-11-11; ADR-046)
+
+- 2026-11-11: Henry probó "Hoy" en celular y computador en producción y aprobó el hito (ADR-049,
+  T-154).
 
 - Spec en `main` (PR #114): REQ-076, REQ-077, design §21, T-150…T-154, sin migraciones. Sin código.
 - Se construye después de T-160 y T-161, ya con el sistema visual nuevo (PA-H16-1).
@@ -422,7 +428,10 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
   ingresos se cuelgan y fallan pruebas que no tienen que ver; reiniciar el servidor y usar
   `--workers=2` lo deja estable.
 
-### Hito 16 — sistema visual nuevo (**spec aprobada**, ADR-047, 2026-11-07)
+### Hito 16 — sistema visual nuevo (**aprobado**, ADR-050, 2026-11-11; ADR-047)
+
+- 2026-11-11: Henry recorrió cliente, barbero, dueño y televisor, hizo la prueba en la barbería y
+  aprobó el hito (ADR-050, T-168). Producción en `main` 16f69e1.
 
 - Diseño: lienzo "TurnOS — Rediseño" (https://claude.ai/artifact/VK8TXA9Aw9tnZMnrXZ4kPU, 20
   tableros, versión 22 tras la revisión visual) hecho con `docs/diseno/prompt-diseno.md`; capturas en
@@ -576,7 +585,7 @@ Hecho el 2026-11-03: #36…#43 fusionados en orden (CI de `main` en verde), `sup
 - Migración `0071_screen_numbers.sql` (solo reemplaza `get_screen_queue`). La app acepta la forma
   vieja: si se despliega antes del `db push`, la pantalla sale sin números.
 - PR #156 fusionada el 2026-11-11. Falta de Henry: subir la 0071 con `supabase db push
-  --include-all`, desplegar y abrir `/<slug>/pantalla?k=<clave>` en el televisor.
+--include-all`, desplegar y abrir `/<slug>/pantalla?k=<clave>` en el televisor.
 
 ### Hito 4 — servicios por barbero (2026-10-28)
 
