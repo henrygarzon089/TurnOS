@@ -1028,3 +1028,33 @@
 - Decisión: Henry aprueba el Hito 16 ("ya están", 2026-11-11, sin fallas reportadas). T-168 cerrada.
 - Consecuencias: los ajustes visuales que salgan del uso diario van como cambios con su propio
   requisito o ADR. Número: ADR-050, reservado desde ADR-047.
+
+## ADR-055 · Modo esencial: módulos fijos en código y un solo negocio (Gamma Club)
+
+- Fecha: 2026-11-12. Estado: aceptada (Henry).
+- Contexto: Henry validó la app completa (Hitos 0–16) y la encontró muy cargada para la primera
+  salida: 20 destinos en el menú del dueño y 6 en el del barbero. Lo que importa ahora es el manejo
+  de los barberos y la caja. Solo citas, limpieza y WhatsApp tienen interruptor por negocio; el
+  resto no se puede apagar. Además, Henry decidió que por ahora TurnOS se usa solo en su barbería,
+  **Gamma Club**, sin más negocios ni clientes del producto.
+- Opciones: (a) dejar todo y no configurar lo que no se usa (cero trabajo, el menú sigue largo);
+  (b) módulos por negocio con columna y migración (sirve a varios negocios, pide migración en
+  producción la víspera de salir); (c) lista de módulos en código, igual para todos.
+- Decisión:
+  - **(c)**: una lista única en `src/lib/domain/modules.ts`. Encendidos y apagados, en REQ-079.1.
+    Sin migraciones. Encender un módulo después es cambiar la lista y desplegar.
+  - Lo apagado **no se borra**: código, tablas, funciones, datos y pruebas se quedan. Las pruebas de
+    esos módulos siguen corriendo con `TURNOS_MODULES=todos` (CI y local); producción no define la
+    variable.
+  - **Un solo negocio**: "Crear negocio" se cierra y `/` lleva a `/gamma-club`. Gamma Club se crea
+    como negocio nuevo (PA-H17-1) y **Filo se borra** con un procedimiento probado que corre Henry.
+  - El multi-tenant (ADR-009, `business_id` + RLS) **no se toca**: sigue siendo la base de la
+    seguridad y permite volver a varios negocios con un ADR nuevo.
+  - Sale primero menús, "Hoy" y rutas. El recorte del cobro y del formulario de turno queda fuera
+    (se esconden solos sin datos).
+- Consecuencias: REQ-077.3 y REQ-077.4 cambian (menú sin los módulos apagados) y REQ-030.1 queda en
+  pausa (sin registro de negocios). Los Hitos 6, 7, 8, 9 y 11 quedan construidos y apagados; su
+  "operación en Filo" pendiente ya no aplica. El modo esencial se prueba con unitarias sobre
+  funciones puras y los E2E existentes corren con todo encendido, así que el E2E no recorre la app
+  en modo esencial: lo cubre la prueba de Henry en el celular (T-191). Si llega un segundo negocio,
+  la lista pasa a ser por negocio (opción b) con su ADR.

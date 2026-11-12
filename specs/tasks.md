@@ -2624,6 +2624,77 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ---
 
+## Hito 17 — Modo esencial y un solo negocio (REQ-079, REQ-080, ADR-055)
+
+> Aprobado por Henry el 2026-11-12. Orden: T-184 → T-185…T-189 (independientes entre sí) →
+> T-191. T-190 va aparte y la corre Henry. Modelo sugerido en cada tarea.
+
+### [ ] T-184 · Lista de módulos y modo de pruebas
+- REQ: REQ-079.1, REQ-079.7, REQ-079.8
+- Modelo: Sonnet 5.5. Complejidad: baja.
+- Archivos: `src/lib/domain/modules.ts`, `tests/unit/modules.test.ts`, `playwright.config.ts`,
+  `.github/workflows/*` (E2E y Lighthouse con `TURNOS_MODULES=todos`), `scripts/traceability.ts`
+  (`HITOS["17"]`), `tests/unit/traceability.test.ts`.
+- Terminado: `enabledModules`, `isModuleEnabled`, `moduleForPath` con pruebas; la prueba que recorre
+  las `page.tsx` pasa; CI verde sin cambios visibles en la app.
+
+### [ ] T-185 · Menú del dueño filtrado
+- REQ: REQ-079.2
+- Modelo: Haiku 5.5. Complejidad: baja.
+- Archivos: `src/lib/domain/admin-nav.ts`, `src/components/admin/AdminNav.tsx`,
+  `src/app/(staff)/admin/layout.tsx`, `tests/unit/admin-nav.test.ts`.
+- Terminado: en modo esencial el menú muestra 13 destinos en sus grupos; con `todos`, los 20.
+
+### [ ] T-186 · Menú del barbero filtrado
+- REQ: REQ-079.3
+- Modelo: Haiku 5.5. Complejidad: baja.
+- Archivos: `src/lib/domain/barber-nav.ts`, `src/components/staff/BarberNav.tsx`, layout del
+  barbero, `tests/unit/barber-nav.test.ts`.
+- Terminado: barra con Mi fila, Clientes, Números y Mi estación, sin "Más".
+
+### [ ] T-187 · "Hoy" sin lo apagado
+- REQ: REQ-079.4
+- Modelo: Sonnet 5.5. Complejidad: media.
+- Archivos: `src/app/(staff)/admin/(hoy)/page.tsx`, `src/components/admin/today/TodayShortcuts.tsx`,
+  `src/components/admin/today/load-owner-alerts.ts`, `src/lib/domain/today.ts`, pruebas unitarias.
+- Terminado: sin citas, recordar ni alertas de limpieza; rejilla sin huecos en celular y en 1024 px.
+
+### [ ] T-188 · Rutas apagadas redirigen
+- REQ: REQ-079.5, REQ-079.6
+- Modelo: Sonnet 5.5. Complejidad: media.
+- Archivos: `src/proxy.ts`, `src/app/(public)/[slug]/cita/page.tsx`, `src/app/(public)/c/[token]/page.tsx`,
+  `src/app/(public)/regalo/[token]/page.tsx`, `src/lib/actions/appointments.ts`, `tests/unit/proxy.test.ts`.
+- Terminado: cada ruta apagada lleva al inicio que toca; la portada no ofrece cita.
+
+### [ ] T-189 · Un solo negocio
+- REQ: REQ-080.1, REQ-080.2
+- Modelo: Sonnet 5.5. Complejidad: media.
+- Archivos: `src/app/page.tsx`, `src/components/auth/LoginForm.tsx`, `src/app/(staff)/layout.tsx`,
+  `src/proxy.ts`, pruebas unitarias.
+- Depende de Henry: que Gamma Club exista con el enlace `gamma-club` **antes** de desplegar esta
+  tarea (después de desplegarla ya no se puede crear un negocio desde la app).
+- Terminado: `/` lleva a `/gamma-club`; `/crear-negocio` lleva a `/entrar`; sin enlace en `/entrar`.
+
+### [ ] T-190 · Procedimiento para borrar un negocio (Filo)
+- REQ: REQ-080.3, REQ-080.4
+- Modelo: Opus 5.5. Complejidad: alta (borra datos reales).
+- Archivos: `scripts/delete-business.sql`, `supabase/tests/delete_business.sql`,
+  `docs/guia-borrar-negocio.md`.
+- Depende de Henry: correr la simulación en producción, revisar los conteos, confirmar y borrar los
+  archivos de Storage. El agente no lo corre en producción.
+- Terminado: pgTAP verde (borra uno, el otro intacto, cuentas del personal borradas); guía con los
+  comandos exactos y qué revisar antes de confirmar.
+
+### [ ] T-191 · Validación Hito 17
+- REQ: REQ-079, REQ-080
+- Modelo: Sonnet 5.5 para la guía; Opus 5.5 para la revisión del código antes de fusionar.
+- Archivos: `docs/guia-prueba-hito-17.md`, `docs/estado-del-proyecto.md`, `CLAUDE.md`.
+- Depende de Henry: desplegar, recorrer dueño y barbero en el celular (turno, cobro, cierre de
+  caja, liquidación de la semana) y aprobar (ADR nuevo).
+- Terminado: `pnpm trace --hito=17` sin huecos; CI verde.
+
+---
+
 ## Dependencias principales
 
 ```mermaid
@@ -2647,4 +2718,10 @@ flowchart LR
   T119 --> T140
   T133 --> T160 --> T161 --> T150 --> T151 --> T152 --> T153 --> T154
   T154 --> T162 --> T163 --> T164 --> T165 --> T166 --> T167 --> T168
+  T168 --> T184 --> T185 --> T191
+  T184 --> T186 --> T191
+  T184 --> T187 --> T191
+  T184 --> T188 --> T191
+  T184 --> T189 --> T191
+  T190
 ```
