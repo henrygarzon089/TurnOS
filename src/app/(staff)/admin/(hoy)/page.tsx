@@ -11,7 +11,8 @@ import { TodayWeek } from "@/components/admin/today/TodayWeek";
 import { LiveRefresh } from "@/components/queue/LiveRefresh";
 import { getStaffSession } from "@/lib/auth/session";
 import { businessDayBogota, formatTimeBogota, weekdayName } from "@/lib/domain/time";
-import { shortDayLabel } from "@/lib/domain/today";
+import { enabledModules } from "@/lib/domain/modules";
+import { shortDayLabel, todayLayout } from "@/lib/domain/today";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Hoy" };
@@ -40,15 +41,18 @@ const MONTHS = [
  *
  * Celular: cabecera azul y una columna (alertas, fila, caja, citas, recordar; REQ-076.11).
  * Tablet (768 px): dos columnas, alertas y fila a la izquierda, la plata a la derecha. Escritorio:
- * rejilla de 12 columnas; las dos columnas pasan a `contents` y cada bloque toma su celda:
- * Fila (8) + Caja (4); Alertas (8) + Citas (4) (sin citas, alertas ocupa 12); Semana (6) +
- * Recordar (6).
+ * rejilla de 12 columnas; las dos columnas pasan a `contents` y cada bloque toma su celda
+ * (`todayLayout`, REQ-079.4): con todos los módulos, Fila (8) + Caja (4); Alertas (8) + Citas (4);
+ * Semana (6) + Recordar (6). En modo esencial (sin citas ni recordar): Fila (8) + Alertas (4) y
+ * Caja (6) + Semana (6).
  */
 export default async function TodayPage() {
   const session = (await getStaffSession())!;
   const day = businessDayBogota();
   const [, m, d] = day.split("-").map(Number);
   const time = formatTimeBogota(new Date());
+  const modules = enabledModules();
+  const layout = todayLayout(modules);
   return (
     <main data-tablet className="pb-6">
       <LiveRefresh businessId={session.business.id} />
@@ -79,43 +83,45 @@ export default async function TodayPage() {
             en vivo · {time}
           </p>
         </div>
-        <TodayShortcuts />
+        <TodayShortcuts modules={modules} />
       </div>
       <div className="group grid gap-2 max-lg:-mx-4 md:grid-cols-2 md:items-start lg:mt-6 lg:grid-cols-12 lg:items-stretch lg:gap-5">
         <div className="flex flex-col gap-2 lg:contents">
-          <div className="max-lg:has-[[data-empty]]:hidden lg:col-span-8 lg:row-start-2 lg:group-has-[[data-appointments]:empty]:col-span-12">
+          <div className={`max-lg:has-[[data-empty]]:hidden ${layout.alerts}`}>
             <Suspense fallback={<TodayCardSkeleton rows={3} />}>
               <TodayAlerts />
             </Suspense>
           </div>
-          <div className="lg:col-span-8 lg:row-start-1">
+          <div className={layout.queue}>
             <Suspense fallback={<TodayCardSkeleton rows={5} />}>
               <TodayQueue />
             </Suspense>
           </div>
         </div>
         <div className="flex flex-col gap-2 lg:contents">
-          <div className="lg:col-span-4 lg:col-start-9 lg:row-start-1">
+          <div className={layout.cash}>
             <Suspense fallback={<TodayCardSkeleton rows={6} />}>
               <TodayCash />
             </Suspense>
           </div>
-          {/* Con citas apagadas el bloque no pinta nada y la celda se oculta (REQ-076.5) */}
-          <div
-            data-appointments
-            className="empty:hidden lg:col-span-4 lg:col-start-9 lg:row-start-2"
-          >
-            <Suspense fallback={<TodayCardSkeleton rows={3} />}>
-              <TodayAppointments />
-            </Suspense>
-          </div>
-          <div className="lg:col-span-6 lg:col-start-7 lg:row-start-3">
-            <Suspense fallback={<TodayCardSkeleton rows={4} />}>
-              <TodayRemind />
-            </Suspense>
-          </div>
+          {/* REQ-079.4 con citas apagadas ni se monta; con citas encendidas pero sin citas hoy el
+              bloque no pinta nada y la celda se oculta (REQ-076.5) */}
+          {layout.showAppointments && (
+            <div data-appointments className={`empty:hidden ${layout.appointments}`}>
+              <Suspense fallback={<TodayCardSkeleton rows={3} />}>
+                <TodayAppointments />
+              </Suspense>
+            </div>
+          )}
+          {layout.showRemind && (
+            <div className={layout.remind}>
+              <Suspense fallback={<TodayCardSkeleton rows={4} />}>
+                <TodayRemind />
+              </Suspense>
+            </div>
+          )}
           {/* REQ-076.9 solo desde 1024 px */}
-          <div className="hidden lg:col-span-6 lg:col-start-1 lg:row-start-3 lg:block">
+          <div className={`hidden lg:block ${layout.week}`}>
             <Suspense fallback={<TodayCardSkeleton rows={4} />}>
               <TodayWeek />
             </Suspense>
