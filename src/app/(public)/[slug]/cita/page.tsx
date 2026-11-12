@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PublicHeader } from "@/components/public/PublicHeader";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { isModuleEnabled } from "@/lib/domain/modules";
 import { AppointmentForm } from "@/components/queue/AppointmentForm";
 import { getPublicBusiness } from "@/lib/actions/public";
 import { getAppointmentInfo } from "@/lib/actions/public-appointments";
@@ -20,6 +21,8 @@ export default async function BookAppointmentPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { slug } = await params;
+  // REQ-079.6: con el módulo apagado, a la portada del negocio
+  if (!isModuleEnabled("appointments")) redirect(`/${slug}`);
   const sp = await searchParams;
   const [b, info] = await Promise.all([getPublicBusiness(slug), getAppointmentInfo(slug)]);
   if (!b || !info) notFound();

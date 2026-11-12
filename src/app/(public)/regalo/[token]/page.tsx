@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { isModuleEnabled } from "@/lib/domain/modules";
 import { getGiftCardByToken } from "@/lib/actions/public";
 import {
   formatGiftCardCode,
@@ -21,6 +22,8 @@ export const metadata: Metadata = { title: "Tarjeta de regalo", robots: { index:
  * No se construye: "De parte de", "Mensaje" (no hay esos datos), "Compartir por WhatsApp".
  */
 export default async function GiftCardPage({ params }: { params: Promise<{ token: string }> }) {
+  // REQ-079.6: con el módulo apagado, a la portada (sin consultar la tarjeta)
+  if (!isModuleEnabled("giftCards")) redirect("/");
   const { token } = await params;
   const card = await getGiftCardByToken(token);
   if (!card) notFound();

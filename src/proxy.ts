@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { redirectForDisabled } from "@/lib/domain/modules";
 
 /**
  * Proxy (antes "middleware") de Next.js 16:
@@ -35,6 +36,16 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
+
+  // REQ-079.5: la ruta de un módulo apagado lleva al inicio de quien la abre (sin error)
+  const disabledTo = redirectForDisabled(pathname);
+  if (disabledTo) {
+    const url = request.nextUrl.clone();
+    url.pathname = disabledTo;
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
+
   const isStaffRoute = pathname.startsWith("/app") || pathname.startsWith("/admin");
 
   if (isStaffRoute && !user) {
