@@ -1031,7 +1031,7 @@
 
 ## ADR-055 · Modo esencial: módulos fijos en código y un solo negocio (Gamma Club)
 
-- Fecha: 2026-11-12. Estado: propuesta (falta Henry).
+- Fecha: 2026-11-12. Estado: aceptada (Henry).
 - Contexto: Henry validó la app completa (Hitos 0–16) y la encontró muy cargada para la primera
   salida: 20 destinos en el menú del dueño y 6 en el del barbero. Lo que importa ahora es el manejo
   de los barberos y la caja. Solo citas, limpieza y WhatsApp tienen interruptor por negocio; el

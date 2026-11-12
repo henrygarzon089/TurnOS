@@ -3056,7 +3056,7 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
 
 ## 23. Hito 17 — Modo esencial y un solo negocio (REQ-079, REQ-080, ADR-055)
 
-> Propuesta (2026-11-12), falta Henry. Sin migraciones.
+> Aprobado por Henry (2026-11-12, ADR-055). Sin migraciones.
 
 ### 23.1 Lista de módulos (REQ-079.1, REQ-079.7, REQ-079.8)
 - `src/lib/domain/modules.ts`, lógica pura:

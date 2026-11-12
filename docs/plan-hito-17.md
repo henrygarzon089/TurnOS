@@ -4,7 +4,7 @@ Contexto para el arnés principal y para cada agente. La fuente de verdad es `sp
 REQ-079 y REQ-080 (`requirements.md` §5n), `design.md` §23, ADR-055 y T-184…T-191 (`tasks.md`).
 Si este plan y la spec no coinciden, manda la spec.
 
-Estado: **propuesto el 2026-11-12**. Nada de código está hecho. No se ejecuta ningún agente hasta
+Estado: **spec aprobada por Henry el 2026-11-12**. Nada de código está hecho. No se ejecuta ningún agente hasta
 que Henry termine la Fase 0.
 
 ## 1. Objetivo
@@ -31,11 +31,11 @@ Sin migraciones.
 
 Los agentes no arrancan hasta que estén marcados 1, 2 y 3.
 
-- [ ] 1. **Aprobar la spec**: leer REQ-079, REQ-080 y ADR-055 en el PR de la spec y fusionarlo (o
+- [x] 1. **Aprobar la spec**: leer REQ-079, REQ-080 y ADR-055 en el PR de la spec y fusionarlo (o
       decir "aprobado").
 - [x] 2. **PA-H17-3 resuelta (2026-11-12)**: el dueño de Gamma Club usa el mismo correo que el de
       Filo. Por eso Filo se borra **antes** de crear Gamma Club (Fase 3, pasos 1 y 2).
-- [ ] 3. **Confirmar que el PR #163 quedó fusionado** (Hitos 8, 15 y 16 aprobados).
+- [x] 3. **Confirmar que el PR #163 quedó fusionado** (Hitos 8, 15 y 16 aprobados).
 - [ ] 4. Tener a la mano los datos de Gamma Club: barberos con celular y PIN, servicios con precio
       y duración, porcentaje de comisión, horario, regla de fidelidad y productos. Se cargan en la
       Fase 3; no bloquea a los agentes.

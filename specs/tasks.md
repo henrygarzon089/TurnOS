@@ -2626,7 +2626,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ## Hito 17 — Modo esencial y un solo negocio (REQ-079, REQ-080, ADR-055)
 
-> Propuesto el 2026-11-12, falta Henry. Orden: T-184 → T-185…T-189 (independientes entre sí) →
+> Aprobado por Henry el 2026-11-12. Orden: T-184 → T-185…T-189 (independientes entre sí) →
 > T-191. T-190 va aparte y la corre Henry. Modelo sugerido en cada tarea.
 
 ### [ ] T-184 · Lista de módulos y modo de pruebas

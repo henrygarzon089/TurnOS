@@ -1674,7 +1674,7 @@ marca propia de TurnOS más allá del punto rojo y el nombre; ilustraciones; ani
 
 ## 5n. Hito 17 — Modo esencial y un solo negocio (Gamma Club)
 
-> Estado: **PROPUESTA** (2026-11-12), falta la aprobación de Henry. Ver ADR-055. Henry validó la app
+> Estado: **APROBADA** (Henry, 2026-11-12). Ver ADR-055. Henry validó la app
 > y la encontró muy cargada para una primera salida: lo que importa ahora es el manejo de los
 > barberos y la caja. Además, por ahora TurnOS se usa en un solo negocio, la barbería **Gamma Club**.
 > No se borra código ni datos de ningún módulo: lo apagado deja de verse. Sin migraciones.
