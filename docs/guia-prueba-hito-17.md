@@ -72,6 +72,9 @@ Con tu celular, entra a Gamma Club como dueño.
   - **No** deben salir: Citas, Membresías, Tarjetas de regalo, Recordar, Limpieza, Mensajes.
 - [ ] **"Hoy" sin lo apagado.** Debe verse: sin bloque de citas, sin "Recordar", sin alertas de
       limpieza; la rejilla de atajos sin huecos en el celular y en el computador.
+- [ ] **Pantallas encendidas sin rastros de lo apagado.** Debe verse: en Fidelidad, solo la
+      tarjeta (sin el panel "Recordar"); en Fila, sin la tarjeta de limpieza; en Barberos, sin
+      "Fotos de cortes".
 - [ ] **Rutas apagadas.** Escribe a mano en la barra del navegador
       `https://turnos-smoky-nine.vercel.app/admin/citas` y luego `/admin/limpieza`. Debe verse:
       ambas te llevan a `/admin` (Hoy).
