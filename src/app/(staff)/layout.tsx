@@ -11,7 +11,8 @@ import { SkeletonBlock, SkeletonScreen } from "@/components/ui/Skeleton";
 import { getStaffSession } from "@/lib/auth/session";
 import { adminGroups, adminTabs } from "@/lib/domain/admin-nav";
 import { barberMore, barberTabs } from "@/lib/domain/barber-nav";
-import { enabledModules, moduleForPath } from "@/lib/domain/modules";
+import { enabledModules, isModuleEnabled, moduleForPath } from "@/lib/domain/modules";
+import { noBusinessDestination } from "@/lib/domain/staff-entry";
 
 /**
  * Todas las rutas del personal (/app/*, /admin/*) exigen sesión y membresía en un negocio.
@@ -36,7 +37,9 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
 async function StaffGate({ children }: { children: React.ReactNode }) {
   const session = await getStaffSession();
   if (!session) {
-    redirect("/crear-negocio");
+    // REQ-080.1: sin registro, la cuenta sin negocio va a /entrar con el aviso (el proxy no la
+    // devuelve a /app por el motivo, así no hay ciclo)
+    redirect(noBusinessDestination(isModuleEnabled("signup")));
   }
   const owner = session.role === "owner";
   // REQ-079.2/3: los menús llevan solo los módulos encendidos; se calcula aquí, en el servidor.

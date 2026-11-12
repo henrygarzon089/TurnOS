@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { isModuleEnabled } from "@/lib/domain/modules";
 import { PageHeader, Panel } from "@/components/admin/PageHeader";
 import { BARBER_COLS } from "@/components/admin/barber-cols";
 import {
@@ -80,7 +81,7 @@ export default async function BarbersPage() {
             <ul className="divide-line divide-y">
               {barbers.map((b) => (
                 <li key={b.id}>
-                  <BarberCard barber={b} services={services} />
+                  <BarberCard barber={b} services={services} photosOn={isModuleEnabled("photos")} />
                 </li>
               ))}
             </ul>

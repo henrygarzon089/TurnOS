@@ -8,6 +8,7 @@ import { ModuleHeader, Panel, Tag } from "@/components/admin/ModulePage";
 import { RemindTable } from "@/components/customers/RemindTable";
 import { getBirthdaysThisWeek, getInactiveCustomers } from "@/lib/actions/customers";
 import { getStaffSession } from "@/lib/auth/session";
+import { isModuleEnabled } from "@/lib/domain/modules";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +30,8 @@ export default async function LoyaltyPage() {
   const session = (await getStaffSession())!;
   const supabase = await createSupabaseServerClient();
   const biz = session.business.id;
+  // REQ-079.4/079.5: con Recordar apagado no se carga ni se muestra su panel
+  const remindOn = isModuleEnabled("remind");
   const [progRes, servicesRes, cardsRes, reminders, birthdays] = await Promise.all([
     supabase
       .from("loyalty_programs")
@@ -47,8 +50,8 @@ export default async function LoyaltyPage() {
       .select("stamps, status")
       .eq("business_id", biz)
       .in("status", ["active", "completed"]),
-    getInactiveCustomers(),
-    getBirthdaysThisWeek(),
+    remindOn ? getInactiveCustomers() : null,
+    remindOn ? getBirthdaysThisWeek() : null,
   ]);
   const program = (progRes.data as LoyaltyProgramRow | null) ?? DEFAULTS;
   const services = (servicesRes.data ?? []) as LoyaltyServiceRow[];
@@ -95,9 +98,11 @@ export default async function LoyaltyPage() {
             </div>
           </dl>
         </Panel>
-        <Panel title="Recordar">
-          <RemindTable reminders={reminders!} birthdays={birthdays!} limit={5} showDays={false} />
-        </Panel>
+        {remindOn && (
+          <Panel title="Recordar">
+            <RemindTable reminders={reminders!} birthdays={birthdays!} limit={5} showDays={false} />
+          </Panel>
+        )}
       </div>
     </main>
   );

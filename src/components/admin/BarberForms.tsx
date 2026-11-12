@@ -177,7 +177,16 @@ type View = { kind: "edit" } | { kind: "pct"; pct: number } | { kind: "retire" }
  * retirar (REQ-016). El celular va enmascarado (REQ-078.6); cambiar el % y retirar piden
  * confirmación (REQ-078.3).
  */
-export function BarberCard({ barber, services }: { barber: BarberRow; services: ServiceOption[] }) {
+export function BarberCard({
+  barber,
+  services,
+  photosOn = true,
+}: {
+  barber: BarberRow;
+  services: ServiceOption[];
+  /** REQ-079.1: con "Mis fotos" apagado no se suben fotos de cortes desde aquí */
+  photosOn?: boolean;
+}) {
   const [state, action, pending] = useActionState<FormState, FormData>(updateBarber, undefined);
   const [busy, startTransition] = useTransition();
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
@@ -362,12 +371,14 @@ export function BarberCard({ barber, services }: { barber: BarberRow; services: 
                 <InviteButtons url={inviteUrl} />
               </div>
             )}
-            <details>
-              <summary className="flex min-h-12 cursor-pointer items-center text-base font-semibold">
-                Fotos de cortes ({barber.photos.length})
-              </summary>
-              <BarberPhotos barberId={barber.id} barberName={name} photos={barber.photos} />
-            </details>
+            {photosOn && (
+              <details>
+                <summary className="flex min-h-12 cursor-pointer items-center text-base font-semibold">
+                  Fotos de cortes ({barber.photos.length})
+                </summary>
+                <BarberPhotos barberId={barber.id} barberName={name} photos={barber.photos} />
+              </details>
+            )}
             <Button variant="danger" onClick={() => setView({ kind: "retire" })}>
               Retirar…
             </Button>

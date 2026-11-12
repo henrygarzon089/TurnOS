@@ -40,7 +40,10 @@ export async function getAppointmentWeek(
 }
 
 /** REQ-050.2–050.5, 050.7 */
-export async function bookAppointment(input: appts.BookInput) {
+export async function bookAppointment(input: appts.BookInput): Promise<appts.BookResult> {
+  // REQ-079.6: sin pantalla de citas tampoco se reserva por detrás
+  if (!isModuleEnabled("appointments"))
+    return { ok: false, error: "Este negocio no está recibiendo citas." };
   return appts.bookAppointment(createAdminGateway(), input, await clientIp());
 }
 

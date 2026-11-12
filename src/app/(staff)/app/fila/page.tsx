@@ -5,6 +5,7 @@ import { BarberQueue } from "@/components/queue/BarberQueue";
 import { getCleaningToday } from "@/lib/actions/cleaning";
 import { getMyQueue } from "@/lib/actions/queue";
 import { getStaffSession } from "@/lib/auth/session";
+import { isModuleEnabled } from "@/lib/domain/modules";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Mi fila" };
@@ -14,7 +15,8 @@ export default async function BarberQueuePage() {
   const session = await getStaffSession();
   const [view, cleaning] = await Promise.all([
     session?.barberId ? getMyQueue() : null,
-    session ? getCleaningToday() : null,
+    // REQ-079.5: con Limpieza apagada no hay banner (llevaría a una ruta apagada)
+    session && isModuleEnabled("cleaning") ? getCleaningToday() : null,
   ]);
   const banner = cleaning?.enabled ? (
     <CleaningBanner openingPending={cleaning.openingPending} />

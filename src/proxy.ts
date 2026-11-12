@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { redirectForDisabled } from "@/lib/domain/modules";
+import { shouldBounceLoginToApp } from "@/lib/domain/staff-entry";
 
 /**
  * Proxy (antes "middleware") de Next.js 16:
@@ -37,13 +38,21 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // Toda redirección lleva las cookies que getUser() pudo renovar; si no, el token rotado se
+  // pierde y la sesión se cae (revisión del Hito 17).
+  const redirectTo = (url: URL) => {
+    const out = NextResponse.redirect(url);
+    response.cookies.getAll().forEach((c) => out.cookies.set(c));
+    return out;
+  };
+
   // REQ-079.5: la ruta de un módulo apagado lleva al inicio de quien la abre (sin error)
   const disabledTo = redirectForDisabled(pathname);
   if (disabledTo) {
     const url = request.nextUrl.clone();
     url.pathname = disabledTo;
     url.search = "";
-    return NextResponse.redirect(url);
+    return redirectTo(url);
   }
 
   const isStaffRoute = pathname.startsWith("/app") || pathname.startsWith("/admin");
@@ -52,14 +61,18 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/entrar";
     url.searchParams.set("volver", pathname);
-    return NextResponse.redirect(url);
+    return redirectTo(url);
   }
 
-  if (pathname === "/entrar" && user) {
+  // `?motivo=sin-negocio` no rebota a /app: la cuenta sin negocio vería un ciclo (REQ-080.1)
+  if (
+    pathname === "/entrar" &&
+    shouldBounceLoginToApp(!!user, request.nextUrl.searchParams.get("motivo"))
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = "/app";
     url.search = "";
-    return NextResponse.redirect(url);
+    return redirectTo(url);
   }
 
   return response;

@@ -169,7 +169,7 @@ begin
   -- con los `on delete set null`), avisos en tiempo real y ganchos de inventario. Las llaves
   -- foráneas son disparadores internos y siguen activas.
   for v_trg in
-    select t.tgrelid::regclass as rel, t.tgname
+    select t.tgrelid::regclass as rel, t.tgname, t.tgenabled
     from pg_trigger t
     where not t.tgisinternal and t.tgenabled <> 'D'
       and (t.tgrelid in (select b.tabla from pg_temp.tb_business_tables() b)
@@ -177,7 +177,9 @@ begin
     order by 1, 2
   loop
     execute format('alter table %s disable trigger %I', v_trg.rel, v_trg.tgname);
-    v_off := v_off || format('alter table %s enable trigger %I', v_trg.rel, v_trg.tgname);
+    -- se vuelven a encender en su modo original: O (normal), A (always) o R (replica)
+    v_off := v_off || format('alter table %s enable %s trigger %I', v_trg.rel,
+      case v_trg.tgenabled when 'A' then 'always' when 'R' then 'replica' else '' end, v_trg.tgname);
   end loop;
 
   -- Tablas a las que no llega la cascada (sus llaves son `no action` hacia otras tablas del
