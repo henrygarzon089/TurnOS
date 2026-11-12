@@ -10,6 +10,7 @@ import { TodayRemind } from "@/components/admin/today/TodayRemind";
 import { TodayShortcuts } from "@/components/admin/today/TodayShortcuts";
 import { TodayWeek } from "@/components/admin/today/TodayWeek";
 import type { CashDaySummary } from "@/lib/actions/cash";
+import { ADMIN_GROUPS, ADMIN_TABS } from "@/lib/domain/admin-nav";
 import {
   agoLabel,
   barAmount,
@@ -402,7 +403,11 @@ describe("alertas, citas y recordar (T-152)", () => {
 
   it("REQ-077.6 la insignia de Hoy sale en la barra y en el menú lateral", () => {
     const h = renderToStaticMarkup(
-      <AdminNav todayBadge={<CountBadge count={3} label="alertas" testId="today-badge" />} />,
+      <AdminNav
+        groups={ADMIN_GROUPS}
+        tabs={ADMIN_TABS}
+        todayBadge={<CountBadge count={3} label="alertas" testId="today-badge" />}
+      />,
     );
     expect(h.match(/data-testid="today-badge"/g)).toHaveLength(2);
     expect(h).toMatch(/href="\/admin"[^>]*>Hoy<span[^>]*><span data-testid="today-badge"/);

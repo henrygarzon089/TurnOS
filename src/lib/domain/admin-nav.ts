@@ -1,56 +1,59 @@
 import type { OwnerAlert } from "./owner-alerts";
+import type { ModuleId } from "./modules";
 
 /**
  * Menú del dueño por grupos (REQ-077, design §21.4): fuente única para la barra inferior, la hoja
- * "Más" y el menú lateral.
+ * "Más" y el menú lateral. Cada destino dice a qué módulo pertenece (REQ-079.2, design §23.2); lo
+ * que no está encendido no se muestra (`adminGroups`, `adminTabs`).
  */
-export type AdminLink = { href: string; label: string; exact?: boolean };
+export type AdminLink = { href: string; label: string; exact?: boolean; module: ModuleId };
 export type AdminGroup = { label: string; items: AdminLink[] };
 
-const HOY: AdminLink = { href: "/admin", label: "Hoy", exact: true };
-const FILA: AdminLink = { href: "/admin/fila", label: "Fila" };
-const CAJA: AdminLink = { href: "/admin/caja", label: "Caja" };
-const CLIENTES: AdminLink = { href: "/app/clientes", label: "Clientes" };
+const HOY: AdminLink = { href: "/admin", label: "Hoy", exact: true, module: "today" };
+const FILA: AdminLink = { href: "/admin/fila", label: "Fila", module: "queue" };
+const CAJA: AdminLink = { href: "/admin/caja", label: "Caja", module: "cash" };
+const CLIENTES: AdminLink = { href: "/app/clientes", label: "Clientes", module: "customers" };
 
+/** Lista completa, con todos los módulos (modo `todos`). Los filtros viven en `adminGroups`. */
 export const ADMIN_GROUPS: AdminGroup[] = [
   {
     label: "Operación",
     items: [
       HOY,
       FILA,
-      { href: "/admin/citas", label: "Citas" },
+      { href: "/admin/citas", label: "Citas", module: "appointments" },
       CAJA,
-      { href: "/admin/semana", label: "Semana" },
+      { href: "/admin/semana", label: "Semana", module: "week" },
     ],
   },
   {
     label: "Clientes",
     items: [
       CLIENTES,
-      { href: "/admin/fidelidad", label: "Fidelidad" },
-      { href: "/admin/recordar", label: "Recordar" },
-      { href: "/admin/membresias", label: "Membresías" },
-      { href: "/admin/regalos", label: "Tarjetas de regalo" },
+      { href: "/admin/fidelidad", label: "Fidelidad", module: "loyalty" },
+      { href: "/admin/recordar", label: "Recordar", module: "remind" },
+      { href: "/admin/membresias", label: "Membresías", module: "memberships" },
+      { href: "/admin/regalos", label: "Tarjetas de regalo", module: "giftCards" },
     ],
   },
   {
     label: "Local",
     items: [
-      { href: "/admin/limpieza", label: "Limpieza" },
-      { href: "/admin/productos", label: "Productos" },
-      { href: "/admin/inventario", label: "Inventario" },
+      { href: "/admin/limpieza", label: "Limpieza", module: "cleaning" },
+      { href: "/admin/productos", label: "Productos", module: "products" },
+      { href: "/admin/inventario", label: "Inventario", module: "inventory" },
     ],
   },
   {
     label: "Configuración",
     items: [
-      { href: "/admin/barberos", label: "Barberos" },
-      { href: "/admin/servicios", label: "Servicios" },
-      { href: "/admin/horario", label: "Horario" },
-      { href: "/admin/qr", label: "QR" },
-      { href: "/admin/mensajes", label: "Mensajes" },
-      { href: "/admin/negocio", label: "Negocio" },
-      { href: "/admin/privacidad", label: "Privacidad" },
+      { href: "/admin/barberos", label: "Barberos", module: "barbers" },
+      { href: "/admin/servicios", label: "Servicios", module: "services" },
+      { href: "/admin/horario", label: "Horario", module: "hours" },
+      { href: "/admin/qr", label: "QR", module: "qr" },
+      { href: "/admin/mensajes", label: "Mensajes", module: "messages" },
+      { href: "/admin/negocio", label: "Negocio", module: "business" },
+      { href: "/admin/privacidad", label: "Privacidad", module: "privacy" },
     ],
   },
 ];
@@ -58,30 +61,48 @@ export const ADMIN_GROUPS: AdminGroup[] = [
 /** Lo de todos los días en la barra inferior del celular; el resto queda en "Más". */
 export const ADMIN_TABS: AdminLink[] = [HOY, FILA, CAJA, CLIENTES];
 
+/**
+ * REQ-079.2: los grupos con solo los destinos encendidos, con su nombre y orden. Un grupo sin
+ * módulos encendidos no sale.
+ */
+export function adminGroups(enabled: ReadonlySet<ModuleId>): AdminGroup[] {
+  return ADMIN_GROUPS.map((g) => ({
+    label: g.label,
+    items: g.items.filter((i) => enabled.has(i.module)),
+  })).filter((g) => g.items.length > 0);
+}
+
+/** REQ-079.2: la barra inferior con solo los destinos encendidos. */
+export function adminTabs(enabled: ReadonlySet<ModuleId>): AdminLink[] {
+  return ADMIN_TABS.filter((t) => enabled.has(t.module));
+}
+
 /** Destino actual por prefijo de ruta (`/admin/caja/2026-11-01` es Caja); Hoy solo en `/admin`. */
 export function isActiveLink(pathname: string, link: AdminLink): boolean {
   if (link.exact) return pathname === link.href;
   return pathname === link.href || pathname.startsWith(`${link.href}/`);
 }
 
-export function isMoreActive(pathname: string): boolean {
-  return !ADMIN_TABS.some((t) => isActiveLink(pathname, t));
+export function isMoreActive(pathname: string, tabs: AdminLink[] = ADMIN_TABS): boolean {
+  return !tabs.some((t) => isActiveLink(pathname, t));
 }
 
 /**
  * REQ-078.27 insignias rojas del menú lateral: cuántas alertas de "Hoy" (REQ-076.6) son de
  * Limpieza y cuántas de Inventario, para que el menú y "Hoy" digan lo mismo. Sin alertas, nada.
+ * REQ-079.2: una insignia de un módulo apagado no se cuenta.
  */
-export function navAlertCounts(alerts: OwnerAlert[] | null): Record<string, number> {
+export function navAlertCounts(
+  alerts: OwnerAlert[] | null,
+  enabled: ReadonlySet<ModuleId>,
+): Record<string, number> {
   const out: Record<string, number> = {};
   for (const a of alerts ?? []) {
-    const href =
-      a.kind === "cleaning"
-        ? "/admin/limpieza"
-        : a.kind === "inventory"
-          ? "/admin/inventario"
-          : null;
-    if (href) out[href] = (out[href] ?? 0) + 1;
+    if (a.kind === "cleaning" && enabled.has("cleaning")) {
+      out["/admin/limpieza"] = (out["/admin/limpieza"] ?? 0) + 1;
+    } else if (a.kind === "inventory" && enabled.has("inventory")) {
+      out["/admin/inventario"] = (out["/admin/inventario"] ?? 0) + 1;
+    }
   }
   return out;
 }
@@ -107,14 +128,18 @@ export function businessInitials(name: string): string {
 /**
  * REQ-078.27 números en texto suave del menú lateral: los que esperan en la fila y las citas de
  * hoy que faltan por llegar, de la misma lectura de la fila del dueño. En cero, nada.
+ * REQ-079.2: Fila solo si `queue` está encendido; Citas solo si `appointments` lo está.
  */
 export function navQueueCounts(
   view: { active: { status: string }[]; appointments: unknown[] } | null,
+  enabled: ReadonlySet<ModuleId>,
 ): Record<string, number> {
   const out: Record<string, number> = {};
   if (!view) return out;
   const waiting = view.active.filter((t) => t.status === "waiting").length;
-  if (waiting > 0) out["/admin/fila"] = waiting;
-  if (view.appointments.length > 0) out["/admin/citas"] = view.appointments.length;
+  if (enabled.has("queue") && waiting > 0) out["/admin/fila"] = waiting;
+  if (enabled.has("appointments") && view.appointments.length > 0) {
+    out["/admin/citas"] = view.appointments.length;
+  }
   return out;
 }

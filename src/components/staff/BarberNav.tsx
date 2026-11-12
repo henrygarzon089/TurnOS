@@ -8,21 +8,25 @@ import { Icon } from "@/components/ui/Icon";
 import { Sheet } from "@/components/ui/Sheet";
 import { Toast } from "@/components/ui/Toast";
 import { signOut } from "@/lib/actions/auth";
-import {
-  BARBER_MORE,
-  BARBER_TABS,
-  isBarberActive,
-  isBarberMoreActive,
-  type BarberLink,
-} from "@/lib/domain/barber-nav";
+import { isBarberActive, isBarberMoreActive, type BarberLink } from "@/lib/domain/barber-nav";
 
 /**
- * Barra inferior del barbero (T-163, T-169, tablero Barbero-Fila): Mi fila, Clientes, Números,
- * Limpieza y "Más", cada uno con su ícono encima. Destinos de 56 px (REQ-078.5); el actual con raya
- * arriba y texto en `brand`. "Más" abre una hoja con Mis fotos, Mi estación, "Nueva venta" y
- * "Salir" (ADR-051). `cleaningDot` es el punto rojo de Limpieza cuando falta la apertura.
+ * Barra inferior del barbero (T-163, T-169, T-186, tablero Barbero-Fila): los destinos encendidos
+ * (`tabs`, máximo cuatro, REQ-079.3) con su ícono encima. Destinos de 56 px (REQ-078.5); el actual
+ * con raya arriba y texto en `brand`. "Más" abre una hoja con los módulos de `moreLinks`, "+ Nueva venta"
+ * y "Salir" (ADR-051). Esas dos acciones no son módulos: por eso "Más" siempre se pinta.
+ * `cleaningDot` es el punto rojo de Limpieza cuando falta la apertura; solo llega si Limpieza
+ * está encendida.
  */
-export function BarberNav({ cleaningDot }: { cleaningDot?: React.ReactNode }) {
+export function BarberNav({
+  tabs,
+  moreLinks,
+  cleaningDot,
+}: {
+  tabs: BarberLink[];
+  moreLinks: BarberLink[];
+  cleaningDot?: React.ReactNode;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [more, setMore] = useState(false);
@@ -39,7 +43,7 @@ export function BarberNav({ cleaningDot }: { cleaningDot?: React.ReactNode }) {
         className="border-line bg-card fixed inset-x-0 bottom-0 z-20 border-t pb-[env(safe-area-inset-bottom)]"
       >
         <ul className="mx-auto grid max-w-md grid-cols-5">
-          {BARBER_TABS.map((it) => (
+          {tabs.map((it) => (
             <li key={it.href}>
               <Link
                 href={it.href}
@@ -61,7 +65,7 @@ export function BarberNav({ cleaningDot }: { cleaningDot?: React.ReactNode }) {
               aria-haspopup="dialog"
               aria-expanded={more}
               onClick={() => setMore(true)}
-              className={`${tabClass(isBarberMoreActive(pathname))} w-full`}
+              className={`${tabClass(isBarberMoreActive(pathname, tabs))} w-full`}
             >
               <Icon name="more" className="size-5" />
               Más
@@ -72,7 +76,7 @@ export function BarberNav({ cleaningDot }: { cleaningDot?: React.ReactNode }) {
 
       <Sheet open={more} onClose={closeMore} title="Más">
         <ul>
-          {BARBER_MORE.map((it) => (
+          {moreLinks.map((it) => (
             <li key={it.href}>
               <Link
                 href={it.href}

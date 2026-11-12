@@ -2643,7 +2643,10 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Modelo: Haiku 5.5. Complejidad: baja.
 - Archivos: `src/lib/domain/admin-nav.ts`, `src/components/admin/AdminNav.tsx`,
   `src/app/(staff)/admin/layout.tsx`, `tests/unit/admin-nav.test.ts`.
-- Terminado: en modo esencial el menú muestra 13 destinos en sus grupos; con `todos`, los 20.
+- Terminado: en modo esencial el menú muestra 14 destinos en sus grupos; con `todos`, los 20.
+- Nota (2026-11-12): la tarea decía 13; la lista de REQ-079.1 da 14 (contando Hoy). Se sigue la
+  spec. Hecha junto con T-186 en un solo PR, porque los dos menús se pintan en
+  `src/app/(staff)/layout.tsx`.
 
 ### [ ] T-186 · Menú del barbero filtrado
 - REQ: REQ-079.3
@@ -2651,6 +2654,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Archivos: `src/lib/domain/barber-nav.ts`, `src/components/staff/BarberNav.tsx`, layout del
   barbero, `tests/unit/barber-nav.test.ts`.
 - Terminado: barra con Mi fila, Clientes, Números y Mi estación, sin "Más".
+- Nota (2026-11-12): "Más" se queda, porque además de módulos trae "Nueva venta" y "Salir"; ya
+  no lleva destinos de módulos. Cumple REQ-079.3 ("sin Más cuando no queda nada que poner").
 
 ### [ ] T-187 · "Hoy" sin lo apagado
 - REQ: REQ-079.4
