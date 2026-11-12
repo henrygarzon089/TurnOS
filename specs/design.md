@@ -3120,6 +3120,13 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
      borran desde el panel de Storage (SQL no borra los objetos del disco).
 - Riesgo a verificar en T-190: disparadores de inmutabilidad (`sale_items_immutable`, cierres de
   caja) son `before update`; se confirma con pgTAP que no frenan el borrado en cascada.
+- Corrección (T-190, 2026-11-12): no todas las tablas hijas tienen `on delete cascade`.
+  `inventory_usage`, `stock_count_lines`, `stock_counts` y `stock_movements` usan `no action`, y
+  `stock_movements_guard` es `before delete`. El script lee las tablas con `business_id` del
+  catálogo, apaga los disparadores de usuario de esas tablas solo dentro de la transacción, borra
+  primero las tablas sin cascada y luego `businesses`; verifica 0 filas y vuelve a encender los
+  disparadores. Las cuentas se conservan si son barbero o tienen membresía en otro negocio. Sin
+  migraciones.
 - Prueba: `supabase/tests/delete_business.sql` crea dos negocios con ventas, cierres, clientes y
   fotos, borra uno y verifica 0 filas del borrado y todas las del otro.
 
