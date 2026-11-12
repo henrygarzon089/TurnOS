@@ -1672,6 +1672,70 @@ marca propia de TurnOS más allá del punto rojo y el nombre; ilustraciones; ani
 
 ---
 
+## 5n. Hito 17 — Modo esencial y un solo negocio (Gamma Club)
+
+> Estado: **PROPUESTA** (2026-11-12), falta la aprobación de Henry. Ver ADR-055. Henry validó la app
+> y la encontró muy cargada para una primera salida: lo que importa ahora es el manejo de los
+> barberos y la caja. Además, por ahora TurnOS se usa en un solo negocio, la barbería **Gamma Club**.
+> No se borra código ni datos de ningún módulo: lo apagado deja de verse. Sin migraciones.
+
+### REQ-079 · Modo esencial — M
+**Como** dueño o barbero, **quiero** ver solo los módulos que uso todos los días, **para** atender,
+cobrar y liquidar sin perderme entre pantallas que no uso.
+
+- REQ-079.1 El sistema DEBE tener una lista única de módulos encendidos. Encendidos: Hoy, Fila, Caja,
+  Semana, Clientes, Fidelidad, Productos, Inventario, Barberos, Servicios, Horario, QR, Negocio y
+  Privacidad; del barbero: Mi fila, Clientes, Mis números y Mi estación. Apagados: Citas,
+  Membresías, Tarjetas de regalo, Recordar, Limpieza, Mensajes y Mis fotos.
+- REQ-079.2 El menú del dueño (barra inferior, "Más" y menú lateral) DEBE mostrar solo los módulos
+  encendidos; un grupo sin módulos encendidos NO DEBE mostrarse. Cambia REQ-077.3 y REQ-077.4: los
+  grupos conservan su nombre y orden, sin los módulos apagados.
+- REQ-079.3 El menú del barbero DEBE mostrar solo los módulos encendidos: "Mi fila", "Clientes",
+  "Números" y "Mi estación" en la barra inferior, sin "Más" cuando no queda nada que poner ahí.
+- REQ-079.4 "Hoy" NO DEBE mostrar bloques, atajos, alertas ni conteos de módulos apagados (citas de
+  hoy, recordar, alertas de limpieza); los bloques encendidos DEBEN ocupar el espacio sin huecos.
+- REQ-079.5 CUANDO alguien del personal abre la ruta de un módulo apagado, el sistema DEBE llevarlo
+  a su inicio ("Hoy" al dueño, "Mi fila" al barbero) sin mostrar error.
+- REQ-079.6 CUANDO un cliente abre una página pública de un módulo apagado (`/[slug]/cita`,
+  `/c/[token]`, `/regalo/[token]`), el sistema DEBE llevarlo a la portada del negocio; la portada y
+  "Mi turno" NO DEBEN ofrecer reservar cita.
+- REQ-079.7 Encender o apagar un módulo DEBE ser un cambio en la lista de REQ-079.1 y nada más: las
+  tablas, funciones y datos de los módulos apagados NO DEBEN cambiar.
+- REQ-079.8 El sistema DEBE permitir correr con todos los módulos encendidos por una variable de
+  entorno (`TURNOS_MODULES=todos`), para que las pruebas de los módulos apagados sigan corriendo en
+  CI. Sin la variable, rige la lista de REQ-079.1.
+
+### REQ-080 · Un solo negocio — M
+**Como** operador de TurnOS, **quiero** que la app sirva solo a Gamma Club, **para** que nadie cree
+otro negocio y los clientes lleguen directo a la barbería.
+
+- REQ-080.1 En modo esencial, "Crear negocio" NO DEBE estar disponible: `/crear-negocio` DEBE llevar
+  a `/entrar` y `/entrar` NO DEBE mostrar el enlace para crear un negocio. Cambia REQ-030.1.
+- REQ-080.2 En modo esencial, la portada `/` DEBE llevar a la página pública de Gamma Club
+  (`/gamma-club`).
+- REQ-080.3 El operador DEBE tener un procedimiento escrito y probado para borrar un negocio
+  completo por su enlace (`slug`): sus datos, sus cuentas de personal y sus archivos, sin tocar otros
+  negocios. Se usa una vez para borrar **Filo**.
+- REQ-080.4 El procedimiento de REQ-080.3 DEBE mostrar primero cuántas filas borraría por tabla y
+  NO DEBE borrar nada sin una confirmación explícita con el `slug` exacto.
+
+Preguntas abiertas del Hito 17:
+- **PA-H17-1**: ¿Gamma Club se crea nuevo o se renombra Filo? **Resuelta (Henry, 2026-11-12):
+  negocio nuevo**, con el enlace `gamma-club`; Filo se borra.
+- **PA-H17-2**: ¿módulos por negocio (columna y migración) o iguales para todos en código?
+  **Resuelta (Henry, 2026-11-12): en código**, porque solo habrá un negocio por ahora.
+- **PA-H17-3**: el dueño de Gamma Club, ¿usa el mismo correo que el dueño de Filo? Una cuenta que ya
+  es dueña de un negocio no puede crear otro: si es el mismo correo, hay que borrar Filo **antes** de
+  crear Gamma Club. Propuesta: borrar Filo primero (T-190) y crear Gamma Club con el mismo correo.
+
+Fuera de alcance del Hito 17: recortar el cobro (pago con tarjeta de regalo, "Usar membresía") y el
+formulario de turno (cumpleaños, bebida de cortesía, "Ver cortes"), que se esconden solos sin datos
+y van en un cambio aparte; simplificar Productos (queda como está); un interruptor de módulos para
+el dueño; borrar código, tablas o migraciones de los módulos apagados; el aviso por WhatsApp (sigue
+apagado, Hito 6); cambiar el seed de La 33.
+
+---
+
 ## 6. Requisitos no funcionales
 
 | ID | Requisito | Criterio verificable |

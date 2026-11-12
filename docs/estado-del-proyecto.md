@@ -646,6 +646,16 @@ en `/admin/negocio` y `/app/estacion` (barbero).
 Pendientes (H3): `/admin/caja`,
 `/admin/semana`, `/app/mis-numeros`.
 
+### Hito 17 — modo esencial y un solo negocio, Gamma Club (**spec propuesta**, ADR-055, 2026-11-12)
+
+- Henry validó la app y la encontró muy cargada para salir: ahora importan barberos y caja, y por
+  ahora TurnOS se usa solo en su barbería, **Gamma Club** (negocio nuevo, enlace `gamma-club`; Filo
+  se borra).
+- Spec: REQ-079 (módulos encendidos fijos en código, sin migración) y REQ-080 (un solo negocio),
+  `design.md` §23, T-184…T-191. Falta la aprobación de Henry; no hay código.
+- Plan para el arnés y los agentes, con olas, modelos y lo que le toca a Henry:
+  `docs/plan-hito-17.md`.
+
 ## Desvíos registrados respecto a la spec (todos explícitos)
 
 - Next.js 16: `middleware.ts` → `src/proxy.ts`; `cacheComponents` desactivado.

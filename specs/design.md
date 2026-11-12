@@ -3053,3 +3053,79 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
   texto suave cuando está apagado.
 - Mensajes, Negocio y Privacidad en tarjetas lado a lado (2 columnas desde 1024 px). No se
   construye: logo del negocio, estado de plantillas de Meta, tabla de solicitudes de privacidad.
+
+## 23. Hito 17 — Modo esencial y un solo negocio (REQ-079, REQ-080, ADR-055)
+
+> Propuesta (2026-11-12), falta Henry. Sin migraciones.
+
+### 23.1 Lista de módulos (REQ-079.1, REQ-079.7, REQ-079.8)
+- `src/lib/domain/modules.ts`, lógica pura:
+  - `type ModuleId` = `today | queue | cash | week | customers | loyalty | products | inventory |
+    barbers | services | hours | qr | business | privacy | appointments | memberships | giftCards |
+    remind | cleaning | messages | myNumbers | station | photos | signup`.
+  - `ESSENTIAL: ReadonlySet<ModuleId>` con los encendidos de REQ-079.1 (`signup` apagado).
+  - `enabledModules(env = process.env.TURNOS_MODULES)`: `"todos"` → todos; cualquier otro valor o
+    vacío → `ESSENTIAL`.
+  - `isModuleEnabled(id, env?)`, `isEssentialMode(env?)`.
+  - `moduleForPath(pathname): ModuleId | null`: tabla de prefijos (`/admin/citas` → `appointments`,
+    `/admin/membresias` → `memberships`, `/admin/regalos` → `giftCards`, `/admin/recordar` →
+    `remind`, `/admin/limpieza` y `/app/limpieza` → `cleaning`, `/admin/mensajes` → `messages`,
+    `/app/mis-fotos` → `photos`, `/crear-negocio` → `signup`; las públicas `/<slug>/cita` y
+    `/c/<token>` → `appointments`, `/regalo/<token>` → `giftCards`). Las rutas encendidas también
+    están en la tabla, para que la prueba recorra todas las `page.tsx`.
+- La variable se lee solo en el servidor. Los componentes cliente reciben la lista ya filtrada por
+  props; no hay `NEXT_PUBLIC_*`.
+
+### 23.2 Menús (REQ-079.2, REQ-079.3)
+- `admin-nav.ts`: cada `AdminLink` gana `module: ModuleId`. `adminGroups(enabled)` y
+  `adminTabs(enabled)` devuelven los grupos y la barra filtrados; un grupo vacío no sale.
+  `ADMIN_GROUPS` y `ADMIN_TABS` quedan como la lista completa (fuente única).
+- `barber-nav.ts`: igual, `barberTabs(enabled)` y `barberMore(enabled)`. En modo esencial "Mi
+  estación" sube a la barra (ocupa el lugar de "Limpieza") y "Más" no se pinta si queda vacío.
+- `admin/layout.tsx` y el layout del barbero calculan `enabledModules()` y pasan los enlaces a
+  `AdminNav` y `BarberNav`. `navAlertCounts` y `navQueueCounts` no cuentan lo apagado.
+
+### 23.3 "Hoy" (REQ-079.4)
+- `admin/(hoy)/page.tsx` no monta `TodayAppointments` ni `TodayRemind` si su módulo está apagado.
+  Rejilla en ≥ 1024 px sin esos bloques: fila (8) y alertas (4) arriba; caja (6) y semana (6) abajo.
+- `TodayShortcuts` recibe los módulos y no pinta atajos apagados. `load-owner-alerts.ts` no carga
+  alertas de `cleaning` ni de `memberships` si están apagados (inventario sí).
+
+### 23.4 Rutas apagadas (REQ-079.5, REQ-079.6)
+- Personal: `src/proxy.ts` ya corre en `/app/*`, `/admin/*`, `/entrar` y `/crear-negocio`. Si
+  `moduleForPath` da un módulo apagado, redirige: `/admin/*` → `/admin`, `/app/*` → `/app/fila`,
+  `/crear-negocio` → `/entrar`. Un solo lugar; ninguna `page.tsx` cambia.
+- Públicas: `/[slug]/cita`, `/c/[token]` y `/regalo/[token]` hacen `redirect` a `/<slug>` (o a `/`
+  si no hay slug) al inicio de la página cuando su módulo está apagado. `getAppointmentsConfig`
+  (`actions/appointments.ts`) devuelve `enabled: false` con el módulo apagado, así la portada y "Mi
+  turno" no ofrecen cita aunque el negocio la tenga encendida.
+- Las server actions de los módulos apagados no cambian: siguen con su control de rol y RLS. Quedan
+  sin pantalla que las llame.
+
+### 23.5 Un solo negocio (REQ-080.1, REQ-080.2)
+- `HOME_SLUG = "gamma-club"` en `modules.ts`. `src/app/page.tsx`: en modo esencial,
+  `redirect("/gamma-club")`; con `TURNOS_MODULES=todos`, la portada de hoy.
+- `LoginForm` recibe `canSignup` y no pinta el enlace a `/crear-negocio`. `(staff)/layout.tsx`: una
+  cuenta sin negocio va a `/entrar` con el mensaje "Tu cuenta no tiene un negocio." en vez de a
+  `/crear-negocio`.
+
+### 23.6 Borrar un negocio (REQ-080.3, REQ-080.4)
+- `scripts/delete-business.sql`, para `psql` con `-v slug=...` y `-v confirm=...`:
+  1. Cuenta filas por tabla con `business_id` del negocio y las imprime.
+  2. Si `confirm` no es igual al `slug`, termina ahí (simulación).
+  3. En una transacción: guarda los `user_id` de `memberships` del negocio; `delete from businesses
+     where slug = :slug` (las 38 tablas hijas tienen `on delete cascade`); borra de `auth.users` las
+     cuentas guardadas que no queden con membresía en otro negocio.
+  4. Lista los archivos de los buckets `media` y `cleaning` bajo la carpeta del negocio; esos se
+     borran desde el panel de Storage (SQL no borra los objetos del disco).
+- Riesgo a verificar en T-190: disparadores de inmutabilidad (`sale_items_immutable`, cierres de
+  caja) son `before update`; se confirma con pgTAP que no frenan el borrado en cascada.
+- Prueba: `supabase/tests/delete_business.sql` crea dos negocios con ventas, cierres, clientes y
+  fotos, borra uno y verifica 0 filas del borrado y todas las del otro.
+
+### 23.7 Pruebas y matriz
+- Unitarias (`tests/unit/modules.test.ts`, `admin-nav.test.ts`, `barber-nav.test.ts`,
+  `proxy.test.ts`): REQ-079.1…8 y REQ-080.1…2 sobre funciones puras. Una prueba recorre todas las
+  `page.tsx` de `src/app` y falla si alguna ruta no está en la tabla de `moduleForPath`.
+- `playwright.config.ts` y el job de E2E agregan `TURNOS_MODULES: "todos"`; Lighthouse también.
+- `scripts/traceability.ts`: `HITOS["17"] = [[79, 80]]`.
