@@ -33,10 +33,8 @@ Los agentes no arrancan hasta que estén marcados 1, 2 y 3.
 
 - [ ] 1. **Aprobar la spec**: leer REQ-079, REQ-080 y ADR-055 en el PR de la spec y fusionarlo (o
       decir "aprobado").
-- [ ] 2. **Responder PA-H17-3**: ¿el dueño de Gamma Club usa el mismo correo que el dueño de Filo?
-      Una cuenta que ya es dueña de un negocio no puede crear otro. Si es el mismo correo, hay que
-      borrar Filo antes de crear Gamma Club (ver Fase 3); si es otro correo, Gamma Club se puede
-      crear ya.
+- [x] 2. **PA-H17-3 resuelta (2026-11-12)**: el dueño de Gamma Club usa el mismo correo que el de
+      Filo. Por eso Filo se borra **antes** de crear Gamma Club (Fase 3, pasos 1 y 2).
 - [ ] 3. **Confirmar que el PR #163 quedó fusionado** (Hitos 8, 15 y 16 aprobados).
 - [ ] 4. Tener a la mano los datos de Gamma Club: barberos con celular y PIN, servicios con precio
       y duración, porcentaje de comisión, horario, regla de fidelidad y productos. Se cargan en la
@@ -102,8 +100,9 @@ Dos escritores nunca tocan el mismo archivo en la misma ola. Los archivos de cad
 
 ## 5. Fase 3 — lo que hace Henry después de los agentes
 
-En este orden. Los pasos 1 a 3 cambian si el correo del dueño es distinto (PA-H17-3): entonces
-Gamma Club se crea primero y Filo se borra cuando quiera.
+En este orden, que es obligatorio porque el dueño usa el mismo correo en los dos negocios: el
+borrado de Filo también borra su cuenta de dueño, y al crear Gamma Club se registra de nuevo con ese
+correo y una contraseña nueva.
 
 - [ ] 1. **Borrar Filo** con `docs/guia-borrar-negocio.md`: correr la simulación, revisar los
       conteos, confirmar con el `slug` exacto y borrar sus archivos en Storage. No tiene vuelta

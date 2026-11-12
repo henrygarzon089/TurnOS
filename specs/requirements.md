@@ -1724,9 +1724,10 @@ Preguntas abiertas del Hito 17:
   negocio nuevo**, con el enlace `gamma-club`; Filo se borra.
 - **PA-H17-2**: ¿módulos por negocio (columna y migración) o iguales para todos en código?
   **Resuelta (Henry, 2026-11-12): en código**, porque solo habrá un negocio por ahora.
-- **PA-H17-3**: el dueño de Gamma Club, ¿usa el mismo correo que el dueño de Filo? Una cuenta que ya
-  es dueña de un negocio no puede crear otro: si es el mismo correo, hay que borrar Filo **antes** de
-  crear Gamma Club. Propuesta: borrar Filo primero (T-190) y crear Gamma Club con el mismo correo.
+- **PA-H17-3**: el dueño de Gamma Club, ¿usa el mismo correo que el dueño de Filo? **Resuelta
+  (Henry, 2026-11-12): sí, el mismo.** Una cuenta que ya es dueña de un negocio no puede crear
+  otro, así que el orden es: borrar Filo (T-190, que también borra su cuenta de dueño), y luego
+  crear Gamma Club desde "Crear negocio" registrando de nuevo ese correo.
 
 Fuera de alcance del Hito 17: recortar el cobro (pago con tarjeta de regalo, "Usar membresía") y el
 formulario de turno (cumpleaños, bebida de cortesía, "Ver cortes"), que se esconden solos sin datos
