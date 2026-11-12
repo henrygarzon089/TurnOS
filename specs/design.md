@@ -3102,6 +3102,14 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
 - Las server actions de los módulos apagados no cambian: siguen con su control de rol y RLS. Quedan
   sin pantalla que las llame.
 
+- Corrección (revisión del Hito 17, 2026-11-12): (1) `/app/*` apagado va a `/app`, que reparte
+  por rol (dueño → "Hoy", barbero → "Mi fila"), no a `/app/fila`, para cumplir REQ-079.5 con el
+  dueño. (2) La oferta de cita se apaga en `getAppointmentInfo` (`actions/public-appointments.ts`);
+  `getAppointmentsConfig` no existe. `bookAppointment` también rechaza con el módulo apagado. (3)
+  Las redirecciones del proxy copian las cookies que `getUser()` renovó. (4) Las pantallas
+  encendidas no muestran nada de módulos apagados: Recordar en Fidelidad, Limpieza en las dos
+  filas, fotos de cortes en Barberos. (5) `/` es `force-dynamic`, para leer el modo al servir.
+
 ### 23.5 Un solo negocio (REQ-080.1, REQ-080.2)
 - `HOME_SLUG = "gamma-club"` en `modules.ts`. `src/app/page.tsx`: en modo esencial,
   `redirect("/gamma-club")`; con `TURNOS_MODULES=todos`, la portada de hoy.

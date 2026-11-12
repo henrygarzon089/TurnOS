@@ -28,9 +28,9 @@ describe("redirectForDisabled (personal)", () => {
     }
   });
 
-  it("REQ-079.5 una ruta apagada del barbero va a Mi fila", () => {
+  it("REQ-079.5 una ruta apagada de /app va a /app, que reparte por rol (dueño a Hoy, barbero a Mi fila)", () => {
     for (const p of ["/app/limpieza", "/app/mis-fotos"]) {
-      expect(redirectForDisabled(p, essential), p).toBe("/app/fila");
+      expect(redirectForDisabled(p, essential), p).toBe("/app");
     }
   });
 

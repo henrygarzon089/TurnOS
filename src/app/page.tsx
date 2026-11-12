@@ -2,6 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { HOME_SLUG, isEssentialMode } from "@/lib/domain/modules";
 
+// El modo se lee al servir, no al compilar (TURNOS_MODULES puede cambiar sin recompilar)
+export const dynamic = "force-dynamic";
+
 export default function HomePage() {
   // REQ-080.2: en modo esencial la portada es la página pública del único negocio.
   if (isEssentialMode()) redirect(`/${HOME_SLUG}`);
