@@ -1,8 +1,10 @@
 # Guía de prueba de Henry · Hitos 8, 14, 15 y 16
 
 Para cerrar los hitos construidos que esperan tu prueba y aprobación. Todo se prueba en
-producción (https://turnos-smoky-nine.vercel.app) **después de desplegar `main`**. Ninguno de estos
-hitos trae migraciones nuevas: basta `vercel deploy --prod` desde `main`.
+producción (https://turnos-smoky-nine.vercel.app) **después de desplegar `main`** desde la carpeta
+principal del repo (`/Users/henrygarzon/Projects/turnOS`, en `main` y al día), no desde una carpeta
+de trabajo de Claude: `vercel deploy --prod`. Las migraciones del Hito 16 (0070, 0071 y 0072) ya
+están en producción (verificado el 2026-11-11 con `supabase migration list`).
 
 Necesitas: tu celular, otro celular (o el de alguien de la barbería) y el computador. Usa turnos y
 ventas de prueba con tu propio nombre; anula las ventas de prueba al final (Caja → la venta →
@@ -28,7 +30,15 @@ pantalla y los mismos textos de siempre.
       lleva a la portada.
 - [ ] En el computador: la fila como tabla a la izquierda y "Tomar turno" en una tarjeta a la
       derecha.
-- [ ] "Mi turno": número grande; "Cancelar mi turno" abre una hoja; elegir "No, seguir en la fila".
+- [ ] "Mi turno" (T-174): número grande con su estado, "Vas de N.º" y "Te toca en ~ N min · cerca
+      de <hora>", tu barbero con el servicio y el precio, y la barra de 4 pasos. "Cancelar turno"
+      abre una hoja; elegir "No, seguir en la fila".
+- [ ] Cuando el barbero te llame: el bloque rojo "¡Es tu turno!" reemplaza la tarjeta.
+- [ ] "Reservar una cita" (T-175): filas Servicio y Barbero con "Cambiar", tira de días y horas
+      libres en 3 columnas; el botón dice "Confirmar · <día> <hora>". Cancela la cita de prueba
+      desde "Mi cita" (enlace rojo "Cancelar la cita").
+- [ ] Una tarjeta de regalo (`/regalo/<código>`): tarjeta azul con borde rojo, "Vale por", saldo y
+      vencimiento.
 - [ ] Modo avión: aparece la franja "Sin conexión" con la hora y los botones quedan deshabilitados
       con el motivo. Al quitarlo, la franja se va sola.
 - [ ] Agrandar el texto del celular al máximo: nada se sale de la pantalla.
@@ -59,6 +69,18 @@ pantalla y los mismos textos de siempre.
 - [ ] Computador: `/entrar?rol=dueno` sale como tarjeta centrada; la fila sale por carriles (uno
       por barbero); la caja tiene el resumen a la izquierda.
 
+### Televisor (computador o el televisor del local)
+
+- [ ] Dueño → Fila → "Ver pantalla del televisor" (T-183): abre la pantalla, no "Negocio no
+      encontrado".
+- [ ] Como el tablero Cliente-Pantalla (T-176): marca, nombre, "● N esperando" y la hora arriba;
+      una columna por barbero con su estado (Atendiendo, Llamando en rojo, En pausa en amarillo,
+      Libre en verde), el número que atiende y los siguientes con su número o "Cita <hora>";
+      abajo el QR con "Escanea para tomar turno". Sin celulares en ningún lado.
+- [ ] Con el otro celular toma un turno y que un barbero lo llame: la franja roja "LLAMANDO A
+      <número> <nombre> → <barbero>" sale 30 segundos y se va sola; lo de abajo no se mueve.
+- [ ] Dejarla abierta un rato: se actualiza sola y no pide entrar.
+
 ### En la barbería (PA-H16-2)
 
 - [ ] Una mañana normal con los barberos usando la app nueva. Anota si alguien se confundió con
@@ -81,8 +103,9 @@ pantalla y los mismos textos de siempre.
       2026-11-08).
 - [ ] Al navegar entre pantallas del personal se ve el esqueleto (cajas grises) y después la
       pantalla, sin pantallazo en blanco.
-- [ ] Vercel → proyecto `turnos` → Speed Insights: con unos días de uso del Hito 16, comparar con
-      los números del Hito 14 (que no empeoren). Esto también cierra T-168.
+- [x] Aprobado (ADR-044, 2026-11-09). Speed Insights quedó apagado por costo (ADR-054); la
+      comparación de velocidad del Hito 16 se hizo con Lighthouse móvil del CI (nota de T-168:
+      todo sobre el mínimo, accesibilidad 100).
 
 ## 4. Hito 8 · citas a hora fija (T-087, aprobación ADR-035)
 
@@ -98,7 +121,8 @@ pantalla y los mismos textos de siempre.
 ## Cuando termines
 
 Dime qué hitos quedaron bien y qué falló. Con tu visto bueno escribo los ADR de aprobación
-(ADR-035 Hito 8, ADR-044 Hito 14, ADR-049 Hito 15, ADR-050 Hito 16) y marco las tareas `[x]`.
+(ADR-035 Hito 8, ADR-049 Hito 15, ADR-050 Hito 16) y marco las tareas `[x]`. El Hito 14 ya está
+aprobado (ADR-044).
 
 Pendientes que no son de estos hitos: los pasos de Meta del Hito 6 (T-069), encender en Filo lo de
 los Hitos 7, 9, 11, 12 y 13, y proteger `main` en GitHub (T-010).
