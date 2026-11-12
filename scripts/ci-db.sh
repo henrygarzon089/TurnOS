@@ -38,10 +38,12 @@ up() {
 }
 
 test_db() {
+  # Misma estructura que el repo: delete_business.sql incluye ../../scripts/delete-business.sql (T-190)
   docker exec "$NAME" rm -rf /tmp/t
-  docker exec "$NAME" mkdir /tmp/t
-  for f in "$ROOT"/supabase/tests/*.sql; do docker cp -q "$f" "$NAME:/tmp/t/"; done
-  docker exec "$NAME" bash -c "pg_prove -U postgres -d postgres /tmp/t/*.sql"
+  docker exec "$NAME" mkdir -p /tmp/t/supabase/tests /tmp/t/scripts
+  for f in "$ROOT"/supabase/tests/*.sql; do docker cp -q "$f" "$NAME:/tmp/t/supabase/tests/"; done
+  docker cp -q "$ROOT/scripts/delete-business.sql" "$NAME:/tmp/t/scripts/"
+  docker exec "$NAME" bash -c "pg_prove -U postgres -d postgres /tmp/t/supabase/tests/*.sql"
 }
 
 case "${1:-up}" in
