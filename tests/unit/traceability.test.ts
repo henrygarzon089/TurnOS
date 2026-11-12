@@ -20,6 +20,7 @@ describe("NFR-009 pruebas trazables", () => {
       "14",
       "15",
       "16", // T-168: REQ-078 completo, con T-169…T-183 (ADR-051, ADR-052, ADR-053)
+      // "17" se agrega en T-191, cuando T-185…T-190 cubran los criterios de REQ-079 y REQ-080
     ]) {
       const out = execFileSync(
         "node_modules/.bin/tsx",
