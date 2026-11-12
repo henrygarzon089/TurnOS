@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { MyAppointment } from "@/components/queue/MyAppointment";
 import { getAppointmentByToken } from "@/lib/actions/public-appointments";
+import { isModuleEnabled } from "@/lib/domain/modules";
 import { businessPwaMetadata } from "@/lib/pwa";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +30,8 @@ export default async function AppointmentPage({
   params: Promise<{ token: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  // REQ-079.6: con el módulo apagado, a la portada (sin consultar la cita)
+  if (!isModuleEnabled("appointments")) redirect("/");
   const { token } = await params;
   const sp = await searchParams;
   const appointment = await getAppointmentByToken(token);

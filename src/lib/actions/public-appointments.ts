@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { createAdminGateway } from "@/lib/db/supabase-gateway";
+import { isModuleEnabled } from "@/lib/domain/modules";
 import * as appts from "@/lib/queue/appointments";
 
 // Citas desde la portada y "Mi cita" (REQ-050, REQ-051, ADR-009): service_role + funciones SQL.
@@ -11,9 +12,11 @@ async function clientIp(): Promise<string | null> {
   return h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? h.get("x-real-ip") ?? null;
 }
 
-/** REQ-050.1 */
+/** REQ-050.1. REQ-079.6: con el módulo de citas apagado nunca se ofrece reservar. */
 export async function getAppointmentInfo(slug: string) {
-  return appts.getAppointmentInfo(createAdminGateway(), slug);
+  const info = await appts.getAppointmentInfo(createAdminGateway(), slug);
+  if (info && !isModuleEnabled("appointments")) return { ...info, enabled: false };
+  return info;
 }
 
 /** REQ-049.3, 049.4 */
