@@ -2629,7 +2629,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 > Aprobado por Henry el 2026-11-12. Orden: T-184 → T-185…T-189 (independientes entre sí) →
 > T-191. T-190 va aparte y la corre Henry. Modelo sugerido en cada tarea.
 
-### [ ] T-184 · Lista de módulos y modo de pruebas
+### [x] T-184 · Lista de módulos y modo de pruebas
+- Hecha 2026-11-12 (PR #165).
 - REQ: REQ-079.1, REQ-079.7, REQ-079.8
 - Modelo: Sonnet 5.5. Complejidad: baja.
 - Archivos: `src/lib/domain/modules.ts`, `tests/unit/modules.test.ts`, `playwright.config.ts`,
@@ -2638,7 +2639,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: `enabledModules`, `isModuleEnabled`, `moduleForPath` con pruebas; la prueba que recorre
   las `page.tsx` pasa; CI verde sin cambios visibles en la app.
 
-### [ ] T-185 · Menú del dueño filtrado
+### [x] T-185 · Menú del dueño filtrado
+- Hecha 2026-11-12 (PR #169).
 - REQ: REQ-079.2
 - Modelo: Haiku 5.5. Complejidad: baja.
 - Archivos: `src/lib/domain/admin-nav.ts`, `src/components/admin/AdminNav.tsx`,
@@ -2648,7 +2650,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   spec. Hecha junto con T-186 en un solo PR, porque los dos menús se pintan en
   `src/app/(staff)/layout.tsx`.
 
-### [ ] T-186 · Menú del barbero filtrado
+### [x] T-186 · Menú del barbero filtrado
+- Hecha 2026-11-12 (PR #169).
 - REQ: REQ-079.3
 - Modelo: Haiku 5.5. Complejidad: baja.
 - Archivos: `src/lib/domain/barber-nav.ts`, `src/components/staff/BarberNav.tsx`, layout del
@@ -2657,21 +2660,24 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Nota (2026-11-12): "Más" se queda, porque además de módulos trae "Nueva venta" y "Salir"; ya
   no lleva destinos de módulos. Cumple REQ-079.3 ("sin Más cuando no queda nada que poner").
 
-### [ ] T-187 · "Hoy" sin lo apagado
+### [x] T-187 · "Hoy" sin lo apagado
+- Hecha 2026-11-12 (PR #168).
 - REQ: REQ-079.4
 - Modelo: Sonnet 5.5. Complejidad: media.
 - Archivos: `src/app/(staff)/admin/(hoy)/page.tsx`, `src/components/admin/today/TodayShortcuts.tsx`,
   `src/components/admin/today/load-owner-alerts.ts`, `src/lib/domain/today.ts`, pruebas unitarias.
 - Terminado: sin citas, recordar ni alertas de limpieza; rejilla sin huecos en celular y en 1024 px.
 
-### [ ] T-188 · Rutas apagadas redirigen
+### [x] T-188 · Rutas apagadas redirigen
+- Hecha 2026-11-12 (PR #167).
 - REQ: REQ-079.5, REQ-079.6
 - Modelo: Sonnet 5.5. Complejidad: media.
 - Archivos: `src/proxy.ts`, `src/app/(public)/[slug]/cita/page.tsx`, `src/app/(public)/c/[token]/page.tsx`,
   `src/app/(public)/regalo/[token]/page.tsx`, `src/lib/actions/appointments.ts`, `tests/unit/proxy.test.ts`.
 - Terminado: cada ruta apagada lleva al inicio que toca; la portada no ofrece cita.
 
-### [ ] T-189 · Un solo negocio
+### [x] T-189 · Un solo negocio
+- Hecha 2026-11-12 (PR #170).
 - REQ: REQ-080.1, REQ-080.2
 - Modelo: Sonnet 5.5. Complejidad: media.
 - Archivos: `src/app/page.tsx`, `src/components/auth/LoginForm.tsx`, `src/app/(staff)/layout.tsx`,
@@ -2680,7 +2686,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   tarea (después de desplegarla ya no se puede crear un negocio desde la app).
 - Terminado: `/` lleva a `/gamma-club`; `/crear-negocio` lleva a `/entrar`; sin enlace en `/entrar`.
 
-### [ ] T-190 · Procedimiento para borrar un negocio (Filo)
+### [x] T-190 · Procedimiento para borrar un negocio (Filo)
+- Hecha 2026-11-12 (PR #166).
 - REQ: REQ-080.3, REQ-080.4
 - Modelo: Opus 5.5. Complejidad: alta (borra datos reales).
 - Archivos: `scripts/delete-business.sql`, `supabase/tests/delete_business.sql`,
@@ -2691,6 +2698,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   comandos exactos y qué revisar antes de confirmar.
 
 ### [ ] T-191 · Validación Hito 17
+- Nota (2026-11-12): trazabilidad del Hito 17 sin huecos (`pnpm trace --hito=17`) y guía en
+  `docs/guia-prueba-hito-17.md`. Falta la prueba de Henry en el celular y su aprobación (ADR-056).
 - REQ: REQ-079, REQ-080
 - Modelo: Sonnet 5.5 para la guía; Opus 5.5 para la revisión del código antes de fusionar.
 - Archivos: `docs/guia-prueba-hito-17.md`, `docs/estado-del-proyecto.md`, `CLAUDE.md`.
