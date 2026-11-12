@@ -1,4 +1,5 @@
 import { navQueueCounts } from "@/lib/domain/admin-nav";
+import type { ModuleId } from "@/lib/domain/modules";
 import { loadOwnerQueue } from "./load-owner-queue";
 
 type QueueCounts = Parameters<typeof navQueueCounts>[0];
@@ -15,13 +16,16 @@ const LABEL: Record<string, string> = {
  */
 export async function NavCount({
   href,
+  enabled,
   load = loadOwnerQueue,
 }: {
   href: string;
+  /** Módulos encendidos (REQ-079.2): un número de un módulo apagado no se pinta. */
+  enabled: readonly ModuleId[];
   load?: () => Promise<QueueCounts>;
 }) {
   const view = await load().catch(() => null);
-  const count = navQueueCounts(view)[href];
+  const count = navQueueCounts(view, new Set(enabled))[href];
   if (!count) return null;
   return (
     <span aria-label={`${count} ${LABEL[href]}`} className="text-muted text-sm tabular-nums">

@@ -6,12 +6,16 @@ import { StaffHeader } from "@/components/staff/StaffHeader";
 import {
   ADMIN_GROUPS,
   ADMIN_TABS,
+  adminGroups,
+  adminTabs,
+  type AdminGroup,
   businessInitials,
   isActiveLink,
   isMoreActive,
   navAlertCounts,
   navQueueCounts,
 } from "@/lib/domain/admin-nav";
+import { ALL_MODULES, ESSENTIAL, enabledModules, type ModuleId } from "@/lib/domain/modules";
 import type { OwnerAlert } from "@/lib/domain/owner-alerts";
 import type { StaffSession } from "@/lib/auth/session";
 
@@ -19,6 +23,8 @@ const nav = vi.hoisted(() => ({ pathname: "/admin/caja" }));
 vi.mock("next/navigation", () => ({ usePathname: () => nav.pathname }));
 vi.mock("@/lib/actions/auth", () => ({ signOut: async () => {} }));
 vi.mock("@/lib/actions/queue", () => ({ getBusinessQueue: vi.fn() }));
+
+const ALL = enabledModules("todos");
 
 /** Los 19 destinos que tenía la fila de chips antes de T-150 (REQ-077.4). */
 const MODULES_BEFORE = [
@@ -94,7 +100,7 @@ describe("destino actual", () => {
 describe("AdminNav", () => {
   it("REQ-077.5 el destino actual lleva aria-current y cada destino mide ≥ 48 px", () => {
     nav.pathname = "/admin/caja";
-    const h = renderToStaticMarkup(<AdminNav />);
+    const h = renderToStaticMarkup(<AdminNav groups={ADMIN_GROUPS} tabs={ADMIN_TABS} />);
     // Caja aparece en la barra inferior y en el menú lateral: ambos marcados
     expect(h.match(/aria-current="page"/g)).toHaveLength(2);
     expect(h).toMatch(/<a[^>]*aria-current="page"[^>]*>(<[^>]+>)*Caja/);
@@ -106,7 +112,7 @@ describe("AdminNav", () => {
 
   it("REQ-077.2 el menú lateral es solo para 1024 px o más y la barra solo por debajo", () => {
     nav.pathname = "/admin/fila";
-    const h = renderToStaticMarkup(<AdminNav />);
+    const h = renderToStaticMarkup(<AdminNav groups={ADMIN_GROUPS} tabs={ADMIN_TABS} />);
     expect(h).toMatch(/aria-label="Menú del dueño"[^>]*class="[^"]*hidden[^"]*lg:flex/);
     expect(h).toMatch(/aria-label="Accesos rápidos"[^>]*class="[^"]*lg:hidden/);
     expect(h).toContain("env(safe-area-inset-bottom)");
@@ -130,18 +136,20 @@ describe("T-177 menú lateral con conteos (REQ-078.27)", () => {
       alert("inventory"),
       alert("membership"),
     ];
-    expect(navAlertCounts(alerts)).toEqual({ "/admin/limpieza": 2, "/admin/inventario": 1 });
+    expect(navAlertCounts(alerts, ALL)).toEqual({ "/admin/limpieza": 2, "/admin/inventario": 1 });
   });
 
   it("REQ-078.27 sin alertas de Limpieza ni Inventario (o si no cargaron) no hay insignias", () => {
-    expect(navAlertCounts([alert("cash"), alert("membership")])).toEqual({});
-    expect(navAlertCounts(null)).toEqual({});
+    expect(navAlertCounts([alert("cash"), alert("membership")], ALL)).toEqual({});
+    expect(navAlertCounts(null, ALL)).toEqual({});
   });
 
   it("REQ-078.27 la insignia roja va junto a su destino en el menú lateral", () => {
     nav.pathname = "/admin/fila";
     const h = renderToStaticMarkup(
       <AdminNav
+        groups={ADMIN_GROUPS}
+        tabs={ADMIN_TABS}
         badges={{
           "/admin/limpieza": <b data-x="limpieza">2</b>,
           "/admin/inventario": <b data-x="inventario">1</b>,
@@ -163,12 +171,12 @@ describe("T-177 menú lateral con conteos (REQ-078.27)", () => {
       ],
       appointments: [{ id: "a" }, { id: "b" }, { id: "c" }],
     };
-    expect(navQueueCounts(view)).toEqual({ "/admin/fila": 2, "/admin/citas": 3 });
+    expect(navQueueCounts(view, ALL)).toEqual({ "/admin/fila": 2, "/admin/citas": 3 });
   });
 
   it("REQ-078.27 sin nadie esperando ni citas (o si la fila no cargó) no se pinta número", () => {
-    expect(navQueueCounts({ active: [{ status: "called" }], appointments: [] })).toEqual({});
-    expect(navQueueCounts(null)).toEqual({});
+    expect(navQueueCounts({ active: [{ status: "called" }], appointments: [] }, ALL)).toEqual({});
+    expect(navQueueCounts(null, ALL)).toEqual({});
   });
 
   it("REQ-078.27 el conteo de Fila y Citas va en texto suave a la derecha del destino", async () => {
@@ -176,20 +184,30 @@ describe("T-177 menú lateral con conteos (REQ-078.27)", () => {
       active: [{ status: "waiting" }, { status: "waiting" }],
       appointments: [{ id: "a" }],
     });
-    const fila = renderToStaticMarkup(await NavCount({ href: "/admin/fila", load }));
+    const fila = renderToStaticMarkup(
+      await NavCount({ href: "/admin/fila", load, enabled: ALL_MODULES }),
+    );
     expect(fila).toMatch(/<span[^>]*class="[^"]*text-muted[^"]*"[^>]*>2<\/span>/);
     expect(fila).toContain('aria-label="2 esperando"');
-    const citas = renderToStaticMarkup(await NavCount({ href: "/admin/citas", load }));
+    const citas = renderToStaticMarkup(
+      await NavCount({ href: "/admin/citas", load, enabled: ALL_MODULES }),
+    );
     expect(citas).toContain('aria-label="1 citas por llegar"');
-    expect(await NavCount({ href: "/admin/fila", load: async () => null })).toBeNull();
+    expect(
+      await NavCount({ href: "/admin/fila", load: async () => null, enabled: ALL_MODULES }),
+    ).toBeNull();
     const fails = () => Promise.reject(new Error("x"));
-    expect(await NavCount({ href: "/admin/fila", load: fails })).toBeNull();
+    expect(await NavCount({ href: "/admin/fila", load: fails, enabled: ALL_MODULES })).toBeNull();
   });
 
   it("REQ-078.27 los conteos llegan al menú lateral junto a Fila y Citas", () => {
     nav.pathname = "/admin";
     const h = renderToStaticMarkup(
-      <AdminNav badges={{ "/admin/fila": <i>7</i>, "/admin/citas": <i>4</i> }} />,
+      <AdminNav
+        groups={ADMIN_GROUPS}
+        tabs={ADMIN_TABS}
+        badges={{ "/admin/fila": <i>7</i>, "/admin/citas": <i>4</i> }}
+      />,
     );
     expect(h).toMatch(/Fila<span class="ml-auto[^"]*"><i>7<\/i>/);
     expect(h).toMatch(/Citas<span class="ml-auto[^"]*"><i>4<\/i>/);
@@ -197,7 +215,7 @@ describe("T-177 menú lateral con conteos (REQ-078.27)", () => {
 
   it("REQ-078.27 el activo lleva raya izquierda de 3 px y fondo suave", () => {
     nav.pathname = "/admin/limpieza";
-    const h = renderToStaticMarkup(<AdminNav />);
+    const h = renderToStaticMarkup(<AdminNav groups={ADMIN_GROUPS} tabs={ADMIN_TABS} />);
     const side = h.slice(h.indexOf('aria-label="Menú del dueño"'), h.indexOf("Accesos rápidos"));
     const tag = side.match(/<a [^>]*aria-current="page"[^>]*>Limpieza/)![0];
     expect(tag).toContain("bg-brand-soft");
@@ -205,9 +223,84 @@ describe("T-177 menú lateral con conteos (REQ-078.27)", () => {
   });
 
   it("REQ-078.27 el menú lateral empieza debajo de la barra azul de 56 px", () => {
-    const h = renderToStaticMarkup(<AdminNav />);
+    const h = renderToStaticMarkup(<AdminNav groups={ADMIN_GROUPS} tabs={ADMIN_TABS} />);
     expect(h).toMatch(/aria-label="Menú del dueño"[^>]*class="[^"]*top-14[^"]*bottom-0/);
     expect(h).not.toMatch(/aria-label="Menú del dueño"[^>]*class="[^"]*inset-y-0/);
+  });
+});
+
+const labelsOf = (groups: AdminGroup[]) =>
+  groups.map((g) => [g.label, g.items.map((i) => i.label)]);
+const hrefsOf = (groups: AdminGroup[]) => groups.flatMap((g) => g.items.map((i) => i.href));
+const ONLY_CASH = new Set<ModuleId>(["cash"]);
+
+describe("REQ-079.2 menú del dueño con los módulos encendidos", () => {
+  it("REQ-079.2 en modo esencial quedan 14 destinos en sus grupos y en orden", () => {
+    expect(labelsOf(adminGroups(ESSENTIAL))).toEqual([
+      ["Operación", ["Hoy", "Fila", "Caja", "Semana"]],
+      ["Clientes", ["Clientes", "Fidelidad"]],
+      ["Local", ["Productos", "Inventario"]],
+      ["Configuración", ["Barberos", "Servicios", "Horario", "QR", "Negocio", "Privacidad"]],
+    ]);
+    expect(hrefsOf(adminGroups(ESSENTIAL))).toHaveLength(14);
+  });
+
+  it("REQ-079.2 en modo esencial no sale ningún módulo apagado", () => {
+    const hrefs = hrefsOf(adminGroups(ESSENTIAL));
+    for (const off of [
+      "/admin/citas",
+      "/admin/recordar",
+      "/admin/membresias",
+      "/admin/regalos",
+      "/admin/limpieza",
+      "/admin/mensajes",
+    ]) {
+      expect(hrefs).not.toContain(off);
+    }
+  });
+
+  it("REQ-079.2 con todos los módulos el menú es el de siempre (20 destinos)", () => {
+    expect(adminGroups(ALL)).toEqual(ADMIN_GROUPS);
+    expect(hrefsOf(adminGroups(ALL))).toHaveLength(20);
+    expect(adminTabs(ALL)).toEqual(ADMIN_TABS);
+  });
+
+  it("REQ-079.2 un grupo sin módulos encendidos no se muestra", () => {
+    expect(labelsOf(adminGroups(ONLY_CASH))).toEqual([["Operación", ["Caja"]]]);
+    expect(labelsOf(adminGroups(new Set<ModuleId>(["today"])))).toEqual([["Operación", ["Hoy"]]]);
+    expect(adminGroups(new Set<ModuleId>())).toEqual([]);
+  });
+
+  it("REQ-079.2 la barra del dueño solo lleva los encendidos de Hoy, Fila, Caja y Clientes", () => {
+    expect(adminTabs(ESSENTIAL).map((t) => t.label)).toEqual(["Hoy", "Fila", "Caja", "Clientes"]);
+    expect(adminTabs(ONLY_CASH).map((t) => t.label)).toEqual(["Caja"]);
+  });
+
+  it("REQ-079.2 el menú renderizado en modo esencial no lleva enlaces apagados", () => {
+    nav.pathname = "/admin";
+    const h = renderToStaticMarkup(
+      <AdminNav groups={adminGroups(ESSENTIAL)} tabs={adminTabs(ESSENTIAL)} />,
+    );
+    expect(h).not.toContain('href="/admin/citas"');
+    expect(h).not.toContain('href="/admin/limpieza"');
+    // 14 del lateral + 4 de la barra
+    expect(h.match(/<a [^>]*>/g)).toHaveLength(18);
+  });
+});
+
+describe("REQ-079.2 conteos sin módulos apagados", () => {
+  it("REQ-079.2 la insignia de Limpieza no cuenta si Limpieza está apagada", () => {
+    const alerts = [alert("cleaning"), alert("inventory")];
+    expect(navAlertCounts(alerts, ESSENTIAL)).toEqual({ "/admin/inventario": 1 });
+  });
+
+  it("REQ-079.2 el número de Citas no sale si Citas está apagada", () => {
+    const view = {
+      active: [{ status: "waiting" }, { status: "waiting" }],
+      appointments: [{ id: "a" }, { id: "b" }, { id: "c" }],
+    };
+    expect(navQueueCounts(view, ESSENTIAL)).toEqual({ "/admin/fila": 2 });
+    expect(navQueueCounts(view, ALL)).toEqual({ "/admin/fila": 2, "/admin/citas": 3 });
   });
 });
 
