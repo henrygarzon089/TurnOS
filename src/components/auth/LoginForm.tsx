@@ -14,7 +14,16 @@ type Tab = "barber" | "owner";
  * Entrar (tablero Acceso): pestañas con subrayado, no rellenas, para que "Entrar" sea el único
  * principal (REQ-078.4). El barbero escribe el PIN en 6 casillas que muestran puntos (REQ-078.7).
  */
-export function LoginForm({ initialTab, volver }: { initialTab: Tab; volver?: string }) {
+export function LoginForm({
+  initialTab,
+  volver,
+  canSignup = false,
+}: {
+  initialTab: Tab;
+  volver?: string;
+  /** REQ-080.1: solo con el módulo `signup` encendido se ofrece crear un negocio. */
+  canSignup?: boolean;
+}) {
   const [tab, setTab] = useState<Tab>(initialTab);
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
@@ -82,12 +91,14 @@ export function LoginForm({ initialTab, volver }: { initialTab: Tab; volver?: st
           >
             Entrar
           </Button>
-          <Link
-            href="/crear-negocio"
-            className="text-brand flex min-h-12 items-center justify-center text-base font-semibold underline underline-offset-4"
-          >
-            ¿Nuevo negocio? Crear mi cuenta
-          </Link>
+          {canSignup && (
+            <Link
+              href="/crear-negocio"
+              className="text-brand flex min-h-12 items-center justify-center text-base font-semibold underline underline-offset-4"
+            >
+              ¿Nuevo negocio? Crear mi cuenta
+            </Link>
+          )}
         </form>
       )}
     </div>

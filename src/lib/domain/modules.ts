@@ -131,8 +131,8 @@ const SLUG_ROUTES = new Map<string, ModuleId>([
 
 /**
  * A dónde mandar al personal que abre la ruta de un módulo apagado (REQ-079.5, design §23.4), o
- * `null` si no hay que redirigir. `/admin/*` → `/admin`, `/app/*` → `/app/fila`. T-189 agrega aquí
- * el caso de `/crear-negocio` → `/entrar`.
+ * `null` si no hay que redirigir. `/admin/*` → `/admin`, `/app/*` → `/app/fila`,
+ * `/crear-negocio` → `/entrar` (REQ-080.1).
  */
 export function redirectForDisabled(
   pathname: string,
@@ -143,6 +143,7 @@ export function redirectForDisabled(
   const first = pathname.split("/").filter(Boolean)[0];
   if (first === "admin") return "/admin";
   if (first === "app") return "/app/fila";
+  if (first === "crear-negocio") return "/entrar"; // REQ-080.1
   return null;
 }
 

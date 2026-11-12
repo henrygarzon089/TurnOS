@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getStaffSession } from "@/lib/auth/session";
 import { parseLoyaltyForm } from "@/lib/domain/loyalty";
+import { isModuleEnabled } from "@/lib/domain/modules";
 import { parseCOP } from "@/lib/domain/money";
 import { normalizePhoneCO } from "@/lib/domain/phone";
 import { parseProductForm } from "@/lib/domain/product-form";
@@ -44,6 +45,8 @@ export async function slugify(name: string): Promise<string> {
 
 /** Paso 1 (REQ-030.1): crea la cuenta del dueño (si no hay sesión) y el negocio. */
 export async function createBusiness(_prev: FormState, formData: FormData): Promise<FormState> {
+  // REQ-080.1: defensa aunque el proxy ya redirija la ruta; sin registro no se crean negocios.
+  if (!isModuleEnabled("signup")) return { error: "Crear negocios nuevos no está disponible." };
   const raw = Object.fromEntries(formData);
   const biz = businessSchema.safeParse(raw);
   if (!biz.success) return { error: biz.error.issues[0]?.message };

@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { enabledModules, redirectForDisabled } from "@/lib/domain/modules";
+import {
+  NO_BUSINESS_MESSAGE,
+  noBusinessDestination,
+  shouldBounceLoginToApp,
+} from "@/lib/domain/staff-entry";
 
 vi.mock("next/headers", () => ({ headers: async () => new Headers() }));
 const rpc = vi.fn();
@@ -52,8 +57,24 @@ describe("redirectForDisabled (personal)", () => {
     }
   });
 
-  it("REQ-079.5 /crear-negocio no redirige todavía (lo agrega T-189)", () => {
-    expect(redirectForDisabled("/crear-negocio", essential)).toBeNull();
+  it("REQ-080.1 /crear-negocio va a /entrar en esencial y no redirige con todos", () => {
+    expect(redirectForDisabled("/crear-negocio", essential)).toBe("/entrar");
+    expect(redirectForDisabled("/crear-negocio", all)).toBeNull();
+  });
+
+  it("REQ-080.1 sin negocio y sin registro: /entrar con el motivo, sin ciclo con el proxy", () => {
+    expect(noBusinessDestination(true)).toBe("/crear-negocio");
+    expect(noBusinessDestination(false)).toBe("/entrar?motivo=sin-negocio");
+    expect(NO_BUSINESS_MESSAGE).toBe("Tu cuenta no tiene un negocio.");
+    // el proxy no devuelve a /app a quien llegó con ese motivo
+    expect(shouldBounceLoginToApp(true, "sin-negocio")).toBe(false);
+    expect(shouldBounceLoginToApp(true, undefined)).toBe(true);
+    expect(shouldBounceLoginToApp(false, undefined)).toBe(false);
+  });
+
+  it("REQ-080.1 el enlace de la portada del personal sigue hacia /entrar sin ciclo", () => {
+    // /entrar nunca redirige a una ruta que a su vez redirija a /entrar
+    expect(redirectForDisabled("/entrar", essential)).toBeNull();
   });
 });
 

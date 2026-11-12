@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { redirectForDisabled } from "@/lib/domain/modules";
+import { shouldBounceLoginToApp } from "@/lib/domain/staff-entry";
 
 /**
  * Proxy (antes "middleware") de Next.js 16:
@@ -55,7 +56,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (pathname === "/entrar" && user) {
+  // `?motivo=sin-negocio` no rebota a /app: la cuenta sin negocio vería un ciclo (REQ-080.1)
+  if (
+    pathname === "/entrar" &&
+    shouldBounceLoginToApp(!!user, request.nextUrl.searchParams.get("motivo"))
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = "/app";
     url.search = "";
