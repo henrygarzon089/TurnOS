@@ -246,3 +246,72 @@ export function buildRemindPeople(
     })),
   ];
 }
+
+/**
+ * REQ-079.4 qué bloques de "Hoy" van y en qué celdas de la rejilla de 12 columnas (≥ 1024 px)
+ * según los módulos encendidos, sin huecos. Los textos de clase son literales para que Tailwind
+ * los encuentre.
+ *
+ * Con citas: fila (8) + caja (4) arriba; alertas (8) + citas (4); semana (6) + recordar (6).
+ * Sin citas: fila (8) + alertas (4) arriba; caja (6) + semana (6) abajo. Si recordar sigue
+ * encendido sin citas, va en su propia fila de 12; si citas sigue sin recordar, la semana toma 12.
+ */
+export type TodayLayout = {
+  showAppointments: boolean;
+  showRemind: boolean;
+  queue: string;
+  alerts: string;
+  cash: string;
+  appointments: string;
+  remind: string;
+  week: string;
+};
+
+export function todayLayout(modules: ReadonlySet<string>): TodayLayout {
+  const showAppointments = modules.has("appointments");
+  const showRemind = modules.has("remind");
+  const queue = "lg:col-span-8 lg:row-start-1";
+  if (showAppointments) {
+    return {
+      showAppointments,
+      showRemind,
+      queue,
+      alerts: "lg:col-span-8 lg:row-start-2 lg:group-has-[[data-appointments]:empty]:col-span-12",
+      cash: "lg:col-span-4 lg:col-start-9 lg:row-start-1",
+      appointments: "lg:col-span-4 lg:col-start-9 lg:row-start-2",
+      remind: "lg:col-span-6 lg:col-start-7 lg:row-start-3",
+      week: showRemind
+        ? "lg:col-span-6 lg:col-start-1 lg:row-start-3"
+        : "lg:col-span-12 lg:col-start-1 lg:row-start-3",
+    };
+  }
+  return {
+    showAppointments,
+    showRemind,
+    queue,
+    alerts: "lg:col-span-4 lg:col-start-9 lg:row-start-1",
+    cash: "lg:col-span-6 lg:col-start-1 lg:row-start-2",
+    appointments: "",
+    remind: "lg:col-span-12 lg:col-start-1 lg:row-start-3",
+    week: "lg:col-span-6 lg:col-start-7 lg:row-start-2",
+  };
+}
+
+/** REQ-079.4 atajos de "Hoy" que apuntan a módulos encendidos. */
+export function todayShortcuts(modules: ReadonlySet<string>) {
+  return {
+    queue: modules.has("queue"),
+    closeCash: modules.has("cash"),
+    newSale: modules.has("cash"),
+  };
+}
+
+/** REQ-079.4 de qué fuentes se leen las alertas del dueño; las de módulos apagados no se cargan. */
+export function ownerAlertSources(modules: ReadonlySet<string>) {
+  return {
+    cash: modules.has("cash"),
+    cleaning: modules.has("cleaning"),
+    inventory: modules.has("inventory"),
+    memberships: modules.has("memberships"),
+  };
+}

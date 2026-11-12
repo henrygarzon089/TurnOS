@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { NewSaleButton } from "@/components/cash/NewSaleSheet";
+import { enabledModules } from "@/lib/domain/modules";
+import { todayShortcuts } from "@/lib/domain/today";
 
 /**
  * REQ-076.8, REQ-078.29 accesos directos de "Hoy": "Nueva venta" (el único botón relleno de la
@@ -10,20 +12,26 @@ import { NewSaleButton } from "@/components/cash/NewSaleSheet";
  */
 const FIT = "whitespace-nowrap max-md:px-3 max-lg:text-base md:w-auto";
 
-export function TodayShortcuts() {
+export function TodayShortcuts({ modules = enabledModules() }: { modules?: ReadonlySet<string> }) {
+  const show = todayShortcuts(modules);
+  const cols = show.closeCash ? "grid-cols-[2fr_3fr]" : "grid-cols-1";
   return (
     <div
       role="group"
       aria-label="Accesos directos"
-      className="bg-surface border-line fixed inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] z-10 grid grid-cols-[2fr_3fr] gap-2 border-t p-4 md:flex md:justify-end lg:static lg:border-0 lg:bg-transparent lg:p-0"
+      className={`bg-surface border-line fixed inset-x-0 bottom-[calc(3.5rem+1px+env(safe-area-inset-bottom))] z-10 grid ${cols} gap-2 border-t p-4 md:flex md:justify-end lg:static lg:border-0 lg:bg-transparent lg:p-0`}
     >
-      <Link href="/admin/fila" className={`btn-secondary max-md:hidden ${FIT}`}>
-        Fila
-      </Link>
-      <Link href="/admin/caja" className={`btn-secondary ${FIT}`}>
-        Cerrar caja
-      </Link>
-      <NewSaleButton className={`btn-primary ${FIT}`} toast />
+      {show.queue && (
+        <Link href="/admin/fila" className={`btn-secondary max-md:hidden ${FIT}`}>
+          Fila
+        </Link>
+      )}
+      {show.closeCash && (
+        <Link href="/admin/caja" className={`btn-secondary ${FIT}`}>
+          Cerrar caja
+        </Link>
+      )}
+      {show.newSale && <NewSaleButton className={`btn-primary ${FIT}`} toast />}
     </div>
   );
 }
