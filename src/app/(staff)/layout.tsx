@@ -9,6 +9,9 @@ import { BarberNav } from "@/components/staff/BarberNav";
 import { StaffHeader } from "@/components/staff/StaffHeader";
 import { SkeletonBlock, SkeletonScreen } from "@/components/ui/Skeleton";
 import { getStaffSession } from "@/lib/auth/session";
+import { adminGroups, adminTabs } from "@/lib/domain/admin-nav";
+import { barberMore, barberTabs } from "@/lib/domain/barber-nav";
+import { enabledModules, moduleForPath } from "@/lib/domain/modules";
 
 /**
  * Todas las rutas del personal (/app/*, /admin/*) exigen sesión y membresía en un negocio.
@@ -36,6 +39,13 @@ async function StaffGate({ children }: { children: React.ReactNode }) {
     redirect("/crear-negocio");
   }
   const owner = session.role === "owner";
+  // REQ-079.2/3: los menús llevan solo los módulos encendidos; se calcula aquí, en el servidor.
+  const modules = enabledModules();
+  const enabledList = [...modules];
+  const badgeOn = (href: string) => {
+    const m = moduleForPath(href);
+    return m !== null && modules.has(m);
+  };
   return (
     // Por debajo de 1024 px, una pantalla del dueño con su propia cabecera azul (`data-screen-header`,
     // design §22.8) oculta la barra del negocio para no mostrar dos barras azules.
@@ -52,15 +62,21 @@ async function StaffGate({ children }: { children: React.ReactNode }) {
       </div>
       {session.role === "barber" && (
         <BarberNav
+          tabs={barberTabs(modules)}
+          moreLinks={barberMore(modules)}
           cleaningDot={
-            <Suspense fallback={null}>
-              <CleaningDot />
-            </Suspense>
+            modules.has("cleaning") ? (
+              <Suspense fallback={null}>
+                <CleaningDot />
+              </Suspense>
+            ) : undefined
           }
         />
       )}
       {owner && (
         <AdminNav
+          groups={adminGroups(modules)}
+          tabs={adminTabs(modules)}
           todayBadge={
             <Suspense fallback={null}>
               <TodayBadge />
@@ -68,18 +84,22 @@ async function StaffGate({ children }: { children: React.ReactNode }) {
           }
           badges={{
             ...Object.fromEntries(
-              ["/admin/fila", "/admin/citas"].map((href) => [
+              ["/admin/fila", "/admin/citas"].filter(badgeOn).map((href) => [
                 href,
                 <Suspense key={href} fallback={null}>
-                  <NavCount href={href} />
+                  <NavCount href={href} enabled={enabledList} />
                 </Suspense>,
               ]),
             ),
             ...Object.fromEntries(
-              ["/admin/limpieza", "/admin/inventario"].map((href) => [
+              ["/admin/limpieza", "/admin/inventario"].filter(badgeOn).map((href) => [
                 href,
                 <Suspense key={href} fallback={null}>
-                  <NavAlertBadge href={href} testId={`nav-badge-${href.split("/").at(-1)}`} />
+                  <NavAlertBadge
+                    href={href}
+                    enabled={enabledList}
+                    testId={`nav-badge-${href.split("/").at(-1)}`}
+                  />
                 </Suspense>,
               ]),
             ),
