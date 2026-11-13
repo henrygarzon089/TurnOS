@@ -30,8 +30,8 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 ## Estado actual (2026-11-12)
 
 - **Hito 17 (modo esencial y un solo negocio, REQ-079…080, ADR-055)** construido (T-184…T-190,
-  2026-11-12), falta lo de Henry (T-191): solo **Gamma Club** (`/gamma-club`), Filo por borrar con
-  `docs/guia-borrar-negocio.md`. La lista de módulos encendidos vive en `src/lib/domain/modules.ts`
+  2026-11-12), falta lo de Henry (T-191): solo **Gamma Club** (`/gamma-club`), Filo y La 33 borrados de
+  producción el 2026-11-12 (`docs/guia-borrar-negocio.md`; el seed La 33 sigue solo en local y CI). La lista de módulos encendidos vive en `src/lib/domain/modules.ts`
   (14 destinos del dueño, 4 del barbero; sin migraciones); `TURNOS_MODULES=todos` enciende todo y
   es lo que usan el CI (E2E y Lighthouse) y, si algo falla, Vercel. Pasos y prueba en
   `docs/guia-prueba-hito-17.md`.

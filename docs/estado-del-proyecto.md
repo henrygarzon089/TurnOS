@@ -660,6 +660,12 @@ Pendientes (H3): `/admin/caja`,
 - Falta (Henry, en este orden; detalle en `docs/guia-prueba-hito-17.md`): 1) borrar Filo
   (`docs/guia-borrar-negocio.md`); 2) crear Gamma Club en `/crear-negocio` **antes** de desplegar; 3) desplegar `main`; 4) cargar Gamma Club (barberos y PIN, servicios, comisión, horario,
   fidelidad, productos, privacidad); 5) prueba en el celular como dueño y como barbero; 6) imprimir el QR; 7) aprobar (ADR-056); 8) otro día, el inventario.
+- 2026-11-12, Henry en producción con `scripts/delete-business.sql`: respaldo con `pg_dump`
+  (guardado fuera del repositorio), y borrados **Filo** (2 cuentas, 8 turnos, 8 ventas; sin cierres
+  de caja) y **La 33** (el seed de prueba: 6 cuentas, 187 turnos). Producción quedó con 0 negocios.
+  El script funcionó con el usuario `postgres` del Session pooler, sin errores de permisos. Falta
+  revisar en el panel la carpeta de Filo en Storage (la lista del script salió vacía aunque había
+  1 foto de barbero). Siguen los pasos 2 a 8.
 - Plan para el arnés y los agentes: `docs/plan-hito-17.md`.
 
 ## Desvíos registrados respecto a la spec (todos explícitos)
