@@ -684,6 +684,15 @@ Pendientes (H3): `/admin/caja`,
   dueño queda con 13 destinos en modo esencial. Sin migraciones; falta desplegar (Henry).
 - 2026-11-13, T-193: al guardar el horario, los selectores volvían a "12:00 a. m." hasta recargar
   (React limpiaba el formulario). Corregido en `HoursForm`; los datos siempre se guardaron bien.
+- 2026-11-13: cargadas en producción las facturas de Tecniafilado Crissmen (PVA18721 y PVA18930):
+  23 insumos de uso interno y sus entradas a bodega ($495.000), con `supabase db query --linked`
+  y autorización de Henry. Los 3 ítems de la plantilla básica quedaron convertidos en guantes,
+  cuchillas Dorco y cuellos Venus. Falta el conteo inicial de la bodega y, cuando estén todos los
+  barberos, dotación 1 por estación (Henry lo pidió).
+- 2026-11-13, T-194 (REQ-081, ADR-058): el barbero puede tener celular de otro país (Pedro, de
+  Argentina). "País del celular" en el formulario del barbero y "Mi celular no es de Colombia" al
+  entrar; los clientes siguen solo con celular colombiano. Migración `0073` (la aplica Henry con
+  `supabase db push`), luego desplegar.
 - Plan para el arnés y los agentes: `docs/plan-hito-17.md`.
 
 ## Desvíos registrados respecto a la spec (todos explícitos)

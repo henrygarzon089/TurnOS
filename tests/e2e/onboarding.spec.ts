@@ -36,7 +36,7 @@ test.describe("REQ-030 alta de negocio e invitaciones", () => {
     const phone = `301${Math.floor(1000000 + Math.random() * 8999999)}`;
     await page.getByRole("button", { name: "Nuevo barbero" }).click();
     await page.getByLabel("Nombre").fill("Invitado E2E");
-    await page.getByLabel("Celular").fill(phone);
+    await page.getByLabel("Celular", { exact: true }).fill(phone);
     await page.getByLabel("Comisión (%)").fill("55");
     await page.getByRole("button", { name: "Crear e invitar" }).click();
 
@@ -57,6 +57,52 @@ test.describe("REQ-030 alta de negocio e invitaciones", () => {
     await barberPage.goto(link!);
     await expect(barberPage.getByRole("heading", { name: "Invitación no válida" })).toBeVisible();
     await ctx.close();
+  });
+
+  test("REQ-081.1 REQ-081.3 REQ-081.4 REQ-081.5 barbero con celular de Argentina: se crea, acepta y entra", async ({
+    page,
+    browser,
+  }) => {
+    await loginAsOwner(page);
+    await page.goto("/admin/barberos");
+    const last = String(Math.floor(1000 + Math.random() * 8999));
+    const typed = `+54 9 11 2345 ${last}`;
+    const name = `Pedro E2E ${last}`;
+    await page.getByRole("button", { name: "Nuevo barbero" }).click();
+    await page.getByLabel("Nombre").fill(name);
+    await page.getByLabel("País del celular").selectOption("other");
+    await page.getByLabel("Celular", { exact: true }).fill(typed);
+    await page.getByLabel("Comisión (%)").fill("50");
+    await page.getByRole("button", { name: "Crear e invitar" }).click();
+    const link = await page.getByTestId("invite-url").textContent();
+    expect(link).toMatch(/\/invitacion\/[A-Za-z0-9_-]+$/);
+    await page.getByRole("button", { name: "Listo" }).click();
+
+    // REQ-081.5: en la lista sale con su indicativo y enmascarado
+    await page.reload();
+    const row = page.getByRole("article", { name: `Barbero ${name}` });
+    await expect(row.getByText(`+54 *** ${last}`)).toBeVisible();
+
+    // REQ-081.3: acepta la invitación con su número de otro país
+    const ctx = await browser.newContext();
+    const barberPage = await ctx.newPage();
+    await barberPage.goto(link!);
+    await barberPage.getByLabel("PIN (6 números)").fill("615243");
+    await barberPage.getByLabel("Repite el PIN").fill("615243");
+    await barberPage.getByRole("button", { name: "Crear mi acceso" }).click();
+    await expect(barberPage).toHaveURL(/\/app\/fila/);
+    await ctx.close();
+
+    // REQ-081.4: entra desde /entrar con "Mi celular no es de Colombia"
+    const ctx2 = await browser.newContext();
+    const login = await ctx2.newPage();
+    await login.goto("/entrar");
+    await login.getByRole("button", { name: "Mi celular no es de Colombia" }).click();
+    await login.getByLabel("Celular").fill(typed);
+    await login.getByLabel("PIN (6 números)").fill("615243");
+    await login.getByRole("button", { name: "Entrar" }).click();
+    await expect(login).toHaveURL(/\/app\/fila/, { timeout: 15_000 });
+    await ctx2.close();
   });
 
   test("REQ-030.2 un enlace inexistente muestra invitación no válida", async ({ page }) => {
