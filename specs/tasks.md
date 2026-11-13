@@ -2708,6 +2708,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   caja, liquidación de la semana) y aprobar (ADR nuevo).
 - Terminado: `pnpm trace --hito=17` sin huecos; CI verde.
 
+### [x] T-192 · Horario y QR en un solo destino del menú
+- Hecha 2026-11-12 (ADR-057).
+- REQ: REQ-079.9
+- Modelo: Opus 5.5. Complejidad: baja.
+- Archivos: `src/lib/domain/admin-nav.ts`, `src/app/(staff)/admin/horario/page.tsx`,
+  `tests/unit/admin-nav.test.tsx`, `tests/e2e/admin-nav.spec.ts`.
+- Terminado: un solo destino "Horario y QR" marcado en `/admin/horario` y `/admin/qr`; 13 destinos
+  en modo esencial; CI verde.
+
 ---
 
 ## Dependencias principales

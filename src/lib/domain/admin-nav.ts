@@ -6,7 +6,14 @@ import type { ModuleId } from "./modules";
  * "Más" y el menú lateral. Cada destino dice a qué módulo pertenece (REQ-079.2, design §23.2); lo
  * que no está encendido no se muestra (`adminGroups`, `adminTabs`).
  */
-export type AdminLink = { href: string; label: string; exact?: boolean; module: ModuleId };
+export type AdminLink = {
+  href: string;
+  label: string;
+  exact?: boolean;
+  module: ModuleId;
+  /** Otras rutas que abren la misma pantalla y marcan este destino (REQ-079.9: `/admin/qr`). */
+  also?: string[];
+};
 export type AdminGroup = { label: string; items: AdminLink[] };
 
 const HOY: AdminLink = { href: "/admin", label: "Hoy", exact: true, module: "today" };
@@ -49,8 +56,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     items: [
       { href: "/admin/barberos", label: "Barberos", module: "barbers" },
       { href: "/admin/servicios", label: "Servicios", module: "services" },
-      { href: "/admin/horario", label: "Horario", module: "hours" },
-      { href: "/admin/qr", label: "QR", module: "qr" },
+      // REQ-079.9: Horario y QR son la misma pantalla (design §22.8), un solo destino.
+      { href: "/admin/horario", label: "Horario y QR", module: "hours", also: ["/admin/qr"] },
       { href: "/admin/mensajes", label: "Mensajes", module: "messages" },
       { href: "/admin/negocio", label: "Negocio", module: "business" },
       { href: "/admin/privacidad", label: "Privacidad", module: "privacy" },
@@ -80,7 +87,9 @@ export function adminTabs(enabled: ReadonlySet<ModuleId>): AdminLink[] {
 /** Destino actual por prefijo de ruta (`/admin/caja/2026-11-01` es Caja); Hoy solo en `/admin`. */
 export function isActiveLink(pathname: string, link: AdminLink): boolean {
   if (link.exact) return pathname === link.href;
-  return pathname === link.href || pathname.startsWith(`${link.href}/`);
+  return [link.href, ...(link.also ?? [])].some(
+    (href) => pathname === href || pathname.startsWith(`${href}/`),
+  );
 }
 
 export function isMoreActive(pathname: string, tabs: AdminLink[] = ADMIN_TABS): boolean {

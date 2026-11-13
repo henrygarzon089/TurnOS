@@ -57,17 +57,21 @@ describe("ADMIN_GROUPS", () => {
       ["Local", ["Limpieza", "Productos", "Inventario"]],
       [
         "Configuración",
-        ["Barberos", "Servicios", "Horario", "QR", "Mensajes", "Negocio", "Privacidad"],
+        ["Barberos", "Servicios", "Horario y QR", "Mensajes", "Negocio", "Privacidad"],
       ],
     ]);
   });
 
   it("REQ-077.4 ningún módulo del menú anterior queda sin acceso, y se suma Hoy", () => {
     const hrefs = ADMIN_GROUPS.flatMap((g) => g.items.map((i) => i.href));
-    for (const href of MODULES_BEFORE) expect(hrefs).toContain(href);
+    // REQ-079.9: /admin/qr se abre desde "Horario y QR" (queda marcado ahí).
+    const reachable = ADMIN_GROUPS.flatMap((g) =>
+      g.items.flatMap((i) => [i.href, ...(i.also ?? [])]),
+    );
+    for (const href of MODULES_BEFORE) expect(reachable).toContain(href);
     expect(hrefs).toContain("/admin");
     expect(new Set(hrefs).size).toBe(hrefs.length);
-    expect(hrefs).toHaveLength(20);
+    expect(hrefs).toHaveLength(19);
   });
 
   it("REQ-077.1 la barra inferior lleva Hoy, Fila, Caja y Clientes (más el botón Más)", () => {
@@ -105,7 +109,7 @@ describe("AdminNav", () => {
     expect(h.match(/aria-current="page"/g)).toHaveLength(2);
     expect(h).toMatch(/<a[^>]*aria-current="page"[^>]*>(<[^>]+>)*Caja/);
     const links = h.match(/<a [^>]*>/g)!;
-    expect(links.length).toBeGreaterThanOrEqual(24); // 4 de la barra + 20 del lateral
+    expect(links.length).toBeGreaterThanOrEqual(23); // 4 de la barra + 19 del lateral (REQ-079.9)
     for (const a of links) expect(a).toMatch(/min-h-12|h-14/);
     expect(h).toMatch(/<button[^>]*min-h-12[^>]*>[\s\S]*?Más/);
   });
@@ -235,14 +239,14 @@ const hrefsOf = (groups: AdminGroup[]) => groups.flatMap((g) => g.items.map((i) 
 const ONLY_CASH = new Set<ModuleId>(["cash"]);
 
 describe("REQ-079.2 menú del dueño con los módulos encendidos", () => {
-  it("REQ-079.2 en modo esencial quedan 14 destinos en sus grupos y en orden", () => {
+  it("REQ-079.2 en modo esencial quedan 13 destinos en sus grupos y en orden", () => {
     expect(labelsOf(adminGroups(ESSENTIAL))).toEqual([
       ["Operación", ["Hoy", "Fila", "Caja", "Semana"]],
       ["Clientes", ["Clientes", "Fidelidad"]],
       ["Local", ["Productos", "Inventario"]],
-      ["Configuración", ["Barberos", "Servicios", "Horario", "QR", "Negocio", "Privacidad"]],
+      ["Configuración", ["Barberos", "Servicios", "Horario y QR", "Negocio", "Privacidad"]],
     ]);
-    expect(hrefsOf(adminGroups(ESSENTIAL))).toHaveLength(14);
+    expect(hrefsOf(adminGroups(ESSENTIAL))).toHaveLength(13);
   });
 
   it("REQ-079.2 en modo esencial no sale ningún módulo apagado", () => {
@@ -259,9 +263,9 @@ describe("REQ-079.2 menú del dueño con los módulos encendidos", () => {
     }
   });
 
-  it("REQ-079.2 con todos los módulos el menú es el de siempre (20 destinos)", () => {
+  it("REQ-079.2 con todos los módulos el menú es el de siempre (19 destinos)", () => {
     expect(adminGroups(ALL)).toEqual(ADMIN_GROUPS);
-    expect(hrefsOf(adminGroups(ALL))).toHaveLength(20);
+    expect(hrefsOf(adminGroups(ALL))).toHaveLength(19);
     expect(adminTabs(ALL)).toEqual(ADMIN_TABS);
   });
 
@@ -283,8 +287,34 @@ describe("REQ-079.2 menú del dueño con los módulos encendidos", () => {
     );
     expect(h).not.toContain('href="/admin/citas"');
     expect(h).not.toContain('href="/admin/limpieza"');
-    // 14 del lateral + 4 de la barra
-    expect(h.match(/<a [^>]*>/g)).toHaveLength(18);
+    // 13 del lateral + 4 de la barra
+    expect(h.match(/<a [^>]*>/g)).toHaveLength(17);
+  });
+});
+
+describe("REQ-079.9 Horario y QR en un solo destino", () => {
+  const hoursAndQr = () =>
+    ADMIN_GROUPS.flatMap((g) => g.items).filter((i) => /Horario|QR/.test(i.label));
+
+  it('REQ-079.9 el menú tiene un solo destino "Horario y QR" que abre /admin/horario', () => {
+    expect(hoursAndQr().map((i) => [i.label, i.href])).toEqual([
+      ["Horario y QR", "/admin/horario"],
+    ]);
+    expect(hrefsOf(adminGroups(ESSENTIAL))).not.toContain("/admin/qr");
+  });
+
+  it("REQ-079.9 el destino queda marcado en /admin/horario y en /admin/qr", () => {
+    const [link] = hoursAndQr();
+    expect(isActiveLink("/admin/horario", link)).toBe(true);
+    expect(isActiveLink("/admin/qr", link)).toBe(true);
+    expect(isActiveLink("/admin/qrx", link)).toBe(false);
+    nav.pathname = "/admin/qr";
+    const h = renderToStaticMarkup(
+      <AdminNav groups={adminGroups(ESSENTIAL)} tabs={adminTabs(ESSENTIAL)} />,
+    );
+    expect(h).toMatch(
+      /<a [^>]*href="\/admin\/horario"[^>]*aria-current="page"|<a [^>]*aria-current="page"[^>]*href="\/admin\/horario"/,
+    );
   });
 });
 

@@ -1073,3 +1073,16 @@
   uso diario (encender un módulo, recortar el cobro o el formulario de turno) va con su propio
   requisito o ADR. El inventario (catálogo, dotación y primer conteo) queda como operación pendiente
   de Henry. Número: ADR-056, reservado desde ADR-055.
+
+## ADR-057 · Horario y QR en un solo destino del menú
+- Estado: **aceptada** (Henry, 2026-11-12)
+- Contexto: con Gamma Club al aire, Henry notó que "Horario" y "QR" del menú del dueño abren la
+  misma pantalla: el tablero los pone lado a lado (design §22.8) y solo cambia cuál va primero en el
+  celular. Dos destinos para una pantalla alargan el menú que el Hito 17 quiso acortar.
+- Opciones: (a) un solo destino "Horario y QR"; (b) separar las pantallas (cada una solo con lo
+  suyo, contra el tablero).
+- Decisión: **(a)**, elegida por Henry. Un solo destino que abre `/admin/horario`; `/admin/qr` sigue
+  funcionando (enlaces e impresos viejos) y marca ese destino. REQ-079.9 nuevo; REQ-077.3 anotado.
+- Consecuencias: el menú del dueño baja a 13 destinos en modo esencial (19 con todo encendido). Sin
+  migraciones; T-192.
+

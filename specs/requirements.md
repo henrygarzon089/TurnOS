@@ -1510,7 +1510,8 @@ atención, **para** no tener que abrir módulo por módulo.
   grupos y módulos.
 - REQ-077.3 Los grupos DEBEN ser: Operación (Hoy, Fila, Citas, Caja, Semana); Clientes (Clientes,
   Fidelidad, Recordar, Membresías, Tarjetas de regalo); Local (Limpieza, Productos, Inventario);
-  Configuración (Barberos, Servicios, Horario, QR, Mensajes, Negocio, Privacidad).
+  Configuración (Barberos, Servicios, Horario, QR, Mensajes, Negocio, Privacidad). Horario y QR
+  van en un solo destino, "Horario y QR" (REQ-079.9).
 - REQ-077.4 Ningún módulo que hoy tiene acceso desde el menú DEBE quedar sin él.
 - REQ-077.5 El destino actual DEBE verse marcado y anunciarse a lectores de pantalla
   (`aria-current`); cada destino DEBE medir ≥ 48 px (NFR-008).
@@ -1704,6 +1705,10 @@ cobrar y liquidar sin perderme entre pantallas que no uso.
 - REQ-079.8 El sistema DEBE permitir correr con todos los módulos encendidos por una variable de
   entorno (`TURNOS_MODULES=todos`), para que las pruebas de los módulos apagados sigan corriendo en
   CI. Sin la variable, rige la lista de REQ-079.1.
+- REQ-079.9 El menú del dueño DEBE tener un solo destino **"Horario y QR"** en Configuración, que
+  abre `/admin/horario`, en lugar de "Horario" y "QR" por separado (las dos rutas muestran la misma
+  pantalla, design §22.8). `/admin/qr` DEBE seguir abriendo esa pantalla con el QR primero y DEBE
+  marcar ese destino como el actual. Cambia REQ-077.3 (ADR-057).
 
 ### REQ-080 · Un solo negocio — M
 **Como** operador de TurnOS, **quiero** que la app sirva solo a Gamma Club, **para** que nadie cree

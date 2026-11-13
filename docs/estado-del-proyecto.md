@@ -679,6 +679,9 @@ Pendientes (H3): `/admin/caja`,
 - Pendiente (Henry): imprimir el QR, revisar la carpeta de Filo en Storage, agregar
   `https://www.gammaclub.co` en Supabase → Authentication → URL Configuration y, otro día, el
   inventario (catálogo, dotación por estación y primer conteo).
+- 2026-11-12, T-192 (ADR-057): "Horario" y "QR" abrían la misma pantalla; ahora son un solo
+  destino, "Horario y QR" (`/admin/horario`; `/admin/qr` sigue funcionando y lo marca). El menú del
+  dueño queda con 13 destinos en modo esencial. Sin migraciones; falta desplegar (Henry).
 - Plan para el arnés y los agentes: `docs/plan-hito-17.md`.
 
 ## Desvíos registrados respecto a la spec (todos explícitos)

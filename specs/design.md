@@ -3084,6 +3084,10 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
   estación" sube a la barra (ocupa el lugar de "Limpieza") y "Más" no se pinta si queda vacío.
 - `admin/layout.tsx` y el layout del barbero calculan `enabledModules()` y pasan los enlaces a
   `AdminNav` y `BarberNav`. `navAlertCounts` y `navQueueCounts` no cuentan lo apagado.
+- REQ-079.9 (ADR-057): "Horario" y "QR" son un solo `AdminLink` ("Horario y QR", `/admin/horario`,
+  módulo `hours`) con `also: ["/admin/qr"]`; `isActiveLink` también lo marca en `/admin/qr`. El
+  menú del dueño queda con 19 destinos (13 en modo esencial). Las dos rutas y `moduleForPath` no
+  cambian.
 
 ### 23.3 "Hoy" (REQ-079.4)
 - `admin/(hoy)/page.tsx` no monta `TodayAppointments` ni `TodayRemind` si su módulo está apagado.
