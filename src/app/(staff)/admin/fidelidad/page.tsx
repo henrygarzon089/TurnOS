@@ -65,7 +65,8 @@ export default async function LoyaltyPage() {
       <p className="text-muted mt-3 text-sm">
         Cada servicio que suma es un sello. Al completar la tarjeta, el cliente gana el premio.
       </p>
-      <div className="mt-4 grid gap-4 lg:grid-cols-2 lg:items-start">
+      {/* Sin Recordar (modo esencial), la tarjeta ocupa todo el ancho y se reparte en columnas */}
+      <div className={`mt-4 grid gap-4 lg:items-start ${remindOn ? "lg:grid-cols-2" : ""}`}>
         <Panel
           title={
             <>

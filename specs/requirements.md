@@ -1653,6 +1653,14 @@ también al sol y con una mano.
   Barbero habitual · Cortes · Fidelidad · Membresía) con el celular enmascarado; Barberos,
   Servicios, Recordar, Membresías, Tarjetas de regalo e Inventario DEBEN verse como las tablas de su
   tablero, y Horario DEBE mostrar las horas en español ("9:00 a. m.").
+- REQ-078.34 Toda hoja y todo diálogo DEBE tener un botón "Cerrar" visible arriba a la derecha y
+  DEBE cerrarse también al tocar el fondo oscuro o con Esc, en celular y en escritorio.
+- REQ-078.35 CUANDO el dueño guarda un formulario (producto, servicio, fidelidad, negocio), la
+  pantalla DEBE mostrar lo guardado sin recargar: el ítem nuevo aparece en su lista y los campos
+  conservan los valores guardados.
+- REQ-078.36 Las casillas y opciones (checkbox, radio) DEBEN usar el color de acción `brand`, no el
+  azul del navegador; en una grilla de campos, los campos de una misma fila DEBEN quedar alineados
+  aunque su etiqueta ocupe dos líneas.
 
 Se mantienen sin cambio: la casilla del aviso de privacidad antes de guardar datos (REQ-002), las
 pantallas públicas sin celulares (REQ-013.2) y los textos en español colombiano (NFR-006).

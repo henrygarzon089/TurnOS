@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useActionState, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CheckList } from "@/components/admin/CheckList";
+import { keepValuesOnSubmit, useRefreshOnOk } from "@/components/ui/form";
 import { ErrorText } from "@/components/auth/LoginForm";
 import {
   saveProduct,
@@ -40,16 +41,6 @@ export type ProductRow = {
   category: string | null;
 };
 
-function useRefreshOnOk(state: FormState, onDone?: () => void) {
-  const router = useRouter();
-  const [seen, setSeen] = useState<FormState>(undefined);
-  if (state?.ok && state !== seen) {
-    setSeen(state);
-    router.refresh();
-    onDone?.();
-  }
-}
-
 /** Fila editable de servicio (REQ-015.1) con activar/desactivar (REQ-015.2). */
 export function ServiceForm({
   service,
@@ -70,6 +61,7 @@ export function ServiceForm({
   return (
     <form
       action={action}
+      onSubmit={keepValuesOnSubmit(action)}
       className="flex flex-col gap-3"
       aria-label={isNew ? "Nuevo servicio" : `Servicio ${service.name}`}
     >
@@ -278,6 +270,7 @@ export function ProductForm({
   return (
     <form
       action={action}
+      onSubmit={keepValuesOnSubmit(action)}
       className="flex flex-col gap-3"
       aria-label={isNew ? "Nuevo producto" : `Producto ${product.name}`}
     >

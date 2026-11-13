@@ -91,7 +91,7 @@ test.describe("Hito 1 · criterios de interfaz", () => {
     await expect(row).toContainText("te eligió"); // REQ-006.2 lo eligió a él
     // REQ-009.4 el botón de aviso existe en cualquier posición
     await expect(row.getByRole("link", { name: "Avisar por WhatsApp" })).toBeVisible();
-    await row.getByRole("button", { name: "Cerrar" }).click();
+    await row.getByRole("button", { name: "Cerrar", exact: true }).click();
 
     await page.getByRole("button", { name: CALL }).click();
     // REQ-008.1 el botón "No llegó" está disponible desde el llamado; el resaltado llega a los 5 min

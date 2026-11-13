@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Sheet } from "@/components/ui/Sheet";
 import { formatPhoneCO, maskPhone } from "@/lib/domain/phone";
+import { useRefreshOnOk } from "@/components/ui/form";
 import type { BarberPhoto } from "@/lib/media/barber-photos";
 
 type BarberFormState = { error?: string; ok?: boolean; inviteUrl?: string };
@@ -52,11 +53,7 @@ export function NewBarberForm({ services }: { services: ServiceOption[] }) {
   const [open, setOpen] = useState(false);
   const [state, action, pending] = useActionState<BarberFormState, FormData>(createBarber, {});
   const router = useRouter();
-  const [refreshed, setRefreshed] = useState<unknown>(null);
-  if (state?.ok && state !== refreshed) {
-    setRefreshed(state);
-    router.refresh();
-  }
+  useRefreshOnOk(state);
   // "Listo" deja atrás el enlace; al volver a abrir sale el formulario
   const [dismissed, setDismissed] = useState<unknown>(null);
   const invited = state?.inviteUrl && state !== dismissed ? state.inviteUrl : null;
@@ -195,12 +192,7 @@ export function BarberCard({
   const formRef = useRef<HTMLFormElement>(null);
   const pctConfirmed = useRef(false);
   const router = useRouter();
-  const [seen, setSeen] = useState<unknown>(null);
-  if (state?.ok && state !== seen) {
-    setSeen(state);
-    setOpen(false);
-    router.refresh();
-  }
+  useRefreshOnOk(state, () => setOpen(false));
   const present = barber.status !== "off";
   const summary = barber.is_active ? servicesSummary(barber, services) : null;
   const phone = barber.phone_e164 ? maskPhone(barber.phone_e164) : "Sin celular";

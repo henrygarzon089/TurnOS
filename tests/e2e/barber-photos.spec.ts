@@ -115,7 +115,7 @@ test.describe("T-062 fotos de cortes", () => {
     await expect
       .poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth))
       .toBeGreaterThan(0);
-    await sheet.getByRole("button", { name: "Cerrar" }).click();
+    await sheet.getByRole("button", { name: "Cerrar", exact: true }).click();
 
     // REQ-039.5: lo escrito sigue ahí
     await expect(sheet).toHaveCount(0);

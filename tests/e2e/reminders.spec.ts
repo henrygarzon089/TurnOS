@@ -132,7 +132,7 @@ test.describe("REQ-020 clientes para recordar", () => {
       });
       const row = await openTicketSheet(barber, name);
       await expect(row.getByRole("link", { name: /Avisar/ })).toHaveCount(0);
-      await row.getByRole("button", { name: "Cerrar" }).click();
+      await row.getByRole("button", { name: "Cerrar", exact: true }).click();
 
       // Limpieza: cancelar el turno y volver a permitir el contacto
       await active.getByRole("button", { name: new RegExp(name) }).click();

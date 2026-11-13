@@ -56,7 +56,7 @@ async function tokenFromBarber(barber: Page, name: string): Promise<string> {
   await expect(barber.getByRole("main").getByText(name).first()).toBeVisible({ timeout: 15_000 });
   const sheet = await openTicketSheet(barber, name);
   const href = await sheet.getByRole("link", { name: "Avisar por WhatsApp" }).getAttribute("href");
-  await sheet.getByRole("button", { name: "Cerrar" }).click();
+  await sheet.getByRole("button", { name: "Cerrar", exact: true }).click();
   const m = decodeURIComponent(href ?? "").match(/\/t\/([A-Za-z0-9_-]{16,64})/);
   expect(m, "el aviso debe incluir el enlace de Mi turno").not.toBeNull();
   return m![1];
