@@ -1058,3 +1058,18 @@
   funciones puras y los E2E existentes corren con todo encendido, así que el E2E no recorre la app
   en modo esencial: lo cubre la prueba de Henry en el celular (T-191). Si llega un segundo negocio,
   la lista pasa a ser por negocio (opción b) con su ADR.
+
+## ADR-056 · Aprobación del Hito 17 (modo esencial y Gamma Club)
+- Estado: **aceptada** (Henry, 2026-11-12)
+- Contexto: REQ-079 y REQ-080 construidos (T-184…T-190, PRs #165…#171) y en producción, sin
+  migraciones. `pnpm trace --hito=17` sin huecos. Henry borró Filo y La 33 de producción con
+  `scripts/delete-business.sql`, creó **Gamma Club** (`/gamma-club`), desplegó `main` 665e01b y
+  cargó barberos, servicios, comisiones, horario, fidelidad, productos y aviso de privacidad. Se
+  conectó el dominio propio **https://www.gammaclub.co** (`NEXT_PUBLIC_APP_URL`), y el QR del local
+  sale con ese dominio. Verificado desde el agente: `/` lleva a `/gamma-club`, `/crear-negocio` a
+  `/entrar`, las rutas del personal piden sesión y el despliegue no registra errores.
+- Decisión: Henry aprueba el Hito 17 ("aprobado", 2026-11-12, sin fallas reportadas). T-191 cerrada.
+- Consecuencias: TurnOS sale a producción solo para Gamma Club en modo esencial. Lo que salga del
+  uso diario (encender un módulo, recortar el cobro o el formulario de turno) va con su propio
+  requisito o ADR. El inventario (catálogo, dotación y primer conteo) queda como operación pendiente
+  de Henry. Número: ADR-056, reservado desde ADR-055.
