@@ -1553,7 +1553,9 @@ también al sol y con una mano.
 - REQ-078.4 Cada pantalla DEBE mostrar a lo más un botón principal relleno a la vez.
 - REQ-078.5 Botones, casillas y destinos del menú DEBEN medir ≥ 48 px de alto; el botón principal de
   la fila del barbero ("Llamar a …", "Empezar corte", "Terminar y cobrar") DEBE medir ≥ 80 px. El
-  texto base DEBE ser ≥ 16 px.
+  texto base DEBE ser ≥ 16 px. En escritorio (≥ 1024 px de ancho y con mouse), botones y campos de
+  formulario DEBEN medir 40 px de alto con texto de 16 px; los destinos del menú y el botón de 80 px
+  no cambian (ADR-058).
 - REQ-078.6 En listas y tablas (fila del dueño, clientes, barberos, solicitudes de privacidad), el
   celular DEBE verse enmascarado con `maskPhone` (`••• ••• 0001`, solo los 4 últimos dígitos). El
   número completo solo DEBE verse en la ficha de un cliente y en el campo donde alguien escribe el
@@ -1753,7 +1755,7 @@ apagado, Hito 6); cambiar el seed de La 33.
 | NFR-005 Privacidad | Ley 1581 | Aviso versionado y aceptación registrada (REQ-002); supresión (REQ-018.6); pantallas públicas sin celulares (REQ-013.2); sin trackers de terceros en páginas públicas; la medición anónima de velocidad de REQ-075.3 no cuenta como tracker si cumple REQ-075.4 (sin cookies, sin identificadores, sin tokens; ADR-043) |
 | NFR-006 Localización | Colombia | `es-CO` en toda la UI; COP sin decimales con punto de miles; `America/Bogota` en servidor y cliente; sin textos en inglés visibles (prueba de lint de textos) |
 | NFR-007 Usabilidad | Sin capacitación | Prueba de pasillo: un barbero real completa llamar → en servicio → terminado → cobro sin ayuda en el primer intento; flujo del cliente ≤ 4 campos y 1 pantalla |
-| NFR-008 Accesibilidad | Legible al sol y con una mano | Contraste ≥ 4.5:1; botones ≥ 48 px; tamaño de fuente base ≥ 16 px; funciona con zoom 200 % |
+| NFR-008 Accesibilidad | Legible al sol y con una mano | Contraste ≥ 4.5:1; botones ≥ 48 px (40 px en escritorio con mouse, ADR-058); tamaño de fuente base ≥ 16 px; funciona con zoom 200 % |
 | NFR-009 Calidad | Pruebas trazables | Cada CA referenciado por al menos una prueba; CI bloquea merge si fallan unit, integración o E2E; cobertura de lógica de dominio (posición, tiempo, comisión, cierre) 100 % de ramas |
 | NFR-010 Datos | Integridad | Montos `integer`; estados como `enum`; transiciones validadas en base de datos (no solo en UI); migraciones versionadas; seed idempotente |
 | NFR-011 Escala MVP | Un negocio pequeño, varios en el futuro | Diseñado para 50 negocios × 200 turnos/día sin cambios de arquitectura; 5.000 clientes por negocio con búsqueda < 1 s |

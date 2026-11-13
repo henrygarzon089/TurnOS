@@ -49,7 +49,7 @@ export function ErrorState({
         <button
           type="button"
           onClick={onRetry}
-          className="bg-brand text-brand-ink mt-2 inline-flex min-h-12 items-center rounded-md px-5 text-lg font-semibold active:opacity-90"
+          className="bg-brand text-brand-ink desk:min-h-10 desk:text-base mt-2 inline-flex min-h-12 items-center rounded-md px-5 text-lg font-semibold active:opacity-90"
         >
           Intentar de nuevo
         </button>

@@ -196,7 +196,7 @@ function RunForm({
           onChange={(e) => setNote(e.target.value)}
         />
       </label>
-      <label className="btn-secondary inline-flex min-h-12 items-center">
+      <label className="btn-secondary inline-flex items-center">
         {file ? "Cambiar adjunto" : "Adjuntar foto o PDF"}
         <input
           type="file"
@@ -346,7 +346,7 @@ export function CleaningTasks({
               <button
                 key={s.name}
                 type="button"
-                className="btn-secondary min-h-12 px-3"
+                className="btn-secondary px-3"
                 onClick={() => void addSuggestion(s.name, s.everyDays)}
               >
                 Agregar {s.name} (cada {s.everyDays} días)

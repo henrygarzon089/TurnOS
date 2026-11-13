@@ -1086,3 +1086,14 @@
 - Consecuencias: el menú del dueño baja a 13 destinos en modo esencial (19 con todo encendido). Sin
   migraciones; T-192.
 
+## ADR-058 · Botones y campos de 40 px en escritorio
+- Estado: **aceptada** (Henry, 2026-11-13)
+- Contexto: probando Gamma Club en el computador, Henry vio los botones y campos "muy grandes": la
+  regla de 48 px (REQ-078.5, NFR-008) es para el pulgar en el celular y en escritorio, con mouse,
+  hace que cada formulario se vea inflado.
+- Opciones: (a) dejar 48 px en todo; (b) 40 px en escritorio con letra de 16 px; (c) 36 px.
+- Decisión: **(b)**, elegida por Henry. Aplica con ancho ≥ 1024 px **y** puntero fino (mouse):
+  una tableta acostada sigue en 48 px. Los destinos del menú (REQ-077.5) y el botón de 80 px del
+  barbero no cambian. 40 px sigue muy por encima del mínimo de WCAG 2.2 (24 px).
+- Consecuencias: variante `desk:` en `globals.css`; `.btn-*`, `.input`, `FIELD_INPUT` y `Button`
+  la usan. REQ-078.5 y NFR-008 anotados; T-195.

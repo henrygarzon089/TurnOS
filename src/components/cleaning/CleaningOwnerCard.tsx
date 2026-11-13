@@ -62,11 +62,7 @@ export function CleaningOwnerCard({
                 Cierre sin registrar · {formatDayCO(day)}
               </span>
               {acking !== day && (
-                <button
-                  type="button"
-                  className="btn-secondary min-h-12 px-3"
-                  onClick={() => setAcking(day)}
-                >
+                <button type="button" className="btn-secondary px-3" onClick={() => setAcking(day)}>
                   Visto
                 </button>
               )}

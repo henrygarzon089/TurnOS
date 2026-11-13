@@ -112,7 +112,7 @@ function Field({
 
 function ItemSelect({ items, use }: { items: OverviewItem[]; use?: InventoryUse }) {
   return (
-    <select name="itemId" required className="input h-12" defaultValue="">
+    <select name="itemId" required className="input desk:h-10 h-12" defaultValue="">
       <option value="" disabled>
         Escoge un ítem
       </option>
@@ -188,7 +188,7 @@ export function InventoryMovements({
               El barbero entrega el envase vacío y recibe uno lleno de la bodega.
             </p>
             <Field label="Barbero">
-              <select name="barberId" required className="input h-12" defaultValue="">
+              <select name="barberId" required className="input desk:h-10 h-12" defaultValue="">
                 <option value="" disabled>
                   Escoge un barbero
                 </option>
@@ -253,7 +253,7 @@ export function InventoryMovements({
               <ItemSelect items={items} />
             </Field>
             <Field label="Desde">
-              <select name="from" required className="input h-12" defaultValue="">
+              <select name="from" required className="input desk:h-10 h-12" defaultValue="">
                 <option value="" disabled>
                   Escoge el origen
                 </option>
@@ -265,7 +265,7 @@ export function InventoryMovements({
               </select>
             </Field>
             <Field label="Hacia">
-              <select name="to" required className="input h-12" defaultValue="">
+              <select name="to" required className="input desk:h-10 h-12" defaultValue="">
                 <option value="" disabled>
                   Escoge el destino
                 </option>
@@ -370,7 +370,7 @@ export function InventoryItemForm({
         <select
           name="group"
           required
-          className="input h-12"
+          className="input desk:h-10 h-12"
           defaultValue={item?.group ?? (use === "sale" ? "for_sale" : "")}
         >
           <option value="" disabled>
@@ -448,7 +448,11 @@ export function InventoryItemForm({
       ) : (
         <>
           <Field label="Producto de la caja">
-            <select name="productId" className="input h-12" defaultValue={item?.product_id ?? ""}>
+            <select
+              name="productId"
+              className="input desk:h-10 h-12"
+              defaultValue={item?.product_id ?? ""}
+            >
               <option value="">Sin enlazar</option>
               {products.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -682,7 +686,7 @@ export function CountForm({
                 <select
                   name={`reason:${r.itemId}`}
                   required
-                  className="input h-12"
+                  className="input desk:h-10 h-12"
                   defaultValue=""
                   aria-label={`Motivo de ${r.name}`}
                 >

@@ -99,7 +99,7 @@ export function ProductShowcase({
               <span className="flex items-center justify-between gap-1">
                 <button
                   type="button"
-                  className="btn-secondary h-12 w-12 px-0"
+                  className="btn-secondary desk:h-10 h-12 w-12 px-0"
                   aria-label={`Quitar un ${p.name}`}
                   disabled={n === 0}
                   onClick={() => onChange(p.id, Math.max(0, n - 1))}
@@ -111,7 +111,7 @@ export function ProductShowcase({
                 </span>
                 <button
                   type="button"
-                  className="btn-secondary h-12 w-12 px-0"
+                  className="btn-secondary desk:h-10 h-12 w-12 px-0"
                   aria-label={`Agregar un ${p.name}`}
                   onClick={() => onChange(p.id, n + 1)}
                 >

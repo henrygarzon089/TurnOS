@@ -2728,6 +2728,20 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   limpieza), `tests/e2e/admin-config.spec.ts`.
 - Terminado: después de guardar se ven las horas elegidas sin recargar; CI verde.
 
+### [x] T-195 · Botones y campos de 40 px en escritorio
+- Hecha 2026-11-13 (Henry: "muy grandes en la versión desktop"; ADR-058).
+- REQ: REQ-078.5 y NFR-008 (anotados: 40 px y 16 px en escritorio con mouse).
+- Modelo: Opus 5.5. Complejidad: baja.
+- Cambio: variante `desk:` (≥ 1024 px y puntero fino) en `globals.css`; `.btn-primary`,
+  `.btn-secondary`, `.btn-danger`, `.input`, `Button` (no el de 80 px), `FIELD_INPUT`, `Segmented`
+  y el botón de los estados vacíos bajan a 40 px con texto de 16 px. Los `input h-12` y
+  `btn-secondary h-12` sueltos llevan `desk:h-10`; los `min-h-12` repetidos junto a `btn-secondary`
+  se quitaron (ganaban a la clase). El menú (REQ-077.5) y las casillas no cambian.
+- Archivos: `src/app/globals.css`, `src/components/ui/{Button,Field,States,Segmented}.tsx`, siete
+  pantallas con `h-12` sueltos, `tests/e2e/control-sizes.spec.ts`, `playwright.config.ts`
+  (proyecto "escritorio").
+- Terminado: 40 px en escritorio, ≥ 48 px en Pixel 7 e iPhone 13 y el menú en 48 px; CI verde.
+
 ---
 
 ## Dependencias principales

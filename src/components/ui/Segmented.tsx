@@ -51,7 +51,7 @@ export function Segmented({
             tabIndex={i === active ? 0 : -1}
             onClick={() => pick(i)}
             onKeyDown={(e) => key(e, i)}
-            className={`min-h-12 text-sm font-semibold transition-colors ${
+            className={`desk:min-h-10 min-h-12 text-sm font-semibold transition-colors ${
               i > 0 ? "border-line-strong border-l" : ""
             } ${i === active ? "bg-brand text-brand-ink" : "bg-card text-ink"}`}
           >
