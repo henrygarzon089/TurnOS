@@ -29,12 +29,13 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 
 ## Estado actual (2026-11-12)
 
-- **Hito 17 (modo esencial y un solo negocio, REQ-079…080, ADR-055)** construido (T-184…T-190,
-  2026-11-12), falta lo de Henry (T-191): solo **Gamma Club** (`/gamma-club`), Filo y La 33 borrados de
-  producción el 2026-11-12 (`docs/guia-borrar-negocio.md`; el seed La 33 sigue solo en local y CI). La lista de módulos encendidos vive en `src/lib/domain/modules.ts`
-  (14 destinos del dueño, 4 del barbero; sin migraciones); `TURNOS_MODULES=todos` enciende todo y
-  es lo que usan el CI (E2E y Lighthouse) y, si algo falla, Vercel. Pasos y prueba en
-  `docs/guia-prueba-hito-17.md`.
+- **Hito 17 (modo esencial y un solo negocio, REQ-079…080, ADR-055)** aprobado (ADR-056,
+  2026-11-12): solo **Gamma Club** (`/gamma-club`), cargado por Henry y en
+  **https://www.gammaclub.co**. Filo y La 33 borrados de producción (`docs/guia-borrar-negocio.md`;
+  el seed La 33 sigue solo en local y CI). La lista de módulos encendidos vive en
+  `src/lib/domain/modules.ts` (14 destinos del dueño, 4 del barbero; sin migraciones);
+  `TURNOS_MODULES=todos` enciende todo y es lo que usan el CI (E2E y Lighthouse) y, si algo falla,
+  Vercel. Falta la operación del inventario (Henry).
 - **Hito 16 (sistema visual nuevo, REQ-078, ADR-047)** aprobado (ADR-050, 2026-11-11): tokens nuevos
   (acción en `brand` azul marino, `accent` rojo solo para "atención ahora"), componentes base y
   cliente, barbero, dueño y televisor fieles a los tableros (T-160…T-183); migraciones 0070–0072.
@@ -72,7 +73,7 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 - **MVP completo**: Hitos 0–3 aprobados por Henry (ADR-017, ADR-020) y en producción. Matriz: 144 CA,
   0 sin prueba. Prueba de pasillo e instalación hechas (ADR-021). Abierta solo T-010 (E2E en CI,
   proteger `main`).
-- Producción: https://turnos-smoky-nine.vercel.app (Vercel `henry-garzons-projects/turnos` +
+- Producción: https://www.gammaclub.co (también https://turnos-smoky-nine.vercel.app; Vercel `henry-garzons-projects/turnos` +
   Supabase `uucjmxdssnmvznibrafc`). CI en GitHub `henrygarzon089/TurnOS`.
 - Ver `docs/estado-del-proyecto.md` para el detalle y los pendientes externos.
 

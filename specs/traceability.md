@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-12.
+> Generada por `scripts/traceability.ts` el 2026-11-13.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -139,10 +139,10 @@
 | REQ-028.4 | Resumen semanal | T-011 (hecha), T-048 (hecha) | 0027_weekly.sql | cubierto |
 | REQ-029.1 | Vista del barbero sobre sus números | T-042 (hecha), T-047 (hecha), T-050 (hecha) | my-numbers.spec.ts, my-numbers.test.ts, rls-cash.test.ts, 0025_cash_summary.sql, 0027_weekly.sql | cubierto |
 | REQ-030.1 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts, onboarding.spec.ts, 0002_core.sql | cubierto |
-| REQ-030.2 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | onboarding.spec.ts, 0004_invitations.sql, 0028_mvp_gaps.sql, 0029_function_grants.sql | cubierto |
+| REQ-030.2 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | onboarding.spec.ts, t.sql, 0004_invitations.sql, 0028_mvp_gaps.sql, 0029_function_grants.sql | cubierto |
 | REQ-030.3 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts | cubierto |
 | REQ-030.4 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts, 0004_invitations.sql | cubierto |
-| REQ-031.1 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-cash.test.ts, 0002_core.sql, 0003_rls_core.sql, 0017_loyalty_progress.sql, 0029_function_grants.sql, 0030_barber_services.sql, 0033_customer_experience.sql | cubierto |
+| REQ-031.1 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-cash.test.ts, t.sql, 0002_core.sql, 0003_rls_core.sql, 0017_loyalty_progress.sql, 0029_function_grants.sql, 0030_barber_services.sql, 0033_customer_experience.sql | cubierto |
 | REQ-031.2 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | 0008_public_fns.sql, 0009_realtime.sql | cubierto |
 | REQ-031.3 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | 0028_mvp_gaps.sql | cubierto |
 | REQ-031.4 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-core.test.ts, 0003_rls_core.sql | cubierto |
@@ -180,7 +180,7 @@
 | REQ-038.5 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (hecha), T-173 (hecha) | menu-courtesy.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
 | REQ-038.6 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (hecha), T-173 (hecha) | menu-courtesy.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
 | REQ-038.7 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (hecha), T-173 (hecha) | menu-courtesy.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
-| REQ-039.1 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, barber-photos.test.ts, 0029_function_grants.sql, 0033_customer_experience.sql | cubierto |
+| REQ-039.1 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, barber-photos.test.ts, t.sql, 0029_function_grants.sql, 0033_customer_experience.sql | cubierto |
 | REQ-039.2 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, 0033_customer_experience.sql | cubierto |
 | REQ-039.3 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, barber-photos.test.ts | cubierto |
 | REQ-039.4 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, barber-photos.test.ts, resize.test.ts, 0033_customer_experience.sql | cubierto |
@@ -447,15 +447,15 @@
 | REQ-078.31 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (hecha), T-170 (hecha), T-171 (hecha), T-177 (hecha), T-178 (hecha), T-179 (hecha), T-180 (hecha), T-181 (hecha), T-172 (hecha), T-173 (hecha), T-174 (hecha), T-175 (hecha), T-176 (hecha), T-168 (hecha) | cash-day.spec.ts, visual-dueno-fila-caja.spec.ts, cash-sales.test.ts | cubierto |
 | REQ-078.32 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (hecha), T-170 (hecha), T-171 (hecha), T-177 (hecha), T-178 (hecha), T-179 (hecha), T-180 (hecha), T-181 (hecha), T-172 (hecha), T-173 (hecha), T-174 (hecha), T-175 (hecha), T-176 (hecha), T-168 (hecha) | week.spec.ts, week.test.ts, 0078_week_matches_cash.sql | cubierto |
 | REQ-078.33 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (hecha), T-170 (hecha), T-171 (hecha), T-177 (hecha), T-178 (hecha), T-179 (hecha), T-180 (hecha), T-181 (hecha), T-172 (hecha), T-173 (hecha), T-174 (hecha), T-175 (hecha), T-176 (hecha), T-168 (hecha) | gift-cards.spec.ts, memberships.spec.ts, reminders.spec.ts, visual-dueno-clientes.spec.ts, visual-dueno-config.spec.ts, visual-dueno-modulos.spec.ts, hours-form.test.tsx, hours.test.ts, inventory-catalog.test.ts, owner-tables.test.ts | cubierto |
-| REQ-079.1 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (pendiente) | modules.test.ts | prueba escrita |
-| REQ-079.2 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (pendiente) | admin-nav.test.tsx | prueba escrita |
-| REQ-079.3 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (pendiente) | barber-nav.test.tsx | prueba escrita |
-| REQ-079.4 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (pendiente) | today-modules.test.tsx | prueba escrita |
-| REQ-079.5 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (pendiente) | modules.test.ts, proxy.test.ts | prueba escrita |
-| REQ-079.6 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (pendiente) | modules.test.ts, proxy.test.ts | prueba escrita |
-| REQ-079.7 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (pendiente) | modules.test.ts | prueba escrita |
-| REQ-079.8 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (pendiente) | modules.test.ts | prueba escrita |
-| REQ-080.1 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (pendiente) | modules.test.ts, proxy.test.ts, single-business.test.tsx | prueba escrita |
-| REQ-080.2 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (pendiente) | modules.test.ts, single-business.test.tsx | prueba escrita |
-| REQ-080.3 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (pendiente) | delete_business.sql | prueba escrita |
-| REQ-080.4 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (pendiente) | delete_business.sql | prueba escrita |
+| REQ-079.1 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | modules.test.ts | cubierto |
+| REQ-079.2 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | admin-nav.test.tsx | cubierto |
+| REQ-079.3 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | barber-nav.test.tsx | cubierto |
+| REQ-079.4 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | today-modules.test.tsx | cubierto |
+| REQ-079.5 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | modules.test.ts, proxy.test.ts | cubierto |
+| REQ-079.6 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | modules.test.ts, proxy.test.ts | cubierto |
+| REQ-079.7 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | modules.test.ts | cubierto |
+| REQ-079.8 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | modules.test.ts | cubierto |
+| REQ-080.1 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | modules.test.ts, proxy.test.ts, single-business.test.tsx | cubierto |
+| REQ-080.2 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | modules.test.ts, single-business.test.tsx | cubierto |
+| REQ-080.3 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | delete_business.sql | cubierto |
+| REQ-080.4 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | delete_business.sql | cubierto |

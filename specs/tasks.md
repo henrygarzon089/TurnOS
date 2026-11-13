@@ -2697,9 +2697,10 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: pgTAP verde (borra uno, el otro intacto, cuentas del personal borradas); guía con los
   comandos exactos y qué revisar antes de confirmar.
 
-### [ ] T-191 · Validación Hito 17
-- Nota (2026-11-12): trazabilidad del Hito 17 sin huecos (`pnpm trace --hito=17`) y guía en
-  `docs/guia-prueba-hito-17.md`. Falta la prueba de Henry en el celular y su aprobación (ADR-056).
+### [x] T-191 · Validación Hito 17
+- Hecha 2026-11-12: Henry aprobó el hito (ADR-056) con Gamma Club cargado en producción y el QR con
+  el dominio `www.gammaclub.co`. Trazabilidad sin huecos (`pnpm trace --hito=17`) y guía en
+  `docs/guia-prueba-hito-17.md`.
 - REQ: REQ-079, REQ-080
 - Modelo: Sonnet 5.5 para la guía; Opus 5.5 para la revisión del código antes de fusionar.
 - Archivos: `docs/guia-prueba-hito-17.md`, `docs/estado-del-proyecto.md`, `CLAUDE.md`.

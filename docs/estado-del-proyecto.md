@@ -646,7 +646,7 @@ en `/admin/negocio` y `/app/estacion` (barbero).
 Pendientes (H3): `/admin/caja`,
 `/admin/semana`, `/app/mis-numeros`.
 
-### Hito 17 — modo esencial y un solo negocio, Gamma Club (**construido, falta Henry**, ADR-055, 2026-11-12)
+### Hito 17 — modo esencial y un solo negocio, Gamma Club (**aprobado**, ADR-056, 2026-11-12)
 
 - Henry validó la app y la encontró muy cargada para salir: ahora importan barberos y caja, y por
   ahora TurnOS se usa solo en su barbería, **Gamma Club** (negocio nuevo, enlace `gamma-club`; Filo
@@ -666,6 +666,19 @@ Pendientes (H3): `/admin/caja`,
   El script funcionó con el usuario `postgres` del Session pooler, sin errores de permisos. Falta
   revisar en el panel la carpeta de Filo en Storage (la lista del script salió vacía aunque había
   1 foto de barbero). Siguen los pasos 2 a 8.
+- 2026-11-12, después: Henry creó **Gamma Club**, desplegó `main` 665e01b y cargó barberos,
+  servicios, comisiones, horario, fidelidad, productos y aviso de privacidad. Dominio propio
+  **https://www.gammaclub.co** en Vercel (`gammaclub.co` lleva a `www`); `NEXT_PUBLIC_APP_URL`
+  (Production, tipo Config) apunta ahí y el QR sale con ese dominio. Henry aprobó el hito
+  (ADR-056, T-191).
+- Lección del dominio: el primer intento guardó la variable como `EXT_PUBLIC_APP_URL` (el QR salió
+  solo con `/gamma-club`) y al arreglarla se borró `NEXT_PUBLIC_SUPABASE_URL` (500 en `/entrar` y
+  `/admin`: "supabaseUrl is required"). Se volvió a crear (Production y Preview, tipo Config) y se
+  redesplegó. Al tocar variables en Vercel: revisar `vercel env ls` antes de desplegar; las
+  `NEXT_PUBLIC_*` se fijan al construir y exigen redesplegar.
+- Pendiente (Henry): imprimir el QR, revisar la carpeta de Filo en Storage, agregar
+  `https://www.gammaclub.co` en Supabase → Authentication → URL Configuration y, otro día, el
+  inventario (catálogo, dotación por estación y primer conteo).
 - Plan para el arnés y los agentes: `docs/plan-hito-17.md`.
 
 ## Desvíos registrados respecto a la spec (todos explícitos)
@@ -713,7 +726,7 @@ Pendientes (H3): `/admin/caja`,
 2. **GitHub** — hecho 2026-10-24: `main` en `henrygarzon089/TurnOS`. CI arreglado (workflow
    inválido, `next typegen`, base de pruebas con `scripts/ci-db.sh`).
 3. **Vercel** — hecho 2026-10-24: proyecto `turnos` en la cuenta personal
-   (`henry-garzons-projects`), producción en **https://turnos-smoky-nine.vercel.app**
+   (`henry-garzons-projects`), producción en **https://www.gammaclub.co** (dominio propio desde el 2026-11-12; sigue respondiendo **https://turnos-smoky-nine.vercel.app**)
    (`/salud` → `{ok:true, db:true}`). Variables en producción y preview:
    `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
    (sensible), `NEXT_PUBLIC_APP_URL`. **Pendiente (Henry)**: conectar el repo de GitHub en
