@@ -9,7 +9,8 @@ import { loginAsOwner, waitForContent } from "./helpers";
  * celular, en "Más".
  */
 
-const ROUTES = ADMIN_GROUPS.flatMap((g) => g.items.map((i) => i.href));
+// REQ-079.9: /admin/qr ya no es un destino propio ("Horario y QR"), pero sigue siendo pantalla.
+const ROUTES = ADMIN_GROUPS.flatMap((g) => g.items.flatMap((i) => [i.href, ...(i.also ?? [])]));
 
 test.describe("T-177 marco del dueño en escritorio", () => {
   test.use({ serviceWorkers: "block" });
