@@ -20,8 +20,7 @@ const MODULES: [string, RegExp][] = [
   ["Inventario", /\/admin\/inventario/],
   ["Barberos", /\/admin\/barberos/],
   ["Servicios", /\/admin\/servicios/],
-  ["Horario", /\/admin\/horario/],
-  ["QR", /\/admin\/qr/],
+  ["Horario y QR", /\/admin\/horario/],
   ["Mensajes", /\/admin\/mensajes/],
   ["Negocio", /\/admin\/negocio/],
   ["Privacidad", /\/admin\/privacidad/],
@@ -53,7 +52,7 @@ test.describe("menú del dueño en el celular", () => {
   });
 
   test("REQ-077.1 Más abre los grupos y cada módulo se abre desde ahí", async ({ page }) => {
-    test.setTimeout(120_000); // recorre los 19 módulos
+    test.setTimeout(120_000); // recorre los 18 módulos
     const bar = page.getByRole("navigation", { name: "Accesos rápidos" });
     for (const [label, url] of MODULES) {
       await bar.getByRole("button", { name: "Más" }).click();
@@ -92,7 +91,7 @@ test.describe("menú del dueño en escritorio", () => {
   });
 
   test("REQ-077.2 el menú lateral muestra los grupos y lleva a cada módulo", async ({ page }) => {
-    test.setTimeout(120_000); // recorre los 19 módulos
+    test.setTimeout(120_000); // recorre los 18 módulos
     const side = page.getByRole("navigation", { name: "Menú del dueño" });
     await expect(side).toBeVisible();
     await expect(page.getByRole("navigation", { name: "Accesos rápidos" })).toBeHidden();
@@ -112,7 +111,7 @@ test.describe("menú del dueño en escritorio", () => {
       .getByRole("navigation", { name: "Menú del dueño" })
       .getByRole("link")
       .evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
-    expect(heights).toHaveLength(20);
+    expect(heights).toHaveLength(19);
     for (const h of heights) expect(h).toBeGreaterThanOrEqual(48);
   });
 });

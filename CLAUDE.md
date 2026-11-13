@@ -33,7 +33,7 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
   2026-11-12): solo **Gamma Club** (`/gamma-club`), cargado por Henry y en
   **https://www.gammaclub.co**. Filo y La 33 borrados de producción (`docs/guia-borrar-negocio.md`;
   el seed La 33 sigue solo en local y CI). La lista de módulos encendidos vive en
-  `src/lib/domain/modules.ts` (14 destinos del dueño, 4 del barbero; sin migraciones);
+  `src/lib/domain/modules.ts` (13 destinos del dueño con "Horario y QR" juntos, ADR-057; 4 del barbero; sin migraciones);
   `TURNOS_MODULES=todos` enciende todo y es lo que usan el CI (E2E y Lighthouse) y, si algo falla,
   Vercel. Falta la operación del inventario (Henry).
 - **Hito 16 (sistema visual nuevo, REQ-078, ADR-047)** aprobado (ADR-050, 2026-11-11): tokens nuevos

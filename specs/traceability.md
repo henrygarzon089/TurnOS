@@ -447,14 +447,15 @@
 | REQ-078.31 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (hecha), T-170 (hecha), T-171 (hecha), T-177 (hecha), T-178 (hecha), T-179 (hecha), T-180 (hecha), T-181 (hecha), T-172 (hecha), T-173 (hecha), T-174 (hecha), T-175 (hecha), T-176 (hecha), T-168 (hecha) | cash-day.spec.ts, visual-dueno-fila-caja.spec.ts, cash-sales.test.ts | cubierto |
 | REQ-078.32 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (hecha), T-170 (hecha), T-171 (hecha), T-177 (hecha), T-178 (hecha), T-179 (hecha), T-180 (hecha), T-181 (hecha), T-172 (hecha), T-173 (hecha), T-174 (hecha), T-175 (hecha), T-176 (hecha), T-168 (hecha) | week.spec.ts, week.test.ts, 0078_week_matches_cash.sql | cubierto |
 | REQ-078.33 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (hecha), T-170 (hecha), T-171 (hecha), T-177 (hecha), T-178 (hecha), T-179 (hecha), T-180 (hecha), T-181 (hecha), T-172 (hecha), T-173 (hecha), T-174 (hecha), T-175 (hecha), T-176 (hecha), T-168 (hecha) | gift-cards.spec.ts, memberships.spec.ts, reminders.spec.ts, visual-dueno-clientes.spec.ts, visual-dueno-config.spec.ts, visual-dueno-modulos.spec.ts, hours-form.test.tsx, hours.test.ts, inventory-catalog.test.ts, owner-tables.test.ts | cubierto |
-| REQ-079.1 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | modules.test.ts | cubierto |
-| REQ-079.2 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | admin-nav.test.tsx | cubierto |
-| REQ-079.3 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | barber-nav.test.tsx | cubierto |
-| REQ-079.4 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | today-modules.test.tsx | cubierto |
-| REQ-079.5 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | modules.test.ts, proxy.test.ts | cubierto |
-| REQ-079.6 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | modules.test.ts, proxy.test.ts | cubierto |
-| REQ-079.7 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | modules.test.ts | cubierto |
-| REQ-079.8 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha) | modules.test.ts | cubierto |
+| REQ-079.1 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | modules.test.ts | cubierto |
+| REQ-079.2 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | admin-nav.test.tsx | cubierto |
+| REQ-079.3 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | barber-nav.test.tsx | cubierto |
+| REQ-079.4 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | today-modules.test.tsx | cubierto |
+| REQ-079.5 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | modules.test.ts, proxy.test.ts | cubierto |
+| REQ-079.6 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | modules.test.ts, proxy.test.ts | cubierto |
+| REQ-079.7 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | modules.test.ts | cubierto |
+| REQ-079.8 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | modules.test.ts | cubierto |
+| REQ-079.9 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | admin-nav.test.tsx | cubierto |
 | REQ-080.1 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | modules.test.ts, proxy.test.ts, single-business.test.tsx | cubierto |
 | REQ-080.2 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | modules.test.ts, single-business.test.tsx | cubierto |
 | REQ-080.3 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | delete_business.sql | cubierto |
