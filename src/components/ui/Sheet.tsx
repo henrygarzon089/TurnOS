@@ -27,9 +27,11 @@ function useModal(open: boolean, onClose: () => void) {
     if (!el) return;
     if (open && !el.open) {
       el.showModal();
-      const first = el.querySelector<HTMLElement>(
-        "[autofocus], input:not([type=hidden]), select, textarea, button",
-      );
+      // El "Cerrar ventana" va primero en el orden, pero el foco va al contenido (REQ-078.34)
+      const first =
+        el.querySelector<HTMLElement>("[autofocus]") ??
+        el.querySelector<HTMLElement>("input:not([type=hidden]), select, textarea") ??
+        el.querySelector<HTMLElement>("button:not([data-sheet-close])");
       first?.focus();
     }
     if (!open && el.open) el.close();
@@ -75,6 +77,7 @@ function Header({
         type="button"
         onClick={onClose}
         aria-label="Cerrar ventana"
+        data-sheet-close=""
         className="text-muted hover:bg-surface hover:text-ink focus-visible:outline-brand -mt-1 -mr-2 flex size-12 shrink-0 items-center justify-center rounded-md focus-visible:outline-2"
       >
         <Icon name="x" className="size-6" />
