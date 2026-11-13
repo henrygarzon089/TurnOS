@@ -63,7 +63,7 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium webkit
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 3.1.0
       - name: Supabase local (migraciones + seed)
         run: supabase start -x imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
       - name: Variables de la app desde supabase status
@@ -125,7 +125,7 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 3.1.0
       - name: Supabase local (migraciones + seed)
         run: supabase start -x storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
       - name: Variables de la app desde supabase status
