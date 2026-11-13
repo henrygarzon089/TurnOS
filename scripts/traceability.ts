@@ -35,7 +35,7 @@ const HITOS: Record<string, [number, number][]> = {
   "14": [[75, 75]], // rendimiento percibido y medición (ADR-043)
   "15": [[76, 77]], // inicio "Hoy" y menú del dueño (ADR-046)
   "16": [[78, 78]], // sistema visual nuevo (ADR-047)
-  "17": [[79, 80]], // modo esencial y un solo negocio (ADR-055)
+  "17": [[79, 81]], // modo esencial, un solo negocio (ADR-055) y barbero de otro país (ADR-058)
 };
 
 const req = readFileSync("specs/requirements.md", "utf8");

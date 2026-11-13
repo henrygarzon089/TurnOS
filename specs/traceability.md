@@ -87,9 +87,9 @@
 | REQ-016.2 | Gestión de barberos y sillas | T-004 (hecha), T-007 (hecha), T-008 (hecha), T-025 (hecha) | 0002_core.sql | cubierto |
 | REQ-016.3 | Gestión de barberos y sillas | T-004 (hecha), T-007 (hecha), T-008 (hecha), T-025 (hecha) | 0003_rls_core.sql, 0004_invitations.sql | cubierto |
 | REQ-016.4 | Gestión de barberos y sillas | T-004 (hecha), T-007 (hecha), T-008 (hecha), T-025 (hecha) | admin-config.spec.ts, owner-queue.spec.ts | cubierto |
-| REQ-017.1 | Horario y estado del negocio | T-004 (hecha), T-008 (hecha), T-014 (hecha), T-016 (hecha), T-018 (hecha), T-019 (hecha) | admin-config.spec.ts, 0002_core.sql | cubierto |
-| REQ-017.2 | Horario y estado del negocio | T-004 (hecha), T-008 (hecha), T-014 (hecha), T-016 (hecha), T-018 (hecha), T-019 (hecha) | owner-queue.spec.ts, 0008_public_fns.sql, 0029_override_open.sql | cubierto |
-| REQ-017.3 | Horario y estado del negocio | T-004 (hecha), T-008 (hecha), T-014 (hecha), T-016 (hecha), T-018 (hecha), T-019 (hecha) | queue-estimate.test.ts | cubierto |
+| REQ-017.1 | Horario y estado del negocio | T-004 (hecha), T-008 (hecha), T-014 (hecha), T-016 (hecha), T-018 (hecha), T-019 (hecha), T-193 (hecha) | admin-config.spec.ts, 0002_core.sql | cubierto |
+| REQ-017.2 | Horario y estado del negocio | T-004 (hecha), T-008 (hecha), T-014 (hecha), T-016 (hecha), T-018 (hecha), T-019 (hecha), T-193 (hecha) | owner-queue.spec.ts, 0008_public_fns.sql, 0029_override_open.sql | cubierto |
+| REQ-017.3 | Horario y estado del negocio | T-004 (hecha), T-008 (hecha), T-014 (hecha), T-016 (hecha), T-018 (hecha), T-019 (hecha), T-193 (hecha) | queue-estimate.test.ts | cubierto |
 | REQ-018.1 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | 0013_customers_loyalty.sql | cubierto |
 | REQ-018.2 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, customer-history.test.ts | cubierto |
 | REQ-018.3 | Ficha de cliente por celular | T-031 (hecha), T-032 (hecha), T-033 (hecha), T-034 (hecha), T-039 (hecha) | customers.spec.ts, visual-dueno-clientes.spec.ts, customers.test.ts, 0013_customers_loyalty.sql | cubierto |
@@ -455,8 +455,14 @@
 | REQ-079.6 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | modules.test.ts, proxy.test.ts | cubierto |
 | REQ-079.7 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | modules.test.ts | cubierto |
 | REQ-079.8 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | modules.test.ts | cubierto |
-| REQ-079.9 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | admin-nav.test.tsx | cubierto |
+| REQ-079.9 | Modo esencial | T-184 (hecha), T-185 (hecha), T-186 (hecha), T-187 (hecha), T-188 (hecha), T-191 (hecha), T-192 (hecha) | visual-dueno-ancho.spec.ts, admin-nav.test.tsx | cubierto |
 | REQ-080.1 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | modules.test.ts, proxy.test.ts, single-business.test.tsx | cubierto |
 | REQ-080.2 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | modules.test.ts, single-business.test.tsx | cubierto |
 | REQ-080.3 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | delete_business.sql | cubierto |
 | REQ-080.4 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | delete_business.sql | cubierto |
+| REQ-081.1 | Barbero con celular de otro país | T-194 (hecha) | onboarding.spec.ts, barber-foreign-phone.test.tsx | cubierto |
+| REQ-081.2 | Barbero con celular de otro país | T-194 (hecha) | barber-foreign-phone.test.tsx, phone.test.ts, 0073_barber_foreign_phone.sql | cubierto |
+| REQ-081.3 | Barbero con celular de otro país | T-194 (hecha) | onboarding.spec.ts, barber-foreign-phone.test.tsx | cubierto |
+| REQ-081.4 | Barbero con celular de otro país | T-194 (hecha) | onboarding.spec.ts, barber-foreign-phone.test.tsx | cubierto |
+| REQ-081.5 | Barbero con celular de otro país | T-194 (hecha) | onboarding.spec.ts, barber-foreign-phone.test.tsx, phone.test.ts | cubierto |
+| REQ-081.6 | Barbero con celular de otro país | T-194 (hecha) | barber-foreign-phone.test.tsx | cubierto |

@@ -55,7 +55,8 @@ Cada decisión se evalúa primero contra esa barbería. Lo que no sirve allí no
 - Interfaz 100% en español.
 - Moneda: pesos colombianos (COP), **sin decimales**, con separador de miles (`$ 25.000`).
 - Zona horaria: `America/Bogota` para todo cálculo de "hoy", cierres de caja y semanas.
-- Celulares colombianos (10 dígitos, inician en 3) normalizados a formato E.164 (`+57…`).
+- Celulares colombianos (10 dígitos, inician en 3) normalizados a formato E.164 (`+57…`). Única
+  excepción: el celular del barbero puede ser de otro país, también en E.164 (ADR-058, REQ-081).
 
 ### P6. Protección de datos personales (Ley 1581 de 2012)
 - Antes de guardar nombre y celular, el cliente ve un aviso de privacidad y lo acepta de forma
