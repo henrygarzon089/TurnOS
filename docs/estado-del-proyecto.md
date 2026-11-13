@@ -682,6 +682,8 @@ Pendientes (H3): `/admin/caja`,
 - 2026-11-12, T-192 (ADR-057): "Horario" y "QR" abrían la misma pantalla; ahora son un solo
   destino, "Horario y QR" (`/admin/horario`; `/admin/qr` sigue funcionando y lo marca). El menú del
   dueño queda con 13 destinos en modo esencial. Sin migraciones; falta desplegar (Henry).
+- 2026-11-13, T-193: al guardar el horario, los selectores volvían a "12:00 a. m." hasta recargar
+  (React limpiaba el formulario). Corregido en `HoursForm`; los datos siempre se guardaron bien.
 - Plan para el arnés y los agentes: `docs/plan-hito-17.md`.
 
 ## Desvíos registrados respecto a la spec (todos explícitos)

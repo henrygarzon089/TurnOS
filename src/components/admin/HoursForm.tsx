@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 import { ErrorText } from "@/components/auth/LoginForm";
 import { Switch } from "@/components/ui/Switch";
 import { TimeSelect } from "@/components/ui/TimeSelect";
@@ -55,7 +55,18 @@ export function HoursForm({
     setDays((all) => ({ ...all, [d]: { ...all[d], ...patch } }));
 
   return (
-    <form action={action} className="@container flex flex-col gap-3">
+    <form
+      action={action}
+      onSubmit={(e) => {
+        // Con `action` sola, React limpia el formulario al terminar y los selectores controlados
+        // vuelven a su primera opción ("12:00 a. m.") aunque el estado diga otra hora. Enviando a
+        // mano no hay limpieza y se ve lo que quedó guardado.
+        e.preventDefault();
+        const data = new FormData(e.currentTarget);
+        startTransition(() => action(data));
+      }}
+      className="@container flex flex-col gap-3"
+    >
       {next && <input type="hidden" name="next" value={next} />}
       <div className="divide-line flex flex-col divide-y">
         <div

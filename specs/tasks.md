@@ -2717,6 +2717,17 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: un solo destino "Horario y QR" marcado en `/admin/horario` y `/admin/qr`; 13 destinos
   en modo esencial; CI verde.
 
+### [x] T-193 · El horario no vuelve a "12:00 a. m." al guardar
+- Hecha 2026-11-13 (falla que vio Henry en producción).
+- REQ: REQ-017.1
+- Modelo: Opus 5.5. Complejidad: baja.
+- Causa: con `<form action>`, React 19 limpia el formulario al terminar la acción; los `select`
+  controlados de `TimeSelect` volvían a su primera opción (00:00, "12:00 a. m.") aunque el estado y
+  la base tuvieran la hora guardada. Se veía bien solo al recargar.
+- Archivos: `src/components/admin/HoursForm.tsx` (envío con `onSubmit` + `startTransition`, sin
+  limpieza), `tests/e2e/admin-config.spec.ts`.
+- Terminado: después de guardar se ven las horas elegidas sin recargar; CI verde.
+
 ---
 
 ## Dependencias principales

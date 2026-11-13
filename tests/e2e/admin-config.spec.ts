@@ -74,6 +74,27 @@ test.describe("REQ-015/016/017/033 administración del negocio", () => {
     await expect(page.getByText("Horario guardado.")).toBeVisible();
   });
 
+  test("REQ-017.1 después de guardar, el horario sigue mostrando las horas elegidas", async ({
+    page,
+  }) => {
+    // Antes, React limpiaba el formulario al guardar y los selectores volvían a "12:00 a. m."
+    await page.goto("/admin/horario");
+    const opens = page.getByLabel("Lunes: abre");
+    const before = await opens.inputValue();
+    const other = before === "10:00" ? "10:15" : "10:00";
+    await opens.selectOption(other);
+    await page.getByRole("button", { name: "Guardar horario" }).click();
+    await expect(page.getByText("Horario guardado.")).toBeVisible();
+    await expect(opens).toHaveValue(other);
+    await expect(page.getByLabel("Lunes: cierra")).not.toHaveValue("00:00");
+    await page.reload();
+    await expect(page.getByLabel("Lunes: abre")).toHaveValue(other);
+    // Deja el horario como estaba
+    await page.getByLabel("Lunes: abre").selectOption(before);
+    await page.getByRole("button", { name: "Guardar horario" }).click();
+    await expect(page.getByText("Horario guardado.")).toBeVisible();
+  });
+
   test("REQ-033.1 edita una plantilla y ve la vista previa", async ({ page }) => {
     await page.goto("/admin/mensajes");
     const ta = page.getByLabel("Compartir la fila");
