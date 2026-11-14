@@ -1,4 +1,4 @@
-# Estado del proyecto — traspaso (2026-11-13)
+# Estado del proyecto — traspaso (2026-11-14)
 
 Este documento resume la conversación en la que se construyó todo hasta aquí, para que cualquier
 persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `specs/`.
@@ -719,6 +719,29 @@ Pendientes (H3): `/admin/caja`,
   - Sigue (Henry): conteo semanal de las dos estaciones; a las 4 semanas aceptar los rendimientos
     sugeridos; cobrar cada servicio en la caja para que la medición sirva.
 - Plan para el arnés y los agentes: `docs/plan-hito-17.md`.
+
+### Hito 18 — cobro y pantallas sin módulos apagados (en validación, REQ-082…083, ADR-060)
+
+- Henry aprobó la spec el 2026-11-13; quería un cobro más simple. Decidió que la bebida de cortesía
+  y el cumpleaños se quedan (REQ-083.4).
+- Construido y fusionado el 2026-11-14 (PR #183, `c8b7ebb`), sin migraciones:
+  - T-200: el cobro no muestra "Tarjeta de regalo" ni nada de membresías. El servidor rechaza esos
+    pagos con "Esta opción no está disponible." y no consulta la membresía del cliente.
+  - T-201: la caja (hoy y por fecha) y la semana sin los recuadros "Tarjetas de regalo" ni
+    "Membresía familiar", aunque haya datos viejos (`cashFeatures()` en `modules.ts`).
+  - T-202: sin "Ver cortes" (no se piden fotos), sin la marca "Membresía" en la fila ni su línea en
+    "Mi turno", y en clientes sin columna "Membresía", marca "Familia" ni fila "Membresía"
+    (`showMembership`).
+  - Con `TURNOS_MODULES=todos` todo sale como antes. Las pruebas de integración de fotos y
+    membresías ahora encienden los módulos con `vi.stubEnv`.
+  - El ADR quedó como ADR-060 porque ADR-059 ya era el de los 40 px.
+  - `pnpm trace --hito=18` sin huecos; CI en verde.
+- Falta (Henry), T-203:
+  1. Desplegar `main` (`vercel --prod`; no hay migraciones). El último despliegue de producción es
+     de antes de la fusión.
+  2. Cobrar una venta desde el celular y confirmar que en "Pago con" no sale "Tarjeta de regalo" y
+     que la caja de hoy no muestra esos recuadros.
+  3. Aprobar el hito (ADR nuevo).
 
 ## Desvíos registrados respecto a la spec (todos explícitos)
 

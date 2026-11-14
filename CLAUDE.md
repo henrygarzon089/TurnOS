@@ -27,8 +27,11 @@ comisión, venta de helados y bebidas). Dueño del producto: Henry Garzón.
 Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 …'`.
 `scripts/traceability.ts` las encuentra así. `--hito=N` falla si falta alguna.
 
-## Estado actual (2026-11-13)
+## Estado actual (2026-11-14)
 
+- **Hito 18 (cobro y pantallas sin módulos apagados, REQ-082…083, ADR-060)** fusionado
+  (PR #183, 2026-11-14); sin migraciones. Falta T-203: Henry despliega, cobra una venta sin
+  "Tarjeta de regalo" y aprueba.
 - **Hito 17 (modo esencial y un solo negocio, REQ-079…080, ADR-055)** aprobado (ADR-056,
   2026-11-12): solo **Gamma Club** (`/gamma-club`), cargado por Henry y en
   **https://www.gammaclub.co**. Filo y La 33 borrados de producción (`docs/guia-borrar-negocio.md`;
