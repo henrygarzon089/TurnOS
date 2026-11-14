@@ -2857,9 +2857,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   §26.1, ADR-063).
 - Modelo: Opus 5.5. Complejidad: media.
 
-### [ ] T-221 · Foto del barbero (dueño y barbero)
+### [x] T-221 · Foto del barbero (dueño y barbero)
 - REQ: REQ-085.1, REQ-085.2, REQ-085.3, REQ-085.4 · `uploadBrandImage`, `ImagePicker`, Barberos y
   "Mi foto". Modelo: Opus 5.5. Complejidad: media.
+- Hecha 2026-11-14: `src/lib/media/brand.ts`, `src/lib/actions/brand.ts` (sirve también a T-222 y
+  T-223), `Avatar`, `ImagePicker` (guarda al escoger, sin botón "Guardar"). El dueño la cambia en
+  la hoja de editar de Barberos; el barbero en "Mi foto", arriba de "Mis números". El recorte y la
+  reducción van en el celular con canvas (`resizeToBox`, `coverCrop`). Pruebas:
+  `tests/unit/brand-images.test.tsx`.
 
 ### [ ] T-222 · Fotos de servicios
 - REQ: REQ-086.1 · Modelo: Sonnet 5.5. Complejidad: baja.
