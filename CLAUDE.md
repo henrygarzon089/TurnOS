@@ -27,7 +27,7 @@ comisión, venta de helados y bebidas). Dueño del producto: Henry Garzón.
 Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 …'`.
 `scripts/traceability.ts` las encuentra así. `--hito=N` falla si falta alguna.
 
-## Estado actual (2026-11-12)
+## Estado actual (2026-11-13)
 
 - **Hito 17 (modo esencial y un solo negocio, REQ-079…080, ADR-055)** aprobado (ADR-056,
   2026-11-12): solo **Gamma Club** (`/gamma-club`), cargado por Henry y en
@@ -35,7 +35,10 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
   el seed La 33 sigue solo en local y CI). La lista de módulos encendidos vive en
   `src/lib/domain/modules.ts` (13 destinos del dueño con "Horario y QR" juntos, ADR-057; 4 del barbero; sin migraciones);
   `TURNOS_MODULES=todos` enciende todo y es lo que usan el CI (E2E y Lighthouse) y, si algo falla,
-  Vercel. Falta la operación del inventario (Henry).
+  Vercel. Inventario en marcha (2026-11-13): 23 insumos, reparto por barbero, conteos iniciales y
+  servicios en "Midiendo".
+- **T-194 (REQ-081, ADR-058)**: el barbero puede tener celular de otro país (Pedro, de Argentina);
+  los clientes siguen solo con celular colombiano. Migración `0073` en producción.
 - **Hito 16 (sistema visual nuevo, REQ-078, ADR-047)** aprobado (ADR-050, 2026-11-11): tokens nuevos
   (acción en `brand` azul marino, `accent` rojo solo para "atención ahora"), componentes base y
   cliente, barbero, dueño y televisor fieles a los tableros (T-160…T-183); migraciones 0070–0072.
