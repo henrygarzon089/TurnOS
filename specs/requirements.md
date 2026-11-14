@@ -329,7 +329,8 @@ la caja usen los valores correctos.
 cuenta.
 
 - REQ-016.1 El dueño DEBE poder crear un barbero con nombre visible, celular, porcentaje de
-  comisión (REQ-025) y estado activo/inactivo, e invitarlo a crear su acceso (REQ-030).
+  comisión (REQ-025) y estado activo/inactivo, e invitarlo a crear su acceso (REQ-030). El celular
+  puede ser de otro país (REQ-081, ADR-058).
 - REQ-016.2 El negocio tiene un número de sillas (por defecto 5) usado en el reporte de ocupación
   (REQ-028); un barbero activo ocupa una silla cuando está `disponible`, `en servicio` o `en pausa`
   dentro del horario.
@@ -1731,6 +1732,30 @@ otro negocio y los clientes lleguen directo a la barbería.
   negocios. Se usa una vez para borrar **Filo**.
 - REQ-080.4 El procedimiento de REQ-080.3 DEBE mostrar primero cuántas filas borraría por tabla y
   NO DEBE borrar nada sin una confirmación explícita con el `slug` exacto.
+
+### REQ-081 · Barbero con celular de otro país — M
+**Como** dueño, **quiero** registrar a un barbero que tiene celular de otro país (por ejemplo
+Argentina), **para** que entre a la app con su número y su PIN como los demás.
+
+- REQ-081.1 Al crear o editar un barbero, el dueño DEBE poder escoger el país del celular:
+  **Colombia (+57)**, que es el valor por defecto y funciona como hoy, u **Otro país**, donde
+  escribe el número completo con su indicativo (ej. `+54 9 11 2345 6789`).
+- REQ-081.2 Un celular de otro país DEBE guardarse en E.164: `+`, indicativo y número, de 8 a 15
+  dígitos en total, sin espacios. SI empieza por `+57`, ENTONCES DEBE cumplir la regla colombiana
+  (10 dígitos que inician en 3). SI no es válido, ENTONCES EL SISTEMA DEBE rechazarlo con "Escribe el
+  celular con el indicativo del país, por ejemplo +54 9 11 2345 6789.". La base de datos DEBE aceptar
+  en `barbers.phone_e164` cualquier número E.164 válido y seguir rechazando lo demás.
+- REQ-081.3 CUANDO un barbero con celular de otro país abre su invitación (REQ-030.2), EL SISTEMA
+  DEBE crear su acceso igual que para un celular colombiano (cuenta alias con su número, ADR-010).
+- REQ-081.4 La pantalla de ingreso del personal DEBE ofrecer "Mi celular no es de Colombia"; al
+  tocarlo, el barbero escribe su número con indicativo y su PIN, y entra a su fila. Sin tocarlo, el
+  ingreso funciona igual que hoy (+57 fijo).
+- REQ-081.5 En la lista de barberos, un celular de otro país DEBE mostrarse con su indicativo y
+  enmascarado (ej. `+54 *** 6789`, P6); al editarlo, el campo muestra el número completo con su
+  indicativo y "Otro país" escogido.
+- REQ-081.6 Los celulares de los **clientes** (fila, citas, membresías, tarjetas de regalo, avisos)
+  DEBEN seguir aceptando solo celulares colombianos: este requisito cambia solo el celular del
+  barbero. Cambia REQ-016.1 y P5 (ADR-058).
 
 Preguntas abiertas del Hito 17:
 - **PA-H17-1**: ¿Gamma Club se crea nuevo o se renombra Filo? **Resuelta (Henry, 2026-11-12):

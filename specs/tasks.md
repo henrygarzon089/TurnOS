@@ -2728,8 +2728,24 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   limpieza), `tests/e2e/admin-config.spec.ts`.
 - Terminado: después de guardar se ven las horas elegidas sin recargar; CI verde.
 
-### [x] T-194 · Hojas que se cierran y formularios que muestran lo guardado
-- Hecha 2026-11-13 (fallas que vio Henry probando Gamma Club en producción).
+### [x] T-194 · Barbero con celular de otro país
+- Hecha 2026-11-13; spec aprobada por Henry el mismo día (ADR-058). Primer caso: Pedro, de Gamma
+  Club, con celular de Argentina.
+- REQ: REQ-081.1…REQ-081.6
+- Modelo: Opus 5.5. Complejidad: media. Migración `0073` (la aplica Henry en producción).
+- Archivos: `src/lib/domain/phone.ts`, `src/components/ui/PhoneField.tsx`,
+  `src/components/admin/BarberForms.tsx`, `src/components/auth/LoginForm.tsx`,
+  `src/lib/actions/admin.ts`, `src/lib/actions/auth.ts`,
+  `supabase/migrations/0073_barber_foreign_phone.sql`, `supabase/tests/`, `tests/unit/`,
+  `tests/e2e/`, `scripts/traceability.ts`.
+- Terminado: el dueño crea un barbero con celular de Argentina, el barbero acepta la invitación y
+  entra con su número y su PIN; los clientes siguen solo con celular colombiano; `pnpm trace
+  --hito=17` sin huecos; CI verde.
+
+### [x] T-196 · Hojas que se cierran y formularios que muestran lo guardado
+- Hecha 2026-11-13 (fallas que vio Henry probando Gamma Club en producción). Los commits dicen
+  "T-194" porque el número se tomó en paralelo para el celular extranjero (#179); T-195 es la de
+  40 px en escritorio.
 - REQ: REQ-078.34, REQ-078.35, REQ-078.36 (nuevos en esta tarea).
 - Modelo: Opus 5.5. Complejidad: media.
 - Causas:
