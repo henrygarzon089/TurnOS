@@ -239,20 +239,20 @@ const hrefsOf = (groups: AdminGroup[]) => groups.flatMap((g) => g.items.map((i) 
 const ONLY_CASH = new Set<ModuleId>(["cash"]);
 
 describe("REQ-079.2 menú del dueño con los módulos encendidos", () => {
-  it("REQ-079.2 en modo esencial quedan 13 destinos en sus grupos y en orden", () => {
+  it("REQ-084.1 en modo esencial quedan 14 destinos (con Citas) en sus grupos y en orden", () => {
     expect(labelsOf(adminGroups(ESSENTIAL))).toEqual([
-      ["Operación", ["Hoy", "Fila", "Caja", "Semana"]],
+      ["Operación", ["Hoy", "Fila", "Citas", "Caja", "Semana"]],
       ["Clientes", ["Clientes", "Fidelidad"]],
       ["Local", ["Productos", "Inventario"]],
       ["Configuración", ["Barberos", "Servicios", "Horario y QR", "Negocio", "Privacidad"]],
     ]);
-    expect(hrefsOf(adminGroups(ESSENTIAL))).toHaveLength(13);
+    expect(hrefsOf(adminGroups(ESSENTIAL))).toHaveLength(14);
   });
 
   it("REQ-079.2 en modo esencial no sale ningún módulo apagado", () => {
     const hrefs = hrefsOf(adminGroups(ESSENTIAL));
+    expect(hrefs).toContain("/admin/citas"); // REQ-084.1
     for (const off of [
-      "/admin/citas",
       "/admin/recordar",
       "/admin/membresias",
       "/admin/regalos",
@@ -285,10 +285,10 @@ describe("REQ-079.2 menú del dueño con los módulos encendidos", () => {
     const h = renderToStaticMarkup(
       <AdminNav groups={adminGroups(ESSENTIAL)} tabs={adminTabs(ESSENTIAL)} />,
     );
-    expect(h).not.toContain('href="/admin/citas"');
+    expect(h).toContain('href="/admin/citas"'); // REQ-084.1
     expect(h).not.toContain('href="/admin/limpieza"');
-    // 13 del lateral + 4 de la barra
-    expect(h.match(/<a [^>]*>/g)).toHaveLength(17);
+    // 14 del lateral + 4 de la barra
+    expect(h.match(/<a [^>]*>/g)).toHaveLength(18);
   });
 });
 
@@ -329,7 +329,10 @@ describe("REQ-079.2 conteos sin módulos apagados", () => {
       active: [{ status: "waiting" }, { status: "waiting" }],
       appointments: [{ id: "a" }, { id: "b" }, { id: "c" }],
     };
-    expect(navQueueCounts(view, ESSENTIAL)).toEqual({ "/admin/fila": 2 });
+    const withoutCitas = new Set([...ESSENTIAL].filter((m) => m !== "appointments"));
+    expect(navQueueCounts(view, withoutCitas)).toEqual({ "/admin/fila": 2 });
+    // REQ-084.1: en modo esencial el número de Citas sí sale
+    expect(navQueueCounts(view, ESSENTIAL)).toEqual({ "/admin/fila": 2, "/admin/citas": 3 });
     expect(navQueueCounts(view, ALL)).toEqual({ "/admin/fila": 2, "/admin/citas": 3 });
   });
 });

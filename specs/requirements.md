@@ -1823,6 +1823,115 @@ Preguntas del Hito 18 (resueltas por Henry, 2026-11-13):
 Fuera de alcance del Hito 18: borrar código, tablas, funciones o datos de los módulos apagados
 (REQ-079.7 sigue); simplificar Productos; la dotación por barbero (REQ-070.4 queda igual).
 
+### Hito 19 — Citas en modo esencial (ADR-062)
+
+### REQ-084 · Citas encendidas en Gamma Club — M
+**Como** dueño, **quiero** que el cliente pueda reservar para hoy u otro día y ver la agenda de los
+próximos días, **para** llenar las sillas con citas además de la fila.
+
+- REQ-084.1 La lista de REQ-079.1 DEBE tener **Citas** encendido: el menú del dueño muestra "Citas",
+  "Hoy" muestra las citas de hoy y la portada y "Mi turno" ofrecen "Reservar una cita" (REQ-050.1).
+  Cambia REQ-079.1 y REQ-079.6 solo en Citas; los demás apagados siguen igual (REQ-079.7).
+- REQ-084.2 Reservar DEBE seguir dependiendo de lo que el dueño configura en "Citas" (recibir citas,
+  barberos que las aceptan y horario, REQ-049); sin eso, la portada NO DEBE ofrecer "Reservar una
+  cita".
+- REQ-084.3 La agenda del dueño DEBE mostrar las citas de hoy y de los 7 días siguientes (REQ-054.1).
+  El barbero sigue viendo solo sus citas de hoy en su fila (REQ-054.6), salvo que Henry decida otra
+  cosa en PA-H19-1.
+- REQ-084.4 Con `TURNOS_MODULES=todos` todo DEBE funcionar igual que antes.
+
+Preguntas del Hito 19 (Henry aprobó la spec el 2026-11-14; esta sigue abierta):
+- **PA-H19-1**: ¿el barbero debe ver **sus propias** citas de los próximos días? Hoy REQ-054.6 se lo
+  prohíbe. Propuesta: sí, solo las suyas, en una lista "Mis citas" (sería REQ-084.5 y cambia
+  REQ-054.6).
+
+Fuera de alcance del Hito 19: avisos por WhatsApp de las citas (dependen de T-069), cambiar cómo se
+calculan las horas libres.
+
+### Hito 20 — Cliente más moderno, con fotos y paso a paso (ADR-063)
+
+### REQ-085 · Foto del barbero — M
+**Como** cliente, **quiero** ver la cara de cada barbero, **para** escoger con quién me corto.
+
+- REQ-085.1 El dueño DEBE poder subir, cambiar y quitar la foto de cada barbero desde "Barberos".
+- REQ-085.2 El barbero DEBE poder subir, cambiar y quitar su propia foto desde su menú ("Mi foto",
+  dentro de "Mis números" o donde diga el diseño §26); NO DEBE poder cambiar la de otro barbero.
+- REQ-085.3 La foto DEBE poder escogerse de la galería o tomarse con la cámara del celular (hasta
+  10 MB); la app DEBE recortarla cuadrada y reducirla a 400 × 400 px WebP antes de subirla. Un
+  archivo que no es imagen o más grande DEBE rechazarse con "Sube una foto de hasta 10 MB."
+- REQ-085.4 Sin foto, DEBEN mostrarse las iniciales del barbero en un círculo, como hoy.
+- REQ-085.5 La foto DEBE verse en las tarjetas de barbero al tomar turno y al reservar (REQ-088,
+  REQ-089), en "Mi turno" y en "Mi cita" en lugar de las iniciales.
+
+### REQ-086 · Servicios con foto — S
+- REQ-086.1 El dueño DEBE poder subir, cambiar y quitar una foto por servicio desde "Servicios", con
+  las reglas de REQ-085.3 (guardada en 600 × 400 px WebP).
+- REQ-086.2 Al tomar turno y al reservar, cada servicio DEBE mostrarse como tarjeta con su foto (o
+  un ícono de tijera si no tiene), el nombre, el precio y la duración ("30 min").
+
+### REQ-087 · Marca del negocio — S
+- REQ-087.1 El dueño DEBE poder subir el logo (cuadrado, 256 × 256 px WebP) y una foto de portada
+  del local (1200 × 600 px WebP) desde "Negocio".
+- REQ-087.2 La portada del negocio DEBE mostrar arriba la foto de portada con el logo y el nombre
+  encima; sin foto de portada, el fondo DEBE ser el color de marca de TurnOS (azul marino) con el
+  logo o el nombre.
+- REQ-087.3 Los colores DEBEN seguir siendo los de TurnOS (REQ-078), salvo que Henry decida otra cosa
+  en PA-H20-1.
+
+### REQ-088 · Tomar turno paso a paso — M
+**Como** cliente que escanea el QR, **quiero** tomar turno sin ver un formulario largo, **para**
+terminar en pocos toques desde el celular.
+
+- REQ-088.1 La portada DEBE mostrar, en este orden: la cabecera de REQ-087.2, el estado ("Abierto
+  hasta …" o "Cerrado · …"), el bloque en vivo con las fotos de los barberos ("N esperando", y por
+  barbero "Libre", "n · ~ N min" o "En pausa"), y dos botones grandes: **"Tomar turno"** y
+  **"Reservar una cita"** (este último solo con REQ-084.2); "Ver menú" debajo cuando exista.
+- REQ-088.2 "Tomar turno" DEBE abrir 3 pasos con barra de avance ("Paso 1 de 3") y botón "Atrás":
+  1) **Servicio** (tarjetas de REQ-086.2); 2) **Barbero**: "El primero libre" primero con su espera
+  aproximada, y una tarjeta por barbero con foto, nombre y "Libre", "n antes · ~ N min" o "En pausa"
+  (en pausa no se puede escoger); los barberos que no hacen el servicio escogido NO DEBEN salir
+  (REQ-035); 3) **Tus datos**: nombre, celular, cumpleaños si falta (REQ-037.2), bebida de cortesía
+  (REQ-038) y privacidad; y el botón fijo **"Confirmar turno"** con un resumen
+  ("Corte moderno con Pedro · ~ 20 min").
+- REQ-088.3 Tocar un servicio o un barbero DEBE pasar solo al paso siguiente, sin otro botón.
+- REQ-088.4 El paso DEBE quedar en la dirección (`?paso=servicio|barbero|datos`) para que el botón
+  "atrás" del celular vuelva al paso anterior y recargar no pierda lo escogido.
+- REQ-088.5 El cliente que vuelve DEBE encontrar el paso 3 con su nombre y celular ya puestos
+  (REQ-022) y su barbero de siempre marcado en el paso 2.
+- REQ-088.6 Todas las reglas de tomar turno siguen (REQ-003, REQ-035, REQ-037, REQ-038): mismos
+  mensajes de error, junto al paso donde está el dato (un error del celular lleva al paso 3).
+- REQ-088.7 Desde 1024 px, la fila en vivo DEBE ir a la izquierda y los pasos en una tarjeta a la
+  derecha (como ADR-052).
+
+### REQ-089 · Reservar una cita paso a paso — M
+- REQ-089.1 "Reservar una cita" DEBE tener 4 pasos con barra de avance y "Atrás": 1) **Servicio**;
+  2) **Barbero** (tarjetas con foto de los que aceptan citas y hacen el servicio, y "El que esté
+  libre"); 3) **Día y hora** (tira de días y horas libres, REQ-078.24); 4) **Tus datos** y el botón
+  fijo "Confirmar · <día>, <hora>".
+- REQ-089.2 Los casos sin horas de REQ-078.24 ("<barbero> ya no tiene horas <día>", "Ver el …",
+  "Probar con otro barbero", "Mejor tomar turno en la fila") DEBEN seguir en el paso 3.
+- REQ-089.3 REQ-088.3, REQ-088.4 y REQ-088.6 aplican igual a la cita.
+
+### REQ-090 · Fotos rápidas y seguras — M
+- REQ-090.1 Las fotos públicas (barbero, servicio, logo, portada) DEBEN servirse ya reducidas y en
+  WebP, con carga diferida debajo del primer pantallazo; Lighthouse móvil de la portada DEBE seguir
+  ≥ 80 en rendimiento (NFR-001).
+- REQ-090.2 Solo el dueño (y el barbero para su propia foto) DEBE poder subir o borrar; el cliente
+  solo las ve. Al quitar una foto o borrar el barbero o el servicio, el archivo DEBE borrarse.
+- REQ-090.3 Toda la UI nueva DEBE cumplir REQ-078.5 (toques ≥ 48 px), REQ-078.15 (sin
+  desplazamiento horizontal en 360, 390 y 1280 px) y NFR-008 (contraste), en español.
+
+Preguntas del Hito 20 (Henry aprobó la spec con las propuestas el 2026-11-14; se pueden cambiar sin
+reconstruir):
+- **PA-H20-1**: ¿la portada usa los colores de Gamma Club (por ejemplo, negro y dorado) o los de
+  TurnOS? Propuesta: los de TurnOS ahora; color de marca por negocio, después.
+- **PA-H20-2**: ¿el televisor también muestra las fotos de los barberos? Propuesta: no en este hito.
+- **PA-H20-3**: ¿tienes logo y una foto del local listos? Si no, la portada sale con el nombre sobre
+  azul marino hasta que los subas.
+
+Fuera de alcance del Hito 20: fotos de cortes (sigue apagado, REQ-039), colores por negocio, el
+televisor, las pantallas del personal salvo los formularios para subir fotos.
+
 ---
 
 ## 6. Requisitos no funcionales

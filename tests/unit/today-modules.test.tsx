@@ -6,16 +6,18 @@ import { ownerAlertSources, todayLayout, todayShortcuts } from "@/lib/domain/tod
 
 const essential = enabledModules("");
 const todos = enabledModules("todos");
+/** La lista del Hito 17, antes de encender Citas (REQ-084.1): sigue probando REQ-079.4. */
+const sinCitas = new Set([...essential].filter((m) => m !== "appointments"));
 
 describe("Hoy según los módulos encendidos (T-187)", () => {
-  it("REQ-079.4 en esencial no hay bloques de citas ni de recordar", () => {
-    const l = todayLayout(essential);
+  it("REQ-079.4 sin Citas encendido no hay bloques de citas ni de recordar", () => {
+    const l = todayLayout(sinCitas);
     expect(l.showAppointments).toBe(false);
     expect(l.showRemind).toBe(false);
   });
 
-  it("REQ-079.4 en esencial la rejilla pone fila (8) y alertas (4) arriba, caja (6) y semana (6) abajo", () => {
-    const l = todayLayout(essential);
+  it("REQ-079.4 sin citas ni recordar la rejilla pone fila (8) y alertas (4) arriba, caja (6) y semana (6) abajo", () => {
+    const l = todayLayout(sinCitas);
     expect(l.queue).toContain("lg:col-span-8");
     expect(l.queue).toContain("lg:row-start-1");
     expect(l.alerts).toContain("lg:col-span-4");
@@ -41,9 +43,16 @@ describe("Hoy según los módulos encendidos (T-187)", () => {
   });
 
   it("REQ-079.4 sin citas pero con recordar, recordar toma toda la fila de abajo sin hueco", () => {
-    const l = todayLayout(new Set([...essential, "remind" as const]));
+    const l = todayLayout(new Set([...sinCitas, "remind" as const]));
     expect(l.showRemind).toBe(true);
     expect(l.remind).toContain("lg:col-span-12");
+  });
+
+  it("REQ-084.1 en modo esencial Hoy muestra las citas de hoy, sin recordar", () => {
+    const l = todayLayout(essential);
+    expect(l.showAppointments).toBe(true);
+    expect(l.showRemind).toBe(false);
+    expect(l.week).toContain("lg:col-span-12");
   });
 
   it("REQ-079.4 con citas y sin recordar, la semana ocupa los 12 de su fila", () => {

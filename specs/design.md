@@ -3215,3 +3215,56 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
 - Las E2E existentes de tarjetas y membresías siguen con `TURNOS_MODULES=todos` (REQ-082.5,
   REQ-083.5). `HITOS["18"] = [[82, 83]]`.
 
+## 25. Hito 19 — Citas en modo esencial (REQ-084, ADR-062)
+
+- `ESSENTIAL` en `src/lib/domain/modules.ts` suma `"appointments"`. Nada más cambia en código de la
+  app: el menú, "Hoy", la portada y las rutas ya leen la lista (design §23).
+- Pruebas que cuentan destinos del dueño (13 → 14) y las de REQ-079.6 sobre `/[slug]/cita` se
+  ajustan: con Citas encendido, `/[slug]/cita` abre la reserva; `/c/[token]` muestra "Mi cita".
+- Henry, en producción: "Citas" → "Recibir citas", barberos que las aceptan y probar una reserva.
+
+## 26. Hito 20 — Cliente con fotos y paso a paso (REQ-085…090, ADR-063)
+
+### 26.1 Datos y almacenamiento (migración 0074)
+- Columnas `barbers.photo_path`, `services.photo_path`, `businesses.logo_path`,
+  `businesses.cover_path` (`text null`).
+- Bucket público `brand` (lectura pública, escritura solo `service_role`). Rutas:
+  `<business_id>/barbers/<barber_id>-<n>.webp`, `<business_id>/services/<service_id>-<n>.webp`,
+  `<business_id>/logo-<n>.webp`, `<business_id>/cover-<n>.webp` (`<n>` cambia en cada subida para
+  no servir la vieja desde la caché).
+- `get_public_business` y `get_ticket_by_token` devuelven `photoPath` por barbero y servicio,
+  `logoPath` y `coverPath`; la URL pública se arma en `src/lib/media/brand.ts`.
+- Funciones `set_barber_photo(p_barber_id, p_path)`, `set_service_photo(...)` y
+  `set_business_brand(p_logo_path, p_cover_path)` (`security definer`): el dueño cualquiera de su
+  negocio; el barbero solo `set_barber_photo` con su propio id. Devuelven la ruta anterior para
+  borrar el archivo.
+
+### 26.2 Subida
+- En el celular, `ImagePicker` lee la foto escogida (el iPhone entrega JPEG al escoger con
+  `accept="image/*"`), la recorta (cuadrada o 3:2) y la reduce con `canvas` a WebP calidad 0.8 en el
+  tamaño de REQ-085.3/086.1/087.1. Sin dependencias nuevas (`sharp` no está y no lee HEIC).
+- Server action `uploadBrandImage(kind, id, file)` en `src/lib/actions/brand.ts`: revisa sesión y
+  permiso, acepta solo `image/webp` de hasta 1 MB con el tamaño esperado, sube con el cliente de
+  `service_role`, llama la función SQL y borra el archivo anterior. `removeBrandImage(kind, id)` hace
+  lo contrario.
+- Componente `ImagePicker` (vista previa, "Cambiar foto", "Quitar") reutilizado en Barberos,
+  Servicios, Negocio y en "Mi foto" del barbero (en "Mis números", arriba).
+
+### 26.3 Pantallas del cliente
+- `Avatar` (foto o iniciales), `BarberCard`, `ServiceCard`, `StepHeader` ("Paso N de M", "Atrás",
+  barra de avance) en `src/components/public/`.
+- `JoinFlow` reemplaza a `JoinForm` en la presentación; reusa su estado, `joinQueue`, preferencias
+  guardadas y errores. El paso sale de `useSearchParams` (`?paso=`); cambiar de paso usa
+  `router.push` con `scroll: true`.
+- `BookFlow` hace lo mismo con la reserva (`/[slug]/cita`), reusando la tira de días y horas.
+- Portada: `PublicHero` (portada, logo, nombre y estado), `LiveBlock` con `Avatar`, y los dos botones.
+- Imágenes con `next/image` y `remotePatterns` para el dominio de Storage; `priority` solo para la
+  portada; el resto `loading="lazy"`.
+
+### 26.4 Pruebas
+- Unitarias: validación de archivo, permisos de subida (dueño, barbero propio, barbero ajeno),
+  `Avatar` sin foto, pasos y `?paso=`, filtros de barberos por servicio y en pausa.
+- pgTAP: `set_barber_photo` y compañía (permisos y ruta anterior).
+- Integración: subir y quitar contra el Postgres local con un doble de Storage.
+- E2E móvil: tomar turno en 3 pasos y reservar en 4, "atrás" del celular, cliente que vuelve.
+- Lighthouse móvil de la portada ≥ 80 (REQ-090.1).

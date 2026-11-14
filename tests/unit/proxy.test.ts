@@ -16,16 +16,18 @@ const all = enabledModules("todos");
 describe("redirectForDisabled (personal)", () => {
   it("REQ-079.5 una ruta apagada del dueño va a su inicio /admin", () => {
     for (const p of [
-      "/admin/citas",
       "/admin/membresias",
       "/admin/regalos",
       "/admin/recordar",
       "/admin/limpieza",
       "/admin/mensajes",
-      "/admin/citas/otra",
     ]) {
       expect(redirectForDisabled(p, essential), p).toBe("/admin");
     }
+  });
+
+  it("REQ-084.1 la agenda de Citas ya no redirige en modo esencial", () => {
+    expect(redirectForDisabled("/admin/citas", essential)).toBeNull();
   });
 
   it("REQ-079.5 una ruta apagada de /app va a /app, que reparte por rol (dueño a Hoy, barbero a Mi fila)", () => {
@@ -85,12 +87,14 @@ describe("oferta de cita (públicas)", () => {
   });
   const raw = { enabled: true, barbers: [{ id: "b1", name: "Ana" }], openDays: ["2026-11-13"] };
 
-  it("REQ-079.6 con el módulo apagado la oferta de cita desaparece aunque el negocio la tenga", async () => {
+  it("REQ-084.2 en modo esencial la oferta de cita sale si el negocio la tiene configurada", async () => {
     vi.stubEnv("TURNOS_MODULES", "");
     rpc.mockResolvedValue(raw);
     const { getAppointmentInfo } = await import("@/lib/actions/public-appointments");
     const info = await getAppointmentInfo("gamma-club");
-    expect(info?.enabled).toBe(false);
+    expect(info?.enabled).toBe(true);
+    rpc.mockResolvedValue({ ...raw, enabled: false });
+    expect((await getAppointmentInfo("gamma-club"))?.enabled).toBe(false);
   });
 
   it("REQ-079.6 con todos los módulos la oferta de cita sigue igual", async () => {

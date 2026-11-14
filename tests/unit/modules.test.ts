@@ -12,9 +12,10 @@ import {
   moduleForPath,
   type ModuleId,
 } from "@/lib/domain/modules";
+import { groupAgendaByDay } from "@/lib/domain/appointments";
+import { barberMore, barberTabs } from "@/lib/domain/barber-nav";
 
 const OFF: ModuleId[] = [
-  "appointments",
   "memberships",
   "giftCards",
   "remind",
@@ -39,6 +40,7 @@ const ON: ModuleId[] = [
   "qr",
   "business",
   "privacy",
+  "appointments", // REQ-084.1 (ADR-062)
   "myNumbers",
   "station",
 ];
@@ -70,6 +72,27 @@ describe("REQ-079.1 lista única de módulos", () => {
   });
 });
 
+describe("REQ-084 Citas encendido en Gamma Club", () => {
+  it("REQ-084.1 en modo esencial Citas está encendido y los demás apagados siguen igual", () => {
+    expect(isModuleEnabled("appointments", "")).toBe(true);
+    expect(isModuleEnabled("appointments", undefined)).toBe(true);
+    for (const id of OFF) expect(isModuleEnabled(id, ""), id).toBe(false);
+  });
+
+  it("REQ-084.3 el dueño ve la agenda de hoy a +7 y el barbero no tiene agenda en su menú", () => {
+    const days = groupAgendaByDay([], "2026-11-17").map((g) => g.day);
+    expect(days).toHaveLength(8);
+    expect(days[0]).toBe("2026-11-17");
+    expect(days[7]).toBe("2026-11-24");
+    const barber = [...barberTabs(ESSENTIAL), ...barberMore(ESSENTIAL)].map((l) => l.href);
+    expect(barber).toEqual(["/app/fila", "/app/clientes", "/app/mis-numeros", "/app/estacion"]);
+  });
+
+  it("REQ-084.4 con todos los módulos, Citas sigue encendido", () => {
+    expect(isModuleEnabled("appointments", "todos")).toBe(true);
+  });
+});
+
 describe("REQ-079.8 modo de pruebas TURNOS_MODULES=todos", () => {
   it("REQ-079.8 'todos' enciende todos los módulos", () => {
     const on = enabledModules("todos");
@@ -84,10 +107,10 @@ describe("REQ-079.8 modo de pruebas TURNOS_MODULES=todos", () => {
 
   it("REQ-079.8 sin argumento lee TURNOS_MODULES del entorno", () => {
     vi.stubEnv("TURNOS_MODULES", "todos");
-    expect(isModuleEnabled("appointments")).toBe(true);
+    expect(isModuleEnabled("memberships")).toBe(true);
     expect(isEssentialMode()).toBe(false);
     vi.stubEnv("TURNOS_MODULES", "");
-    expect(isModuleEnabled("appointments")).toBe(false);
+    expect(isModuleEnabled("memberships")).toBe(false);
     expect(isEssentialMode()).toBe(true);
     expect(enabledModules()).toBe(ESSENTIAL);
   });

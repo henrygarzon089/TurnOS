@@ -743,6 +743,21 @@ Pendientes (H3): `/admin/caja`,
   `henrygarzon089`; el `gh` del agente no es administrador), los pasos de Meta para WhatsApp
   (T-069), la revisión del aviso de privacidad por un abogado y el inventario de Gamma Club.
 
+### Hito 19 — Citas en modo esencial (en validación, REQ-084, ADR-062)
+
+- Henry arranca con Gamma Club el martes 2026-11-17 y pidió ver la agenda de otros días. Citas
+  estaba apagado desde el Hito 17. T-210 (2026-11-14) lo enciende en `modules.ts`, sin migraciones:
+  "Citas" en el menú del dueño (14 destinos), las citas de hoy en "Hoy" y "Reservar una cita" en la
+  portada cuando hay barberos que las reciben.
+- Falta (Henry), T-211: desplegar; en "Citas", activar "Recibir citas" y escoger a Pedro y Stiven;
+  reservar una cita para mañana desde el celular y verla en la agenda; aprobar.
+- Abierta PA-H19-1: si el barbero ve sus propias citas de los próximos días (hoy no, REQ-054.6).
+
+### Hito 20 — cliente con fotos y paso a paso (spec aprobada, REQ-085…090, ADR-063)
+
+- Fotos del barbero (dueño y barbero), de los servicios, logo y portada en el bucket público
+  `brand`; tomar turno en 3 pasos y reservar en 4. Tareas T-220…T-228; en construcción.
+
 ## Desvíos registrados respecto a la spec (todos explícitos)
 
 - Next.js 16: `middleware.ts` → `src/proxy.ts`; `cacheComponents` desactivado.
