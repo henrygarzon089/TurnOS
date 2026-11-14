@@ -3,19 +3,33 @@
  * `globals.css` y la regla `.bg-brand`). Se corre después de cada despliegue a producción.
  * Reglas en `src/lib/design/deploy-css.ts`.
  *
- * Uso: pnpm check:deploy https://turnos-smoky-nine.vercel.app [/la-33]
+ * Uso: pnpm check:deploy https://www.gammaclub.co [/gamma-club]
+ * La ruta por defecto es la fila de Gamma Club, el único negocio en producción (ADR-055); La 33
+ * existe solo en local y en el CI. Si la ruta no responde 200 o dice "Negocio no encontrado" (que
+ * responde 200), falla: una página de error también trae CSS y daría un ✓ engañoso.
  */
 import { readFileSync } from "node:fs";
 import { compareDeployedCss } from "../src/lib/design/deploy-css";
 
-const [base, path = "/la-33"] = process.argv.slice(2);
+const [base, path = "/gamma-club"] = process.argv.slice(2);
 if (!base) {
   console.error("Uso: pnpm check:deploy <url> [ruta]");
   process.exit(1);
 }
 
 const pageUrl = new URL(path, base);
-const html = await fetch(pageUrl, { cache: "no-store" }).then((r) => r.text());
+const res = await fetch(pageUrl, { cache: "no-store" });
+if (!res.ok) {
+  console.error(`check-deploy: ${pageUrl} respondió ${res.status}; usa una ruta que exista.`);
+  process.exit(1);
+}
+const html = await res.text();
+// La página de "no encontrado" responde 200 y también trae CSS: no sirve para comparar. Se mira el
+// título: el texto suelto va también en el código de cualquier página.
+if (/<title>Negocio no encontrado/.test(html)) {
+  console.error(`check-deploy: ${pageUrl} dice "Negocio no encontrado"; usa una ruta que exista.`);
+  process.exit(1);
+}
 const hrefs = [...html.matchAll(/<link[^>]+rel="stylesheet"[^>]+href="([^"]+)"/g)].map((m) => m[1]);
 const css = (
   await Promise.all(hrefs.map((h) => fetch(new URL(h, pageUrl)).then((r) => r.text())))
