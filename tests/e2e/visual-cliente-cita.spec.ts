@@ -48,17 +48,15 @@ async function withAppointments(run: (x: Awaited<ReturnType<typeof ids>>) => Pro
 const phone = (i: number) => `+57304${String(Date.now() + i).slice(-7)}`;
 
 test.describe("T-175 cita, Mi cita, tarjeta de regalo y privacidad (REQ-078.24)", () => {
-  test("REQ-078.24 reservar: Servicio y Barbero con Cambiar, tira de días, horas en 3 columnas y Confirmar · <día>, <hora>", async ({
+  test("REQ-078.24 / REQ-089.1 reservar: tira de días, horas en 3 columnas, Tus datos y Confirmar · <día>, <hora>", async ({
     page,
   }) => {
     test.setTimeout(90_000);
     await withAppointments(async ({ service, juan }) => {
-      // "Reservar una cita" de la portada manda lo que el cliente ya eligió
-      await page.goto(`/${SEED.slug}/cita?servicio=${service}&barbero=${juan}`);
+      // El paso 3 se abre directo desde la dirección (REQ-088.4 por REQ-089.3)
+      await page.goto(`/${SEED.slug}/cita?paso=hora&servicio=${service}&barbero=${juan}`);
       await expect(page.getByRole("heading", { name: "Reservar una cita" })).toBeVisible();
-      await expect(page.getByTestId("row-service")).toContainText("Corte");
-      await expect(page.getByTestId("row-barber")).toContainText("Juan");
-      await expect(page.getByRole("button", { name: /^Cambiar/ })).toHaveCount(2);
+      await expect(page.getByRole("progressbar", { name: "Paso 3 de 4" })).toBeVisible();
 
       // Tira de días que se desliza dentro de su caja
       const days = page.getByRole("radiogroup", { name: "Día" });
@@ -70,13 +68,15 @@ test.describe("T-175 cita, Mi cita, tarjeta de regalo y privacidad (REQ-078.24)"
       const open = days.getByRole("radio", { disabled: false });
       await expect(open.first()).toBeAttached({ timeout: 15_000 });
       const hours = page.getByRole("radiogroup", { name: "Hora" });
-      if (!(await hours.isVisible().catch(() => false)))
-        await days
+      if (!(await hours.isVisible().catch(() => false))) {
+        const lastDay = days
           .locator("label")
           .filter({ has: page.locator("input:not([disabled])") })
-          .last()
-          .click();
-      await expect(hours.locator("label").first()).toBeVisible({ timeout: 15_000 });
+          .last();
+        await lastDay.click();
+        await expect(lastDay.locator("input")).toBeChecked();
+      }
+      await expect(hours.getByRole("radio").first()).toBeVisible({ timeout: 15_000 });
       await expect(page.getByText(/^Horas libres · /i)).toBeVisible();
       const cols = await hours.evaluate(
         (el) => getComputedStyle(el).gridTemplateColumns.split(" ").length,
@@ -84,34 +84,39 @@ test.describe("T-175 cita, Mi cita, tarjeta de regalo y privacidad (REQ-078.24)"
       expect(cols).toBe(3);
       // La tira se desliza dentro de su caja: la página no se ensancha (el celular no aleja)
       expect(await page.evaluate(() => innerWidth)).toBe(page.viewportSize()!.width);
+      await expect(page.getByText("Llega a tu hora: te esperamos hasta 10 minutos.")).toBeVisible();
+      // Sin hora todavía no se piden datos
+      await expect(page.getByLabel("Tu nombre")).toHaveCount(0);
 
-      const confirm = page.getByRole("button", { name: /^(Elige una hora|Confirmar · )/ });
-      await expect(confirm).toHaveText("Elige una hora");
-      await expect(confirm).toBeDisabled();
-      const hour = (await hours.locator("label").first().textContent())!.trim();
-      await hours.locator("label").first().click();
+      const hour = (await hours.getByRole("radio").first().textContent())!.trim();
+      await hours.getByRole("radio").first().click();
+      await expect(page).toHaveURL(/paso=datos/);
+      await expect(page.getByRole("progressbar", { name: "Paso 4 de 4" })).toBeVisible();
+      await expect(page.getByTestId("book-summary")).toHaveText("Corte con Juan");
+      const confirm = page.getByRole("button", { name: /^Confirmar · / });
       await expect(confirm).toHaveText(new RegExp(`^Confirmar · [a-záéíóú]{3} \\d+, ${hour}$`));
       await expect(confirm).toBeEnabled();
-      await expect(page.getByText("Llega a tu hora: te esperamos hasta 10 minutos.")).toBeVisible();
-
-      // "Cambiar" abre la hoja con "El primero libre"
-      await page
-        .getByTestId("row-barber")
-        .getByRole("button", { name: /^Cambiar/ })
-        .click();
-      const sheet = page.getByRole("dialog", { name: "Barbero" });
-      await expect(sheet.getByText("El primero libre")).toBeVisible();
-      await sheet.locator("label").filter({ hasText: "El primero libre" }).click();
-      await expect(page.getByTestId("row-barber")).toContainText("El primero libre");
-
       await expect(page.getByLabel("Tu nombre")).toBeVisible();
       await expect(page.getByLabel("Tu celular")).toBeVisible();
       expect(await primaryButtons(page)).toBeLessThanOrEqual(1);
       expect(await smallTargets(page)).toEqual([]);
+
+      // "Atrás" dos veces: el paso 2 con "El que esté libre"
+      await page.getByRole("button", { name: "Atrás" }).click();
+      await expect(page.getByRole("progressbar", { name: "Paso 3 de 4" })).toBeVisible();
+      await page.getByRole("button", { name: "Atrás" }).click();
+      await expect(page.getByRole("progressbar", { name: "Paso 2 de 4" })).toBeVisible();
+      await expect(page.getByRole("radio", { name: /^Juan, Ver sus horas$/ })).toHaveAttribute(
+        "aria-checked",
+        "true",
+      );
+      await page.getByRole("radio", { name: /^El que esté libre,/ }).click();
+      await expect(page.getByRole("progressbar", { name: "Paso 3 de 4" })).toBeVisible();
+      await expect(page).toHaveURL(/barbero=libre/);
     });
   });
 
-  test("REQ-078.24 vacío: '<barbero> ya no tiene horas', 'Ver el <día>', otro barbero y la fila", async ({
+  test("REQ-078.24 / REQ-089.2 vacío: '<barbero> ya no tiene horas', 'Ver el <día>', otro barbero y la fila", async ({
     page,
   }) => {
     test.setTimeout(120_000);
@@ -140,7 +145,7 @@ test.describe("T-175 cita, Mi cita, tarjeta de regalo y privacidad (REQ-078.24)"
         if (error && !/SLOT|taken|ocupad/i.test(error.message)) throw new Error(error.message);
       }
 
-      await page.goto(`/${SEED.slug}/cita?servicio=${service}&barbero=${juan}`);
+      await page.goto(`/${SEED.slug}/cita?paso=hora&servicio=${service}&barbero=${juan}`);
       await expect(page.getByText(/^Juan ya no tiene horas (hoy|el \S+ \d+)$/)).toBeVisible({
         timeout: 15_000,
       });
@@ -150,13 +155,15 @@ test.describe("T-175 cita, Mi cita, tarjeta de regalo y privacidad (REQ-078.24)"
       // Sin horas no se piden datos
       await expect(page.getByLabel("Tu nombre")).toHaveCount(0);
 
+      // REQ-089.2: "Probar con otro barbero" vuelve al paso 2; el botón atrás regresa al 3
       await page.getByRole("button", { name: "Probar con otro barbero" }).click();
-      await expect(page.getByRole("dialog", { name: "Barbero" })).toBeVisible();
-      await page.keyboard.press("Escape");
+      await expect(page.getByRole("progressbar", { name: "Paso 2 de 4" })).toBeVisible();
+      await page.goBack();
+      await expect(page.getByRole("progressbar", { name: "Paso 3 de 4" })).toBeVisible();
 
       await page.getByRole("button", { name: /^Ver el / }).click();
       await expect(
-        page.getByRole("radiogroup", { name: "Hora" }).locator("label").first(),
+        page.getByRole("radiogroup", { name: "Hora" }).getByRole("radio").first(),
       ).toBeVisible({ timeout: 15_000 });
       await expect(page.getByText(/ya no tiene horas/)).toHaveCount(0);
     });

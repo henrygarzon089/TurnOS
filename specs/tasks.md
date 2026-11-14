@@ -2890,8 +2890,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   y las E2E de tomar turno con `openJoinForm`. El botón de la foto del barbero dice "Poner foto"
   (no choca con "Subir foto" de las fotos de cortes).
 
-### [ ] T-225 · Reservar una cita paso a paso
+### [x] T-225 · Reservar una cita paso a paso
 - REQ: REQ-089.1, REQ-089.2, REQ-089.3 · `BookFlow`; E2E de reservar. Depende de T-210 y T-224.
+- Hecha 2026-11-14. `src/lib/domain/book-steps.ts` (pasos y dirección `?paso=…&servicio=…&barbero=…
+  &dia=…&hora=…`) y `BookFlow` en `AppointmentForm.tsx`. Las filas "Servicio · Cambiar" y
+  "Barbero · Cambiar" con hojas de REQ-078.24 se cambian por los pasos 1 y 2; "Probar con otro
+  barbero" lleva al paso 2 en lugar de abrir la hoja. Tocar una hora pasa a "Tus datos"; si la hora
+  ya no está libre al cargar, vuelve al paso 3. E2E de reservar (REQ-050.1) y del tablero
+  Cliente-Cita (REQ-078.24) actualizados.
 - Modelo: Opus 5.5. Complejidad: media.
 
 ### [ ] T-226 · Mi turno y Mi cita con la foto del barbero

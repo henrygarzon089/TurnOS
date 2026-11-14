@@ -167,10 +167,13 @@ export function BarberCard({
 
 /** "El primero libre", primero en el paso 2, con su espera. */
 export function AnyBarberCard({
+  title = "El primero libre",
   text,
   checked,
   onPick,
 }: {
+  /** "El que esté libre" en la cita (REQ-089.1). */
+  title?: string;
   text: string;
   checked: boolean;
   onPick: () => void;
@@ -180,7 +183,7 @@ export function AnyBarberCard({
       type="button"
       role="radio"
       aria-checked={checked}
-      aria-label={`El primero libre, ${text}`}
+      aria-label={`${title}, ${text}`}
       onClick={onPick}
       className={`${CARD} ${cardState(checked, false)}`}
     >
@@ -191,7 +194,7 @@ export function AnyBarberCard({
         <Icon name="users" className="size-8" />
       </span>
       <span className="flex min-w-0 flex-1 flex-col">
-        <span className="text-lg leading-tight font-semibold">El primero libre</span>
+        <span className="text-lg leading-tight font-semibold">{title}</span>
         <span className="text-muted text-sm tabular-nums">{text}</span>
       </span>
     </button>
