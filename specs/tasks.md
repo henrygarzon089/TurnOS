@@ -2728,8 +2728,22 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   limpieza), `tests/e2e/admin-config.spec.ts`.
 - Terminado: después de guardar se ven las horas elegidas sin recargar; CI verde.
 
+### [x] T-194 · Barbero con celular de otro país
+- Hecha 2026-11-13; spec aprobada por Henry el mismo día (ADR-058). Primer caso: Pedro, de Gamma
+  Club, con celular de Argentina.
+- REQ: REQ-081.1…REQ-081.6
+- Modelo: Opus 5.5. Complejidad: media. Migración `0073` (la aplica Henry en producción).
+- Archivos: `src/lib/domain/phone.ts`, `src/components/ui/PhoneField.tsx`,
+  `src/components/admin/BarberForms.tsx`, `src/components/auth/LoginForm.tsx`,
+  `src/lib/actions/admin.ts`, `src/lib/actions/auth.ts`,
+  `supabase/migrations/0073_barber_foreign_phone.sql`, `supabase/tests/`, `tests/unit/`,
+  `tests/e2e/`, `scripts/traceability.ts`.
+- Terminado: el dueño crea un barbero con celular de Argentina, el barbero acepta la invitación y
+  entra con su número y su PIN; los clientes siguen solo con celular colombiano; `pnpm trace
+  --hito=17` sin huecos; CI verde.
+
 ### [x] T-195 · Botones y campos de 40 px en escritorio
-- Hecha 2026-11-13 (Henry: "muy grandes en la versión desktop"; ADR-058).
+- Hecha 2026-11-13 (Henry: "muy grandes en la versión desktop"; ADR-059).
 - REQ: REQ-078.5 y NFR-008 (anotados: 40 px y 16 px en escritorio con mouse).
 - Modelo: Opus 5.5. Complejidad: baja.
 - Cambio: variante `desk:` (≥ 1024 px y puntero fino) en `globals.css`; `.btn-primary`,

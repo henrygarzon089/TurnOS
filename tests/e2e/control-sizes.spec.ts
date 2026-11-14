@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { loginAsOwner } from "./helpers";
 
 /**
- * T-195 · ADR-058: en escritorio con mouse, botones y campos de 40 px con letra de 16 px; en el
+ * T-195 · ADR-059: en escritorio con mouse, botones y campos de 40 px con letra de 16 px; en el
  * celular siguen en 48 px (REQ-078.5, NFR-008). Corre en "escritorio" (1280 px) y en los celulares.
  */
 test.describe("REQ-078.5 alto de botones y campos", () => {
@@ -34,8 +34,13 @@ test.describe("REQ-078.5 alto de botones y campos", () => {
     isMobile,
   }) => {
     test.skip(isMobile, "solo escritorio");
-    const link = page.getByRole("navigation").getByRole("link", { name: "Fila", exact: true });
-    await expect(link).toBeVisible();
-    expect(Math.round((await link.boundingBox())!.height)).toBeGreaterThanOrEqual(48);
+    // "Fila" lleva un contador en el nombre: se miden todos los destinos del menú lateral
+    const menu = page.getByRole("navigation", { name: "Menú del dueño" });
+    await expect(menu.getByRole("link").first()).toBeVisible();
+    const heights = await menu
+      .getByRole("link")
+      .evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
+    expect(heights.length).toBeGreaterThan(0);
+    for (const h of heights) expect(h).toBeGreaterThanOrEqual(48);
   });
 });

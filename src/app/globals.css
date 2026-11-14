@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* ADR-058: escritorio = ancho >= 1024 px y mouse; una tableta acostada sigue con tamaños de dedo */
+/* ADR-059: escritorio = ancho >= 1024 px y mouse; una tableta acostada sigue con tamaños de dedo */
 @custom-variant desk (@media (min-width: 64rem) and (pointer: fine));
 
 /*
@@ -109,7 +109,7 @@ body {
   }
 }
 
-/* Campos de formulario: altos, legibles con una mano (NFR-008); 40 px en escritorio (ADR-058) */
+/* Campos de formulario: altos, legibles con una mano (NFR-008); 40 px en escritorio (ADR-059) */
 .input {
   @apply border-line-strong bg-card text-ink focus:border-brand focus:ring-brand-soft desk:min-h-10 min-h-12 w-full rounded-md border px-3 text-base outline-none focus:ring-2;
 }

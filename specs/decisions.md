@@ -1086,7 +1086,23 @@
 - Consecuencias: el menú del dueño baja a 13 destinos en modo esencial (19 con todo encendido). Sin
   migraciones; T-192.
 
-## ADR-058 · Botones y campos de 40 px en escritorio
+## ADR-058 · Barbero con celular de otro país
+- Estado: **aceptada** (Henry, 2026-11-13).
+- Contexto: uno de los barberos de Gamma Club tiene celular de Argentina. La app solo acepta
+  celulares colombianos (P5, REQ-003.2): lo exigen el formulario del barbero, el ingreso con celular
+  + PIN y la regla `barbers.phone_e164` de la base (0002). El barbero no se puede crear, y sin él no
+  hay su fila, su caja ni su estación de inventario.
+- Opciones: (a) aceptar celulares de otro país **solo para barberos**, en E.164; (b) registrarlo con
+  un número colombiano inventado, que sirve solo de usuario (sin código, pero el dato queda falso);
+  (c) aceptar otros países para todos, también clientes (más grande: fila, citas, membresías,
+  WhatsApp, y la constitución entera).
+- Decisión: **(a)**, elegida por Henry. El barbero entra con su número real; los clientes siguen
+  solo con celular colombiano.
+- Consecuencias: P5 queda con una excepción escrita; REQ-081 nuevo y REQ-016.1 anotado. Una
+  migración (`0073`) afloja la regla de `barbers.phone_e164` a cualquier E.164 válido (los +57
+  siguen con la regla colombiana). La cuenta alias (ADR-010) ya sirve con cualquier número. T-194.
+
+## ADR-059 · Botones y campos de 40 px en escritorio
 - Estado: **aceptada** (Henry, 2026-11-13)
 - Contexto: probando Gamma Club en el computador, Henry vio los botones y campos "muy grandes": la
   regla de 48 px (REQ-078.5, NFR-008) es para el pulgar en el celular y en escritorio, con mouse,

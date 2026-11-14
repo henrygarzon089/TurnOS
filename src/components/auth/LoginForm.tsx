@@ -7,6 +7,7 @@ import { Field as UiField } from "@/components/ui/Field";
 import { PhoneField } from "@/components/ui/PhoneField";
 import { PinField } from "@/components/ui/PinField";
 import { signInBarber, signInOwner, type AuthFormState } from "@/lib/actions/auth";
+import type { PhoneCountry } from "@/lib/domain/phone";
 
 type Tab = "barber" | "owner";
 
@@ -26,6 +27,7 @@ export function LoginForm({
 }) {
   const [tab, setTab] = useState<Tab>(initialTab);
   const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState<PhoneCountry>("co");
   const [pin, setPin] = useState("");
   const [ownerState, ownerAction, ownerPending] = useActionState<AuthFormState, FormData>(
     signInOwner,
@@ -54,7 +56,28 @@ export function LoginForm({
           aria-label="Entrar como barbero"
         >
           <input type="hidden" name="volver" value={volver ?? ""} />
-          <PhoneField label="Celular" name="phone" required value={phone} onChange={setPhone} />
+          <input type="hidden" name="phone_country" value={country} />
+          <div className="flex flex-col gap-1">
+            <PhoneField
+              label="Celular"
+              name="phone"
+              required
+              country={country}
+              value={phone}
+              onChange={setPhone}
+            />
+            {/* REQ-081.4: el barbero con celular de otro país lo escribe con su indicativo */}
+            <button
+              type="button"
+              onClick={() => {
+                setCountry(country === "co" ? "other" : "co");
+                setPhone("");
+              }}
+              className="text-brand flex min-h-12 items-center self-start text-base font-semibold underline underline-offset-4"
+            >
+              {country === "co" ? "Mi celular no es de Colombia" : "Mi celular es de Colombia"}
+            </button>
+          </div>
           <PinField
             label="PIN (6 números)"
             name="pin"

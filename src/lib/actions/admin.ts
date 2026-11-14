@@ -6,7 +6,7 @@ import { getStaffSession } from "@/lib/auth/session";
 import { parseLoyaltyForm } from "@/lib/domain/loyalty";
 import { isModuleEnabled } from "@/lib/domain/modules";
 import { parseCOP } from "@/lib/domain/money";
-import { normalizePhoneCO } from "@/lib/domain/phone";
+import { normalizeBarberPhone, normalizePhoneCO, phoneCountryOf } from "@/lib/domain/phone";
 import { parseProductForm } from "@/lib/domain/product-form";
 import { parseGoogleReviewUrl } from "@/lib/domain/review-link";
 import { whatsappChannelReady } from "@/lib/notifications/cloud-api";
@@ -187,6 +187,19 @@ const barberSchema = z.object({
   commission_pct: z.coerce.number().int().min(0).max(100),
 });
 
+/** REQ-016.1 / REQ-081.2: celular del barbero, de Colombia (por defecto) o de otro país. */
+function barberPhone(raw: string, formData: FormData): { e164: string } | { error: string } {
+  const country = phoneCountryOf(formData);
+  const e164 = normalizeBarberPhone(raw, country);
+  if (e164) return { e164 };
+  return {
+    error:
+      country === "co"
+        ? "Escribe un celular colombiano de 10 dígitos."
+        : "Escribe el celular con el indicativo del país, por ejemplo +54 9 11 2345 6789.",
+  };
+}
+
 /** REQ-035.3: un barbero activo no queda sin servicios (lo valida también la base, NO_SERVICES). */
 const NO_SERVICES = "Marca al menos un servicio.";
 const ids = (formData: FormData, key: string) =>
@@ -214,8 +227,8 @@ export async function createBarber(
   if (session?.role !== "owner") return { error: "Solo el dueño puede crear barberos." };
   const parsed = barberSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
-  const phone = normalizePhoneCO(parsed.data.phone);
-  if (!phone) return { error: "Escribe un celular colombiano de 10 dígitos." };
+  const phone = barberPhone(parsed.data.phone, formData);
+  if ("error" in phone) return phone;
   const serviceIds = ids(formData, "service_ids");
   if (formData.has("services_shown") && serviceIds.length === 0) return { error: NO_SERVICES };
 
@@ -225,7 +238,7 @@ export async function createBarber(
     .insert({
       business_id: session.business.id,
       display_name: parsed.data.display_name,
-      phone_e164: phone,
+      phone_e164: phone.e164,
       commission_pct: parsed.data.commission_pct,
     })
     .select("id")
@@ -369,8 +382,8 @@ export async function updateBarber(_prev: FormState, formData: FormData): Promis
   if (session?.role !== "owner") return { error: "Solo el dueño puede editar barberos." };
   const parsed = barberSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
-  const phone = normalizePhoneCO(parsed.data.phone);
-  if (!phone) return { error: "Escribe un celular colombiano de 10 dígitos." };
+  const phone = barberPhone(parsed.data.phone, formData);
+  if ("error" in phone) return phone;
   const id = formData.get("id");
   if (typeof id !== "string") return { error: "Barbero inválido." };
   const serviceIds = ids(formData, "service_ids");
@@ -387,7 +400,7 @@ export async function updateBarber(_prev: FormState, formData: FormData): Promis
     .from("barbers")
     .update({
       display_name: parsed.data.display_name,
-      phone_e164: phone,
+      phone_e164: phone.e164,
       commission_pct: parsed.data.commission_pct,
     })
     .eq("id", id);

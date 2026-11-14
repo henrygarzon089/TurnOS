@@ -16,7 +16,7 @@ import {
 } from "@/lib/actions/admin";
 import { Button } from "@/components/ui/Button";
 import { Sheet } from "@/components/ui/Sheet";
-import { formatPhoneCO, maskPhone } from "@/lib/domain/phone";
+import { maskPhone, phoneForEdit, type PhoneCountry } from "@/lib/domain/phone";
 import type { BarberPhoto } from "@/lib/media/barber-photos";
 
 type BarberFormState = { error?: string; ok?: boolean; inviteUrl?: string };
@@ -36,6 +36,49 @@ export type BarberRow = {
 };
 
 export type ServiceOption = { id: string; name: string };
+
+/**
+ * País y celular del barbero (REQ-081.1, REQ-081.5): Colombia (+57) por defecto; "Otro país" pide el
+ * número con su indicativo. Al editar, arranca con el país y el número que tiene guardados.
+ */
+export function BarberPhoneInputs({
+  idPrefix,
+  phoneE164 = null,
+}: {
+  idPrefix: string;
+  phoneE164?: string | null;
+}) {
+  const initial = phoneForEdit(phoneE164);
+  const [country, setCountry] = useState<PhoneCountry>(initial.country);
+  return (
+    <>
+      <Field label="País del celular" htmlFor={`${idPrefix}_country`}>
+        <select
+          id={`${idPrefix}_country`}
+          name="phone_country"
+          value={country}
+          onChange={(e) => setCountry(e.target.value === "other" ? "other" : "co")}
+          className="input h-12"
+        >
+          <option value="co">Colombia (+57)</option>
+          <option value="other">Otro país</option>
+        </select>
+      </Field>
+      <Field label="Celular" htmlFor={`${idPrefix}_phone`}>
+        <input
+          id={`${idPrefix}_phone`}
+          name="phone"
+          type="tel"
+          inputMode={country === "co" ? "numeric" : "tel"}
+          defaultValue={initial.value}
+          required
+          className="input"
+          placeholder={country === "co" ? "300 123 4567" : "+54 9 11 2345 6789"}
+        />
+      </Field>
+    </>
+  );
+}
 
 const STATUS_LABEL: Record<BarberRow["status"], string> = {
   available: "Disponible",
@@ -91,17 +134,7 @@ export function NewBarberForm({ services }: { services: ServiceOption[] }) {
             <Field label="Nombre" htmlFor="nb_name">
               <input id="nb_name" name="display_name" required maxLength={60} className="input" />
             </Field>
-            <Field label="Celular" htmlFor="nb_phone">
-              <input
-                id="nb_phone"
-                name="phone"
-                type="tel"
-                inputMode="numeric"
-                required
-                className="input"
-                placeholder="300 123 4567"
-              />
-            </Field>
+            <BarberPhoneInputs idPrefix="nb" />
             <Field label="Comisión (%)" htmlFor="nb_pct">
               <input
                 id="nb_pct"
@@ -315,16 +348,7 @@ export function BarberCard({
               className="input"
             />
           </Field>
-          <Field label="Celular" htmlFor={`p_${barber.id}`}>
-            <input
-              id={`p_${barber.id}`}
-              name="phone"
-              type="tel"
-              defaultValue={barber.phone_e164 ? formatPhoneCO(barber.phone_e164) : ""}
-              required
-              className="input"
-            />
-          </Field>
+          <BarberPhoneInputs idPrefix={`p_${barber.id}`} phoneE164={barber.phone_e164} />
           <Field label="Comisión (%)" htmlFor={`c_${barber.id}`}>
             <input
               id={`c_${barber.id}`}

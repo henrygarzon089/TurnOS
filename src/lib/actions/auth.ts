@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { barberEmailFromPhone } from "@/lib/auth/session";
-import { normalizePhoneCO } from "@/lib/domain/phone";
+import { normalizeBarberPhone, phoneCountryOf } from "@/lib/domain/phone";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type AuthFormState = { error?: string } | undefined;
@@ -54,9 +54,16 @@ export async function signInBarber(
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Revisa los datos." };
   }
-  const phone = normalizePhoneCO(parsed.data.phone);
+  // REQ-081.4: "Mi celular no es de Colombia" manda phone_country=other
+  const country = phoneCountryOf(formData);
+  const phone = normalizeBarberPhone(parsed.data.phone, country);
   if (!phone) {
-    return { error: "Escribe un celular colombiano de 10 dígitos (empieza por 3)." };
+    return {
+      error:
+        country === "co"
+          ? "Escribe un celular colombiano de 10 dígitos (empieza por 3)."
+          : "Escribe el celular con el indicativo del país, por ejemplo +54 9 11 2345 6789.",
+    };
   }
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithPassword({

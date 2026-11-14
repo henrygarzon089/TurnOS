@@ -329,7 +329,8 @@ la caja usen los valores correctos.
 cuenta.
 
 - REQ-016.1 El dueño DEBE poder crear un barbero con nombre visible, celular, porcentaje de
-  comisión (REQ-025) y estado activo/inactivo, e invitarlo a crear su acceso (REQ-030).
+  comisión (REQ-025) y estado activo/inactivo, e invitarlo a crear su acceso (REQ-030). El celular
+  puede ser de otro país (REQ-081, ADR-058).
 - REQ-016.2 El negocio tiene un número de sillas (por defecto 5) usado en el reporte de ocupación
   (REQ-028); un barbero activo ocupa una silla cuando está `disponible`, `en servicio` o `en pausa`
   dentro del horario.
@@ -1555,7 +1556,7 @@ también al sol y con una mano.
   la fila del barbero ("Llamar a …", "Empezar corte", "Terminar y cobrar") DEBE medir ≥ 80 px. El
   texto base DEBE ser ≥ 16 px. En escritorio (≥ 1024 px de ancho y con mouse), botones y campos de
   formulario DEBEN medir 40 px de alto con texto de 16 px; los destinos del menú y el botón de 80 px
-  no cambian (ADR-058).
+  no cambian (ADR-059).
 - REQ-078.6 En listas y tablas (fila del dueño, clientes, barberos, solicitudes de privacidad), el
   celular DEBE verse enmascarado con `maskPhone` (`••• ••• 0001`, solo los 4 últimos dígitos). El
   número completo solo DEBE verse en la ficha de un cliente y en el campo donde alguien escribe el
@@ -1726,6 +1727,30 @@ otro negocio y los clientes lleguen directo a la barbería.
 - REQ-080.4 El procedimiento de REQ-080.3 DEBE mostrar primero cuántas filas borraría por tabla y
   NO DEBE borrar nada sin una confirmación explícita con el `slug` exacto.
 
+### REQ-081 · Barbero con celular de otro país — M
+**Como** dueño, **quiero** registrar a un barbero que tiene celular de otro país (por ejemplo
+Argentina), **para** que entre a la app con su número y su PIN como los demás.
+
+- REQ-081.1 Al crear o editar un barbero, el dueño DEBE poder escoger el país del celular:
+  **Colombia (+57)**, que es el valor por defecto y funciona como hoy, u **Otro país**, donde
+  escribe el número completo con su indicativo (ej. `+54 9 11 2345 6789`).
+- REQ-081.2 Un celular de otro país DEBE guardarse en E.164: `+`, indicativo y número, de 8 a 15
+  dígitos en total, sin espacios. SI empieza por `+57`, ENTONCES DEBE cumplir la regla colombiana
+  (10 dígitos que inician en 3). SI no es válido, ENTONCES EL SISTEMA DEBE rechazarlo con "Escribe el
+  celular con el indicativo del país, por ejemplo +54 9 11 2345 6789.". La base de datos DEBE aceptar
+  en `barbers.phone_e164` cualquier número E.164 válido y seguir rechazando lo demás.
+- REQ-081.3 CUANDO un barbero con celular de otro país abre su invitación (REQ-030.2), EL SISTEMA
+  DEBE crear su acceso igual que para un celular colombiano (cuenta alias con su número, ADR-010).
+- REQ-081.4 La pantalla de ingreso del personal DEBE ofrecer "Mi celular no es de Colombia"; al
+  tocarlo, el barbero escribe su número con indicativo y su PIN, y entra a su fila. Sin tocarlo, el
+  ingreso funciona igual que hoy (+57 fijo).
+- REQ-081.5 En la lista de barberos, un celular de otro país DEBE mostrarse con su indicativo y
+  enmascarado (ej. `+54 *** 6789`, P6); al editarlo, el campo muestra el número completo con su
+  indicativo y "Otro país" escogido.
+- REQ-081.6 Los celulares de los **clientes** (fila, citas, membresías, tarjetas de regalo, avisos)
+  DEBEN seguir aceptando solo celulares colombianos: este requisito cambia solo el celular del
+  barbero. Cambia REQ-016.1 y P5 (ADR-058).
+
 Preguntas abiertas del Hito 17:
 - **PA-H17-1**: ¿Gamma Club se crea nuevo o se renombra Filo? **Resuelta (Henry, 2026-11-12):
   negocio nuevo**, con el enlace `gamma-club`; Filo se borra.
@@ -1755,7 +1780,7 @@ apagado, Hito 6); cambiar el seed de La 33.
 | NFR-005 Privacidad | Ley 1581 | Aviso versionado y aceptación registrada (REQ-002); supresión (REQ-018.6); pantallas públicas sin celulares (REQ-013.2); sin trackers de terceros en páginas públicas; la medición anónima de velocidad de REQ-075.3 no cuenta como tracker si cumple REQ-075.4 (sin cookies, sin identificadores, sin tokens; ADR-043) |
 | NFR-006 Localización | Colombia | `es-CO` en toda la UI; COP sin decimales con punto de miles; `America/Bogota` en servidor y cliente; sin textos en inglés visibles (prueba de lint de textos) |
 | NFR-007 Usabilidad | Sin capacitación | Prueba de pasillo: un barbero real completa llamar → en servicio → terminado → cobro sin ayuda en el primer intento; flujo del cliente ≤ 4 campos y 1 pantalla |
-| NFR-008 Accesibilidad | Legible al sol y con una mano | Contraste ≥ 4.5:1; botones ≥ 48 px (40 px en escritorio con mouse, ADR-058); tamaño de fuente base ≥ 16 px; funciona con zoom 200 % |
+| NFR-008 Accesibilidad | Legible al sol y con una mano | Contraste ≥ 4.5:1; botones ≥ 48 px (40 px en escritorio con mouse, ADR-059); tamaño de fuente base ≥ 16 px; funciona con zoom 200 % |
 | NFR-009 Calidad | Pruebas trazables | Cada CA referenciado por al menos una prueba; CI bloquea merge si fallan unit, integración o E2E; cobertura de lógica de dominio (posición, tiempo, comisión, cierre) 100 % de ramas |
 | NFR-010 Datos | Integridad | Montos `integer`; estados como `enum`; transiciones validadas en base de datos (no solo en UI); migraciones versionadas; seed idempotente |
 | NFR-011 Escala MVP | Un negocio pequeño, varios en el futuro | Diseñado para 50 negocios × 200 turnos/día sin cambios de arquitectura; 5.000 clientes por negocio con búsqueda < 1 s |

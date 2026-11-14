@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-13.
+> Generada por `scripts/traceability.ts` el 2026-11-14.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -460,3 +460,9 @@
 | REQ-080.2 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | modules.test.ts, single-business.test.tsx | cubierto |
 | REQ-080.3 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | delete_business.sql | cubierto |
 | REQ-080.4 | Un solo negocio | T-189 (hecha), T-190 (hecha), T-191 (hecha) | delete_business.sql | cubierto |
+| REQ-081.1 | Barbero con celular de otro país | T-194 (hecha) | onboarding.spec.ts, barber-foreign-phone.test.tsx | cubierto |
+| REQ-081.2 | Barbero con celular de otro país | T-194 (hecha) | barber-foreign-phone.test.tsx, phone.test.ts, 0073_barber_foreign_phone.sql | cubierto |
+| REQ-081.3 | Barbero con celular de otro país | T-194 (hecha) | onboarding.spec.ts, barber-foreign-phone.test.tsx | cubierto |
+| REQ-081.4 | Barbero con celular de otro país | T-194 (hecha) | onboarding.spec.ts, barber-foreign-phone.test.tsx | cubierto |
+| REQ-081.5 | Barbero con celular de otro país | T-194 (hecha) | onboarding.spec.ts, barber-foreign-phone.test.tsx, phone.test.ts | cubierto |
+| REQ-081.6 | Barbero con celular de otro país | T-194 (hecha) | barber-foreign-phone.test.tsx | cubierto |

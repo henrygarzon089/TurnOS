@@ -3148,3 +3148,29 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
   `page.tsx` de `src/app` y falla si alguna ruta no está en la tabla de `moduleForPath`.
 - `playwright.config.ts` y el job de E2E agregan `TURNOS_MODULES: "todos"`; Lighthouse también.
 - `scripts/traceability.ts`: `HITOS["17"] = [[79, 80]]`.
+
+### 23.8 Barbero con celular de otro país (REQ-081, ADR-058)
+- Dominio (`src/lib/domain/phone.ts`): `normalizeBarberPhone(input, country)` con `country` =
+  `"co"` (usa `normalizePhoneCO`) u `"other"`: quita espacios, guiones y paréntesis; exige `+` y de 8
+  a 15 dígitos (`^\+[1-9]\d{7,14}$`); si empieza por `+57`, delega en `normalizePhoneCO`.
+  `isColombianPhone(e164)` decide cómo mostrarlo. `maskPhone` de un número extranjero muestra el
+  `+`, los dos primeros dígitos y los 4 últimos: `+54 *** 6789` (no se adivina el largo del
+  indicativo).
+- UI: `PhoneField` gana la prop `country` (`"co"` por defecto, con `+57` fijo y grupos como hoy;
+  `"other"` sin prefijo, `autoComplete="tel"`, placeholder `+54 9 11 2345 6789`, sin reformatear al
+  escribir). Formulario del barbero (crear y editar): selector "País del celular" con "Colombia
+  (+57)" y "Otro país" (`name="phone_country"`). Ingreso: botón de texto "Mi celular no es de
+  Colombia" que cambia el campo a `"other"` y manda `phone_country=other`; "Mi celular es de
+  Colombia" lo devuelve.
+- Acciones: `createBarber`, `updateBarber` y `signInBarber` usan `normalizeBarberPhone` con
+  `phone_country`; sin el campo, `"co"` (formularios viejos en caché siguen funcionando). La
+  invitación (`acceptInvitation`) no cambia: `barberEmailFromPhone` ya quita el `+` de cualquier
+  E.164.
+- Base: migración `0073_barber_foreign_phone.sql` cambia el `check` de `barbers.phone_e164` a
+  `phone_e164 ~ '^\+573\d{9}$' or phone_e164 ~ '^\+57 3\d{9}$' or (phone_e164 ~ '^\+[1-9]\d{7,14}$'
+  and phone_e164 !~ '^\+57')`. Las tablas de clientes no cambian (REQ-081.6).
+- Pruebas: unitarias de `normalizeBarberPhone` y `maskPhone` (REQ-081.2, REQ-081.5); pgTAP de la
+  regla (REQ-081.2: acepta `+5491123456789`, rechaza `+57123`, `5491123456789` y `+54abc`);
+  integración o E2E: crear barbero con "Otro país", aceptar la invitación y entrar con "Mi celular
+  no es de Colombia" (REQ-081.1, .3, .4); unitaria de que las acciones de clientes siguen usando
+  `normalizePhoneCO` (REQ-081.6). `HITOS["17"] = [[79, 81]]`.

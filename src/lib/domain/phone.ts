@@ -1,6 +1,6 @@
 /**
  * Celulares colombianos (constitution.md P5, REQ-003.2): 10 dígitos que inician en 3,
- * guardados en E.164 (`+57XXXXXXXXXX`).
+ * guardados en E.164 (`+57XXXXXXXXXX`). Solo el barbero puede tener uno de otro país (REQ-081).
  */
 
 const CO_MOBILE = /^3\d{9}$/;
@@ -38,10 +38,53 @@ export function formatPhoneTyping(raw: string): string {
   return [d.slice(0, 3), d.slice(3, 6), d.slice(6)].filter(Boolean).join(" ");
 }
 
-/** Listas y tablas: nunca el número completo (P6, REQ-078.6): `300 *** 0001`. */
+/**
+ * Listas y tablas: nunca el número completo (P6, REQ-078.6): `300 *** 0001`. Un celular de otro país
+ * (REQ-081.5) deja ver el `+`, los dos primeros dígitos y los 4 últimos: `+54 *** 6789`.
+ */
 export function maskPhone(e164: string): string {
+  if (!isColombianPhone(e164)) {
+    const all = e164.replace(/\D/g, "");
+    return `+${all.slice(0, 2)} *** ${all.slice(-4)}`;
+  }
   const d = e164.replace(/\D/g, "").slice(-10);
   return `${d.slice(0, 3)} *** ${d.slice(-4)}`;
+}
+
+/** País del celular del barbero (REQ-081.1): Colombia por defecto u otro país con indicativo. */
+export type PhoneCountry = "co" | "other";
+
+/** ¿Es un celular colombiano guardado en E.164 (`+573…`)? */
+export function isColombianPhone(e164: string): boolean {
+  return /^\+57 ?3\d{9}$/.test(e164);
+}
+
+const E164 = /^\+[1-9]\d{7,14}$/;
+
+/**
+ * REQ-081.2 celular del barbero: con Colombia, igual que `normalizePhoneCO`; con otro país, `+`,
+ * indicativo y número (8 a 15 dígitos, sin espacios). Un `+57` siempre cumple la regla colombiana.
+ */
+export function normalizeBarberPhone(input: string, country: PhoneCountry): string | null {
+  if (country === "co") return normalizePhoneCO(input);
+  const trimmed = input.trim();
+  if (!/^\+[\d\s\-()]+$/.test(trimmed)) return null;
+  const e164 = `+${trimmed.replace(/\D/g, "")}`;
+  if (e164.startsWith("+57")) return normalizePhoneCO(e164);
+  return E164.test(e164) ? e164 : null;
+}
+
+/** REQ-081.5 valor inicial del campo al editar: país y número como se escribe. */
+export function phoneForEdit(e164: string | null): { country: PhoneCountry; value: string } {
+  if (!e164) return { country: "co", value: "" };
+  return isColombianPhone(e164)
+    ? { country: "co", value: formatPhoneCO(e164.replace(" ", "")) }
+    : { country: "other", value: e164 };
+}
+
+/** Lee `phone_country` de un formulario: sin el campo, Colombia (formularios viejos en caché). */
+export function phoneCountryOf(formData: FormData): PhoneCountry {
+  return formData.get("phone_country") === "other" ? "other" : "co";
 }
 
 /** Formato que exige wa.me: E.164 sin el signo +. */
