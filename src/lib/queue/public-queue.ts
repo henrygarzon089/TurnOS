@@ -8,6 +8,7 @@ import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
 import { toMembershipStatus, type MembershipStatus } from "@/lib/domain/membership";
 import { GatewayError, type Gateway } from "@/lib/db/gateway";
 import type { BarberPhoto } from "@/lib/media/barber-photos";
+import { isModuleEnabled } from "@/lib/domain/modules";
 import { normalizePhoneCO } from "@/lib/domain/phone";
 import {
   estimateNewTicket,
@@ -201,7 +202,10 @@ export async function getPublicBusiness(
     services,
     products: (raw.products ?? []) as PublicBusiness["products"],
     courtesies: (raw.courtesies ?? []) as PublicBusiness["courtesies"],
-    photoCounts: (raw.photoCounts ?? {}) as PublicBusiness["photoCounts"],
+    // REQ-083.1: sin el módulo de fotos no hay conteo, y "Ver cortes" no sale
+    photoCounts: isModuleEnabled("photos")
+      ? ((raw.photoCounts ?? {}) as PublicBusiness["photoCounts"])
+      : {},
     queue,
     waitingCount: queue.waiting.length,
     estimatedWaitMin: est?.waitMin ?? null,
@@ -233,6 +237,7 @@ export async function getBarberPhotos(
   slug: string,
   barberId: string,
 ): Promise<BarberPhoto[]> {
+  if (!isModuleEnabled("photos")) return []; // REQ-083.1
   if (!/^[a-z0-9-]{3,40}$/.test(slug) || !z.string().uuid().safeParse(barberId).success) return [];
   const raw = await gw.rpc<BarberPhoto[] | null>("get_barber_photos", {
     p_slug: slug,
@@ -407,7 +412,8 @@ export async function getTicketByToken(
     cancelReason: (raw.cancelReason as MyTicket["cancelReason"]) ?? null,
     estimate,
     loyalty: toLoyaltyStatus(raw.loyalty),
-    membership: toMembershipStatus(raw.membership),
+    // REQ-083.2: "Mi turno" sin la línea de la membresía con el módulo apagado
+    membership: isModuleEnabled("memberships") ? toMembershipStatus(raw.membership) : null,
     courtesy: (raw.courtesy as MyTicket["courtesy"]) ?? null,
     googleReviewUrl: (raw.googleReviewUrl as string | null) ?? null,
     whatsappConsent: Boolean(raw.whatsappConsent),

@@ -8,6 +8,7 @@ import {
   searchOwnerCustomers,
 } from "@/lib/actions/customers";
 import { getStaffSession } from "@/lib/auth/session";
+import { isModuleEnabled } from "@/lib/domain/modules";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Clientes" };
@@ -36,7 +37,11 @@ export default async function CustomersPage({
       <main className="pb-6">
         <ModuleHeader title="Clientes" subtitle="Búsqueda, filtros y celular oculto en la lista" />
         {eliminado === "1" && <Deleted />}
-        <OwnerCustomerTable initial={initial} meta={meta!} />
+        <OwnerCustomerTable
+          initial={initial}
+          meta={meta!}
+          showMembership={isModuleEnabled("memberships")}
+        />
       </main>
     );
   }
@@ -47,7 +52,11 @@ export default async function CustomersPage({
       {/* T-171 (ADR-051): el barbero ve solo el título, sin subtítulo. */}
       <h1 className="pt-6 text-2xl font-bold">Clientes</h1>
       {eliminado === "1" && <Deleted />}
-      <CustomerSearch initial={initial} role={session.role} />
+      <CustomerSearch
+        initial={initial}
+        role={session.role}
+        showMembership={isModuleEnabled("memberships")}
+      />
     </main>
   );
 }

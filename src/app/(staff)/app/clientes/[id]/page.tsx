@@ -10,6 +10,7 @@ import { RedeemReward } from "@/components/customers/RedeemReward";
 import { StampCard } from "@/components/loyalty/StampCard";
 import { getCustomer } from "@/lib/actions/customers";
 import { businessDayBogota, formatDayCO } from "@/lib/domain/time";
+import { isModuleEnabled } from "@/lib/domain/modules";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Ficha del cliente" };
@@ -25,7 +26,8 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
   if (!view) notFound();
   const c = view.customer;
   const isOwner = view.viewer.role === "owner";
-  if (!isOwner) return <BarberCustomerDetail view={view} />;
+  if (!isOwner)
+    return <BarberCustomerDetail view={view} showMembership={isModuleEnabled("memberships")} />;
 
   return (
     <main className="flex flex-col gap-4 py-4">

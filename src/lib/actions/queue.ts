@@ -7,6 +7,7 @@ import { capableByService, positions } from "@/lib/domain/queue-estimate";
 import { afterQueueChange } from "@/lib/notifications/after-queue-change";
 import { registerNewTicket } from "@/lib/queue/public-queue";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isModuleEnabled } from "@/lib/domain/modules";
 
 // ---------------------------------------------------------------- tipos ----
 
@@ -151,6 +152,8 @@ async function fetchMemberIds(
   businessId: string,
   rows: TicketRow[],
 ): Promise<Set<string>> {
+  // REQ-083.2: con membresías apagadas no se consulta quién es miembro
+  if (!isModuleEnabled("memberships")) return new Set();
   const ids = [...new Set(rows.map((r) => r.customer_id).filter((id) => id !== null))];
   if (ids.length === 0) return new Set();
   const { data } = await supabase.rpc("membership_member_ids", {
