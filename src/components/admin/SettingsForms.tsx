@@ -2,6 +2,7 @@
 
 import { useActionState, useMemo, useState } from "react";
 import { ErrorText, Field } from "@/components/auth/LoginForm";
+import { keepValuesOnSubmit } from "@/components/ui/form";
 import {
   saveGoogleReviewUrl,
   saveTemplates,
@@ -93,7 +94,11 @@ export function TemplatesForm({
   const sample = useMemo(() => ({ ...SAMPLE, negocio: businessName }), [businessName]);
 
   return (
-    <form action={action} className="mt-4 flex flex-col gap-4">
+    <form
+      action={action}
+      onSubmit={keepValuesOnSubmit(action)}
+      className="mt-4 flex flex-col gap-4"
+    >
       {/* Tarjetas lado a lado desde 1024 px (tablero Dueno-Config, design §22.8) */}
       <div data-two-up className="grid items-start gap-4 lg:grid-cols-2">
         {(Object.keys(TEMPLATE_META) as TemplateKey[]).map((key) => (
@@ -171,6 +176,7 @@ export function BusinessForm({ business }: { business: BusinessSettings }) {
   return (
     <form
       action={action}
+      onSubmit={keepValuesOnSubmit(action)}
       aria-label="Datos del negocio"
       className="border-line bg-card flex flex-col gap-4 rounded-md border p-4"
     >
@@ -208,7 +214,11 @@ export function BusinessForm({ business }: { business: BusinessSettings }) {
           className="input"
         />
       </Field>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+      {/* REQ-078.36: items-end alinea los campos aunque una etiqueta ocupe dos líneas */}
+      <div
+        data-testid="business-numbers"
+        className="grid grid-cols-2 items-end gap-3 lg:grid-cols-3"
+      >
         {num("chairs_count", "Sillas", 1, 50)}
         {num("default_commission_pct", "Comisión por defecto (%)", 0, 100)}
         {num("grace_minutes", "Minutos de gracia al llamar", 1, 60)}
@@ -239,6 +249,7 @@ export function GoogleReviewForm({ url }: { url: string | null }) {
   return (
     <form
       action={action}
+      onSubmit={keepValuesOnSubmit(action)}
       aria-label="Reseñas de Google"
       className="border-line bg-card flex flex-col gap-4 rounded-md border p-4"
     >
@@ -285,6 +296,7 @@ export function WhatsAppForm({
   return (
     <form
       action={action}
+      onSubmit={keepValuesOnSubmit(action)}
       aria-label="Avisos por WhatsApp"
       className="border-line bg-card flex flex-col gap-4 rounded-md border p-4"
     >

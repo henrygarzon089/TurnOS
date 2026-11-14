@@ -2742,6 +2742,34 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   entra con su número y su PIN; los clientes siguen solo con celular colombiano; `pnpm trace
   --hito=17` sin huecos; CI verde.
 
+### [x] T-196 · Hojas que se cierran y formularios que muestran lo guardado
+- Hecha 2026-11-13 (fallas que vio Henry probando Gamma Club en producción). Los commits dicen
+  "T-194" porque el número se tomó en paralelo para el celular extranjero (#179); T-195 es la de
+  40 px en escritorio.
+- REQ: REQ-078.34, REQ-078.35, REQ-078.36 (nuevos en esta tarea).
+- Modelo: Opus 5.5. Complejidad: media.
+- Causas:
+  - Hojas: sin botón para cerrar y sin cerrar al tocar el fondo; en escritorio la manija está
+    oculta y solo cerraba Esc. Ahora "Cerrar ventana" (ícono, 48 px) y clic en el fondo, en
+    `Sheet` y `Dialog`.
+  - Producto nuevo que no aparecía: `router.refresh()` se llamaba durante el render ("Cannot
+    update a component while rendering a different component") y React lo podía descartar. Ahora
+    va en un efecto (`useRefreshOnOk` en `src/components/ui/form.ts`), también en clientes y
+    barberos.
+  - Fidelidad y Negocio "se reseteaban": la misma limpieza de React 19 de T-193 devolvía los
+    campos a su `defaultValue` viejo. Ahora envían con `keepValuesOnSubmit` (servicios, productos,
+    fidelidad, negocio, reseñas, WhatsApp, plantillas).
+  - Casillas en el azul del navegador: `accent-color` con `brand` en `globals.css`. Los % de
+    Negocio quedan alineados (`items-end`). Fidelidad usa el interruptor, ocupa todo el ancho sin
+    Recordar (modo esencial) y reparte regla y premio a un lado y servicios al otro (@container).
+- Archivos: `src/components/ui/{Sheet.tsx,form.ts}`, `src/components/admin/{ItemForms,LoyaltyForm,
+  SettingsForms,BarberForms}.tsx`, `src/components/customers/CustomerForm.tsx`,
+  `src/app/(staff)/admin/fidelidad/page.tsx`, `src/app/globals.css`, `tests/e2e/owner-forms.spec.ts`
+  (y `exact: true` en los "Cerrar" propios de hojas en 4 pruebas).
+- Fuera de esta tarea: botones y campos más bajos en escritorio (pide cambiar REQ-078.5 y NFR-008,
+  ≥ 48 px en toda pantalla); propuesto a Henry.
+- Terminado: pruebas de REQ-078.34…36 en verde; CI verde.
+
 ---
 
 ## Dependencias principales
