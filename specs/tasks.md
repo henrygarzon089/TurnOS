@@ -2851,8 +2851,10 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 > Aprobada por Henry el 2026-11-14. Orden: T-220 → T-221, T-222 y T-223
 > (independientes) → T-224 → T-225 y T-226 → T-227 → T-228.
 
-### [ ] T-220 · Datos y almacenamiento de fotos
-- REQ: REQ-090.2 · Migración `0074_brand_images.sql`, bucket `brand`, funciones de §26.1, pgTAP.
+### [x] T-220 · Datos y almacenamiento de fotos
+- REQ: REQ-090.2 · Migración `0074_brand_images.sql`, rutas en `media`, lecturas de §26.1, pgTAP.
+- Hecha 2026-11-14. Desvío: se reutiliza el bucket `media` en lugar de uno nuevo `brand` (design
+  §26.1, ADR-063).
 - Modelo: Opus 5.5. Complejidad: media.
 
 ### [ ] T-221 · Foto del barbero (dueño y barbero)

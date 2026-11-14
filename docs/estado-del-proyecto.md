@@ -756,7 +756,7 @@ Pendientes (H3): `/admin/caja`,
 ### Hito 20 — cliente con fotos y paso a paso (spec aprobada, REQ-085…090, ADR-063)
 
 - Fotos del barbero (dueño y barbero), de los servicios, logo y portada en el bucket público
-  `brand`; tomar turno en 3 pasos y reservar en 4. Tareas T-220…T-228; en construcción.
+  `media` (reutilizado, ADR-063); tomar turno en 3 pasos y reservar en 4. Tareas T-220…T-228; en construcción.
 
 ## Desvíos registrados respecto a la spec (todos explícitos)
 

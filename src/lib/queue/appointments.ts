@@ -12,7 +12,8 @@ import { RATE_LIMITS } from "./public-queue";
 
 export type AppointmentInfo = {
   enabled: boolean;
-  barbers: { id: string; name: string; serviceIds: string[] }[];
+  /** REQ-089.1: `photoPath` en `media` (0074), null sin foto. */
+  barbers: { id: string; name: string; serviceIds: string[]; photoPath?: string | null }[];
   /** Días de hoy a +7 con horario (REQ-049.4, 049.5), `YYYY-MM-DD`. */
   openDays: string[];
 };

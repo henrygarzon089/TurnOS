@@ -3227,26 +3227,26 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
 
 ### 26.1 Datos y almacenamiento (migración 0074)
 - Columnas `barbers.photo_path`, `services.photo_path`, `businesses.logo_path`,
-  `businesses.cover_path` (`text null`).
-- Bucket público `brand` (lectura pública, escritura solo `service_role`). Rutas:
-  `<business_id>/barbers/<barber_id>-<n>.webp`, `<business_id>/services/<service_id>-<n>.webp`,
-  `<business_id>/logo-<n>.webp`, `<business_id>/cover-<n>.webp` (`<n>` cambia en cada subida para
-  no servir la vieja desde la caché).
-- `get_public_business` y `get_ticket_by_token` devuelven `photoPath` por barbero y servicio,
-  `logoPath` y `coverPath`; la URL pública se arma en `src/lib/media/brand.ts`.
-- Funciones `set_barber_photo(p_barber_id, p_path)`, `set_service_photo(...)` y
-  `set_business_brand(p_logo_path, p_cover_path)` (`security definer`): el dueño cualquiera de su
-  negocio; el barbero solo `set_barber_photo` con su propio id. Devuelven la ruta anterior para
-  borrar el archivo.
+  `businesses.cover_path` (`text null`), con un `check` que exige que la ruta sea del mismo negocio
+  (y del mismo barbero).
+- **Desvío del 2026-11-14 (T-220):** en vez de un bucket nuevo `brand` se reutiliza el bucket
+  público `media` de 0033, que ya sirve las fotos de productos y cortes y ya se escribe con la sesión
+  del dueño o del barbero según la ruta (`media_can_write`). Se amplía `media_can_write` con
+  `<negocio>/services/<uuid>.webp` y `<negocio>/brand/<uuid>.webp` (solo el dueño); la foto del
+  barbero usa la ruta que ya existía, `<negocio>/barbers/<barbero>/<uuid>.webp` (dueño o ese barbero).
+  Cada subida tiene un `<uuid>` nuevo, así que la caché nunca sirve la vieja.
+- `get_public_business` devuelve `logoPath`, `coverPath`, `photoPath` por servicio y `barberPhotos`
+  (`{ <barbero>: <ruta> }`); `get_ticket_by_token`, `assignedBarberPhoto` y `preferredBarberPhoto`;
+  `public_appointment_info`, `photoPath` por barbero. La URL se arma con `mediaUrl`
+  (`src/lib/media/paths.ts`).
+- Guardar la ruta lo cuidan las políticas de siempre: el dueño escribe barberos, servicios y negocio;
+  el barbero solo su fila (`barbers_restrict_self_update` no bloquea `photo_path`). No hacen falta
+  funciones nuevas.
 
 ### 26.2 Subida
-- En el celular, `ImagePicker` lee la foto escogida (el iPhone entrega JPEG al escoger con
-  `accept="image/*"`), la recorta (cuadrada o 3:2) y la reduce con `canvas` a WebP calidad 0.8 en el
-  tamaño de REQ-085.3/086.1/087.1. Sin dependencias nuevas (`sharp` no está y no lee HEIC).
-- Server action `uploadBrandImage(kind, id, file)` en `src/lib/actions/brand.ts`: revisa sesión y
-  permiso, acepta solo `image/webp` de hasta 1 MB con el tamaño esperado, sube con el cliente de
-  `service_role`, llama la función SQL y borra el archivo anterior. `removeBrandImage(kind, id)` hace
-  lo contrario.
+- Como las fotos de productos (`ItemForms`): en el celular, `resizePhoto` reduce la foto (ahora con
+  recorte cuadrado o 3:2 y el tamaño de REQ-085.3/086.1/087.1), se sube a `media` con la sesión del
+  usuario, se guarda la ruta en la tabla y se borra el archivo anterior.
 - Componente `ImagePicker` (vista previa, "Cambiar foto", "Quitar") reutilizado en Barberos,
   Servicios, Negocio y en "Mi foto" del barbero (en "Mis números", arriba).
 

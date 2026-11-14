@@ -47,6 +47,8 @@ export type PublicBusiness = {
     durationMin: number;
     price: number;
     barberIds?: string[];
+    /** REQ-086.2: ruta en el bucket `media`, o null sin foto. */
+    photoPath?: string | null;
   }[];
   /** REQ-038.2: activos a la venta. `photoPath` es la ruta en el bucket `media`. */
   products: { id: string; name: string; price: number; photoPath: string | null }[];
@@ -54,6 +56,11 @@ export type PublicBusiness = {
   courtesies: CourtesyOption[];
   /** REQ-039.5: fotos por barbero activo que tenga alguna. */
   photoCounts: Record<string, number>;
+  /** REQ-085.5: foto de cada barbero activo que tenga una (`{ <barbero>: <ruta> }`). */
+  barberPhotos: Record<string, string>;
+  /** REQ-087.2: logo y foto del local, rutas en `media`. */
+  logoPath: string | null;
+  coverPath: string | null;
   queue: QueueSnapshot;
   /** Derivados */
   waitingCount: number;
@@ -79,6 +86,9 @@ export type MyTicket = {
   preferredBarberName: string | null;
   assignedBarberId: string | null;
   assignedBarberName: string | null;
+  /** REQ-085.5: foto del barbero (ruta en `media`) en lugar de las iniciales. */
+  assignedBarberPhoto: string | null;
+  preferredBarberPhoto: string | null;
   status: TicketStatus;
   /** REQ-052.2: hora de la cita si el turno viene de una cita llegada a tiempo (en espera). */
   scheduledAt: string | null;
@@ -203,6 +213,9 @@ export async function getPublicBusiness(
     products: (raw.products ?? []) as PublicBusiness["products"],
     courtesies: (raw.courtesies ?? []) as PublicBusiness["courtesies"],
     // REQ-083.1: sin el módulo de fotos no hay conteo, y "Ver cortes" no sale
+    barberPhotos: (raw.barberPhotos ?? {}) as PublicBusiness["barberPhotos"],
+    logoPath: (raw.logoPath as string | null) ?? null,
+    coverPath: (raw.coverPath as string | null) ?? null,
     photoCounts: isModuleEnabled("photos")
       ? ((raw.photoCounts ?? {}) as PublicBusiness["photoCounts"])
       : {},
@@ -403,6 +416,8 @@ export async function getTicketByToken(
     preferredBarberName: (raw.preferredBarberName as string | null) ?? null,
     assignedBarberId: (raw.assignedBarberId as string | null) ?? null,
     assignedBarberName: (raw.assignedBarberName as string | null) ?? null,
+    assignedBarberPhoto: (raw.assignedBarberPhoto as string | null) ?? null,
+    preferredBarberPhoto: (raw.preferredBarberPhoto as string | null) ?? null,
     status,
     scheduledAt: String(queue.waiting.find((t) => t.id === raw.id)?.scheduledAt ?? "") || null,
     createdAt: String(raw.createdAt),

@@ -67,6 +67,8 @@ const TICKET: Ticket = {
   preferredBarberName: "Andrés",
   assignedBarberId: null,
   assignedBarberName: null,
+  assignedBarberPhoto: null,
+  preferredBarberPhoto: null,
   status: "waiting",
   scheduledAt: null,
   createdAt: NOW.toISOString(),
