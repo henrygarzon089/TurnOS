@@ -232,7 +232,7 @@ export function CashDay({
                   ))}
                 </select>
                 <select
-                  className="input h-12 w-auto! flex-none"
+                  className="input desk:h-10 h-12 w-auto! flex-none"
                   aria-label="Medio de pago"
                   value={filter.method ?? ""}
                   onChange={(e) => setFilter({ ...filter, method: e.target.value || undefined })}

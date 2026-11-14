@@ -181,7 +181,7 @@ export function CleaningInspection({
                     onChange={(e) => update(item.id, { note: e.target.value })}
                   />
                 </label>
-                <label className="btn-secondary inline-flex min-h-12 items-center">
+                <label className="btn-secondary inline-flex items-center">
                   {a.file ? "Cambiar foto" : "Tomar foto"}
                   <input
                     type="file"

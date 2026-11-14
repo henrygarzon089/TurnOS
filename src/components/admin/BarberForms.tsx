@@ -59,7 +59,7 @@ export function BarberPhoneInputs({
           name="phone_country"
           value={country}
           onChange={(e) => setCountry(e.target.value === "other" ? "other" : "co")}
-          className="input h-12"
+          className="input h-12 desk:h-10"
         >
           <option value="co">Colombia (+57)</option>
           <option value="other">Otro país</option>

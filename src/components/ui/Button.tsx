@@ -84,7 +84,9 @@ export function Button({
   const busy = pending || running;
   const v = VARIANT[variant];
   const look = busy ? v.pending : disabled ? v.disabled : v.idle;
-  const sizing = size === "giant" ? "min-h-20 w-full text-xl font-bold" : "text-lg";
+  // ADR-058: 40 px y 16 px en escritorio; el botón de 80 px del barbero no cambia
+  const sizing =
+    size === "giant" ? "min-h-20 w-full text-xl font-bold" : "text-lg desk:min-h-10 desk:text-base";
 
   async function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     onClick?.(e);

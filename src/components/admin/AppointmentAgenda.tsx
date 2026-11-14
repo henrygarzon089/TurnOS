@@ -405,7 +405,7 @@ function AppointmentSheet({
                   <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm font-semibold">
                     Pasar a
                     <select
-                      className="input h-12"
+                      className="input desk:h-10 h-12"
                       aria-label={`Pasar la cita de ${a.customerName} a`}
                       value={shownTo}
                       onChange={(e) => setTo(e.target.value)}
@@ -601,7 +601,7 @@ function NewAppointment({
         <Field label="Servicio" htmlFor="owner-cita-service">
           <select
             id="owner-cita-service"
-            className="input h-12"
+            className="input desk:h-10 h-12"
             value={serviceId}
             onChange={(e) => setServiceId(e.target.value)}
           >

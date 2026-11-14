@@ -6,7 +6,7 @@ import { Icon } from "./Icon";
  * texto e ícono, nunca solo con color; el campo queda `aria-invalid` y el texto lo describe.
  */
 export const FIELD_INPUT =
-  "min-h-12 w-full rounded-md border bg-card px-3 text-base text-ink outline-none placeholder:text-muted focus:border-2 focus:border-brand focus:ring-2 focus:ring-brand-soft disabled:bg-surface disabled:text-muted";
+  "min-h-12 desk:min-h-10 w-full rounded-md border bg-card px-3 text-base text-ink outline-none placeholder:text-muted focus:border-2 focus:border-brand focus:ring-2 focus:ring-brand-soft disabled:bg-surface disabled:text-muted";
 
 export type FieldProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "prefix"> & {
   label: string;
@@ -62,7 +62,7 @@ export function Field({ label, hint, error, prefix, id, className = "", ...input
     <FieldFrame id={fid} label={label} hint={hint} error={error}>
       {prefix ? (
         <div
-          className={`bg-card focus-within:border-brand focus-within:ring-brand-soft has-disabled:bg-surface flex min-h-12 items-stretch overflow-hidden rounded-md border focus-within:border-2 focus-within:ring-2 ${border}`}
+          className={`bg-card focus-within:border-brand focus-within:ring-brand-soft has-disabled:bg-surface desk:min-h-10 flex min-h-12 items-stretch overflow-hidden rounded-md border focus-within:border-2 focus-within:ring-2 ${border}`}
         >
           <span className="text-ink border-line bg-surface flex items-center border-r px-3 text-base font-semibold">
             {prefix}

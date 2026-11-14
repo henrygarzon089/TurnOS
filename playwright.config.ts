@@ -28,7 +28,7 @@ export default defineConfig({
     {
       name: "escritorio",
       use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 800 } },
-      testMatch: /(admin-nav|today|visual-dueno-ancho)\.spec\.ts/,
+      testMatch: /(admin-nav|today|visual-dueno-ancho|control-sizes)\.spec\.ts/,
     },
   ],
   webServer: process.env.E2E_BASE_URL
