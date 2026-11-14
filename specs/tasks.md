@@ -32,6 +32,7 @@
 | H14 | Rendimiento percibido y medición (ADR-043) | T-130…T-133 | REQ-075 |
 | H15 | Inicio "Hoy" y menú del dueño (ADR-046) — **aprobado** (ADR-049) | T-150…T-154 | REQ-076, REQ-077 |
 | H16 | Sistema visual nuevo (ADR-047, ADR-051, ADR-053) — **aprobado** (ADR-050) | T-160…T-181 | REQ-078 |
+| H18 | Cobro y pantallas sin módulos apagados (ADR-059) | T-200…T-203 | REQ-082, REQ-083 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -2783,6 +2784,42 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Fuera de esta tarea: botones y campos más bajos en escritorio (pide cambiar REQ-078.5 y NFR-008,
   ≥ 48 px en toda pantalla); propuesto a Henry.
 - Terminado: pruebas de REQ-078.34…36 en verde; CI verde.
+
+
+---
+
+## Hito 18 — Cobro y pantallas sin módulos apagados (REQ-082, REQ-083, ADR-059)
+
+> Aprobado por Henry el 2026-11-13 (spec). Sin migraciones. Orden: T-200 → T-201 y
+> T-202 (independientes) → T-203.
+
+### [ ] T-200 · Cobro sin tarjetas de regalo ni membresías apagadas
+- REQ: REQ-082.1, REQ-082.2, REQ-082.3, REQ-082.5
+- Modelo: Opus 5.5. Complejidad: media.
+- Archivos: `src/lib/actions/cash.ts`, `src/components/cash/CheckoutSheet.tsx`, `tests/unit/`.
+- Terminado: en modo esencial el cobro no muestra "Tarjeta de regalo" ni nada de membresías, y el
+  servidor rechaza esos pagos; con `todos`, igual que antes; CI verde.
+
+### [ ] T-201 · Caja y semana sin recuadros apagados
+- REQ: REQ-082.4, REQ-082.5
+- Modelo: Haiku 5.5. Complejidad: baja.
+- Archivos: `src/components/cash/CashDay.tsx`, `src/components/cash/WeekSummary.tsx`, sus páginas,
+  `tests/unit/`.
+- Terminado: sin "Tarjetas de regalo" ni "Membresía familiar" en modo esencial; CI verde.
+
+### [ ] T-202 · Fila, turno y clientes sin membresías ni fotos apagadas
+- REQ: REQ-083.1, REQ-083.2, REQ-083.3, REQ-083.4, REQ-083.5
+- Modelo: Sonnet 5.5. Complejidad: media.
+- Archivos: `src/lib/queue/public-queue.ts`, `src/lib/actions/public.ts`, `src/lib/actions/queue.ts`,
+  `src/components/customers/{OwnerCustomerTable,CustomerSearch,BarberCustomerDetail}.tsx`, sus
+  páginas, `tests/unit/`.
+- Terminado: sin "Ver cortes", marca "Membresía" ni columna o fila "Membresía" en modo esencial;
+  cortesía y cumpleaños siguen; CI verde.
+
+### [ ] T-203 · Validación Hito 18
+- REQ: todos los del hito.
+- Terminado: `pnpm trace --hito=18` sin huecos; Henry cobra una venta en producción y no ve
+  "Tarjeta de regalo"; aprobación (ADR nuevo).
 
 ---
 

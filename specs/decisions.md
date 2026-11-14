@@ -1113,3 +1113,19 @@
   barbero no cambian. 40 px sigue muy por encima del mínimo de WCAG 2.2 (24 px).
 - Consecuencias: variante `desk:` en `globals.css`; `.btn-*`, `.input`, `FIELD_INPUT` y `Button`
   la usan. REQ-078.5 y NFR-008 anotados; T-195.
+
+## ADR-059 · Hito 18: el cobro y las pantallas respetan los módulos apagados
+- Estado: **aceptada** (Henry, 2026-11-13).
+- Contexto: el Hito 17 apagó módulos en menús, "Hoy" y rutas, y dejó fuera a propósito el cobro y el
+  formulario de turno. Al revisarlos: "Pago con → Tarjeta de regalo" sale en casi todos los cobros;
+  la columna "Membresía" y la fila "Membresía: No tiene" salen siempre en clientes; lo demás de
+  membresías y "Ver cortes" se esconde solo porque Gamma Club no tiene datos. Ninguna de esas
+  pantallas consulta la lista de módulos, y el servidor sigue aceptando pagos con tarjeta de regalo
+  y líneas con membresía.
+- Opciones: (a) esconder con la lista de módulos (`isModuleEnabled`) en la pantalla y rechazar en el
+  servidor, sin borrar nada; (b) borrar el código de tarjetas de regalo y membresías.
+- Decisión: **(a)**, igual que el Hito 17 (REQ-079.7): encender un módulo sigue siendo cambiar la
+  lista. Henry decidió que la bebida de cortesía y el cumpleaños se quedan como están.
+- Consecuencias: REQ-082 y REQ-083. Sin migraciones. Las pruebas de tarjetas y membresías siguen
+  corriendo en CI con `TURNOS_MODULES=todos`; las nuevas prueban el modo esencial. T-200…T-203.
+

@@ -3174,3 +3174,44 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
   integración o E2E: crear barbero con "Otro país", aceptar la invitación y entrar con "Mi celular
   no es de Colombia" (REQ-081.1, .3, .4); unitaria de que las acciones de clientes siguen usando
   `normalizePhoneCO` (REQ-081.6). `HITOS["17"] = [[79, 81]]`.
+
+## 24. Hito 18 — Cobro y pantallas sin módulos apagados (REQ-082, REQ-083, ADR-059)
+
+### 24.1 Regla
+- El servidor decide con `isModuleEnabled` (design §23.1) y le pasa a la pantalla banderas simples;
+  los componentes de cliente no leen `process.env`. Nada se borra: con `TURNOS_MODULES=todos` todo
+  vuelve (REQ-082.5, REQ-083.5).
+
+### 24.2 Cobro (REQ-082.1…082.3)
+- `getCheckout` (`src/lib/actions/cash.ts`) devuelve `features: { giftCards, memberships }`. Con
+  `memberships` apagado no llama `membership_status` y devuelve `membership: null` y
+  `membershipServiceIds: []`; igual `findCheckoutCustomer`.
+- `CheckoutSheet`: la fila "Tarjeta de regalo" de "Pago con" solo con `features.giftCards`; lo de
+  membresía ya depende de `membership`, que llega nulo.
+- `registerSale`: si llega `giftCard` con `giftCards` apagado, o alguna línea con `membership` con
+  `memberships` apagado, devuelve `{ error: "Esta opción no está disponible." }` sin llamar a
+  `register_sale`. `lookupGiftCard` responde lo mismo con el módulo apagado.
+
+### 24.3 Caja y semana (REQ-082.4)
+- `CashDay` y `WeekSummary` reciben `features` desde su página y pintan `GiftCardTotals` y
+  `MembershipTotals` solo con el módulo encendido. Los totales de la base no cambian.
+
+### 24.4 Fila, turno y clientes (REQ-083)
+- `getPublicBusiness`: con `photos` apagado devuelve `photoCounts: {}`; `JoinForm` ya esconde "Ver
+  cortes" sin conteo, y `getBarberPhotos` devuelve `[]` con el módulo apagado.
+- `fetchMemberIds` (`src/lib/actions/queue.ts`) devuelve un conjunto vacío sin llamar
+  `membership_member_ids` con `memberships` apagado; la línea de membresía de "Mi turno"
+  (`public-queue.ts`) llega nula.
+- Clientes: `OwnerCustomerTable`, `CustomerSearch` y `BarberCustomerDetail` reciben
+  `showMembership` desde su página; sin él, no pintan columna, marca ni fila.
+- Cortesía y cumpleaños: sin cambios (REQ-083.4).
+
+### 24.5 Pruebas
+- Unitarias con `vi.stubEnv("TURNOS_MODULES", "")` y con `"todos"`: `getCheckout`, `registerSale`,
+  `lookupGiftCard`, `fetchMemberIds`, `getPublicBusiness` (con dobles del cliente de Supabase), y
+  `renderToStaticMarkup` de `CheckoutSheet` (sin "Tarjeta de regalo"), `CashDay`/`WeekSummary`,
+  `OwnerCustomerTable` y `BarberCustomerDetail` (sin "Membresía"), y de `JoinForm` (cortesía y
+  cumpleaños siguen, REQ-083.4).
+- Las E2E existentes de tarjetas y membresías siguen con `TURNOS_MODULES=todos` (REQ-082.5,
+  REQ-083.5). `HITOS["18"] = [[82, 83]]`.
+
