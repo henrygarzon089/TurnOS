@@ -189,6 +189,25 @@ describe("Mi turno como el tablero (T-174)", () => {
     expect(h).toMatch(/border-danger[^"]*"[^>]*>Cancelar turno/);
   });
 
+  it("REQ-085.5 Mi turno muestra la foto del barbero en lugar de sus iniciales", () => {
+    const path = "b1/barbers/a/0f0e0d0c-0b0a-4908-8706-050403020100.webp";
+    const withPhoto = render({ preferredBarberPhoto: path });
+    expect(withPhoto).toContain('alt="Foto de Andrés"');
+    expect(withPhoto).toContain(encodeURIComponent(path).replace(/%2F/g, "/"));
+    expect(withPhoto).not.toContain('data-testid="avatar-initials"');
+    // El asignado manda sobre el de siempre
+    const assigned = render({
+      assignedBarberId: "p",
+      assignedBarberName: "Pedro",
+      assignedBarberPhoto: "b1/barbers/p/1f0e0d0c-0b0a-4908-8706-050403020100.webp",
+      preferredBarberPhoto: path,
+    });
+    expect(assigned).toContain('alt="Foto de Pedro"');
+    expect(assigned).not.toContain('alt="Foto de Andrés"');
+    // REQ-085.4: sin foto, las iniciales
+    expect(render()).toContain('data-testid="avatar-initials"');
+  });
+
   it("REQ-078.22 lo que el tablero no tiene va debajo de la barra de pasos", () => {
     const v = visible(
       render({ courtesy: { productId: "x", name: "Tinto", photoPath: null, served: false } }),

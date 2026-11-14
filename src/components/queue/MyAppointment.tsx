@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { Avatar } from "@/components/media/Avatar";
 import { PublicHeader } from "@/components/public/PublicHeader";
 import { Button } from "@/components/ui/Button";
 import { Sheet } from "@/components/ui/Sheet";
@@ -91,7 +92,11 @@ export function MyAppointment({
 
         <dl className="bg-card border-line border-b">
           <Row testId="row-barbero" label="Barbero">
-            {a.barberName}
+            {/* REQ-085.5: la foto; sin foto, las iniciales (REQ-085.4) */}
+            <span className="flex items-center gap-3">
+              <Avatar name={a.barberName} photoPath={a.barberPhoto} size="sm" />
+              <span className="min-w-0 break-words">{a.barberName}</span>
+            </span>
           </Row>
           <Row
             testId="row-servicio"

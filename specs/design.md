@@ -3239,6 +3239,10 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
   (`{ <barbero>: <ruta> }`); `get_ticket_by_token`, `assignedBarberPhoto` y `preferredBarberPhoto`;
   `public_appointment_info`, `photoPath` por barbero. La URL se arma con `mediaUrl`
   (`src/lib/media/paths.ts`).
+- **Agregado del 2026-11-14 (T-226, aprobado por Henry):** REQ-085.5 pide la foto en "Mi cita" y
+  `get_appointment_by_token` no la devolvía. La migración `0075_appointment_barber_photo.sql`
+  redefine esa función con `barberPhoto` (la ruta en `media` del barbero de la cita, o null). Sale
+  a producción junto con 0074.
 - Guardar la ruta lo cuidan las políticas de siempre: el dueño escribe barberos, servicios y negocio;
   el barbero solo su fila (`barbers_restrict_self_update` no bloquea `photo_path`). No hacen falta
   funciones nuevas.

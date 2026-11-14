@@ -2900,8 +2900,12 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   Cliente-Cita (REQ-078.24) actualizados.
 - Modelo: Opus 5.5. Complejidad: media.
 
-### [ ] T-226 · Mi turno y Mi cita con la foto del barbero
+### [x] T-226 · Mi turno y Mi cita con la foto del barbero
 - REQ: REQ-085.5 · Modelo: Haiku 5.5. Complejidad: baja.
+- Hecha 2026-11-14. Desvío aprobado por Henry: `get_appointment_by_token` no traía la foto, así que
+  la migración `0075_appointment_barber_photo.sql` le suma `barberPhoto` (design §26.1); sale a
+  producción junto con 0074. "Mi turno" usa `assignedBarberPhoto` o `preferredBarberPhoto` según el
+  barbero que nombra; las dos pantallas usan `Avatar` (iniciales sin foto, REQ-085.4).
 
 ### [ ] T-227 · Rapidez y accesibilidad de las fotos
 - REQ: REQ-090.1, REQ-090.3 · Lighthouse móvil ≥ 80, 360/390/1280 px sin desplazamiento.
