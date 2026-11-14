@@ -1,23 +1,18 @@
 "use client";
 
-import { startTransition, useActionState, useState } from "react";
-import { useRouter } from "next/navigation";
+import { startTransition, useActionState } from "react";
 import { ErrorText } from "@/components/auth/LoginForm";
 import { updateCustomer, type CustomerFormState, type CustomerView } from "@/lib/actions/customers";
+import { useRefreshOnOk } from "@/components/ui/form";
 import { MONTH_NAMES } from "@/lib/domain/birthday";
 
 /** REQ-018.5 dueño: nombre y notas; REQ-018.4 barbero: notas y barbero preferido; REQ-037.1 ambos: cumpleaños. */
 export function CustomerForm({ view }: { view: CustomerView }) {
-  const router = useRouter();
-  const [seen, setSeen] = useState<CustomerFormState>(undefined);
   const [state, action, pending] = useActionState<CustomerFormState, FormData>(
     updateCustomer,
     undefined,
   );
-  if (state?.ok && state !== seen) {
-    setSeen(state);
-    router.refresh();
-  }
+  useRefreshOnOk(state);
   const isOwner = view.viewer.role === "owner";
   const c = view.customer;
 
@@ -109,7 +104,7 @@ export function CustomerForm({ view }: { view: CustomerView }) {
         <button type="submit" className="btn-primary flex-1" disabled={pending}>
           {pending ? "Guardando…" : "Guardar"}
         </button>
-        {state?.ok && state === seen && !pending && (
+        {state?.ok && !pending && (
           <span role="status" className="text-ok text-sm font-medium">
             Guardado
           </span>

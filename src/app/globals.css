@@ -114,6 +114,12 @@ body {
   @apply border-line-strong bg-card text-ink focus:border-brand focus:ring-brand-soft desk:min-h-10 min-h-12 w-full rounded-md border px-3 text-base outline-none focus:ring-2;
 }
 
+/* REQ-078.36: casillas y opciones en el azul marino de acción, no en el azul del navegador */
+input[type="checkbox"]:not([role="switch"]),
+input[type="radio"] {
+  accent-color: var(--color-brand);
+}
+
 /* Movimiento reducido (REQ-078.13): las entradas dejan de desplazarse y solo aparecen. */
 @media (prefers-reduced-motion: reduce) {
   .animate-enter,
