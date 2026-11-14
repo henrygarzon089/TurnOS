@@ -2907,8 +2907,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   producción junto con 0074. "Mi turno" usa `assignedBarberPhoto` o `preferredBarberPhoto` según el
   barbero que nombra; las dos pantallas usan `Avatar` (iniciales sin foto, REQ-085.4).
 
-### [ ] T-227 · Rapidez y accesibilidad de las fotos
+### [x] T-227 · Rapidez y accesibilidad de las fotos
 - REQ: REQ-090.1, REQ-090.3 · Lighthouse móvil ≥ 80, 360/390/1280 px sin desplazamiento.
+- Hecha 2026-11-14. `tests/unit/photos-speed.test.tsx` (REQ-090.1, REQ-087.3) y un E2E de
+  REQ-090.3 con fotos en la portada y en los pasos de reservar. Lighthouse móvil de la portada lo
+  mide `pnpm lighthouse` en el CI (NFR-001). Nota sobre REQ-090.1 "en WebP": el celular codifica
+  WebP y, si el navegador no sabe (Safari viejo entrega PNG), JPEG, como las fotos de productos
+  desde el Hito 5 (`encodeUnderLimit`); la ruta sigue terminando en `.webp`. Pedir solo WebP
+  dejaría sin subir fotos a esos iPhone.
 - Modelo: Sonnet 5.5. Complejidad: baja.
 
 ### [ ] T-228 · Validación Hito 20

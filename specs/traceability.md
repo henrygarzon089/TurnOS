@@ -483,26 +483,26 @@
 | REQ-084.2 | Citas encendidas en Gamma Club | T-210 (hecha) | proxy.test.ts | cubierto |
 | REQ-084.3 | Citas encendidas en Gamma Club | T-210 (hecha) | modules.test.ts | cubierto |
 | REQ-084.4 | Citas encendidas en Gamma Club | T-210 (hecha) | modules.test.ts | cubierto |
-| REQ-085.1 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (pendiente) | brand-images.test.tsx, 0074_brand_images.sql | prueba escrita |
-| REQ-085.2 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (pendiente) | brand-images.test.tsx, 0074_brand_images.sql | prueba escrita |
-| REQ-085.3 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (pendiente) | brand-images.test.tsx | prueba escrita |
-| REQ-085.4 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (pendiente) | brand-images.test.tsx | prueba escrita |
-| REQ-085.5 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (pendiente) | public-home.test.tsx, 0074_brand_images.sql | prueba escrita |
+| REQ-085.1 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
+| REQ-085.2 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
+| REQ-085.3 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | brand-images.test.tsx | cubierto |
+| REQ-085.4 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | brand-images.test.tsx, my-appointment.test.tsx, my-ticket.test.tsx, 0075_appointment_barber_photo.sql | cubierto |
+| REQ-085.5 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | visual-cliente-cita.spec.ts, my-appointment.test.tsx, my-ticket.test.tsx, public-home.test.tsx, 0074_brand_images.sql, 0075_appointment_barber_photo.sql | cubierto |
 | REQ-086.1 |  | T-222 (hecha), T-224 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
-| REQ-086.2 |  | T-222 (hecha), T-224 (hecha) | 0074_brand_images.sql | cubierto |
+| REQ-086.2 |  | T-222 (hecha), T-224 (hecha) | visual-cliente-cita.spec.ts, 0074_brand_images.sql | cubierto |
 | REQ-087.1 |  | T-223 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
 | REQ-087.2 |  | T-223 (hecha) | public-home.test.tsx, 0074_brand_images.sql | cubierto |
-| REQ-087.3 |  | T-223 (hecha) | — | sin prueba |
+| REQ-087.3 |  | T-223 (hecha) | photos-speed.test.tsx | cubierto |
 | REQ-088.1 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, join-steps.test.ts, public-home.test.tsx | cubierto |
 | REQ-088.2 | Tomar turno paso a paso | T-224 (hecha) | helpers.ts, join-steps.spec.ts, join-steps.test.ts, public-home.test.tsx | cubierto |
-| REQ-088.3 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, join-steps.test.ts | cubierto |
-| REQ-088.4 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, privacy.spec.ts, join-steps.test.ts, public-home.test.tsx | cubierto |
+| REQ-088.3 | Tomar turno paso a paso | T-224 (hecha) | appointments-public.spec.ts, join-steps.spec.ts, join-steps.test.ts | cubierto |
+| REQ-088.4 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, privacy.spec.ts, visual-cliente-cita.spec.ts, join-steps.test.ts, public-home.test.tsx | cubierto |
 | REQ-088.5 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts | cubierto |
 | REQ-088.6 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, join-steps.test.ts | cubierto |
 | REQ-088.7 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, public-home.test.tsx | cubierto |
-| REQ-089.1 | Reservar una cita paso a paso | T-225 (pendiente) | — | sin prueba |
-| REQ-089.2 | Reservar una cita paso a paso | T-225 (pendiente) | — | sin prueba |
-| REQ-089.3 | Reservar una cita paso a paso | T-225 (pendiente) | — | sin prueba |
-| REQ-090.1 | Fotos rápidas y seguras | T-220 (hecha), T-227 (pendiente) | — | sin prueba |
+| REQ-089.1 | Reservar una cita paso a paso | T-225 (hecha) | appointments-public.spec.ts, visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
+| REQ-089.2 | Reservar una cita paso a paso | T-225 (hecha) | visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
+| REQ-089.3 | Reservar una cita paso a paso | T-225 (hecha) | appointments-public.spec.ts, visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
+| REQ-090.1 | Fotos rápidas y seguras | T-220 (hecha), T-227 (pendiente) | photos-speed.test.tsx | prueba escrita |
 | REQ-090.2 | Fotos rápidas y seguras | T-220 (hecha), T-227 (pendiente) | brand-images.test.tsx, 0074_brand_images.sql | prueba escrita |
-| REQ-090.3 | Fotos rápidas y seguras | T-220 (hecha), T-227 (pendiente) | visual-cliente.spec.ts | prueba escrita |
+| REQ-090.3 | Fotos rápidas y seguras | T-220 (hecha), T-227 (pendiente) | visual-cliente-cita.spec.ts, visual-cliente.spec.ts | prueba escrita |

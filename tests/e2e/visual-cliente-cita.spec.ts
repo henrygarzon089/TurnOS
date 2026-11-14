@@ -116,6 +116,49 @@ test.describe("T-175 cita, Mi cita, tarjeta de regalo y privacidad (REQ-078.24)"
     });
   });
 
+  test("REQ-090.3 con fotos: portada y pasos de reservar sin desplazamiento en 360, 390 y 1280 px, un botón principal y ≥ 48 px", async ({
+    page,
+  }) => {
+    test.setTimeout(180_000);
+    await withAppointments(async ({ biz, service, juan }) => {
+      const db = adminDb();
+      const file = (dir: string) => `${biz}/${dir}/3f0e0d0c-0b0a-4908-8706-050403020100.webp`;
+      await db
+        .from("barbers")
+        .update({ photo_path: file(`barbers/${juan}`) })
+        .eq("id", juan);
+      await db
+        .from("services")
+        .update({ photo_path: file("services") })
+        .eq("id", service);
+      await db
+        .from("businesses")
+        .update({ logo_path: file("brand"), cover_path: file("brand") })
+        .eq("id", biz);
+      try {
+        const base = `/${SEED.slug}/cita?paso=`;
+        for (const path of [
+          `/${SEED.slug}`,
+          `${base}servicio`,
+          `${base}barbero&servicio=${service}`,
+          `${base}hora&servicio=${service}&barbero=${juan}`,
+        ]) {
+          await noHorizontalScroll(page, path);
+          expect(await primaryButtons(page), path).toBeLessThanOrEqual(1);
+          expect(await smallTargets(page), path).toEqual([]);
+        }
+        // Las fotos sí salen en los pasos (REQ-085.5, REQ-086.2)
+        await page.setViewportSize({ width: 390, height: 800 });
+        await page.goto(`${base}barbero&servicio=${service}`);
+        await expect(page.getByRole("img", { name: "Foto de Juan" })).toBeAttached();
+      } finally {
+        await db.from("barbers").update({ photo_path: null }).eq("id", juan);
+        await db.from("services").update({ photo_path: null }).eq("id", service);
+        await db.from("businesses").update({ logo_path: null, cover_path: null }).eq("id", biz);
+      }
+    });
+  });
+
   test("REQ-078.24 / REQ-089.2 vacío: '<barbero> ya no tiene horas', 'Ver el <día>', otro barbero y la fila", async ({
     page,
   }) => {
