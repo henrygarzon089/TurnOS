@@ -720,7 +720,7 @@ Pendientes (H3): `/admin/caja`,
     sugeridos; cobrar cada servicio en la caja para que la medición sirva.
 - Plan para el arnés y los agentes: `docs/plan-hito-17.md`.
 
-### Hito 18 — cobro y pantallas sin módulos apagados (en validación, REQ-082…083, ADR-060)
+### Hito 18 — cobro y pantallas sin módulos apagados (aprobado, REQ-082…083, ADR-060, ADR-061)
 
 - Henry aprobó la spec el 2026-11-13; quería un cobro más simple. Decidió que la bebida de cortesía
   y el cumpleaños se quedan (REQ-083.4).
@@ -736,12 +736,12 @@ Pendientes (H3): `/admin/caja`,
     membresías ahora encienden los módulos con `vi.stubEnv`.
   - El ADR quedó como ADR-060 porque ADR-059 ya era el de los 40 px.
   - `pnpm trace --hito=18` sin huecos; CI en verde.
-- Falta (Henry), T-203:
-  1. Desplegar `main` (`vercel --prod`; no hay migraciones). El último despliegue de producción es
-     de antes de la fusión.
-  2. Cobrar una venta desde el celular y confirmar que en "Pago con" no sale "Tarjeta de regalo" y
-     que la caja de hoy no muestra esos recuadros.
-  3. Aprobar el hito (ADR nuevo).
+- Aprobado el 2026-11-14 (ADR-061, T-203): Henry desplegó `c8b7ebb` (`check:deploy` ✓), cobró
+  una venta desde el celular sin "Tarjeta de regalo" ni membresías y la caja salió sin esos
+  recuadros.
+- Pendientes externos que quedan: proteger `main` en GitHub (T-010, con la cuenta
+  `henrygarzon089`; el `gh` del agente no es administrador), los pasos de Meta para WhatsApp
+  (T-069), la revisión del aviso de privacidad por un abogado y el inventario de Gamma Club.
 
 ## Desvíos registrados respecto a la spec (todos explícitos)
 
