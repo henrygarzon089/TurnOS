@@ -3175,7 +3175,7 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
   no es de Colombia" (REQ-081.1, .3, .4); unitaria de que las acciones de clientes siguen usando
   `normalizePhoneCO` (REQ-081.6). `HITOS["17"] = [[79, 81]]`.
 
-## 24. Hito 18 — Cobro y pantallas sin módulos apagados (REQ-082, REQ-083, ADR-059)
+## 24. Hito 18 — Cobro y pantallas sin módulos apagados (REQ-082, REQ-083, ADR-060)
 
 ### 24.1 Regla
 - El servidor decide con `isModuleEnabled` (design §23.1) y le pasa a la pantalla banderas simples;

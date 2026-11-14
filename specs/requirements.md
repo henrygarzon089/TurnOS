@@ -1775,7 +1775,7 @@ y van en un cambio aparte; simplificar Productos (queda como está); un interrup
 el dueño; borrar código, tablas o migraciones de los módulos apagados; el aviso por WhatsApp (sigue
 apagado, Hito 6); cambiar el seed de La 33.
 
-### Hito 18 — Cobro y pantallas sin módulos apagados (ADR-059)
+### Hito 18 — Cobro y pantallas sin módulos apagados (ADR-060)
 
 ### REQ-082 · Cobro sin tarjetas de regalo ni membresías apagadas — M
 **Como** dueño, **quiero** que el cobro muestre solo lo que uso, **para** cobrar rápido y que nadie

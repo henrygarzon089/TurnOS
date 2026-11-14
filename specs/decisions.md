@@ -1114,7 +1114,7 @@
 - Consecuencias: variante `desk:` en `globals.css`; `.btn-*`, `.input`, `FIELD_INPUT` y `Button`
   la usan. REQ-078.5 y NFR-008 anotados; T-195.
 
-## ADR-059 · Hito 18: el cobro y las pantallas respetan los módulos apagados
+## ADR-060 · Hito 18: el cobro y las pantallas respetan los módulos apagados
 - Estado: **aceptada** (Henry, 2026-11-13).
 - Contexto: el Hito 17 apagó módulos en menús, "Hoy" y rutas, y dejó fuera a propósito el cobro y el
   formulario de turno. Al revisarlos: "Pago con → Tarjeta de regalo" sale en casi todos los cobros;

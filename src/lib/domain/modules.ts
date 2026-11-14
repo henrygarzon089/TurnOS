@@ -79,7 +79,7 @@ export function isModuleEnabled(
   return enabledModules(env).has(id);
 }
 
-/** Módulos que cambian el cobro, la caja y la semana (REQ-082, ADR-059). */
+/** Módulos que cambian el cobro, la caja y la semana (REQ-082, ADR-060). */
 export type CashFeatures = { giftCards: boolean; memberships: boolean };
 
 export function cashFeatures(env: string | undefined = process.env.TURNOS_MODULES): CashFeatures {

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 /**
- * Hito 18 (REQ-082, ADR-059): el cobro respeta los módulos apagados. Doble del cliente de Supabase:
+ * Hito 18 (REQ-082, ADR-060): el cobro respeta los módulos apagados. Doble del cliente de Supabase:
  * cualquier consulta encadenada responde `{ data }` según la tabla; las rpc quedan registradas.
  */
 const m = vi.hoisted(() => ({

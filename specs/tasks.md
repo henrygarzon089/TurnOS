@@ -32,7 +32,7 @@
 | H14 | Rendimiento percibido y medición (ADR-043) | T-130…T-133 | REQ-075 |
 | H15 | Inicio "Hoy" y menú del dueño (ADR-046) — **aprobado** (ADR-049) | T-150…T-154 | REQ-076, REQ-077 |
 | H16 | Sistema visual nuevo (ADR-047, ADR-051, ADR-053) — **aprobado** (ADR-050) | T-160…T-181 | REQ-078 |
-| H18 | Cobro y pantallas sin módulos apagados (ADR-059) | T-200…T-203 | REQ-082, REQ-083 |
+| H18 | Cobro y pantallas sin módulos apagados (ADR-060) | T-200…T-203 | REQ-082, REQ-083 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -2788,7 +2788,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ---
 
-## Hito 18 — Cobro y pantallas sin módulos apagados (REQ-082, REQ-083, ADR-059)
+## Hito 18 — Cobro y pantallas sin módulos apagados (REQ-082, REQ-083, ADR-060)
 
 > Aprobado por Henry el 2026-11-13 (spec). Sin migraciones. Orden: T-200 → T-201 y
 > T-202 (independientes) → T-203.
@@ -2807,7 +2807,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `tests/unit/`.
 - Terminado: sin "Tarjetas de regalo" ni "Membresía familiar" en modo esencial; CI verde.
 
-### [ ] T-202 · Fila, turno y clientes sin membresías ni fotos apagadas
+### [x] T-202 · Fila, turno y clientes sin membresías ni fotos apagadas
 - REQ: REQ-083.1, REQ-083.2, REQ-083.3, REQ-083.4, REQ-083.5
 - Modelo: Sonnet 5.5. Complejidad: media.
 - Archivos: `src/lib/queue/public-queue.ts`, `src/lib/actions/public.ts`, `src/lib/actions/queue.ts`,

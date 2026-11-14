@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-/** Hito 18 (REQ-082.4, ADR-059): la caja y la semana sin recuadros de módulos apagados. */
+/** Hito 18 (REQ-082.4, ADR-060): la caja y la semana sin recuadros de módulos apagados. */
 vi.mock("server-only", () => ({}));
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: () => {}, push: () => {} }),
