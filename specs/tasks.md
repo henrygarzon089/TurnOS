@@ -2793,7 +2793,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 > Aprobado por Henry el 2026-11-13 (spec). Sin migraciones. Orden: T-200 → T-201 y
 > T-202 (independientes) → T-203.
 
-### [ ] T-200 · Cobro sin tarjetas de regalo ni membresías apagadas
+### [x] T-200 · Cobro sin tarjetas de regalo ni membresías apagadas
 - REQ: REQ-082.1, REQ-082.2, REQ-082.3, REQ-082.5
 - Modelo: Opus 5.5. Complejidad: media.
 - Archivos: `src/lib/actions/cash.ts`, `src/components/cash/CheckoutSheet.tsx`, `tests/unit/`.

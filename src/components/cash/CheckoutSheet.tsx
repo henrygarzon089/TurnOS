@@ -18,7 +18,7 @@ import { ProductShowcase } from "@/components/cash/ProductShowcase";
 import { Icon } from "@/components/ui/Icon";
 import { Sheet } from "@/components/ui/Sheet";
 import { computeSale, productCommission, staffDiscount } from "@/lib/domain/commission";
-import { giftCardSplit, normalizeGiftCardCode } from "@/lib/domain/giftCard";
+import { giftCardSplit, normalizeGiftCardCode, showGiftCardPayment } from "@/lib/domain/giftCard";
 import { membershipCheckoutLine, membershipLineKey } from "@/lib/domain/membership";
 import { formatCOP, parseCOP } from "@/lib/domain/money";
 import { saleParties, type Seller } from "@/lib/domain/showcase";
@@ -693,7 +693,7 @@ export function CheckoutSheet({
         </Section>
       )}
 
-      {(total > 0 || gift) && (
+      {showGiftCardPayment(view.features, total, !!gift) && (
         <Section label="Pago con">
           <div className={ROW}>
             <span className="min-w-0 flex-1">
