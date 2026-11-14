@@ -90,7 +90,7 @@ test.describe("T-175 cita, Mi cita, tarjeta de regalo y privacidad (REQ-078.24)"
       await expect(confirm).toBeDisabled();
       const hour = (await hours.locator("label").first().textContent())!.trim();
       await hours.locator("label").first().click();
-      await expect(confirm).toHaveText(new RegExp(`^Confirmar · [a-zé]{3} \\d+, ${hour}$`));
+      await expect(confirm).toHaveText(new RegExp(`^Confirmar · [a-záéíóú]{3} \\d+, ${hour}$`));
       await expect(confirm).toBeEnabled();
       await expect(page.getByText("Llega a tu hora: te esperamos hasta 10 minutos.")).toBeVisible();
 
