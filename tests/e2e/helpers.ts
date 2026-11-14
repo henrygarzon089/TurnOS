@@ -56,6 +56,36 @@ export async function waitForContent(page: Page) {
   await expect(page.locator('[aria-busy="true"]')).toHaveCount(0, { timeout: 10_000 });
 }
 
+/**
+ * T-224 (REQ-088): de la portada al paso 3 de tomar turno. "Tomar turno" → servicio (por defecto
+ * "Corte") → barbero (por defecto "El primero libre"). Tocar una tarjeta pasa sola al paso siguiente.
+ */
+export async function openJoinForm(page: Page, opts: { service?: RegExp; barber?: string } = {}) {
+  await openBarberStep(page, opts.service);
+  await page
+    .getByRole("radio", {
+      name: opts.barber ? new RegExp(`^${opts.barber},`) : /^El primero libre/,
+    })
+    .click();
+  await expect(page.getByLabel("Tu nombre")).toBeVisible();
+}
+
+/** De la portada al paso 2 ("¿Con quién?") de tomar turno (REQ-088.2). */
+export async function openBarberStep(page: Page, service: RegExp = /^Corte\s+\$/) {
+  await page.goto(`/${SEED.slug}`);
+  await waitForContent(page);
+  await page.getByRole("button", { name: "Tomar turno" }).click();
+  await page.getByRole("radio", { name: service }).click();
+  await expect(page.getByText("Paso 2 de 3")).toBeVisible();
+}
+
+/** Una tarjeta del paso 2: "Juan, Libre" (REQ-088.2). */
+export const barberCard = (page: Page, name: string) =>
+  page.getByRole("radio", { name: new RegExp(`^${name},`) });
+
+/** El botón del paso 3 (REQ-088.2). */
+export const confirmJoin = (page: Page) => page.getByRole("button", { name: "Confirmar turno" });
+
 /** Mensajes role=alert de la app, sin el anunciador de rutas de Next (`__next-route-announcer__`). */
 export function appAlert(page: Page) {
   return page.locator('[role="alert"]:not(#__next-route-announcer__)');

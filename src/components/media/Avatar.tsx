@@ -3,11 +3,12 @@ import { initials } from "@/lib/domain/my-ticket";
 import { mediaUrl } from "@/lib/media/paths";
 
 const SIZES = {
+  xs: "size-6 text-[10px]",
   sm: "size-10 text-sm",
   md: "size-14 text-base",
   lg: "size-20 text-xl",
 } as const;
-const PX = { sm: 40, md: 56, lg: 80 } as const;
+const PX = { xs: 24, sm: 40, md: 56, lg: 80 } as const;
 
 /**
  * REQ-085.4 / REQ-085.5: la foto del barbero en un círculo; sin foto, sus iniciales. Las fotos ya

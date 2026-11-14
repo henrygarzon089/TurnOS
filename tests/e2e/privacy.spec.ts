@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { loginAsOwner, SEED, cancelMyTicket } from "./helpers";
+import { cancelMyTicket, confirmJoin, loginAsOwner, openJoinForm } from "./helpers";
 
 test("REQ-002.5 una versión nueva del aviso hace que el cliente vuelva a ver la casilla", async ({
   page,
@@ -10,16 +10,17 @@ test("REQ-002.5 una versión nueva del aviso hace que el cliente vuelva a ver la
   // Cliente acepta la versión vigente
   const cctx = await browser.newContext();
   const customer = await cctx.newPage();
-  await customer.goto(`/${SEED.slug}`);
+  await openJoinForm(customer);
   await customer.getByLabel("Tu nombre").fill("Privacidad");
   await customer
     .getByLabel("Tu celular")
     .fill(`300 7${Math.floor(100000 + Math.random() * 899999)}`);
   await customer.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
-  await customer.getByRole("button", { name: "Tomar turno" }).click();
+  await confirmJoin(customer).click();
   await expect(customer).toHaveURL(/\/t\//);
   await cancelMyTicket(customer);
-  await customer.goto(`/${SEED.slug}`);
+  // La recarga de abajo conserva el paso 3 (REQ-088.4)
+  await openJoinForm(customer);
   await expect(customer.getByText("Ya aceptaste nuestra política de datos.")).toBeVisible();
 
   // El dueño publica una versión nueva

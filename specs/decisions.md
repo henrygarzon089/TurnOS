@@ -1164,7 +1164,9 @@
   eso. Desvío anotado en design §26.1.) (2) Tomar turno y reservar pasan a pasos con
   `?paso=` en la dirección, en la misma ruta y con las mismas acciones del servidor
   (`joinQueue`, `bookAppointment`): cambia la presentación, no las reglas. (3) REQ-078.21 y
-  REQ-078.24 quedan reemplazados por REQ-088 y REQ-089 en lo que digan distinto.
+  REQ-078.24 quedan reemplazados por REQ-088 y REQ-089 en lo que digan distinto; también la "1
+  pantalla" de NFR-007 y el botón "Tomar turno" de REQ-003.1 al final del formulario (ahora
+  "Confirmar turno"). Nota en cada uno (T-224, 2026-11-14).
 - Alternativas: URLs firmadas del bucket privado (caducan, no se guardan en caché y suben el LCP);
   un formulario largo con fotos (no responde al pedido de "paso a paso").
 - Consecuencias: migración nueva (rutas de foto en `barbers`, `services` y `businesses`, y rutas

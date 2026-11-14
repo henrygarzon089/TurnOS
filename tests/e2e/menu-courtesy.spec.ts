@@ -1,5 +1,14 @@
 import { expect, test, type BrowserContext, type Page } from "@playwright/test";
-import { CALL, adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED } from "./helpers";
+import {
+  CALL,
+  adminDb,
+  confirmJoin,
+  loginAsBarber,
+  loginAsOwner,
+  openJoinForm,
+  resetQueue,
+  SEED,
+} from "./helpers";
 
 /** T-061 · REQ-038. Tinto y Aromática son del seed: solo de cortesía, sin precio. */
 const phone = () => `300 8${Math.floor(100000 + Math.random() * 899999)}`;
@@ -10,10 +19,9 @@ const PNG = Buffer.from(
 );
 
 async function fillJoinForm(page: Page, name: string) {
-  await page.goto(`/${SEED.slug}`);
+  await openJoinForm(page);
   await page.getByLabel("Tu nombre").fill(name);
   await page.getByLabel("Tu celular").fill(phone());
-  await page.getByRole("radio", { name: /^Corte\s+\$/ }).check();
 }
 
 async function takeTicket(ctx: BrowserContext, name: string, drink?: string) {
@@ -21,7 +29,7 @@ async function takeTicket(ctx: BrowserContext, name: string, drink?: string) {
   await fillJoinForm(page, name);
   if (drink) await page.getByRole("radio", { name: drink }).check();
   await page.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
-  await page.getByRole("button", { name: "Tomar turno" }).click();
+  await confirmJoin(page).click();
   await expect(page).toHaveURL(/\/t\//);
   return page;
 }
@@ -218,7 +226,7 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     await page.getByRole("radio", { name: "Tinto" }).check();
     await page.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
     await setProduct("Tinto", { is_active: false });
-    await page.getByRole("button", { name: "Tomar turno" }).click();
+    await confirmJoin(page).click();
     const group = page.getByRole("group", { name: "Bebida de cortesía" });
     await expect(group.getByText("Esa bebida ya no está disponible")).toBeVisible();
     await expect(page).not.toHaveURL(/\/t\//);
@@ -281,7 +289,7 @@ test.describe("Hito 5 · menú y bebida de cortesía", () => {
     await expect(menu.getByText("Helado")).toBeVisible();
     await expect(menu.getByText("Agua")).toHaveCount(0);
     const form = await ctx.newPage();
-    await form.goto(`/${SEED.slug}`);
+    await openJoinForm(form);
     await expect(form.getByRole("radio", { name: "Agua" })).toBeVisible();
     await ctx.close();
 

@@ -2877,9 +2877,18 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   en 0074 y su pgTAP; mostrarlos en la página del cliente y REQ-087.3 (colores) van con
   `PublicHero` en T-224.
 
-### [ ] T-224 · Portada y tomar turno paso a paso
+### [x] T-224 · Portada y tomar turno paso a paso
 - REQ: REQ-085.5, REQ-086.2, REQ-088.1…REQ-088.7 · `PublicHero`, `Avatar`, `BarberCard`,
   `ServiceCard`, `StepHeader`, `JoinFlow`; E2E de tomar turno. Modelo: Opus 5.5. Complejidad: alta.
+- Hecha 2026-11-14: `JoinFlow` (en `JoinForm.tsx`, mismo estado y `joinQueue`), `PublicHero`,
+  `ServiceCard`/`BarberCard`/`AnyBarberCard`/`StepHeader` (`src/components/public/JoinSteps.tsx`) y
+  la lógica pura en `src/lib/domain/join-steps.ts`. El paso, el servicio y el barbero van en la
+  dirección (`?paso=…&servicio=…&barbero=…|libre`) con `history.pushState` (sin ir al servidor);
+  "Atrás" usa el historial si venimos del paso anterior. "Ver cortes" va bajo la tarjeta de cada
+  barbero con fotos. Notas explícitas en REQ-003.1, REQ-078.21 y NFR-007 (ADR-063). Pruebas:
+  `tests/unit/join-steps.test.ts`, `tests/unit/public-home.test.tsx`, `tests/e2e/join-steps.spec.ts`
+  y las E2E de tomar turno con `openJoinForm`. El botón de la foto del barbero dice "Poner foto"
+  (no choca con "Subir foto" de las fotos de cortes).
 
 ### [ ] T-225 · Reservar una cita paso a paso
 - REQ: REQ-089.1, REQ-089.2, REQ-089.3 · `BookFlow`; E2E de reservar. Depende de T-210 y T-224.

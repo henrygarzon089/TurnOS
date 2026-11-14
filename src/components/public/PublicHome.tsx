@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useState } from "react";
+import { Avatar } from "@/components/media/Avatar";
 import { ConnectionBanner } from "@/components/ui/ConnectionBanner";
 import { capLines, deskLine, liveLineText, type PublicBarberLine } from "@/lib/domain/public-view";
 import { formatTimeBogota } from "@/lib/domain/time";
@@ -55,9 +56,12 @@ export function LiveBlock({
   waiting,
   lines,
   whatsapp,
+  photos = {},
 }: {
   waiting: number;
   lines: PublicBarberLine[];
+  /** REQ-088.1: foto de cada barbero (id → ruta en `media`); sin foto, sus iniciales. */
+  photos?: Record<string, string>;
   /** Aviso por WhatsApp encendido: la frase de escritorio lo promete. */
   whatsapp: boolean;
 }) {
@@ -80,8 +84,11 @@ export function LiveBlock({
         {shown.length > 0 && (
           <ul className="mt-1.5">
             {shown.map((l) => (
-              <li key={l.id} className="flex min-h-6 items-center justify-between gap-3 text-sm">
-                <span className="min-w-0 truncate">{l.name}</span>
+              <li key={l.id} className="flex min-h-8 items-center justify-between gap-3 text-sm">
+                <span className="flex min-w-0 items-center gap-2">
+                  <Avatar name={l.name} photoPath={photos[l.id]} size="xs" />
+                  <span className="min-w-0 truncate">{l.name}</span>
+                </span>
                 <span
                   className={`shrink-0 tabular-nums ${l.state === "paused" ? "text-warn font-semibold" : l.state === "free" ? "text-ok font-semibold" : ""}`}
                 >
@@ -120,8 +127,13 @@ export function LiveBlock({
               {lines.map((l) => {
                 const d = deskLine(l);
                 return (
-                  <tr key={l.id} className="h-12">
-                    <td className="font-semibold">{l.name}</td>
+                  <tr key={l.id} className="h-14">
+                    <td className="font-semibold">
+                      <span className="flex items-center gap-3">
+                        <Avatar name={l.name} photoPath={photos[l.id]} size="sm" />
+                        {l.name}
+                      </span>
+                    </td>
                     <td
                       className={
                         l.state === "paused"
@@ -195,11 +207,17 @@ export function JoinBar({
   canBook,
   citaQuery,
   menuTrigger,
+  label = "Tomar turno",
+  summary,
 }: {
   slug: string;
   pending: boolean;
   disabled: boolean;
   online: boolean;
+  /** REQ-088.2: "Confirmar turno" en el paso 3. */
+  label?: string;
+  /** REQ-088.2: "Corte moderno con Pedro · ~ 20 min" encima del botón. */
+  summary?: string;
   /** Por qué sigue deshabilitado con red (la casilla de privacidad). */
   hint: string | null;
   canBook: boolean;
@@ -209,6 +227,11 @@ export function JoinBar({
   return (
     <div className={BAR}>
       <div className="mx-auto max-w-md lg:max-w-none">
+        {summary && (
+          <p className="mb-2 truncate text-center text-sm font-semibold" data-testid="join-summary">
+            {summary}
+          </p>
+        )}
         <button
           type="submit"
           // Guardando: azul marino atenuado; sin red o sin la casilla: gris (Cliente-Negocio)
@@ -216,7 +239,7 @@ export function JoinBar({
           disabled={disabled}
           aria-busy={pending || undefined}
         >
-          {pending ? "Guardando…" : "Tomar turno"}
+          {pending ? "Guardando…" : label}
         </button>
         {!online ? (
           <p className="text-muted mt-2 text-center text-sm">

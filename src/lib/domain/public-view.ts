@@ -69,7 +69,7 @@ export function publicBarberLines(
 }
 
 /** "40 min", "1 h 10 min", "2 h": la espera sin el "≈" de `formatMinutes`. */
-function minutes(n: number): string {
+export function minutes(n: number): string {
   if (n < 60) return `${n} min`;
   const h = Math.floor(n / 60);
   const m = n % 60;

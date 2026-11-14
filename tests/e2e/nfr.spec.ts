@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { loginAsBarber, loginAsOwner, SEED } from "./helpers";
+import { loginAsBarber, loginAsOwner, openBarberStep, openJoinForm } from "./helpers";
 
 /** T-050 · NFR que no tenían prueba con su nombre: NFR-002, NFR-007 (flujo del cliente), NFR-012. */
 test.describe("NFR del MVP", () => {
@@ -43,19 +43,16 @@ test.describe("NFR del MVP", () => {
     }
   });
 
-  test("NFR-007 el flujo del cliente tiene ≤ 4 campos y 1 pantalla", async ({ page }) => {
-    await page.goto(`/${SEED.slug}`);
+  test("NFR-007 el flujo del cliente tiene ≤ 4 campos (en 3 pasos, ADR-063)", async ({ page }) => {
+    // Servicio y barbero son un toque cada uno (pasos 1 y 2); el paso 3 pide nombre y celular
+    await openBarberStep(page);
+    await expect(page.getByRole("radio", { name: /^El primero libre/ })).toBeVisible();
+    await openJoinForm(page);
     const form = page.getByRole("form", { name: "Tomar turno" });
-    // Campos: nombre, celular, servicio, barbero (+ la casilla de privacidad, REQ-002)
     await expect(form.getByRole("textbox")).toHaveCount(2); // nombre y celular
     await expect(form.getByLabel("Tu nombre")).toBeVisible();
     await expect(form.getByLabel("Tu celular")).toBeVisible();
-    await expect(form.getByRole("group").filter({ hasText: "¿Qué te vas a hacer?" })).toHaveCount(
-      1,
-    );
-    await expect(form.getByRole("group").filter({ hasText: "¿Con quién?" })).toHaveCount(1);
-    // Una sola pantalla: el botón de confirmar está en el mismo formulario
-    await expect(form.getByRole("button", { name: "Tomar turno" })).toBeVisible();
+    await expect(form.getByRole("button", { name: "Confirmar turno" })).toBeVisible();
   });
 
   test("NFR-012 /salud confirma que la app y la base de datos responden", async ({ request }) => {
