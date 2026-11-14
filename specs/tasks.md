@@ -33,6 +33,8 @@
 | H15 | Inicio "Hoy" y menú del dueño (ADR-046) — **aprobado** (ADR-049) | T-150…T-154 | REQ-076, REQ-077 |
 | H16 | Sistema visual nuevo (ADR-047, ADR-051, ADR-053) — **aprobado** (ADR-050) | T-160…T-181 | REQ-078 |
 | H18 | Cobro y pantallas sin módulos apagados (ADR-060) | T-200…T-203 | REQ-082, REQ-083 |
+| H19 | Citas en modo esencial (ADR-062) | T-210…T-211 | REQ-084 |
+| H20 | Cliente con fotos y paso a paso (ADR-063) | T-220…T-228 | REQ-085…REQ-090 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -2822,6 +2824,63 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   "Tarjeta de regalo"; aprobación (ADR nuevo).
 - Nota (2026-11-14): Henry desplegó c8b7ebb (`check:deploy` ✓), cobró en producción sin "Tarjeta de
   regalo" ni membresías y aprobó el hito (ADR-061).
+
+---
+
+
+## Hito 19 — Citas en modo esencial (REQ-084, ADR-062)
+
+> Spec del 2026-11-14, pendiente de aprobación de Henry. Sin migraciones. Para antes del martes
+> 2026-11-17.
+
+### [ ] T-210 · Encender Citas
+- REQ: REQ-084.1, REQ-084.2, REQ-084.3, REQ-084.4
+- Modelo: Sonnet 5.5. Complejidad: baja.
+- Archivos: `src/lib/domain/modules.ts`, pruebas de menú, "Hoy" y rutas apagadas.
+- Terminado: en modo esencial el dueño ve "Citas" y el cliente "Reservar una cita" (con barberos que
+  las reciben); CI verde.
+
+### [ ] T-211 · Validación Hito 19
+- Terminado: `pnpm trace --hito=19` sin huecos; Henry configura "Citas" en producción, reserva una
+  cita para mañana desde el celular y la ve en la agenda; aprobación (ADR nuevo).
+
+## Hito 20 — Cliente con fotos y paso a paso (REQ-085…090, ADR-063)
+
+> Spec del 2026-11-14, pendiente de aprobación de Henry. Orden: T-220 → T-221, T-222 y T-223
+> (independientes) → T-224 → T-225 y T-226 → T-227 → T-228.
+
+### [ ] T-220 · Datos y almacenamiento de fotos
+- REQ: REQ-090.2 · Migración `0074_brand_images.sql`, bucket `brand`, funciones de §26.1, pgTAP.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [ ] T-221 · Foto del barbero (dueño y barbero)
+- REQ: REQ-085.1, REQ-085.2, REQ-085.3, REQ-085.4 · `uploadBrandImage`, `ImagePicker`, Barberos y
+  "Mi foto". Modelo: Opus 5.5. Complejidad: media.
+
+### [ ] T-222 · Fotos de servicios
+- REQ: REQ-086.1 · Modelo: Sonnet 5.5. Complejidad: baja.
+
+### [ ] T-223 · Logo y portada del negocio
+- REQ: REQ-087.1, REQ-087.2, REQ-087.3 · Modelo: Sonnet 5.5. Complejidad: baja.
+
+### [ ] T-224 · Portada y tomar turno paso a paso
+- REQ: REQ-085.5, REQ-086.2, REQ-088.1…REQ-088.7 · `PublicHero`, `Avatar`, `BarberCard`,
+  `ServiceCard`, `StepHeader`, `JoinFlow`; E2E de tomar turno. Modelo: Opus 5.5. Complejidad: alta.
+
+### [ ] T-225 · Reservar una cita paso a paso
+- REQ: REQ-089.1, REQ-089.2, REQ-089.3 · `BookFlow`; E2E de reservar. Depende de T-210 y T-224.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [ ] T-226 · Mi turno y Mi cita con la foto del barbero
+- REQ: REQ-085.5 · Modelo: Haiku 5.5. Complejidad: baja.
+
+### [ ] T-227 · Rapidez y accesibilidad de las fotos
+- REQ: REQ-090.1, REQ-090.3 · Lighthouse móvil ≥ 80, 360/390/1280 px sin desplazamiento.
+- Modelo: Sonnet 5.5. Complejidad: baja.
+
+### [ ] T-228 · Validación Hito 20
+- Terminado: `pnpm trace --hito=20` sin huecos; Henry sube las fotos de Pedro y Stiven, logo y
+  portada, toma un turno y reserva una cita desde el celular; aprobación (ADR nuevo).
 
 ---
 
