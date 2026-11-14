@@ -6,6 +6,7 @@ import { CashDayPicker } from "@/components/cash/CashDayPicker";
 import { getCashDay } from "@/lib/actions/cash";
 import { getStaffSession } from "@/lib/auth/session";
 import { businessDayBogota, formatDayCO } from "@/lib/domain/time";
+import { cashFeatures } from "@/lib/domain/modules";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Cierre de caja" };
@@ -21,6 +22,7 @@ export default async function PastCashPage({ params }: { params: Promise<{ fecha
   return (
     <main data-tablet className="pb-6">
       <CashDay
+        features={cashFeatures()}
         businessId={session.business.id}
         businessName={session.business.name}
         initial={summary}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { GroupLabel } from "@/components/admin/ModulePage";
 import { GiftCardTotals } from "@/components/cash/GiftCardTotals";
 import { MembershipTotals } from "@/components/cash/MembershipTotals";
+import type { CashFeatures } from "@/lib/domain/modules";
 import { Icon } from "@/components/ui/Icon";
 import type { WeekSummary as Week } from "@/lib/actions/cash";
 import { staffPurchasesLine } from "@/lib/domain/cash-closure";
@@ -55,6 +56,7 @@ export function WeekSummary({
   pcts,
   purchases,
   thisWeek,
+  features = { giftCards: true, memberships: true },
 }: {
   current: Week;
   previous: Week;
@@ -62,6 +64,8 @@ export function WeekSummary({
   purchases: Record<string, number>;
   /** Lunes de la semana actual: no se navega al futuro. */
   thisWeek: string;
+  /** REQ-082.4: sin el recuadro de un módulo apagado, aunque haya datos viejos. */
+  features?: CashFeatures;
 }) {
   const f = weekFigures(w);
   const fp = weekFigures(p);
@@ -252,8 +256,8 @@ export function WeekSummary({
       </p>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <MembershipTotals totals={w} />
-        <GiftCardTotals totals={w} />
+        {features.memberships && <MembershipTotals totals={w} />}
+        {features.giftCards && <GiftCardTotals totals={w} />}
       </div>
     </div>
   );

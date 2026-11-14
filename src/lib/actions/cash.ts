@@ -10,7 +10,7 @@ import {
 } from "@/lib/domain/giftCard";
 import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
 import { toMembershipStatus, type MembershipStatus } from "@/lib/domain/membership";
-import { isModuleEnabled } from "@/lib/domain/modules";
+import { cashFeatures, isModuleEnabled, type CashFeatures } from "@/lib/domain/modules";
 import { normalizePhoneCO } from "@/lib/domain/phone";
 import {
   MY_NUMBERS_COLUMNS,
@@ -68,14 +68,12 @@ export type CheckoutView = {
   features: CheckoutFeatures;
 };
 
-export type CheckoutFeatures = { giftCards: boolean; memberships: boolean };
+export type CheckoutFeatures = CashFeatures;
 
 /** REQ-082.3: lo que llega para un módulo apagado se rechaza con este mensaje. */
 const MODULE_OFF = "Esta opción no está disponible.";
 
-function checkoutFeatures(): CheckoutFeatures {
-  return { giftCards: isModuleEnabled("giftCards"), memberships: isModuleEnabled("memberships") };
-}
+const checkoutFeatures = (): CheckoutFeatures => cashFeatures();
 
 export type SaleLineInput = {
   kind: "service" | "product";

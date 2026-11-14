@@ -2800,7 +2800,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: en modo esencial el cobro no muestra "Tarjeta de regalo" ni nada de membresías, y el
   servidor rechaza esos pagos; con `todos`, igual que antes; CI verde.
 
-### [ ] T-201 · Caja y semana sin recuadros apagados
+### [x] T-201 · Caja y semana sin recuadros apagados
 - REQ: REQ-082.4, REQ-082.5
 - Modelo: Haiku 5.5. Complejidad: baja.
 - Archivos: `src/components/cash/CashDay.tsx`, `src/components/cash/WeekSummary.tsx`, sus páginas,
