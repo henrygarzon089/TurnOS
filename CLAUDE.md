@@ -77,8 +77,8 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 - **Hito 4 (servicios por barbero, REQ-035, ADR-023)** aprobado (ADR-024, 2026-10-28): migraciones
   0030–0032. Filo (`/filo`) es el primer negocio real.
 - **MVP completo**: Hitos 0–3 aprobados por Henry (ADR-017, ADR-020) y en producción. Matriz: 144 CA,
-  0 sin prueba. Prueba de pasillo e instalación hechas (ADR-021). Abierta solo T-010 (E2E en CI,
-  proteger `main`).
+  0 sin prueba. Prueba de pasillo e instalación hechas (ADR-021). T-010 cerrada (2026-11-14):
+  `main` protegida, exige los checks de calidad, E2E móvil y Lighthouse.
 - Producción: https://www.gammaclub.co (también https://turnos-smoky-nine.vercel.app; Vercel `henry-garzons-projects/turnos` +
   Supabase `uucjmxdssnmvznibrafc`). CI en GitHub `henrygarzon089/TurnOS`.
 - Ver `docs/estado-del-proyecto.md` para el detalle y los pendientes externos.
