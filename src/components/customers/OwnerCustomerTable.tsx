@@ -21,7 +21,16 @@ type Meta = {
  * mismo en una línea. La búsqueda va al servidor (REQ-018.3); los
  * filtros, sobre lo ya cargado. La ficha (nombre) muestra el celular completo.
  */
-export function OwnerCustomerTable({ initial, meta }: { initial: OwnerCustomerRow[]; meta: Meta }) {
+export function OwnerCustomerTable({
+  initial,
+  meta,
+  showMembership = true,
+}: {
+  initial: OwnerCustomerRow[];
+  meta: Meta;
+  /** REQ-083.3: sin la columna "Membresía" con el módulo apagado. */
+  showMembership?: boolean;
+}) {
   const [q, setQ] = useState("");
   const [items, setItems] = useState(initial);
   const [which, setWhich] = useState<"all" | "stale">("all");
@@ -116,7 +125,7 @@ export function OwnerCustomerTable({ initial, meta }: { initial: OwnerCustomerRo
                 <th className="px-3 py-2 font-bold">Barbero habitual</th>
                 <th className="px-3 py-2 text-right font-bold">Cortes</th>
                 <th className="px-3 py-2 text-right font-bold">Fidelidad</th>
-                <th className="px-4 py-2 font-bold">Membresía</th>
+                {showMembership && <th className="px-4 py-2 font-bold">Membresía</th>}
               </tr>
             </thead>
             <tbody className="divide-line divide-y">
@@ -137,13 +146,15 @@ export function OwnerCustomerTable({ initial, meta }: { initial: OwnerCustomerRo
                   <td className="px-3 py-2">{barberName(c.preferredBarberId)}</td>
                   <td className="px-3 py-2 text-right tabular-nums">{c.visitsCount}</td>
                   <td className="px-3 py-2 text-right tabular-nums">{c.loyalty}</td>
-                  <td className="px-4 py-2">
-                    {c.membership ? (
-                      <Tag tone={c.membership.tone}>{c.membership.label}</Tag>
-                    ) : (
-                      <span className="text-muted">—</span>
-                    )}
-                  </td>
+                  {showMembership && (
+                    <td className="px-4 py-2">
+                      {c.membership ? (
+                        <Tag tone={c.membership.tone}>{c.membership.label}</Tag>
+                      ) : (
+                        <span className="text-muted">—</span>
+                      )}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -170,7 +181,9 @@ export function OwnerCustomerTable({ initial, meta }: { initial: OwnerCustomerRo
                       {c.visitsCount} {c.visitsCount === 1 ? "corte" : "cortes"}
                       {c.loyalty !== "—" ? ` · ${c.loyalty}` : ""}
                     </span>
-                    {c.membership && <Tag tone={c.membership.tone}>{c.membership.label}</Tag>}
+                    {showMembership && c.membership && (
+                      <Tag tone={c.membership.tone}>{c.membership.label}</Tag>
+                    )}
                   </span>
                 </Link>
               </li>

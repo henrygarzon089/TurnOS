@@ -13,7 +13,14 @@ const LABEL = "text-muted px-4 pt-5 pb-2 text-xs font-semibold tracking-wide upp
  * T-171 detalle del cliente para el barbero, como el tablero Barbero-Otros (ADR-051, REQ-078.16):
  * datos en filas (fidelidad, cumpleaños, membresía), la nota para el próximo y los últimos cortes.
  */
-export function BarberCustomerDetail({ view }: { view: CustomerView }) {
+export function BarberCustomerDetail({
+  view,
+  showMembership = true,
+}: {
+  view: CustomerView;
+  /** REQ-083.3: sin la fila "Membresía" con el módulo apagado. */
+  showMembership?: boolean;
+}) {
   const c = view.customer;
   const l = view.loyalty;
   const stamps = l?.enabled ? Math.min(l.stamps, l.required) : null;
@@ -51,14 +58,16 @@ export function BarberCustomerDetail({ view }: { view: CustomerView }) {
               : "Sin dato"}
           </span>
         </li>
-        <li className={ROW}>
-          <span>Membresía</span>
-          <span className={view.membership ? "font-semibold" : "text-muted"}>
-            {view.membership
-              ? `Quedan ${view.membership.cutsLeft} de ${view.membership.cutsTotal} cortes`
-              : "No tiene"}
-          </span>
-        </li>
+        {showMembership && (
+          <li className={ROW}>
+            <span>Membresía</span>
+            <span className={view.membership ? "font-semibold" : "text-muted"}>
+              {view.membership
+                ? `Quedan ${view.membership.cutsLeft} de ${view.membership.cutsTotal} cortes`
+                : "No tiene"}
+            </span>
+          </li>
+        )}
       </ul>
 
       <h2 className={LABEL}>Nota para el próximo</h2>

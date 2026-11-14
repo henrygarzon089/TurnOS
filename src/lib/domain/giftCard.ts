@@ -203,3 +203,15 @@ export function giftCardReportLines(
     { key: "moneyIn", label: "Entró en plata", value: formatCOP(t.moneyIn ?? 0) },
   ];
 }
+
+/**
+ * REQ-082.1 / REQ-057: la fila "Tarjeta de regalo" de "Pago con" sale solo con el módulo encendido y
+ * cuando hay algo que pagar (o ya hay una tarjeta puesta).
+ */
+export function showGiftCardPayment(
+  features: { giftCards: boolean },
+  total: number,
+  hasGift: boolean,
+): boolean {
+  return features.giftCards && (total > 0 || hasGift);
+}

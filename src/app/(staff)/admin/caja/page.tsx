@@ -6,6 +6,7 @@ import { getCashDay, getClosures } from "@/lib/actions/cash";
 import { getStaffSession } from "@/lib/auth/session";
 import { formatCOP } from "@/lib/domain/money";
 import { formatDayCO } from "@/lib/domain/time";
+import { cashFeatures } from "@/lib/domain/modules";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Caja" };
@@ -18,6 +19,7 @@ export default async function CashPage() {
   return (
     <main data-tablet className="pb-6">
       <CashDay
+        features={cashFeatures()}
         businessId={session.business.id}
         businessName={session.business.name}
         initial={summary!}

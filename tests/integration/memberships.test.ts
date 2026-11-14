@@ -1,4 +1,4 @@
-import { afterAll, describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it, vi } from "vitest";
 import {
   membershipErrorMessage,
   parseMembershipPlanForm,
@@ -14,6 +14,9 @@ import { seedTwoBusinesses, USERS, type TwoBusinesses } from "./fixtures";
 import { createPgGateway } from "./pg-gateway";
 
 afterAll(() => pool.end());
+
+// REQ-082.5 / REQ-083.5: estas pruebas cubren fotos y membresías encendidas (Hito 18, ADR-060).
+vi.stubEnv("TURNOS_MODULES", "todos");
 
 /**
  * Las acciones de src/lib/actions/memberships.ts, paso a paso con la sesión del dueño: las mismas

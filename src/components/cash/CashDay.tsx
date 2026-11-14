@@ -6,6 +6,7 @@ import { ErrorText } from "@/components/auth/LoginForm";
 import { ClosureCard, CloseCashButton } from "@/components/cash/CloseCashSheet";
 import { GiftCardTotals } from "@/components/cash/GiftCardTotals";
 import { MembershipTotals } from "@/components/cash/MembershipTotals";
+import type { CashFeatures } from "@/lib/domain/modules";
 import { NewSaleButton } from "@/components/cash/NewSaleSheet";
 import { Button } from "@/components/ui/Button";
 import { ConnectionBanner } from "@/components/ui/ConnectionBanner";
@@ -60,6 +61,7 @@ export function CashDay({
   initial,
   isToday,
   heading,
+  features = { giftCards: true, memberships: true },
 }: {
   businessId: string;
   businessName: string;
@@ -67,6 +69,8 @@ export function CashDay({
   isToday: boolean;
   /** Título y fecha de la página; las acciones van a su lado en escritorio. */
   heading: React.ReactNode;
+  /** REQ-082.4: sin el recuadro de un módulo apagado, aunque haya datos viejos. */
+  features?: CashFeatures;
 }) {
   const [summary, setSummary] = useState(initial);
   const [voiding, setVoiding] = useState<string | null>(null);
@@ -441,8 +445,8 @@ export function CashDay({
         </section>
 
         <div className="flex flex-col gap-4 md:[grid-area:ext]">
-          <MembershipTotals totals={summary} />
-          <GiftCardTotals totals={summary} />
+          {features.memberships && <MembershipTotals totals={summary} />}
+          {features.giftCards && <GiftCardTotals totals={summary} />}
           {staffPurchasesLine(summary) && (
             <p
               className="border-line bg-card rounded-md border p-3 text-sm"

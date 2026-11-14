@@ -1775,6 +1775,54 @@ y van en un cambio aparte; simplificar Productos (queda como está); un interrup
 el dueño; borrar código, tablas o migraciones de los módulos apagados; el aviso por WhatsApp (sigue
 apagado, Hito 6); cambiar el seed de La 33.
 
+### Hito 18 — Cobro y pantallas sin módulos apagados (ADR-060)
+
+### REQ-082 · Cobro sin tarjetas de regalo ni membresías apagadas — M
+**Como** dueño, **quiero** que el cobro muestre solo lo que uso, **para** cobrar rápido y que nadie
+toque una opción que no existe en mi negocio.
+
+- REQ-082.1 CUANDO el módulo de tarjetas de regalo está apagado, el cobro NO DEBE mostrar "Tarjeta de
+  regalo" en "Pago con" (ni "Agregar", ni el campo del código, ni "Faltan $X…"); el medio de pago
+  sigue igual (Efectivo, Nequi, Daviplata…).
+- REQ-082.2 CUANDO el módulo de membresías está apagado, el cobro NO DEBE mostrar "Usar membresía",
+  la línea de la membresía ni "· Membresía familiar" junto al cliente, y NO DEBE consultar el estado
+  de la membresía del cliente.
+- REQ-082.3 CUANDO un módulo está apagado, el registro de la venta DEBE rechazar un pago con tarjeta
+  de regalo o una línea con membresía con "Esta opción no está disponible.", y buscar una tarjeta de
+  regalo DEBE responder lo mismo. Así un formulario viejo en caché no cobra con algo apagado.
+- REQ-082.4 CUANDO un módulo está apagado, la caja de hoy y la semana NO DEBEN mostrar su recuadro
+  ("Tarjetas de regalo", "Membresía familiar"), aunque haya datos viejos.
+- REQ-082.5 Con el módulo encendido (`TURNOS_MODULES=todos`), todo lo anterior DEBE funcionar igual
+  que antes (REQ-047, REQ-057).
+
+### REQ-083 · Fila, turno y clientes sin membresías ni fotos apagadas — M
+**Como** dueño, **quiero** que la fila y las fichas de clientes no hablen de membresías ni fotos que
+no uso, **para** que el barbero y el cliente no se confundan.
+
+- REQ-083.1 CUANDO el módulo de fotos está apagado, el formulario de turno NO DEBE mostrar "Ver
+  cortes" ni abrir las fotos del barbero, y la página pública NO DEBE pedir el conteo de fotos.
+- REQ-083.2 CUANDO el módulo de membresías está apagado, la fila del barbero y la del dueño NO DEBEN
+  mostrar la marca "Membresía" y NO DEBEN consultar quién es miembro; "Mi turno" NO DEBE mostrar la
+  línea de la membresía.
+- REQ-083.3 CUANDO el módulo de membresías está apagado, la tabla de clientes del dueño NO DEBE tener
+  la columna "Membresía", la búsqueda NO DEBE mostrar la marca "Familia" y la ficha del cliente del
+  barbero NO DEBE tener la fila "Membresía".
+- REQ-083.4 La **bebida de cortesía** (REQ-038) y el **cumpleaños** (REQ-037) DEBEN quedar como
+  están: el cliente sigue escogiendo bebida y diciendo su cumpleaños al pedir turno, el barbero
+  marca la bebida servida, y la ficha del cliente conserva el cumpleaños (decisión de Henry,
+  2026-11-13).
+- REQ-083.5 Con el módulo encendido (`TURNOS_MODULES=todos`), todo lo anterior DEBE funcionar igual
+  que antes (REQ-039, REQ-046, REQ-047).
+
+Preguntas del Hito 18 (resueltas por Henry, 2026-11-13):
+- **PA-H18-1**: ¿la bebida de cortesía se queda? **Sí, se queda** (Gamma Club tiene sus 2 productos
+  marcados "De cortesía").
+- **PA-H18-2**: ¿el cumpleaños se sigue preguntando al pedir turno? **Sí, como está**, para tener el
+  dato cuando se encienda Recordar.
+
+Fuera de alcance del Hito 18: borrar código, tablas, funciones o datos de los módulos apagados
+(REQ-079.7 sigue); simplificar Productos; la dotación por barbero (REQ-070.4 queda igual).
+
 ---
 
 ## 6. Requisitos no funcionales

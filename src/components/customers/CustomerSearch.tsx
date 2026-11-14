@@ -10,9 +10,12 @@ import { agoCO, businessDayBogota, formatDayCO } from "@/lib/domain/time";
 export function CustomerSearch({
   initial,
   role,
+  showMembership = true,
 }: {
   initial: CustomerListItem[];
   role: "owner" | "barber";
+  /** REQ-083.3: sin la marca "Familia" con el módulo de membresías apagado. */
+  showMembership?: boolean;
 }) {
   const [q, setQ] = useState("");
   const [items, setItems] = useState(initial);
@@ -72,7 +75,7 @@ export function CustomerSearch({
                   <span className="min-w-0">
                     <span className="flex flex-wrap items-center gap-2">
                       <span className="truncate font-semibold">{c.name}</span>
-                      {c.hasMembership && (
+                      {showMembership && c.hasMembership && (
                         <span className="border-ink rounded-sm border px-1.5 text-xs font-semibold">
                           Familia
                         </span>

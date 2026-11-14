@@ -10,6 +10,7 @@ import {
 } from "@/lib/domain/giftCard";
 import { toLoyaltyStatus, type LoyaltyStatus } from "@/lib/domain/loyalty";
 import { toMembershipStatus, type MembershipStatus } from "@/lib/domain/membership";
+import { cashFeatures, isModuleEnabled, type CashFeatures } from "@/lib/domain/modules";
 import { normalizePhoneCO } from "@/lib/domain/phone";
 import {
   MY_NUMBERS_COLUMNS,
@@ -63,7 +64,16 @@ export type CheckoutView = {
   /** Servicio que se regala si el premio es "servicio gratis" (REQ-019.4). */
   rewardServiceId: string | null;
   barbers: { id: string; name: string }[];
+  /** REQ-082 (Hito 18): qué módulos del cobro están encendidos. */
+  features: CheckoutFeatures;
 };
+
+export type CheckoutFeatures = CashFeatures;
+
+/** REQ-082.3: lo que llega para un módulo apagado se rechaza con este mensaje. */
+const MODULE_OFF = "Esta opción no está disponible.";
+
+const checkoutFeatures = (): CheckoutFeatures => cashFeatures();
 
 export type SaleLineInput = {
   kind: "service" | "product";
@@ -200,16 +210,19 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
         (await supabase.rpc("customer_loyalty", { p_customer_id: t.customer_id })).data,
       )
     : null;
-  const membership = t?.customer_id
-    ? toMembershipStatus(
-        (
-          await supabase.rpc("membership_status", {
-            p_business_id: biz,
-            p_customer_id: t.customer_id,
-          })
-        ).data,
-      )
-    : null;
+  const features = checkoutFeatures();
+  // REQ-082.2: con membresías apagadas no se consulta la membresía del cliente
+  const membership =
+    features.memberships && t?.customer_id
+      ? toMembershipStatus(
+          (
+            await supabase.rpc("membership_status", {
+              p_business_id: biz,
+              p_customer_id: t.customer_id,
+            })
+          ).data,
+        )
+      : null;
   const services = (servicesRes.data ?? []) as (CatalogItem & {
     counts_for_membership: boolean;
   })[];
@@ -248,9 +261,12 @@ export async function getCheckout(ticketId: string | null): Promise<CheckoutView
     staffDiscountPct: bizRes.data?.staff_discount_pct ?? 0,
     loyalty,
     membership,
-    membershipServiceIds: services.filter((s) => s.counts_for_membership).map((s) => s.id),
+    membershipServiceIds: features.memberships
+      ? services.filter((s) => s.counts_for_membership).map((s) => s.id)
+      : [],
     rewardServiceId: progRes.data?.enabled ? (progRes.data.reward_service_id ?? null) : null,
     barbers,
+    features,
   };
 }
 
@@ -291,6 +307,13 @@ export async function registerSale(input: z.input<typeof saleSchema>): Promise<C
   if (!parsed.success)
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Datos no válidos." };
   const d = parsed.data;
+  // REQ-082.3: un formulario viejo en caché no cobra con un módulo apagado
+  const features = checkoutFeatures();
+  if (
+    (d.giftCard && !features.giftCards) ||
+    (!features.memberships && d.items.some((i) => i.membership))
+  )
+    return { ok: false, error: MODULE_OFF };
   if (d.giftCard && d.giftCard.amount > d.total)
     return { ok: false, error: ERRORS.PAYMENTS_MISMATCH };
   const supabase = await createSupabaseServerClient();
@@ -321,6 +344,7 @@ export async function lookupGiftCard(
 ): Promise<{ ok: true; card: GiftCardLookup; label: string } | { ok: false; error: string }> {
   const session = await getStaffSession();
   if (!session) return { ok: false, error: "Sesión vencida. Vuelve a entrar." };
+  if (!isModuleEnabled("giftCards")) return { ok: false, error: MODULE_OFF }; // REQ-082.3
   const normalized = normalizeGiftCardCode(code);
   if (!/^[A-HJKMNP-Z2-9]{8}$/.test(normalized)) return giftCardLookupResult(null);
   const supabase = await createSupabaseServerClient();
@@ -352,6 +376,9 @@ export async function findCheckoutCustomer(
     .is("anonymized_at", null)
     .maybeSingle();
   if (!data) return { ok: false, error: "No hay un cliente con ese celular." };
+  // REQ-082.2: con membresías apagadas no se consulta
+  if (!isModuleEnabled("memberships"))
+    return { ok: true, customer: { id: data.id, name: data.name, membership: null } };
   const ms = await supabase.rpc("membership_status", {
     p_business_id: session.business.id,
     p_customer_id: data.id,
