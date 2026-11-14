@@ -1,4 +1,4 @@
-import { afterAll, describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it, vi } from "vitest";
 import {
   cancelTicketByToken,
   customerHasBirthday,
@@ -15,6 +15,9 @@ import { pool, withTx, type Q } from "./db";
 import { createPgGateway } from "./pg-gateway";
 
 afterAll(() => pool.end());
+
+// REQ-082.5 / REQ-083.5: estas pruebas cubren fotos y membresías encendidas (Hito 18, ADR-060).
+vi.stubEnv("TURNOS_MODULES", "todos");
 
 /** Deja la barbería del seed abierta 24 h hoy y a Juan disponible, dentro de la transacción. */
 async function openLa33(q: Q) {
