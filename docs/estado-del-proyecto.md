@@ -1,4 +1,4 @@
-# Estado del proyecto — traspaso (2026-11-09)
+# Estado del proyecto — traspaso (2026-11-13)
 
 Este documento resume la conversación en la que se construyó todo hasta aquí, para que cualquier
 persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `specs/`.
@@ -676,9 +676,9 @@ Pendientes (H3): `/admin/caja`,
   `/admin`: "supabaseUrl is required"). Se volvió a crear (Production y Preview, tipo Config) y se
   redesplegó. Al tocar variables en Vercel: revisar `vercel env ls` antes de desplegar; las
   `NEXT_PUBLIC_*` se fijan al construir y exigen redesplegar.
-- Pendiente (Henry): imprimir el QR, revisar la carpeta de Filo en Storage, agregar
-  `https://www.gammaclub.co` en Supabase → Authentication → URL Configuration y, otro día, el
-  inventario (catálogo, dotación por estación y primer conteo).
+- Pendiente (Henry), del 2026-11-12: imprimir el QR, revisar la carpeta de Filo en Storage y agregar
+  `https://www.gammaclub.co` en Supabase → Authentication → URL Configuration. El inventario ya
+  quedó en marcha (2026-11-13, abajo).
 - 2026-11-12, T-192 (ADR-057): "Horario" y "QR" abrían la misma pantalla; ahora son un solo
   destino, "Horario y QR" (`/admin/horario`; `/admin/qr` sigue funcionando y lo marca). El menú del
   dueño queda con 13 destinos en modo esencial. Sin migraciones; falta desplegar (Henry).
@@ -687,12 +687,29 @@ Pendientes (H3): `/admin/caja`,
 - 2026-11-13: cargadas en producción las facturas de Tecniafilado Crissmen (PVA18721 y PVA18930):
   23 insumos de uso interno y sus entradas a bodega ($495.000), con `supabase db query --linked`
   y autorización de Henry. Los 3 ítems de la plantilla básica quedaron convertidos en guantes,
-  cuchillas Dorco y cuellos Venus. Falta el conteo inicial de la bodega y, cuando estén todos los
-  barberos, dotación 1 por estación (Henry lo pidió).
+  cuchillas Dorco y cuellos Venus. Fuera del inventario: el masajeador Wmark y la bolsa.
 - 2026-11-13, T-194 (REQ-081, ADR-058): el barbero puede tener celular de otro país (Pedro, de
   Argentina). "País del celular" en el formulario del barbero y "Mi celular no es de Colombia" al
-  entrar; los clientes siguen solo con celular colombiano. Migración `0073` (la aplica Henry con
-  `supabase db push`), luego desplegar.
+  entrar; los clientes siguen solo con celular colombiano. PR #179; Henry aplicó `0073` y desplegó
+  (`866c4f5`); verificado en producción (regla nueva y botón en `/entrar`). Henry creó a Pedro.
+- 2026-11-13, inventario de Gamma Club en marcha (todo en producción con `supabase db query
+--linked`, con las funciones de la app, a pedido de Henry):
+  - 2 barberos activos: **Pedro** y **Stiven**; ninguno había aceptado su invitación todavía.
+  - Reparto según las fotos de Henry. Pedro: talco, aceite de barba, after shave Pachulí, cera azul
+    Gumgum, cera mate M10 y cera en polvo P1 roja. Stiven: talco, aceite de barba, after shave
+    Antarctica, cera café, cera 5 Estrellas, cera en polvo natural, crema exfoliante y gel Bossber.
+    Compartido en bodega (dotación 0): laca, guantes, cuchillas, cuellos, toalla, shampoo, shaving
+    gel, Cool Care Nishman y Andis, aceite Wahl y mascarilla. Dotación 1 en los 12 repartidos.
+  - Conteos iniciales: bodega (23 ítems, 13 unidades, Henry confirmó las cantidades) y estaciones
+    de Pedro (6) y Stiven (8), estas según las fotos. Sin diferencias.
+  - Servicios que gasta cada insumo, todos en "Midiendo": Combo Gamma (corte + barba + mascarilla)
+    los 23; Corte Moderno 17; Corte Sencillo 16 (sin shampoo); Barba 10; Cejas 2 (guantes y
+    cuchilla). Crema exfoliante y mascarilla solo en el Combo; shampoo en Corte Moderno y Combo.
+  - Límite del diseño que Henry debe tener presente: la dotación es igual para todas las estaciones
+    (REQ-070.4), así que a cada barbero le salen como faltantes los productos que solo tiene el otro
+    y la orden de compra los sugiere.
+  - Sigue (Henry): conteo semanal de las dos estaciones; a las 4 semanas aceptar los rendimientos
+    sugeridos; cobrar cada servicio en la caja para que la medición sirva.
 - Plan para el arnés y los agentes: `docs/plan-hito-17.md`.
 
 ## Desvíos registrados respecto a la spec (todos explícitos)
