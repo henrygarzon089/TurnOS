@@ -2800,8 +2800,8 @@ Comparación del 2026-11-08 contra Cliente-Negocio, Cliente-MiTurno, Cliente-Cit
 y Cliente-Pantalla, con el CSS correcto (build local y preview sin caché). "No se construye" = el
 tablero lo muestra y la app no tiene el dato o la función.
 
-**CSS publicado (T-172).** `scripts/check-deploy.ts` (`pnpm check:deploy <url>`): baja `<url>/la-33`
-(o la ruta que se pase), toma cada `<link rel="stylesheet">`, baja el CSS y verifica que cada
+**CSS publicado (T-172).** `scripts/check-deploy.ts` (`pnpm check:deploy <url>`): baja
+`<url>/gamma-club` (o la ruta que se pase; falla si no responde 200 o es "Negocio no encontrado"), toma cada `<link rel="stylesheet">`, baja el CSS y verifica que cada
 `--color-*` y `--radius-*` del `@theme` de `src/app/globals.css` aparezca con su valor y que exista la
 regla `.bg-brand{`. Sale con código 1 y la lista de lo que falta. Se corre después de cada despliegue
 a producción (paso en `docs/estado-del-proyecto.md` y en la guía de despliegue). La lógica que

@@ -746,7 +746,7 @@ Pendientes (H3): `/admin/caja`,
    (sensible), `NEXT_PUBLIC_APP_URL`. **Pendiente (Henry)**: conectar el repo de GitHub en
    Vercel (Settings → Git; el CLI no pudo: la app de Vercel no tiene acceso al repo) para que cada
    push a `main` despliegue solo. Mientras tanto: `vercel deploy --prod --scope henry-garzons-projects`.
-   Después de cada despliegue a producción: `pnpm check:deploy https://turnos-smoky-nine.vercel.app`
+   Después de cada despliegue a producción: `pnpm check:deploy https://www.gammaclub.co`
    (REQ-078.26); si falla, `vercel --prod --force`.
 4. Correr `pnpm test:e2e` (y `E2E_SCREEN_KEY=<businesses.screen_key>` para la pantalla TV) y
    Lighthouse (`lighthouserc.json`) → pasar las `[~]` a `[x]` → T-030 demo con Henry → cerrar H1.
