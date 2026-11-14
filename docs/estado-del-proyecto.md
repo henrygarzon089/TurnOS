@@ -676,9 +676,9 @@ Pendientes (H3): `/admin/caja`,
   `/admin`: "supabaseUrl is required"). Se volvió a crear (Production y Preview, tipo Config) y se
   redesplegó. Al tocar variables en Vercel: revisar `vercel env ls` antes de desplegar; las
   `NEXT_PUBLIC_*` se fijan al construir y exigen redesplegar.
-- Pendiente (Henry), del 2026-11-12: imprimir el QR, revisar la carpeta de Filo en Storage y agregar
-  `https://www.gammaclub.co` en Supabase → Authentication → URL Configuration. El inventario ya
-  quedó en marcha (2026-11-13, abajo).
+- Hecho por Henry (confirmado el 2026-11-14): QR impreso, carpeta de Filo en Storage revisada y
+  `https://www.gammaclub.co` agregado en Supabase → Authentication → URL Configuration. El
+  inventario quedó en marcha el 2026-11-13 (abajo).
 - 2026-11-12, T-192 (ADR-057): "Horario" y "QR" abrían la misma pantalla; ahora son un solo
   destino, "Horario y QR" (`/admin/horario`; `/admin/qr` sigue funcionando y lo marca). El menú del
   dueño queda con 13 destinos en modo esencial. Sin migraciones; falta desplegar (Henry).
