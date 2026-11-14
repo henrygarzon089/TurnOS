@@ -2830,10 +2830,12 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ## Hito 19 — Citas en modo esencial (REQ-084, ADR-062)
 
-> Spec del 2026-11-14, pendiente de aprobación de Henry. Sin migraciones. Para antes del martes
+> Aprobada por Henry el 2026-11-14. Sin migraciones. Para antes del martes
 > 2026-11-17.
 
-### [ ] T-210 · Encender Citas
+### [x] T-210 · Encender Citas
+- Hecha 2026-11-14: `appointments` en `ESSENTIAL`. Las pruebas de REQ-079 que usaban Citas como
+  ejemplo de módulo apagado ahora usan la lista sin Citas o Membresías.
 - REQ: REQ-084.1, REQ-084.2, REQ-084.3, REQ-084.4
 - Modelo: Sonnet 5.5. Complejidad: baja.
 - Archivos: `src/lib/domain/modules.ts`, pruebas de menú, "Hoy" y rutas apagadas.
@@ -2846,7 +2848,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ## Hito 20 — Cliente con fotos y paso a paso (REQ-085…090, ADR-063)
 
-> Spec del 2026-11-14, pendiente de aprobación de Henry. Orden: T-220 → T-221, T-222 y T-223
+> Aprobada por Henry el 2026-11-14. Orden: T-220 → T-221, T-222 y T-223
 > (independientes) → T-224 → T-225 y T-226 → T-227 → T-228.
 
 ### [ ] T-220 · Datos y almacenamiento de fotos

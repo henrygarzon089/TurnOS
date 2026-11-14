@@ -52,6 +52,7 @@ export const ESSENTIAL: ReadonlySet<ModuleId> = new Set<ModuleId>([
   "qr",
   "business",
   "privacy",
+  "appointments", // REQ-084.1 (ADR-062): Citas encendido en Gamma Club
   "myNumbers",
   "station",
 ]);

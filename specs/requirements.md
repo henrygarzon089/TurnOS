@@ -1840,7 +1840,7 @@ próximos días, **para** llenar las sillas con citas además de la fila.
   cosa en PA-H19-1.
 - REQ-084.4 Con `TURNOS_MODULES=todos` todo DEBE funcionar igual que antes.
 
-Preguntas del Hito 19 (abiertas):
+Preguntas del Hito 19 (Henry aprobó la spec el 2026-11-14; esta sigue abierta):
 - **PA-H19-1**: ¿el barbero debe ver **sus propias** citas de los próximos días? Hoy REQ-054.6 se lo
   prohíbe. Propuesta: sí, solo las suyas, en una lista "Mis citas" (sería REQ-084.5 y cambia
   REQ-054.6).
@@ -1921,7 +1921,8 @@ terminar en pocos toques desde el celular.
 - REQ-090.3 Toda la UI nueva DEBE cumplir REQ-078.5 (toques ≥ 48 px), REQ-078.15 (sin
   desplazamiento horizontal en 360, 390 y 1280 px) y NFR-008 (contraste), en español.
 
-Preguntas del Hito 20 (abiertas):
+Preguntas del Hito 20 (Henry aprobó la spec con las propuestas el 2026-11-14; se pueden cambiar sin
+reconstruir):
 - **PA-H20-1**: ¿la portada usa los colores de Gamma Club (por ejemplo, negro y dorado) o los de
   TurnOS? Propuesta: los de TurnOS ahora; color de marca por negocio, después.
 - **PA-H20-2**: ¿el televisor también muestra las fotos de los barberos? Propuesta: no en este hito.

@@ -1140,7 +1140,7 @@
   tarjetas de regalo o membresías sigue siendo cambiar la lista de `modules.ts` (ADR-055, ADR-060).
 
 ## ADR-062 · Hito 19: encender Citas en Gamma Club
-- Estado: **propuesta** (spec, 2026-11-14)
+- Estado: **aceptada** (Henry, 2026-11-14: "Aprobada, constrúyela")
 - Contexto: Henry arranca con Gamma Club el martes 2026-11-17 y no encuentra la agenda de otros días:
   Citas quedó apagado en el modo esencial (ADR-055). Quiere que el cliente reserve para hoy u otro
   día y ver la agenda.
@@ -1152,7 +1152,7 @@
   migraciones. Los avisos por WhatsApp de citas siguen esperando T-069.
 
 ## ADR-063 · Hito 20: cliente con fotos y paso a paso
-- Estado: **propuesta** (spec, 2026-11-14)
+- Estado: **aceptada** (Henry, 2026-11-14: "Aprobada, constrúyela")
 - Contexto: Henry quiere una interfaz de cliente más moderna: barberos con su foto, servicios con
   foto, la marca de Gamma Club y tomar turno o reservar paso a paso (respuestas del 2026-11-14).
   Hoy la portada es un formulario de una sola pantalla (REQ-078.21, ADR-052) y los barberos salen

@@ -29,6 +29,9 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 
 ## Estado actual (2026-11-14)
 
+- **Hito 19 (Citas encendido, REQ-084, ADR-062)**: T-210 hecha (2026-11-14), sin migraciones;
+  falta T-211 (Henry configura "Citas" y reserva una cita). **Hito 20 (cliente con fotos y paso a
+  paso, REQ-085…090, ADR-063)** aprobado como spec, en construcción.
 - **Hito 18 (cobro y pantallas sin módulos apagados, REQ-082…083, ADR-060)** aprobado (ADR-061,
   2026-11-14): el cobro, la caja, la fila y clientes no muestran tarjetas de regalo, membresías ni
   fotos apagadas; en producción (`c8b7ebb`), sin migraciones.
@@ -36,7 +39,7 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
   2026-11-12): solo **Gamma Club** (`/gamma-club`), cargado por Henry y en
   **https://www.gammaclub.co**. Filo y La 33 borrados de producción (`docs/guia-borrar-negocio.md`;
   el seed La 33 sigue solo en local y CI). La lista de módulos encendidos vive en
-  `src/lib/domain/modules.ts` (13 destinos del dueño con "Horario y QR" juntos, ADR-057; 4 del barbero; sin migraciones);
+  `src/lib/domain/modules.ts` (14 destinos del dueño con Citas, ADR-062, y "Horario y QR" juntos, ADR-057; 4 del barbero; sin migraciones);
   `TURNOS_MODULES=todos` enciende todo y es lo que usan el CI (E2E y Lighthouse) y, si algo falla,
   Vercel. Inventario en marcha (2026-11-13): 23 insumos, reparto por barbero, conteos iniciales y
   servicios en "Midiendo".
