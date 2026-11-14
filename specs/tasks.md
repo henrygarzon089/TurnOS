@@ -2816,10 +2816,12 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: sin "Ver cortes", marca "Membresía" ni columna o fila "Membresía" en modo esencial;
   cortesía y cumpleaños siguen; CI verde.
 
-### [ ] T-203 · Validación Hito 18
+### [x] T-203 · Validación Hito 18
 - REQ: todos los del hito.
 - Terminado: `pnpm trace --hito=18` sin huecos; Henry cobra una venta en producción y no ve
   "Tarjeta de regalo"; aprobación (ADR nuevo).
+- Nota (2026-11-14): Henry desplegó c8b7ebb (`check:deploy` ✓), cobró en producción sin "Tarjeta de
+  regalo" ni membresías y aprobó el hito (ADR-061).
 
 ---
 

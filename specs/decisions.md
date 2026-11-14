@@ -1129,3 +1129,12 @@
 - Consecuencias: REQ-082 y REQ-083. Sin migraciones. Las pruebas de tarjetas y membresías siguen
   corriendo en CI con `TURNOS_MODULES=todos`; las nuevas prueban el modo esencial. T-200…T-203.
 
+## ADR-061 · Aprobación del Hito 18 (cobro y pantallas sin módulos apagados)
+- Estado: **aceptada** (Henry, 2026-11-14)
+- Contexto: REQ-082 y REQ-083 construidos (T-200…T-202, PR #183) y fusionados en `main` c8b7ebb,
+  sin migraciones. `pnpm trace --hito=18` sin huecos y CI en verde. Henry desplegó c8b7ebb en
+  producción (`check:deploy` de https://www.gammaclub.co/gamma-club ✓) y cobró una venta desde el
+  celular: "Pago con" sin "Tarjeta de regalo" ni membresías, y la caja sin esos recuadros.
+- Decisión: Henry aprueba el Hito 18 ("apruebo", 2026-11-14). T-203 cerrada.
+- Consecuencias: Gamma Club cobra en modo esencial sin opciones de módulos apagados. Encender
+  tarjetas de regalo o membresías sigue siendo cambiar la lista de `modules.ts` (ADR-055, ADR-060).
