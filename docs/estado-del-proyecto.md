@@ -692,6 +692,14 @@ Pendientes (H3): `/admin/caja`,
   Argentina). "País del celular" en el formulario del barbero y "Mi celular no es de Colombia" al
   entrar; los clientes siguen solo con celular colombiano. PR #179; Henry aplicó `0073` y desplegó
   (`866c4f5`); verificado en producción (regla nueva y botón en `/entrar`). Henry creó a Pedro.
+- 2026-11-13, T-196 (REQ-078.34…36, PR #177) y T-195 (ADR-059, PR #178): fallas de la prueba de
+  Henry en Gamma Club. Hojas con "Cerrar ventana" y cierre al tocar el fondo; producto nuevo que
+  aparece sin recargar (`router.refresh()` en un efecto, `useRefreshOnOk`); fidelidad, negocio y
+  demás formularios que conservan lo guardado (`keepValuesOnSubmit`, misma causa de T-193);
+  casillas en azul marino, % de Negocio alineados y Fidelidad a todo el ancho. Botones y campos de
+  40 px en escritorio con mouse (48 px en el celular). Desplegado en `0071ab7`; Henry lo revisó en
+  producción y funciona. `check:deploy` ahora revisa `/gamma-club` y falla si la página no existe
+  (PR #181).
 - 2026-11-13, inventario de Gamma Club en marcha (todo en producción con `supabase db query
 --linked`, con las funciones de la app, a pedido de Henry):
   - 2 barberos activos: **Pedro** y **Stiven**; ninguno había aceptado su invitación todavía.
