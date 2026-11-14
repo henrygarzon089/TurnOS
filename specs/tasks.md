@@ -2866,11 +2866,16 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   reducción van en el celular con canvas (`resizeToBox`, `coverCrop`). Pruebas:
   `tests/unit/brand-images.test.tsx`.
 
-### [ ] T-222 · Fotos de servicios
+### [x] T-222 · Fotos de servicios
 - REQ: REQ-086.1 · Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-14: `ImagePicker kind="service"` en la hoja de editar de Servicios (un servicio
+  nuevo se guarda primero y luego se le pone foto). Pruebas en `tests/unit/brand-images.test.tsx`.
 
-### [ ] T-223 · Logo y portada del negocio
+### [x] T-223 · Logo y portada del negocio
 - REQ: REQ-087.1, REQ-087.2, REQ-087.3 · Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-14: tarjeta "Logo y portada" en Mi negocio. REQ-087.2 (la portada los trae) quedó
+  en 0074 y su pgTAP; mostrarlos en la página del cliente y REQ-087.3 (colores) van con
+  `PublicHero` en T-224.
 
 ### [ ] T-224 · Portada y tomar turno paso a paso
 - REQ: REQ-085.5, REQ-086.2, REQ-088.1…REQ-088.7 · `PublicHero`, `Avatar`, `BarberCard`,

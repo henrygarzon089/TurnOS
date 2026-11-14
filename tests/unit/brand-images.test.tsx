@@ -19,9 +19,9 @@ vi.mock("@/lib/supabase/server", () => ({
       select: () => chain,
       update: (v: unknown) => {
         m.updates.push(v);
-        return {
-          eq: () => ({ eq: async () => ({ error: m.updateError }) }),
-        };
+        const done = () => Promise.resolve({ error: m.updateError });
+        const step = { eq: () => step, then: (f: (r: unknown) => unknown) => done().then(f) };
+        return step;
       },
       eq: () => chain,
       maybeSingle: async () => ({ data: m.current }),
@@ -175,5 +175,35 @@ describe("REQ-090.2 permisos y archivos de las fotos", () => {
     expect(await removeBrandImage("barber", JUAN)).toEqual({ ok: true, path: null });
     expect(m.updates).toEqual([{ photo_path: null }]);
     expect(m.remove).toHaveBeenCalledWith([`${BIZ}/barbers/${JUAN}/vieja.webp`]);
+  });
+});
+
+describe("REQ-086 y REQ-087 fotos de servicios, logo y portada", () => {
+  it("REQ-086.1 el dueño sube la foto de un servicio de 600 × 400", async () => {
+    m.session.mockResolvedValue(owner);
+    expect(BRAND_SIZES.service).toEqual({ width: 600, height: 400 });
+    const r = await uploadBrandImage(form("service", PEDRO));
+    expect(r.ok).toBe(true);
+    expect(m.upload.mock.calls[0][0]).toMatch(new RegExp(`^${BIZ}/services/`));
+  });
+
+  it("REQ-086.1 el barbero no sube fotos de servicios", async () => {
+    m.session.mockResolvedValue(juan);
+    expect((await uploadBrandImage(form("service", PEDRO))).ok).toBe(false);
+    expect(m.upload).not.toHaveBeenCalled();
+  });
+
+  it("REQ-087.1 el dueño sube el logo (256 × 256) y la portada (1200 × 600)", async () => {
+    m.session.mockResolvedValue(owner);
+    expect(BRAND_SIZES.logo).toEqual({ width: 256, height: 256 });
+    expect(BRAND_SIZES.cover).toEqual({ width: 1200, height: 600 });
+    const logo = await uploadBrandImage(form("logo", null));
+    const cover = await uploadBrandImage(form("cover", null));
+    expect(logo.ok && cover.ok).toBe(true);
+    expect(m.upload.mock.calls[0][0]).toMatch(new RegExp(`^${BIZ}/brand/`));
+    expect(m.updates).toEqual([
+      { logo_path: (logo as { path: string }).path },
+      { cover_path: (cover as { path: string }).path },
+    ]);
   });
 });
