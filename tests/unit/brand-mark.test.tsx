@@ -123,3 +123,30 @@ describe("REQ-091.6 la app se llama Gamma Club", () => {
     );
   });
 });
+
+describe("REQ-087.2 el logo va encima de la foto del local", () => {
+  const cover =
+    "0f0e0d0c-0b0a-4908-8706-050403020100/brand/2f0e0d0c-0b0a-4908-8706-050403020100.webp";
+  const logo =
+    "0f0e0d0c-0b0a-4908-8706-050403020100/brand/1f0e0d0c-0b0a-4908-8706-050403020100.webp";
+
+  // La foto es `relative`: un logo sin posición queda debajo y se ve cortado arriba (2026-11-15)
+  it("REQ-087.2 con foto, el logo subido sube sobre ella y queda por encima, no tapado", () => {
+    const html = renderToStaticMarkup(
+      <PublicHero name="Gamma Club" logoPath={logo} coverPath={cover} />,
+    );
+    const img = html.match(/<img[^>]*alt="Logo de Gamma Club"[^>]*>/)![0];
+    expect(img).toContain("-mt-10");
+    expect(img).toMatch(/\brelative\b/);
+    expect(img).toMatch(/\bz-10\b/);
+  });
+
+  it("REQ-087.2 REQ-091.9 con foto y sin logo, el símbolo también queda por encima", () => {
+    const html = renderToStaticMarkup(
+      <PublicHero name="Gamma Club" logoPath={null} coverPath={cover} />,
+    );
+    const box = html.match(/<span[^>]*class="[^"]*-mt-10[^"]*"/)![0];
+    expect(box).toMatch(/\brelative\b/);
+    expect(box).toMatch(/\bz-10\b/);
+  });
+});

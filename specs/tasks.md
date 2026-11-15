@@ -2987,6 +2987,9 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   otras pantallas del cliente, "Mi turno" y el televisor cambian las iniciales por el símbolo
   (REQ-091.9/091.10), para que no queden dos marcas distintas. En la portada el nombre va en
   mayúsculas espaciadas.
+- Arreglo del 2026-11-15 (Henry lo vio en producción): con foto del local, el logo salía cortado
+  arriba porque la foto es `relative` y el logo no, y la foto se pintaba encima. El logo (y el
+  símbolo sin logo) llevan `relative z-10`; prueba REQ-087.2 en `brand-mark.test.tsx`.
 - Modelo: Opus 5.5. Complejidad: baja.
 
 ### [ ] T-244 · Rendimiento y capturas

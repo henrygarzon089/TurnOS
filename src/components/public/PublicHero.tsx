@@ -48,12 +48,12 @@ export function PublicHero({
             width={compact ? 48 : 64}
             height={compact ? 48 : 64}
             unoptimized
-            className={`${compact ? "size-12" : `size-16 ${showCover ? "ring-card -mt-10 ring-4" : ""}`} bg-card shrink-0 rounded-md object-cover`}
+            className={`${compact ? "size-12" : `size-16 ${showCover ? "ring-card relative z-10 -mt-10 ring-4" : ""}`} bg-card shrink-0 rounded-md object-cover`}
           />
         ) : (
           <span
             aria-hidden="true"
-            className={`${compact ? "size-12" : `size-16 ${showCover ? "ring-card -mt-10 ring-4" : ""}`} bg-brand flex shrink-0 items-center justify-center rounded-md`}
+            className={`${compact ? "size-12" : `size-16 ${showCover ? "ring-card relative z-10 -mt-10 ring-4" : ""}`} bg-brand flex shrink-0 items-center justify-center rounded-md`}
           >
             <GammaMark variant="negativo" size={compact ? 40 : 48} decorative />
           </span>
