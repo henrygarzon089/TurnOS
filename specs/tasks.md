@@ -3106,12 +3106,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   JoinSteps solo define la tarjeta). Pruebas: `tests/unit/service-card.test.tsx`,
   `tests/e2e/service-description.spec.ts` (con un servicio de prueba por proyecto).
 
-### [ ] T-263 · Descripción del negocio en la portada
+### [x] T-263 · Descripción del negocio en la portada
 - REQ: REQ-097.1, REQ-097.2, REQ-097.3, REQ-097.4, REQ-097.5 · `businessSettingsSchema`/
   `updateBusiness`, `BusinessForm`, `admin/negocio/page.tsx`, `PublicBusiness`, `PublicHero`,
   portada (design §29.2–29.3). Unitarias de `PublicHero`, E2E de "Negocio" → portada y revisión
   con `revisor-textos`.
 - Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-15: `DescriptionField` (de T-261) en `BusinessForm`, arriba de la dirección;
+  `updateBusiness` valida la descripción aparte para dar el mensaje de REQ-097.2. Pruebas:
+  `tests/unit/business-description.test.tsx`, `tests/e2e/business-description.spec.ts`.
 
 ### [ ] T-264 · Validación Hito 23
 - Terminado: `pnpm trace --hito=23` sin huecos; `docs/estado-del-proyecto.md` al día; guía

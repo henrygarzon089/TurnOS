@@ -38,6 +38,8 @@ export type PublicBusiness = {
   nextOpening: string | null;
   closesAt: string | null;
   privacyVersion: number | null;
+  /** REQ-097.3: descripción del negocio para la portada, o null sin descripción. */
+  description?: string | null;
   /** REQ-043.3: flag del negocio; la acción lo apaga si faltan credenciales del servidor. */
   whatsappAutoEnabled: boolean;
   /** barberIds: quienes hacen el servicio (REQ-035.6); falta en datos viejos = todos. */

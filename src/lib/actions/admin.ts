@@ -6,7 +6,11 @@ import { getStaffSession } from "@/lib/auth/session";
 import { parseLoyaltyForm } from "@/lib/domain/loyalty";
 import { isModuleEnabled } from "@/lib/domain/modules";
 import { parseCOP } from "@/lib/domain/money";
-import { SERVICE_DESCRIPTION_MAX, normalizeDescription } from "@/lib/domain/description";
+import {
+  BUSINESS_DESCRIPTION_MAX,
+  SERVICE_DESCRIPTION_MAX,
+  normalizeDescription,
+} from "@/lib/domain/description";
 import { normalizeBarberPhone, normalizePhoneCO, phoneCountryOf } from "@/lib/domain/phone";
 import { parseProductForm } from "@/lib/domain/product-form";
 import { parseGoogleReviewUrl } from "@/lib/domain/review-link";
@@ -483,7 +487,14 @@ const businessSettingsSchema = z.object({
 export async function updateBusiness(_prev: FormState, formData: FormData): Promise<FormState> {
   const session = await getStaffSession();
   if (session?.role !== "owner") return { error: "Solo el dueño puede editar el negocio." };
-  const parsed = businessSettingsSchema.safeParse(Object.fromEntries(formData));
+  // REQ-097.2: la descripción va aparte para dar su propio mensaje; si no viene, no se toca.
+  const { description: rawDescription, ...fields } = Object.fromEntries(formData);
+  const description =
+    rawDescription === undefined
+      ? null
+      : normalizeDescription(String(rawDescription), BUSINESS_DESCRIPTION_MAX);
+  if (description && !description.ok) return { error: description.error };
+  const parsed = businessSettingsSchema.safeParse(fields);
   if (!parsed.success) return { error: "Revisa los datos del negocio." };
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase
@@ -492,6 +503,7 @@ export async function updateBusiness(_prev: FormState, formData: FormData): Prom
       ...parsed.data,
       address: parsed.data.address || null,
       pwa_name: parsed.data.pwa_name || null,
+      ...(description?.ok ? { description: description.value } : {}),
     })
     .eq("id", session.business.id);
   return error ? { error: "No se pudo guardar." } : { ok: true };
