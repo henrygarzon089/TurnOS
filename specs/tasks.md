@@ -3075,18 +3075,18 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   pidiendo confirmación y la puerta frenando un error de tipos; aprobación (ADR nuevo).
 
 
-## Hito 23 — Descripción de los servicios (REQ-096, ADR-067)
+## Hito 23 — Descripción de los servicios y del negocio (REQ-096, REQ-097, ADR-070)
 
-> **PROPUESTA** (2026-11-15), espera la aprobación de Henry. Orden: T-260 → T-261 → T-262 →
-> T-263. La migración 0076 la aplica Henry en producción antes del deploy.
+> **PROPUESTA** (2026-11-15), espera la aprobación de Henry. Orden: T-260 → T-261, T-262 y
+> T-263 (independientes) → T-264. La migración 0076 la aplica Henry en producción antes del deploy.
 
-### [ ] T-260 · Columna `description` y función pública
-- REQ: REQ-096.3 (base de datos), REQ-096.4 (datos) · Migración `0076_service_description.sql`
-  (design §29.1), pgTAP `0076_service_description.sql`. Revisión con `revisor-sql`.
+### [ ] T-260 · Columnas `description` y función pública
+- REQ: REQ-096.3 y REQ-097.2 (base de datos), REQ-096.4 y REQ-097.3 (datos) · Migración
+  `0076_descriptions.sql` (design §29.1), pgTAP `0076_descriptions.sql`. Revisión con `revisor-sql`.
 - Modelo: Opus 5.5. Complejidad: baja.
 
 ### [ ] T-261 · El dueño escribe la descripción
-- REQ: REQ-096.1, REQ-096.2, REQ-096.3, REQ-096.7 · `normalizeServiceDescription`,
+- REQ: REQ-096.1, REQ-096.2, REQ-096.3, REQ-096.7 · `normalizeDescription`,
   `serviceSchema`/`upsertService`, `ServiceRow`, `admin/servicios/page.tsx`, `ServiceForm`
   (design §29.2–29.3). Unitarias y revisión con `revisor-textos`.
 - Modelo: Sonnet 5.5. Complejidad: baja.
@@ -3097,11 +3097,18 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   tomar turno y reservar con descripción.
 - Modelo: Sonnet 5.5. Complejidad: baja.
 
-### [ ] T-263 · Validación Hito 23
+### [ ] T-263 · Descripción del negocio en la portada
+- REQ: REQ-097.1, REQ-097.2, REQ-097.3, REQ-097.4, REQ-097.5 · `businessSettingsSchema`/
+  `updateBusiness`, `BusinessForm`, `admin/negocio/page.tsx`, `PublicBusiness`, `PublicHero`,
+  portada (design §29.2–29.3). Unitarias de `PublicHero`, E2E de "Negocio" → portada y revisión
+  con `revisor-textos`.
+- Modelo: Sonnet 5.5. Complejidad: baja.
+
+### [ ] T-264 · Validación Hito 23
 - Terminado: `pnpm trace --hito=23` sin huecos; `docs/estado-del-proyecto.md` al día; guía
-  `docs/guia-prueba-hito-23.md`; Henry aplica 0076 en producción, escribe la descripción de un
-  servicio de Gamma Club desde el celular, la ve al tomar turno y al reservar, y la borra;
-  aprobación (ADR nuevo).
+  `docs/guia-prueba-hito-23.md`; Henry aplica 0076 en producción, escribe desde el celular la
+  descripción de un servicio y la del negocio de Gamma Club, ve la del servicio al tomar turno y al
+  reservar y la del negocio en la portada, y las borra; aprobación (ADR nuevo).
 
 ---
 

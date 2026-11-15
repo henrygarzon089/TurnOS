@@ -1237,12 +1237,13 @@
   de cada turno con código (~30–90 s). `.claude/settings.local.json` sigue siendo de cada máquina.
   Los hooks corren con permisos del usuario: son código del repo y se revisan como tal.
 
-## ADR-067 · Hito 23: descripción de los servicios
+## ADR-070 · Hito 23: descripción de los servicios y del negocio
 - Estado: **propuesta** (2026-11-15), espera la aprobación de Henry.
 - Contexto: ADR-064 copió de Fresha solo el aspecto de la tarjeta de servicio y dejó fuera, a
   propósito, las categorías, la descripción y escoger varios servicios: las dos primeras
   necesitaban columnas nuevas y que el dueño las llenara. Henry pide ahora la descripción: "se
   tiene que agregar una descripción a cada servicio que se debe mostrar cuando se va a elegir".
+  Después sumó una descripción del negocio en la portada, donde se toma el turno.
 - Decisión: se reabre **solo la descripción** (REQ-096). (1) Columna `services.description text
   null` con un `check` de 1 a 140 caracteres (migración 0076); null es "sin descripción", nunca
   texto vacío. (2) Texto plano de una línea lógica: la acción limpia espacios y saltos de línea
@@ -1250,12 +1251,16 @@
   turno y de reservar; no se toca `public_appointment_info`. (4) Se muestra completa en
   `ServiceCard`, debajo de la duración; sin descripción, la tarjeta queda igual que hoy. (5) RLS
   sin cambios: el dueño ya escribe `services`, el público lee por la función `security definer`.
+  (6) Igual para el negocio (REQ-097): `businesses.description text null`, 1 a 200 caracteres,
+  en la misma migración; el dueño la edita en "Negocio", `get_public_business` la devuelve y
+  `PublicHero` la pinta debajo del nombre solo en la portada, no en la cabecera compacta.
   Las categorías y escoger varios servicios siguen fuera de ADR-064.
 - Alternativas: (a) descripción larga con "Ver más": otro toque y otro estado en una pantalla que
   se diseñó para pasar de un toque (REQ-088.3). (b) Recortarla a 2 líneas con `line-clamp`: el
   cliente no lee el final y el dueño no sabe dónde se corta. (c) Guardarla en un JSON de ajustes
   del negocio: sin `check` en la base de datos y más difícil de leer en la función pública.
-- Consecuencias: una migración pequeña (columna nueva y redefinición de `get_public_business`
+- Consecuencias: una migración pequeña (dos columnas nuevas y redefinición de `get_public_business`
   copiada de 0074 con un campo más); Henry la aplica en producción antes del deploy. Las tarjetas
   con descripción son más altas (hasta ≈ 3 líneas en 360 px). Mientras el dueño no escriba
-  descripciones, la app se ve igual que hoy.
+  descripciones, la app se ve igual que hoy. La portada con descripción empuja un poco hacia abajo
+  "Tomar turno"; Lighthouse del CI sigue vigilando la portada (REQ-090.1).
