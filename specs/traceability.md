@@ -490,8 +490,8 @@
 | REQ-085.3 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | brand-images.test.tsx | cubierto |
 | REQ-085.4 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | brand-images.test.tsx, my-appointment.test.tsx, my-ticket.test.tsx, 0075_appointment_barber_photo.sql | cubierto |
 | REQ-085.5 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | visual-cliente-cita.spec.ts, my-appointment.test.tsx, my-ticket.test.tsx, public-home.test.tsx, 0074_brand_images.sql, 0075_appointment_barber_photo.sql | cubierto |
-| REQ-086.1 |  | T-222 (hecha), T-224 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
-| REQ-086.2 |  | T-222 (hecha), T-224 (hecha) | visual-cliente-cita.spec.ts, 0074_brand_images.sql | cubierto |
+| REQ-086.1 |  | T-222 (hecha), T-224 (hecha), T-230 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
+| REQ-086.2 |  | T-222 (hecha), T-224 (hecha), T-230 (hecha) | visual-cliente-cita.spec.ts, public-home.test.tsx, service-card.test.tsx, 0074_brand_images.sql | cubierto |
 | REQ-087.1 |  | T-223 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
 | REQ-087.2 |  | T-223 (hecha) | public-home.test.tsx, 0074_brand_images.sql | cubierto |
 | REQ-087.3 |  | T-223 (hecha) | photos-speed.test.tsx | cubierto |
