@@ -2947,11 +2947,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 > Aprobada por Henry el 2026-11-15 (ADR-065). Orden: T-240 → T-241 → T-242 →
 > T-243 → T-244 → T-245. Sin migraciones.
 
-### [ ] T-240 · Íconos y PNG de la marca
+### [x] T-240 · Íconos y PNG de la marca
 - REQ: REQ-091.8 · `scripts/brand-icons.ts` genera los íconos de la app, el favicon y
   `logo-negocio-256.png` desde `docs/marca/logos/` (design §27.4).
 - Terminado: PNG en `public/icons/`, `favicon.ico` nuevo; prueba de que el enmascarable deja el
   símbolo en el 80 % central.
+- Hecha 2026-11-15. `sharp` pasa a dependencia de desarrollo (ya venía con Next). El favicon
+  trae 16 y 32 px con el ícono simplificado y 48 px con el completo; el ícono de Apple va a sangre
+  (iPhone no acepta transparencia).
 - Modelo: Opus 5.5. Complejidad: baja.
 
 ### [ ] T-241 · Colores del manual
