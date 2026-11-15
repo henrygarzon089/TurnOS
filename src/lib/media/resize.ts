@@ -30,6 +30,41 @@ export async function encodeUnderLimit(
   return null;
 }
 
+/**
+ * REQ-085.3 / REQ-086.1 / REQ-087.1: recorte centrado que llena `width × height` sin deformar
+ * (como `object-fit: cover`). Devuelve el pedazo de la foto original que se dibuja.
+ */
+export function coverCrop(
+  srcWidth: number,
+  srcHeight: number,
+  width: number,
+  height: number,
+): { sx: number; sy: number; sw: number; sh: number } {
+  const scale = Math.max(width / srcWidth, height / srcHeight);
+  const sw = Math.round(width / scale);
+  const sh = Math.round(height / scale);
+  return {
+    sx: Math.round((srcWidth - sw) / 2),
+    sy: Math.round((srcHeight - sh) / 2),
+    sw,
+    sh,
+  };
+}
+
+/** Solo en el navegador: recorta y reduce a `width × height` exactos (fotos de marca, §26.2). */
+export async function resizeToBox(file: File, width: number, height: number): Promise<Blob | null> {
+  const bitmap = await createImageBitmap(file);
+  const { sx, sy, sw, sh } = coverCrop(bitmap.width, bitmap.height, width, height);
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  canvas.getContext("2d")?.drawImage(bitmap, sx, sy, sw, sh, 0, 0, width, height);
+  bitmap.close();
+  return encodeUnderLimit(
+    (type, quality) => new Promise((resolve) => canvas.toBlob(resolve, type, quality)),
+  );
+}
+
 /** Solo en el navegador. Lanza si el archivo no se puede leer como imagen. */
 export async function resizePhoto(file: File): Promise<Blob | null> {
   const bitmap = await createImageBitmap(file);

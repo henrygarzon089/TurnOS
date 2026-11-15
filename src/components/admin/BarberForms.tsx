@@ -6,6 +6,7 @@ import { BARBER_COLS } from "@/components/admin/barber-cols";
 import { CheckList } from "@/components/admin/CheckList";
 import { ErrorText, Field } from "@/components/auth/LoginForm";
 import { BarberPhotos } from "@/components/photos/BarberPhotos";
+import { ImagePicker } from "@/components/media/ImagePicker";
 import {
   createBarber,
   inviteBarber,
@@ -34,6 +35,8 @@ export type BarberRow = {
   service_ids: string[];
   /** REQ-039.1: de la más nueva a la más vieja */
   photos: BarberPhoto[];
+  /** REQ-085.1: foto de perfil en `media` */
+  photo_path: string | null;
 };
 
 export type ServiceOption = { id: string; name: string };
@@ -331,6 +334,13 @@ export function BarberCard({
           className="flex flex-col gap-3"
         >
           <input type="hidden" name="id" value={barber.id} />
+          <ImagePicker
+            kind="barber"
+            id={barber.id}
+            label="Foto del barbero"
+            name={`Foto de ${name}`}
+            initialPath={barber.photo_path}
+          />
           <Field label="Nombre" htmlFor={`n_${barber.id}`}>
             <input
               id={`n_${barber.id}`}

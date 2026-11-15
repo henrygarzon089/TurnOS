@@ -5,6 +5,9 @@ import {
   loginAsBarber,
   loginAsOwner,
   openBarberMore,
+  barberCard,
+  openBarberStep,
+  openJoinForm,
   resetQueue,
   SEED,
   waitForContent,
@@ -103,10 +106,11 @@ test.describe("T-062 fotos de cortes", () => {
 
     const ctx = await browser.newContext();
     const customer = await ctx.newPage();
-    await customer.goto(`/${SEED.slug}`);
+    // T-224: se escribe en el paso 3, se vuelve al paso 2 a ver los cortes y se escoge a Juan
+    await openJoinForm(customer);
     await customer.getByLabel("Tu nombre").fill("Valentina Ríos");
     await customer.getByLabel("Tu celular").fill("300 811 2233");
-    await customer.getByRole("radio", { name: "Juan" }).click();
+    await customer.getByRole("button", { name: "Atrás" }).click();
 
     await customer.getByRole("button", { name: "Ver cortes de Juan" }).click();
     const sheet = customer.getByRole("dialog", { name: "Cortes de Juan" });
@@ -119,23 +123,19 @@ test.describe("T-062 fotos de cortes", () => {
 
     // REQ-039.5: lo escrito sigue ahí
     await expect(sheet).toHaveCount(0);
+    await barberCard(customer, "Juan").click();
     await expect(customer.getByLabel("Tu nombre")).toHaveValue("Valentina Ríos");
     await expect(customer.getByLabel("Tu celular")).toHaveValue("300 811 2233");
-    await expect(customer.getByRole("radio", { name: "Juan" })).toHaveAttribute(
-      "aria-checked",
-      "true",
-    );
+    await expect(customer.getByTestId("join-summary")).toContainText("con Juan");
     await ctx.close();
   });
 
   test("REQ-039.5 sin fotos no aparece Ver cortes", async ({ page }) => {
     await seedPhotos("Juan", 1);
-    await page.goto(`/${SEED.slug}`);
-    // T-173: "Ver cortes" va debajo de las fichas, para el barbero elegido
-    await page.getByRole("radio", { name: "Juan" }).click();
+    // T-224: "Ver cortes" va debajo de la tarjeta de cada barbero que tiene fotos (paso 2)
+    await openBarberStep(page);
     await expect(page.getByRole("button", { name: "Ver cortes de Juan" })).toBeVisible();
-    await page.getByRole("radio", { name: "Pedro" }).click();
-    await expect(page.getByRole("button", { name: /Ver cortes/ })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Ver cortes de Pedro" })).toHaveCount(0);
   });
 
   test("REQ-039.4 un archivo que no es imagen se rechaza", async ({ page }) => {
@@ -224,8 +224,7 @@ test.describe("T-062 fotos de cortes", () => {
   }) => {
     await seedPhotos("Mateo", 2);
     const { barber } = await ids("Mateo");
-    await page.goto(`/${SEED.slug}`);
-    await page.getByRole("radio", { name: "Mateo" }).click();
+    await openBarberStep(page);
     const open = page.getByRole("button", { name: "Ver cortes de Mateo" });
     await expect(open).toBeVisible();
     try {

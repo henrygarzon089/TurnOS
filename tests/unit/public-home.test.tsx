@@ -3,16 +3,19 @@ import { describe, expect, it, vi } from "vitest";
 import { ClosedNotice, JoinBar, LiveBlock } from "@/components/public/PublicHome";
 import { MenuList } from "@/components/public/MenuSheet";
 import { PublicHeader } from "@/components/public/PublicHeader";
-import { JOIN_FAILED, JoinForm, JoinError } from "@/components/queue/JoinForm";
+import { JOIN_FAILED, JoinFlow, JoinError } from "@/components/queue/JoinForm";
+import { PublicHero } from "@/components/public/PublicHero";
 import { capLines, deskLine, liveLineText, type PublicBarberLine } from "@/lib/domain/public-view";
 import type { PublicBusiness } from "@/lib/queue/public-queue";
 
+const nav = vi.hoisted(() => ({ search: new URLSearchParams() }));
 const redirect = vi.fn((url: string) => {
   throw new Error(`NEXT_REDIRECT ${url}`);
 });
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: () => {}, push: () => {} }),
   usePathname: () => "/la-33",
+  useSearchParams: () => nav.search,
   redirect: (url: string) => redirect(url),
   notFound: () => {
     throw new Error("NEXT_NOT_FOUND");
@@ -71,6 +74,9 @@ const BIZ: PublicBusiness = {
   products: [{ id: "p1", name: "Helado", price: 4000, photoPath: null }],
   courtesies: [],
   photoCounts: {},
+  barberPhotos: {},
+  logoPath: null,
+  coverPath: null,
   queue: { barbers: [], waiting: [], appointments: [] },
   waitingCount: 7,
   estimatedWaitMin: 40,
@@ -140,42 +146,99 @@ describe("T-173 portada y tomar turno en una pantalla (REQ-078.21, ADR-052)", ()
     expect(t).not.toContain("Sabaneta");
   });
 
-  it("REQ-003.1 la portada lleva el formulario: servicio, '¿Con quién?' con 'El primero libre' primero, nombre, celular y 'Tomar turno'", () => {
-    const h = html(<JoinForm business={BIZ} now="2026-11-09T15:00:00Z" canBook />);
+  const flow = (search: string, b: PublicBusiness = BIZ) => {
+    nav.search = new URLSearchParams(search);
+    return html(
+      <JoinFlow
+        business={b}
+        now="2026-11-09T15:00:00Z"
+        canBook
+        lines={LINES}
+        stateText="Abierto hasta 8:00 p. m."
+      />,
+    );
+  };
+
+  it("REQ-088.1 la portada: cabecera, estado, fila en vivo y los botones 'Tomar turno' y 'Reservar una cita'", () => {
+    const t = visible(flow(""));
+    expect(t).toContain("Barbería La 33 Abierto hasta 8:00 p. m.");
+    expect(t).toContain("7 esperando");
+    expect(t.indexOf("esperando")).toBeLessThan(t.indexOf("Tomar turno"));
+    expect(t).toContain("Tomar turno");
+    expect(t).toContain("Reservar una cita");
+    expect(t).not.toContain("Tu nombre");
+  });
+
+  it("REQ-003.1 / REQ-088.2 paso 1: servicios con precio y duración, 'Paso 1 de 3' y 'Atrás'", () => {
+    const h = flow("paso=servicio");
     const t = visible(h);
+    expect(t).toContain("Atrás Paso 1 de 3");
     expect(t).toContain("¿Qué te vas a hacer?");
-    expect(t).toContain("¿Con quién?");
+    expect(t).toContain("Corte + barba $ 35.000 · 45 min");
+    expect(h).toContain('role="progressbar"');
+    // REQ-088.7: durante los pasos, en el celular solo el paso; en escritorio la fila a la izquierda
+    expect(h).toContain('class="hidden lg:block"');
+  });
+
+  it("REQ-003.1 / REQ-088.2 paso 2: 'El primero libre' primero; en pausa no se puede escoger", () => {
+    const h = flow("paso=barbero&servicio=s1");
+    const t = visible(h.slice(h.indexOf('data-testid="step-header"')));
+    expect(t).toContain("Paso 2 de 3 ¿Con quién?");
     expect(t.indexOf("El primero libre")).toBeLessThan(t.indexOf("Andrés"));
+    expect(t).toContain("Mateo En pausa");
+    expect(h).toMatch(/aria-label="Mateo, En pausa"[^>]*disabled/);
+    expect(t).not.toContain("El que esté libre");
+  });
+
+  it("REQ-003.1 / REQ-088.2 paso 3: nombre, celular, privacidad y 'Confirmar turno' con el resumen", () => {
+    const h = flow("paso=datos&servicio=s1&barbero=a");
+    const t = visible(h);
+    expect(t).toContain("Paso 3 de 3 Tus datos");
     expect(t).toContain("Tu nombre");
     expect(t).toContain("Tu celular");
     expect(t).not.toContain("Tu celular (WhatsApp)");
-    expect(t).toContain("Tomar turno");
-    expect(t).not.toContain("Confirmar turno");
-    expect(t).not.toContain("El que esté libre");
-    // en pausa deshabilitada
-    expect(t).toContain("Mateo (en pausa)");
+    expect(t).toMatch(/Corte con Andrés( · ~ [^C]+)? Confirmar turno/);
+    expect(t).not.toMatch(/Tomar turno$/);
   });
 
-  it("REQ-078.21 servicios en rejilla de 2 con nombre y precio, sin la duración a la vista", () => {
-    const h = html(<JoinForm business={BIZ} now="2026-11-09T15:00:00Z" canBook />);
-    expect(h).toContain("grid-cols-2");
-    expect(h).toContain("min-h-15");
-    const t = visible(h);
-    expect(t).toContain("Corte + barba $ 35.000");
-    expect(t).not.toContain("30 min");
-    expect(h).toContain('title="Corte · 30 min"');
-  });
-
-  it("REQ-078.21 las fichas del barbero se deslizan dentro de su caja, no la página", () => {
-    const h = html(<JoinForm business={BIZ} now="2026-11-09T15:00:00Z" canBook />);
-    expect(h).toMatch(/overflow-x-auto[^"]*"[^>]*>\s*<button[^>]*role="radio"/);
+  it("REQ-088.4 sin servicio en la dirección, el paso 3 vuelve al paso 1", () => {
+    const t = visible(flow("paso=datos"));
+    expect(t).toContain("Paso 1 de 3");
+    expect(t).not.toContain("Tu nombre");
   });
 
   it("REQ-002.1 privacidad en una línea con el enlace al aviso", () => {
-    const h = html(<JoinForm business={BIZ} now="2026-11-09T15:00:00Z" canBook />);
+    const h = flow("paso=datos&servicio=s1&barbero=libre");
     expect(visible(h)).toContain("Acepto el aviso de privacidad (Ley 1581)");
     expect(h).toMatch(/<a[^>]*href="\/la-33\/privacidad"[^>]*>aviso de privacidad<\/a>/);
     expect(visible(h)).not.toContain("Ver aviso completo");
+  });
+
+  it("REQ-085.5 la fila en vivo y el paso 2 muestran la foto del barbero; sin foto, sus iniciales", () => {
+    const b = {
+      ...BIZ,
+      barberPhotos: { a: "b/barbers/a/11111111-1111-4111-8111-111111111111.webp" },
+    };
+    expect(flow("", b)).toContain('alt="Foto de Andrés"');
+    const paso2 = flow("paso=barbero&servicio=s1", b);
+    expect(paso2).toContain('alt="Foto de Andrés"');
+    expect(paso2).toMatch(/data-testid="avatar-initials"[^>]*>MA</);
+  });
+
+  it("REQ-087.2 cabecera con la foto del local y el logo; sin ellos, la marca en azul marino", () => {
+    const con = html(
+      <PublicHero name="Gamma Club" logoPath="g/brand/l.webp" coverPath="g/brand/c.webp" />,
+    );
+    expect(con).toContain('alt="Foto del local de Gamma Club"');
+    expect(con).toContain('alt="Logo de Gamma Club"');
+    const sin = html(<PublicHero name="Barbería La 33" logoPath={null} coverPath={null} />);
+    expect(sin).not.toContain("<img");
+    expect(visible(sin)).toContain("33 Barbería La 33");
+    expect(sin).toContain("bg-brand");
+    // en los pasos, una línea sin la foto grande
+    expect(
+      html(<PublicHero name="Gamma Club" logoPath={null} coverPath="g/brand/c.webp" compact />),
+    ).not.toContain("Foto del local");
   });
 
   it("REQ-078.21 'Tomar turno' fijo abajo con 'Reservar una cita' y 'Ver menú' debajo cuando existen", () => {
@@ -246,7 +309,7 @@ describe("T-173 portada y tomar turno en una pantalla (REQ-078.21, ADR-052)", ()
   it("REQ-078.21 error del servidor: 'No pudimos darte el turno.' y los datos siguen ahí", () => {
     const t = visible(html(<JoinError message={JOIN_FAILED} />));
     expect(t).toBe(
-      "No pudimos darte el turno. Revisa la señal y toca “Tomar turno” otra vez. Tus datos siguen ahí.",
+      "No pudimos darte el turno. Revisa la señal y toca “Confirmar turno” otra vez. Tus datos siguen ahí.",
     );
     const otro = visible(html(<JoinError message="El negocio está cerrado en este momento." />));
     expect(otro).toBe("El negocio está cerrado en este momento. Tus datos siguen ahí.");

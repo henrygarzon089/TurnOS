@@ -1,6 +1,14 @@
 import { expect, test, type Page } from "@playwright/test";
 import { businessDayBogota } from "../../src/lib/domain/time";
-import { adminDb, loginAsBarber, loginAsOwner, resetQueue, SEED, cancelMyTicket } from "./helpers";
+import {
+  adminDb,
+  cancelMyTicket,
+  confirmJoin,
+  loginAsBarber,
+  loginAsOwner,
+  openJoinForm,
+  resetQueue,
+} from "./helpers";
 
 /** Cliente del seed sin cumpleaños (el seed se lo pone a los tres primeros). */
 const CUSTOMER = { name: "Valentina", phone: "+573002000004" };
@@ -23,7 +31,7 @@ async function setBirthday(e164: string, on: Date | null) {
 }
 
 async function fillForm(page: Page, name: string, cel: string) {
-  await page.goto(`/${SEED.slug}`);
+  await openJoinForm(page);
   await page.getByLabel("Tu nombre").fill(name);
   await page.getByLabel("Tu celular").fill(cel);
 }
@@ -31,7 +39,7 @@ async function fillForm(page: Page, name: string, cel: string) {
 async function confirm(page: Page) {
   const box = page.getByRole("checkbox");
   if (await box.isVisible()) await box.check();
-  await page.getByRole("button", { name: "Tomar turno" }).click();
+  await confirmJoin(page).click();
 }
 
 const bdayField = (page: Page) => page.getByRole("group", { name: /Cuándo cumples años/ });
@@ -54,7 +62,7 @@ test.describe("REQ-037 cumpleaños", () => {
     await expect(page.getByText("Turno cancelado")).toBeVisible();
 
     // Mismo navegador: el celular se prellena y el campo ya no está
-    await page.goto(`/${SEED.slug}`);
+    await openJoinForm(page);
     await expect(page.getByLabel("Tu nombre")).toHaveValue("Cumple Nuevo");
     await expect(page.getByLabel("Tu celular")).not.toHaveValue("");
     await page.waitForLoadState("networkidle");

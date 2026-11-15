@@ -144,7 +144,7 @@ describe("REQ-050 reservar desde la portada", () => {
       await q("update barbers set accepts_appointments = true where id = $1", [s.barberA]);
       const info = await getAppointmentInfo(gw, "barberia-a");
       expect(info?.barbers).toEqual([
-        { id: s.barberA, name: "Barbero A", serviceIds: [s.serviceA] },
+        { id: s.barberA, name: "Barbero A", serviceIds: [s.serviceA], photoPath: null },
       ]);
       expect(info?.openDays.length).toBeGreaterThan(0);
     }));

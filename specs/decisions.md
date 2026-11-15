@@ -1157,15 +1157,18 @@
   foto, la marca de Gamma Club y tomar turno o reservar paso a paso (respuestas del 2026-11-14).
   Hoy la portada es un formulario de una sola pantalla (REQ-078.21, ADR-052) y los barberos salen
   como fichas con el nombre.
-- Decisión: (1) fotos de barbero, servicio, logo y portada en un bucket **público** `brand` de
-  Supabase Storage, reducidas a WebP en el celular antes de subir (son fotos que el negocio quiere mostrar; el
-  bucket privado `media` sigue para fotos de cortes y limpieza). Se suben con server actions que
-  revisan la sesión (dueño, o barbero para la suya). (2) Tomar turno y reservar pasan a pasos con
+- Decisión: (1) fotos de barbero, servicio, logo y portada en el bucket **público** `media` de
+  Supabase Storage (el de las fotos de productos y cortes, 0033), reducidas a WebP en el celular
+  antes de subir. Se suben con la sesión del dueño, o del barbero para la suya, según la ruta.
+  (La spec decía un bucket nuevo `brand`; al construir T-220 se vio que `media` ya hace exactamente
+  eso. Desvío anotado en design §26.1.) (2) Tomar turno y reservar pasan a pasos con
   `?paso=` en la dirección, en la misma ruta y con las mismas acciones del servidor
   (`joinQueue`, `bookAppointment`): cambia la presentación, no las reglas. (3) REQ-078.21 y
-  REQ-078.24 quedan reemplazados por REQ-088 y REQ-089 en lo que digan distinto.
+  REQ-078.24 quedan reemplazados por REQ-088 y REQ-089 en lo que digan distinto; también la "1
+  pantalla" de NFR-007 y el botón "Tomar turno" de REQ-003.1 al final del formulario (ahora
+  "Confirmar turno"). Nota en cada uno (T-224, 2026-11-14).
 - Alternativas: URLs firmadas del bucket privado (caducan, no se guardan en caché y suben el LCP);
   un formulario largo con fotos (no responde al pedido de "paso a paso").
-- Consecuencias: migración nueva (rutas de foto en `barbers`, `services` y `businesses`, bucket
-  `brand` y sus políticas); `get_public_business` devuelve las rutas. Las E2E de tomar turno y
+- Consecuencias: migración nueva (rutas de foto en `barbers`, `services` y `businesses`, y rutas
+  nuevas en `media_can_write`); `get_public_business` devuelve las rutas. Las E2E de tomar turno y
   reservar cambian de selectores. El barbero tiene su primer formulario para subir una foto propia.

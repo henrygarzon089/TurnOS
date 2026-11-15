@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { AlertPctForm } from "@/components/admin/InventoryForms";
+import { ImagePicker } from "@/components/media/ImagePicker";
 import {
   BusinessForm,
   GoogleReviewForm,
@@ -19,7 +20,7 @@ export default async function BusinessPage() {
   const { data } = await supabase
     .from("businesses")
     .select(
-      "name, slug, address, chairs_count, default_commission_pct, grace_minutes, inactive_days, reminder_cooldown_days, product_commission_pct, staff_discount_pct, pwa_name, google_review_url, whatsapp_auto_enabled, whatsapp_contact_phone, whatsapp_allowed, inventory_alert_pct",
+      "name, slug, address, chairs_count, default_commission_pct, grace_minutes, inactive_days, reminder_cooldown_days, product_commission_pct, staff_discount_pct, pwa_name, google_review_url, logo_path, cover_path, whatsapp_auto_enabled, whatsapp_contact_phone, whatsapp_allowed, inventory_alert_pct",
     )
     .eq("id", session.business.id)
     .single();
@@ -33,6 +34,28 @@ export default async function BusinessPage() {
       {/* Tarjetas lado a lado desde 1024 px (tablero Dueno-Config, design §22.8) */}
       <div data-two-up className="mt-4 grid items-start gap-4 lg:grid-cols-2">
         <BusinessForm business={data as BusinessSettings} />
+        {/* REQ-087.1: logo y foto del local, los que ve el cliente al entrar */}
+        <section
+          aria-label="Logo y portada"
+          className="border-line bg-card flex flex-col gap-4 rounded-md border p-4"
+        >
+          <h2 className="text-lg font-bold">Logo y portada</h2>
+          <ImagePicker
+            kind="logo"
+            label="Logo"
+            name={`Logo de ${data?.name ?? "el negocio"}`}
+            initialPath={data?.logo_path ?? null}
+          />
+          <ImagePicker
+            kind="cover"
+            label="Foto del local (portada)"
+            name={`Foto del local de ${data?.name ?? "el negocio"}`}
+            initialPath={data?.cover_path ?? null}
+          />
+          <p className="text-muted text-sm">
+            Se ven arriba en la página donde los clientes toman turno y reservan.
+          </p>
+        </section>
         <GoogleReviewForm url={data?.google_review_url ?? null} />
         {/* REQ-073.4 porcentaje de la alerta de consumo del inventario. */}
         <AlertPctForm pct={data?.inventory_alert_pct ?? 10} />

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { CheckList } from "@/components/admin/CheckList";
 import { keepValuesOnSubmit, useRefreshOnOk } from "@/components/ui/form";
 import { ErrorText } from "@/components/auth/LoginForm";
+import { ImagePicker } from "@/components/media/ImagePicker";
 import {
   saveProduct,
   toggleProduct,
@@ -27,6 +28,8 @@ export type ServiceRow = {
   counts_for_loyalty: boolean;
   /** REQ-035.2: quién lo hace (ids de barbero) */
   barber_ids?: string[];
+  /** REQ-086.1: foto que ve el cliente al escoger */
+  photo_path?: string | null;
 };
 export type BarberOption = { id: string; name: string };
 export type ProductRow = {
@@ -66,6 +69,15 @@ export function ServiceForm({
       aria-label={isNew ? "Nuevo servicio" : `Servicio ${service.name}`}
     >
       {service && <input type="hidden" name="id" value={service.id} />}
+      {service && (
+        <ImagePicker
+          kind="service"
+          id={service.id}
+          label="Foto del servicio"
+          name={`Foto de ${service.name}`}
+          initialPath={service.photo_path ?? null}
+        />
+      )}
       <div className="grid grid-cols-[1fr_5rem_7rem] gap-2">
         <label className="flex flex-col gap-1 text-sm font-semibold">
           Servicio

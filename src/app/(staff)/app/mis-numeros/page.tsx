@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
+import { ImagePicker } from "@/components/media/ImagePicker";
 import { Segmented } from "@/components/ui/Segmented";
 import { getMyNumbers, type MyPeriod } from "@/lib/actions/cash";
 import { formatCOP } from "@/lib/domain/money";
 import { formatDayCO, formatTimeBogota } from "@/lib/domain/time";
+import { getStaffSession } from "@/lib/auth/session";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Mis números" };
@@ -92,9 +95,23 @@ function Period({
   );
 }
 
+/** REQ-085.2: la foto de perfil del propio barbero (la que ven los clientes). */
+async function myPhoto(): Promise<{ id: string; name: string; path: string | null } | null> {
+  const session = await getStaffSession();
+  if (!session?.barberId) return null;
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("barbers")
+    .select("display_name, photo_path")
+    .eq("id", session.barberId)
+    .maybeSingle();
+  if (!data) return null;
+  return { id: session.barberId, name: data.display_name, path: data.photo_path ?? null };
+}
+
 /** REQ-025.5 / REQ-029.1: lo del barbero, hoy, semana y mes. Nunca totales del negocio. */
 export default async function MyNumbersPage() {
-  const n = await getMyNumbers();
+  const [n, me] = await Promise.all([getMyNumbers(), myPhoto()]);
   if (!n) {
     return (
       <main className="py-6">
@@ -107,6 +124,17 @@ export default async function MyNumbersPage() {
   return (
     <main className="-mx-4 flex flex-col pb-4">
       <h1 className="px-4 pt-4 pb-3 text-2xl font-bold">Mis números</h1>
+      {me && (
+        <section aria-label="Mi foto" className="border-line border-b px-4 pb-4">
+          <ImagePicker
+            kind="barber"
+            id={me.id}
+            label="Mi foto (la ven los clientes)"
+            name={`Foto de ${me.name}`}
+            initialPath={me.path}
+          />
+        </section>
+      )}
       <Segmented
         label="Periodo"
         tabs={[

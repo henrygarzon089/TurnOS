@@ -17,13 +17,17 @@ test.describe("REQ-050 y REQ-051 Reservar cita y Mi cita", () => {
       .eq("display_name", "Juan");
 
     try {
-      // La portada (T-173) lleva a /cita con lo que el cliente ya eligió
+      // La portada lleva a /cita, que va en 4 pasos (REQ-089.1)
       await page.goto(`/${SEED.slug}`);
       await page.getByRole("link", { name: "Reservar una cita" }).click();
       await expect(page.getByRole("heading", { name: "Reservar una cita" })).toBeVisible();
+      await expect(page.getByText("Paso 1 de 4")).toBeVisible();
+      // El primer servicio (en CI puede no ser "Corte": otras pruebas crean servicios)
+      await page.getByRole("radiogroup", { name: "Servicio" }).getByRole("radio").first().click();
+      await expect(page.getByText("Paso 2 de 4")).toBeVisible();
+      await page.getByRole("radio", { name: /^El que esté libre,/ }).click();
+      await expect(page.getByText("Paso 3 de 4")).toBeVisible();
 
-      // El primer servicio va elegido (en CI puede no ser "Corte": otras pruebas crean servicios)
-      await expect(page.getByTestId("row-service")).toContainText(/^Servicio\S.+Cambiar$/);
       // Un día con horas que no sea hoy: hoy puede no tener horas a 1 hora de ahora
       const days = page.getByRole("radiogroup", { name: "Día" });
       await expect(days.getByRole("radio", { disabled: false }).first()).toBeAttached({
@@ -35,15 +39,19 @@ test.describe("REQ-050 y REQ-051 Reservar cita y Mi cita", () => {
           .getByRole("radiogroup", { name: "Hora" })
           .or(page.getByText(/ya no tiene horas|Ya no quedan horas/)),
       ).toBeVisible({ timeout: 15_000 });
-      await days
+      const lastDay = days
         .locator("label")
         .filter({ has: page.locator("input:not([disabled])") })
-        .last()
-        .click();
-      const hours = page.getByRole("radiogroup", { name: "Hora" }).locator("label");
+        .last();
+      await lastDay.click();
+      // Las horas cambian cuando el día queda marcado: antes son las del día anterior
+      await expect(lastDay.locator("input")).toBeChecked();
+      const hours = page.getByRole("radiogroup", { name: "Hora" }).getByRole("radio");
       await expect(hours.first()).toBeVisible({ timeout: 15_000 });
       const hourText = (await hours.first().textContent())!.trim();
+      // Tocar la hora pasa sola a "Tus datos" (REQ-088.3 por REQ-089.3)
       await hours.first().click();
+      await expect(page.getByText("Paso 4 de 4")).toBeVisible();
 
       await page.getByLabel("Tu nombre").fill("Cita E2E");
       await page.getByLabel("Tu celular").fill(phone());

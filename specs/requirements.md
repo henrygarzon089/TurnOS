@@ -102,7 +102,8 @@ preferido (o "el que esté libre"), **para** entrar en la fila.
   formulario de turno con: servicio (obligatorio, servicios activos del negocio con precio), barbero
   (obligatorio: barberos **disponibles hoy** más "El primero libre", seleccionada por defecto),
   nombre (obligatorio) y celular (obligatorio), y el botón "Tomar turno" (ADR-052; antes estaba en
-  una segunda pantalla, `/<slug>/turno`, que ahora lleva a la portada).
+  una segunda pantalla, `/<slug>/turno`, que ahora lleva a la portada). *Hito 20 (ADR-063): los
+  mismos datos se piden en 3 pasos (REQ-088) y el botón final dice "Confirmar turno".*
 - REQ-003.2 CUANDO el cliente escribe un celular, EL SISTEMA DEBE aceptar 10 dígitos que inicien en
   3 (con o sin espacios, con o sin `+57`), normalizarlo a E.164 y rechazar cualquier otro formato
   con un mensaje en español.
@@ -1603,7 +1604,8 @@ también al sol y con una mano.
   libre" primero), "Tu nombre", "Tu celular" y la privacidad; "Tomar turno" DEBE ir fijo abajo con
   "Reservar una cita" y "Ver menú" debajo cuando existan. Desde 1024 px, la fila en vivo como tabla
   (Barbero, Estado, En fila, Espera aprox.) a la izquierda y el formulario en una tarjeta a la
-  derecha (ADR-052).
+  derecha (ADR-052). *Hito 20 (ADR-063): reemplazado por REQ-088 en el orden y los pasos; siguen el
+  bloque en vivo, la tabla de escritorio, la barra fija y el aviso de cerrado.*
 - REQ-078.22 "Mi turno" DEBE mostrar, en este orden: encabezado con la marca, el nombre del negocio
   y "En vivo"; la tarjeta "Tu turno" con el número a 120 px y la insignia del estado; dos celdas
   "Vas de N.º" (con "N antes de ti") y "Te toca en ~ N min" (con "cerca de <hora>"); el barbero con
@@ -1944,7 +1946,7 @@ televisor, las pantallas del personal salvo los formularios para subir fotos.
 | NFR-004 Seguridad | Aislamiento por negocio y mínima exposición | RLS en el 100 % de tablas con `business_id` (REQ-031.4); tokens de "Mi turno" ≥ 128 bits aleatorios; sin `service_role` en el cliente; rate limiting en "Tomar turno" (máx. 5 por celular/hora, 30 por IP/hora) |
 | NFR-005 Privacidad | Ley 1581 | Aviso versionado y aceptación registrada (REQ-002); supresión (REQ-018.6); pantallas públicas sin celulares (REQ-013.2); sin trackers de terceros en páginas públicas; la medición anónima de velocidad de REQ-075.3 no cuenta como tracker si cumple REQ-075.4 (sin cookies, sin identificadores, sin tokens; ADR-043) |
 | NFR-006 Localización | Colombia | `es-CO` en toda la UI; COP sin decimales con punto de miles; `America/Bogota` en servidor y cliente; sin textos en inglés visibles (prueba de lint de textos) |
-| NFR-007 Usabilidad | Sin capacitación | Prueba de pasillo: un barbero real completa llamar → en servicio → terminado → cobro sin ayuda en el primer intento; flujo del cliente ≤ 4 campos y 1 pantalla |
+| NFR-007 Usabilidad | Sin capacitación | Prueba de pasillo: un barbero real completa llamar → en servicio → terminado → cobro sin ayuda en el primer intento; flujo del cliente ≤ 4 campos y 1 pantalla (desde el Hito 20, ≤ 4 campos en 3 pasos de un toque, ADR-063) |
 | NFR-008 Accesibilidad | Legible al sol y con una mano | Contraste ≥ 4.5:1; botones ≥ 48 px (40 px en escritorio con mouse, ADR-059); tamaño de fuente base ≥ 16 px; funciona con zoom 200 % |
 | NFR-009 Calidad | Pruebas trazables | Cada CA referenciado por al menos una prueba; CI bloquea merge si fallan unit, integración o E2E; cobertura de lógica de dominio (posición, tiempo, comisión, cierre) 100 % de ramas |
 | NFR-010 Datos | Integridad | Montos `integer`; estados como `enum`; transiciones validadas en base de datos (no solo en UI); migraciones versionadas; seed idempotente |

@@ -2,6 +2,8 @@ import { expect, test } from "@playwright/test";
 import {
   CALL,
   adminDb,
+  confirmJoin,
+  openJoinForm,
   loginAsBarber,
   loginAsOwner,
   openTicketSheet,
@@ -17,7 +19,7 @@ test.describe("Hito 1 · criterios de interfaz", () => {
   test("REQ-002.1 el formulario muestra el aviso corto con enlace al completo y casilla desmarcada", async ({
     page,
   }) => {
-    await page.goto(`/${SEED.slug}`);
+    await openJoinForm(page);
     const box = page.getByRole("checkbox", { name: /Acepto el aviso/ });
     await expect(box).toBeVisible();
     await expect(box).not.toBeChecked();
@@ -45,11 +47,11 @@ test.describe("Hito 1 · criterios de interfaz", () => {
     page,
     browser,
   }) => {
-    await page.goto(`/${SEED.slug}`);
+    await openJoinForm(page);
     await page.getByLabel("Tu nombre").fill("Cancelable");
     await page.getByLabel("Tu celular").fill(phone());
     await page.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
-    await page.getByRole("button", { name: "Tomar turno" }).click();
+    await confirmJoin(page).click();
     await expect(page.getByRole("button", { name: "Cancelar turno", exact: true })).toBeVisible();
 
     const bctx = await browser.newContext();
@@ -72,13 +74,11 @@ test.describe("Hito 1 · criterios de interfaz", () => {
   }) => {
     const cctx = await browser.newContext();
     const c = await cctx.newPage();
-    await c.goto(`/${SEED.slug}`);
+    await openJoinForm(c, { service: /^Barba\s+\$/, barber: "Pedro" });
     await c.getByLabel("Tu nombre").fill("Detalle Fila");
     await c.getByLabel("Tu celular").fill(phone());
-    await c.getByRole("radio", { name: /^Barba\s+\$/ }).check();
-    await c.getByRole("radio", { name: "Pedro" }).click();
     await c.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
-    await c.getByRole("button", { name: "Tomar turno" }).click();
+    await confirmJoin(c).click();
 
     await loginAsBarber(page, 1); // Pedro
     const here = page.getByRole("button", { name: "Estoy aquí" });
@@ -133,11 +133,11 @@ test.describe("Hito 1 · criterios de interfaz", () => {
 
     const cctx = await browser.newContext();
     const c = await cctx.newPage();
-    await c.goto(`/${SEED.slug}`);
+    await openJoinForm(c);
     await c.getByLabel("Tu nombre").fill("Pantalla Prueba");
     await c.getByLabel("Tu celular").fill(phone());
     await c.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
-    await c.getByRole("button", { name: "Tomar turno" }).click();
+    await confirmJoin(c).click();
 
     const bctx = await browser.newContext();
     const barber = await bctx.newPage();

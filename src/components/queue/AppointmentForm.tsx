@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { AnyBarberCard, BarberCard, ServiceCard, StepHeader } from "@/components/public/JoinSteps";
 import { Field } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/Icon";
-import { OptionList } from "@/components/ui/OptionList";
 import { PhoneField } from "@/components/ui/PhoneField";
-import { Sheet } from "@/components/ui/Sheet";
 import { SkeletonBlock } from "@/components/ui/Skeleton";
 import { bookAppointment, getAppointmentWeek } from "@/lib/actions/public-appointments";
 import {
@@ -20,50 +19,54 @@ import {
   seeDayLabel,
   slotsHeading,
 } from "@/lib/domain/appointments";
-import { formatCOP } from "@/lib/domain/money";
+import {
+  bookableServices,
+  bookBarbers,
+  bookStepNumber,
+  bookStepOfField,
+  bookStepQuery,
+  bookSummary,
+  previousBookStep,
+  readBookView,
+  type BookStep,
+  type BookView,
+} from "@/lib/domain/book-steps";
 import { formatPhoneCO, normalizePhoneCO } from "@/lib/domain/phone";
 import { formatTimeBogota } from "@/lib/domain/time";
 import type { AppointmentInfo, Slot } from "@/lib/queue/appointments";
 import type { PublicBusiness } from "@/lib/queue/public-queue";
 import { readPrefs, writePrefs } from "@/lib/storage/customer-prefs";
 
-const ANY = "";
 type Props = {
   business: PublicBusiness;
   info: AppointmentInfo;
   today: string;
-  /** `?servicio=&barbero=` que manda la portada con lo que el cliente ya eligió. */
-  initialServiceId?: string;
-  initialBarberId?: string;
+};
+
+const TITLES: Record<BookStep, string> = {
+  servicio: "¿Qué te vas a hacer?",
+  barbero: "¿Con quién?",
+  hora: "¿Qué día y a qué hora?",
+  datos: "Tus datos",
 };
 
 /**
- * REQ-050.1 y REQ-078.24 (tablero Cliente-Cita, design §22.7): Servicio y Barbero como filas con
- * "Cambiar", tira de días, horas libres en rejilla de 3, nombre, celular, privacidad y el botón
- * fijo "Confirmar · <día>, <hora>". Sin horas ese día: el vacío del tablero.
+ * Hito 20 (REQ-089, ADR-063, design.md §26.3): reservar en 4 pasos (Servicio → Barbero → Día y hora
+ * → Tus datos) con el paso en la dirección. Las reglas no cambian (REQ-049, REQ-050, REQ-078.24):
+ * mismas horas libres, mismos vacíos ("<barbero> ya no tiene horas…", "Ver el …", "Probar con otro
+ * barbero", "Mejor tomar turno en la fila") y el botón fijo "Confirmar · <día>, <hora>".
  */
-export function AppointmentForm({
-  business,
-  info,
-  today,
-  initialServiceId,
-  initialBarberId,
-}: Props) {
+export function BookFlow({ business, info, today }: Props) {
   const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
+  const services = bookableServices(business.services, info);
+  const view = readBookView(params, business.services, info);
+  const { step, serviceId, barberId } = view;
   const [pending, startTransition] = useTransition();
-  // Solo servicios que hace algún barbero que recibe citas (REQ-049.3)
-  const services = business.services.filter((s) =>
-    info.barbers.some((b) => b.serviceIds.includes(s.id)),
-  );
-  const [serviceId, setServiceId] = useState(
-    services.some((s) => s.id === initialServiceId) ? initialServiceId! : (services[0]?.id ?? ""),
-  );
-  const [barberId, setBarberId] = useState<string>(initialBarberId ?? ANY);
-  const [day, setDay] = useState(info.openDays[0] ?? today);
+  const pushes = useRef(0);
   const [week, setWeek] = useState<{ key: string; days: Record<string, Slot[]> } | null>(null);
-  const [startsAt, setStartsAt] = useState<string | null>(null);
   const [reload, setReload] = useState(0);
-  const [sheet, setSheet] = useState<"service" | "barber" | null>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [privacy, setPrivacy] = useState(false);
@@ -71,11 +74,35 @@ export function AppointmentForm({
   const [error, setError] = useState<{ message: string; field?: string } | null>(null);
 
   const service = services.find((s) => s.id === serviceId);
-  const barbers = info.barbers.filter((b) => b.serviceIds.includes(serviceId));
+  const barbers = serviceId ? bookBarbers(info, serviceId) : [];
   const barber = barbers.find((b) => b.id === barberId) ?? null;
-  const shownBarberId = barber?.id ?? null;
+  const day = view.day ?? info.openDays[0] ?? today;
   const strip = bookingDays(today);
-  const key = `${serviceId}|${shownBarberId ?? ""}|${reload}`;
+  const key = `${serviceId}|${barberId ?? ""}|${reload}`;
+
+  /** REQ-089.3: cambia de paso sin pedirle nada al servidor; "atrás" del celular sirve. */
+  function go(next: BookView, replace = false) {
+    const url = `${pathname}${bookStepQuery(next)}`;
+    if (replace) window.history.replaceState(null, "", url);
+    else {
+      window.history.pushState(null, "", url);
+      pushes.current += 1;
+    }
+    window.scrollTo({ top: 0 });
+  }
+  useEffect(() => {
+    const onPop = () => {
+      pushes.current = Math.max(0, pushes.current - 1);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+  function back() {
+    const prev = previousBookStep(step);
+    if (!prev) return router.push(`/${business.slug}`);
+    if (pushes.current > 0) return window.history.back();
+    go({ ...view, step: prev }, true);
+  }
 
   // REQ-002.4: nombre, celular y aviso ya aceptado en este navegador
   useEffect(() => {
@@ -92,21 +119,22 @@ export function AppointmentForm({
     return () => cancelAnimationFrame(id);
   }, [business.slug, business.privacyVersion]);
 
-  // REQ-049.3 horas libres de los días que se ofrecen (los demás quedan punteados)
+  // REQ-049.3 horas libres de los días que se ofrecen (desde el paso 3)
+  const needsWeek = step === "hora" || step === "datos";
   useEffect(() => {
-    if (!serviceId) return;
+    if (!serviceId || !needsWeek) return;
     let stale = false;
-    void getAppointmentWeek(business.slug, serviceId, shownBarberId, info.openDays).then((days) => {
+    void getAppointmentWeek(business.slug, serviceId, barberId, info.openDays).then((days) => {
       if (!stale) setWeek({ key, days });
     });
     return () => {
       stale = true;
     };
-  }, [business.slug, serviceId, shownBarberId, info.openDays, key]);
+  }, [business.slug, serviceId, barberId, info.openDays, key, needsWeek]);
 
   const loadedWeek = week?.key === key ? week.days : null;
   const slots = loadedWeek ? (loadedWeek[day] ?? []) : null;
-  const chosen = slots?.some((s) => s.startsAt === startsAt) ? startsAt : null;
+  const chosen = slots?.some((s) => s.startsAt === view.startsAt) ? view.startsAt : null;
   const hasHours = (d: string) => (loadedWeek ? (loadedWeek[d]?.length ?? 0) > 0 : true);
   const isOpen = (d: string) => info.openDays.includes(d) && hasHours(d);
   const nextDay =
@@ -115,15 +143,21 @@ export function AppointmentForm({
       : undefined;
   const empty = slots !== null && slots.length === 0;
 
+  // REQ-089.2: la hora de la dirección ya no está libre (recarga tarde): de vuelta al paso 3
+  useEffect(() => {
+    if (step === "datos" && slots !== null && !chosen)
+      go({ ...view, step: "hora", startsAt: null }, true);
+  });
+
   function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!chosen) return;
+    if (!chosen || !serviceId) return;
     startTransition(async () => {
       const r = await bookAppointment({
         slug: business.slug,
         serviceId,
-        barberId: shownBarberId,
+        barberId,
         startsAt: chosen,
         name,
         phone,
@@ -132,8 +166,10 @@ export function AppointmentForm({
       });
       if (!r.ok) {
         setError({ message: r.error, field: r.field });
-        // REQ-050.4: otra persona la tomó; se recargan las horas
+        // REQ-050.4: otra persona la tomó; se recargan las horas y se vuelve al paso 3
         if (r.slotTaken) setReload((n) => n + 1);
+        const at = bookStepOfField(r.field);
+        if (at !== "datos") go({ ...view, step: at, startsAt: null });
         return;
       }
       const e164 = normalizePhoneCO(phone);
@@ -154,145 +190,187 @@ export function AppointmentForm({
     );
   }
 
+  const pickDay = (d: string) => go({ ...view, step: "hora", day: d, startsAt: null }, true);
+  const errorBox = error && error.field !== "name" && error.field !== "phone" && (
+    <p
+      role="alert"
+      className="text-danger border-danger bg-accent-soft flex items-center gap-2 rounded-md border p-3 text-sm font-medium"
+    >
+      <Icon name="error" className="size-4 shrink-0" />
+      {error.message}
+    </p>
+  );
+
   return (
-    <form onSubmit={submit} className="flex flex-col pb-32" aria-label="Reservar cita">
-      {/* Servicio y Barbero como filas con "Cambiar" */}
-      <div className="border-line bg-card -mx-4 border-b">
-        <PickRow
-          testId="row-service"
-          label="Servicio"
-          value={service?.name ?? ""}
-          onChange={() => setSheet("service")}
-        />
-        <PickRow
-          testId="row-barber"
-          label="Barbero"
-          value={barber?.name ?? "El primero libre"}
-          onChange={() => setSheet("barber")}
-        />
-      </div>
+    <div className="flex flex-col gap-4 pt-4 pb-32">
+      <StepHeader step={bookStepNumber(step)} total={4} title={TITLES[step]} onBack={back} />
 
-      <section className="border-line -mx-4 border-b px-4 pt-4 pb-4" aria-labelledby="dia">
-        <h2 id="dia" className="text-muted text-xs font-semibold tracking-wider uppercase">
-          Día
-        </h2>
-        <div
-          role="radiogroup"
-          aria-label="Día"
-          className="relative -mx-4 mt-2 flex gap-2 overflow-x-auto px-4 pb-1"
-        >
-          {strip.map((d) => {
-            const { weekday, n } = dayStripParts(d);
-            const on = d === day;
-            const off = !on && !isOpen(d);
-            return (
-              <label
-                key={d}
-                className={`has-focus-visible:outline-brand relative flex h-[58px] w-[52px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-md has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-disabled:cursor-not-allowed ${
-                  on
-                    ? "bg-brand text-brand-ink"
-                    : off
-                      ? "border-line-strong text-muted border border-dashed"
-                      : "border-line-strong bg-card text-ink border"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="day"
-                  value={d}
-                  checked={on}
-                  disabled={off}
-                  onChange={() => {
-                    setDay(d);
-                    setStartsAt(null);
-                  }}
-                  className="sr-only"
-                />
-                <span className="text-xs">{weekday}</span>
-                <span className="text-xl leading-tight font-bold tabular-nums">{n}</span>
-              </label>
-            );
-          })}
+      {step === "servicio" && (
+        <div role="radiogroup" aria-label="Servicio" className="flex flex-col gap-2">
+          {services.map((s) => (
+            <ServiceCard
+              key={s.id}
+              name={s.name}
+              price={s.price}
+              durationMin={s.durationMin}
+              photoPath={s.photoPath}
+              checked={serviceId === s.id}
+              onPick={() =>
+                go({ step: "barbero", serviceId: s.id, barberId, day: null, startsAt: null })
+              }
+            />
+          ))}
         </div>
+      )}
 
-        {empty ? (
-          <div className="mt-4" role="status">
-            <p className="text-lg font-bold">{noHoursTitle(barber?.name ?? null, day, today)}</p>
-            {nextDay && loadedWeek && (
-              <p className="text-muted mt-1">
-                {nextDayHint(
-                  nextDay,
-                  today,
-                  loadedWeek[nextDay].length,
-                  loadedWeek[nextDay][0].startsAt,
+      {step === "barbero" && (
+        <div role="radiogroup" aria-label="Barbero" className="flex flex-col gap-2">
+          <AnyBarberCard
+            title="El que esté libre"
+            text="Te damos la hora del primero que pueda"
+            checked={params.get("barbero") !== null && barberId === null}
+            onPick={() => go({ ...view, step: "hora", barberId: null, startsAt: null })}
+          />
+          {barbers.map((b) => (
+            <BarberCard
+              key={b.id}
+              name={b.name}
+              photoPath={b.photoPath}
+              text="Ver sus horas"
+              checked={barberId === b.id}
+              onPick={() => go({ ...view, step: "hora", barberId: b.id, startsAt: null })}
+            />
+          ))}
+        </div>
+      )}
+
+      {step === "hora" && (
+        <section aria-label="Día y hora">
+          <div
+            role="radiogroup"
+            aria-label="Día"
+            className="relative -mx-4 flex gap-2 overflow-x-auto px-4 pb-1"
+          >
+            {strip.map((d) => {
+              const { weekday, n } = dayStripParts(d);
+              const on = d === day;
+              const off = !on && !isOpen(d);
+              return (
+                <label
+                  key={d}
+                  className={`has-focus-visible:outline-brand relative flex h-[58px] w-[52px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-md has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-disabled:cursor-not-allowed ${
+                    on
+                      ? "bg-brand text-brand-ink"
+                      : off
+                        ? "border-line-strong text-muted border border-dashed"
+                        : "border-line-strong bg-card text-ink border"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="day"
+                    value={d}
+                    checked={on}
+                    disabled={off}
+                    onChange={() => pickDay(d)}
+                    className="sr-only"
+                  />
+                  <span className="text-xs">{weekday}</span>
+                  <span className="text-xl leading-tight font-bold tabular-nums">{n}</span>
+                </label>
+              );
+            })}
+          </div>
+
+          {empty ? (
+            <div className="mt-4" role="status">
+              <p className="text-lg font-bold">{noHoursTitle(barber?.name ?? null, day, today)}</p>
+              {nextDay && loadedWeek && (
+                <p className="text-muted mt-1">
+                  {nextDayHint(
+                    nextDay,
+                    today,
+                    loadedWeek[nextDay].length,
+                    loadedWeek[nextDay][0].startsAt,
+                  )}
+                </p>
+              )}
+              <div className="mt-3 flex flex-col items-start gap-2">
+                {nextDay && (
+                  <button type="button" className="btn-secondary" onClick={() => pickDay(nextDay)}>
+                    {seeDayLabel(nextDay)}
+                  </button>
                 )}
-              </p>
-            )}
-            <div className="mt-3 flex flex-col items-start gap-2">
-              {nextDay && (
                 <button
                   type="button"
                   className="btn-secondary"
-                  onClick={() => {
-                    setDay(nextDay);
-                    setStartsAt(null);
-                  }}
+                  onClick={() => go({ ...view, step: "barbero", startsAt: null })}
                 >
-                  {seeDayLabel(nextDay)}
+                  Probar con otro barbero
                 </button>
-              )}
-              <button type="button" className="btn-secondary" onClick={() => setSheet("barber")}>
-                Probar con otro barbero
-              </button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <>
-            <h2 className="text-muted mt-4 text-xs font-semibold tracking-wider uppercase">
-              {slotsHeading(day)}
-            </h2>
-            {slots === null ? (
-              <div className="mt-2 grid grid-cols-3 gap-2" aria-busy="true">
-                {Array.from({ length: 9 }, (_, i) => (
-                  <SkeletonBlock key={i} className="h-[52px]" />
-                ))}
+          ) : (
+            <>
+              <h3 className="text-muted mt-4 text-xs font-semibold tracking-wider uppercase">
+                {slotsHeading(day)}
+              </h3>
+              {slots === null ? (
+                <div className="mt-2 grid grid-cols-3 gap-2" aria-busy="true">
+                  {Array.from({ length: 9 }, (_, i) => (
+                    <SkeletonBlock key={i} className="h-[52px]" />
+                  ))}
+                </div>
+              ) : (
+                <div role="radiogroup" aria-label="Hora" className="mt-2 grid grid-cols-3 gap-2">
+                  {slots.map((s) => {
+                    const on = s.startsAt === view.startsAt;
+                    return (
+                      <button
+                        key={s.startsAt}
+                        type="button"
+                        role="radio"
+                        aria-checked={on}
+                        onClick={() => {
+                          if (error?.field === "startsAt") setError(null);
+                          go({ ...view, step: "datos", day, startsAt: s.startsAt });
+                        }}
+                        className={`focus-visible:outline-brand flex h-[52px] items-center justify-center rounded-md text-base font-semibold tabular-nums focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                          on
+                            ? "border-brand bg-brand-soft border-2"
+                            : "border-line-strong bg-card active:bg-surface border"
+                        }`}
+                      >
+                        {formatTimeBogota(new Date(s.startsAt))}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+              <p className="text-muted mt-3 text-sm">
+                Llega a tu hora: te esperamos hasta {APPOINTMENT_TOLERANCE_MIN} minutos.
+              </p>
+            </>
+          )}
+          {error?.field === "startsAt" && <div className="mt-3">{errorBox}</div>}
+          {/* REQ-089.2: sin horas, la fila sigue a mano */}
+          {empty && (
+            <div className="border-line bg-card fixed inset-x-0 bottom-0 z-10 border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+              <div className="mx-auto max-w-md">
+                <Link
+                  href={`/${business.slug}`}
+                  className="text-ink flex min-h-12 items-center justify-center font-semibold underline"
+                >
+                  Mejor tomar turno en la fila
+                </Link>
               </div>
-            ) : (
-              <div role="radiogroup" aria-label="Hora" className="mt-2 grid grid-cols-3 gap-2">
-                {slots.map((s) => {
-                  const on = s.startsAt === chosen;
-                  return (
-                    <label
-                      key={s.startsAt}
-                      className={`has-focus-visible:outline-brand relative flex h-[52px] cursor-pointer items-center justify-center rounded-md text-base font-semibold tabular-nums has-focus-visible:outline-2 has-focus-visible:outline-offset-2 ${
-                        on
-                          ? "border-brand bg-brand-soft border-2"
-                          : "border-line-strong bg-card border"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="startsAt"
-                        value={s.startsAt}
-                        checked={on}
-                        onChange={() => setStartsAt(s.startsAt)}
-                        className="sr-only"
-                      />
-                      {formatTimeBogota(new Date(s.startsAt))}
-                    </label>
-                  );
-                })}
-              </div>
-            )}
-            <p className="text-muted mt-3 text-sm">
-              Llega a tu hora: te esperamos hasta {APPOINTMENT_TOLERANCE_MIN} minutos.
-            </p>
-          </>
-        )}
-      </section>
+            </div>
+          )}
+        </section>
+      )}
 
-      {!empty && (
-        <div className="flex flex-col gap-4 pt-4">
+      {step === "datos" && service && (
+        <form onSubmit={submit} className="flex flex-col gap-4" aria-label="Reservar cita">
           <Field
             label="Tu nombre"
             id="cita-name"
@@ -339,99 +417,26 @@ export function AppointmentForm({
               </span>
             </label>
           )}
-          {error && error.field !== "name" && error.field !== "phone" && (
-            <p
-              role="alert"
-              className="text-danger border-danger bg-accent-soft flex items-center gap-2 rounded-md border p-3 text-sm font-medium"
-            >
-              <Icon name="error" className="size-4 shrink-0" />
-              {error.message}
-            </p>
-          )}
-        </div>
+          {error?.field !== "startsAt" && errorBox}
+          <p className="text-muted text-sm">
+            Llega a tu hora: te esperamos hasta {APPOINTMENT_TOLERANCE_MIN} minutos.
+          </p>
+
+          <div className="border-line bg-card fixed inset-x-0 bottom-0 z-10 border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+            <div className="mx-auto max-w-md">
+              <p
+                className="mb-2 truncate text-center text-sm font-semibold"
+                data-testid="book-summary"
+              >
+                {bookSummary(service.name, barber?.name ?? null)}
+              </p>
+              <button type="submit" className="btn-primary w-full" disabled={pending || !chosen}>
+                {pending ? "Reservando…" : chosen ? confirmLabel(chosen) : "Buscando tu hora…"}
+              </button>
+            </div>
+          </div>
+        </form>
       )}
-
-      <div className="border-line bg-card fixed inset-x-0 bottom-0 z-10 border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-        <div className="mx-auto max-w-md">
-          {empty ? (
-            <Link
-              href={`/${business.slug}`}
-              className="text-ink flex min-h-12 items-center justify-center font-semibold underline"
-            >
-              Mejor tomar turno en la fila
-            </Link>
-          ) : (
-            <button type="submit" className="btn-primary w-full" disabled={pending || !chosen}>
-              {pending ? "Reservando…" : chosen ? confirmLabel(chosen) : "Elige una hora"}
-            </button>
-          )}
-        </div>
-      </div>
-
-      <Sheet open={sheet === "service"} onClose={() => setSheet(null)} title="Servicio">
-        <OptionList
-          name="serviceId"
-          legend="¿Qué te vas a hacer?"
-          value={serviceId}
-          options={services.map((s) => ({
-            value: s.id,
-            label: s.name,
-            meta: `${s.durationMin} min`,
-            aside: formatCOP(s.price),
-          }))}
-          onChange={(v) => {
-            setServiceId(v);
-            setStartsAt(null);
-            setSheet(null);
-          }}
-        />
-      </Sheet>
-      <Sheet open={sheet === "barber"} onClose={() => setSheet(null)} title="Barbero">
-        <OptionList
-          name="barberId"
-          legend="¿Con quién?"
-          value={shownBarberId ?? ANY}
-          options={[
-            { value: ANY, label: "El primero libre" },
-            ...barbers.map((b) => ({ value: b.id, label: b.name })),
-          ]}
-          onChange={(v) => {
-            setBarberId(v);
-            setStartsAt(null);
-            setSheet(null);
-          }}
-        />
-      </Sheet>
-    </form>
-  );
-}
-
-function PickRow({
-  testId,
-  label,
-  value,
-  onChange,
-}: {
-  testId: string;
-  label: string;
-  value: string;
-  onChange: () => void;
-}) {
-  return (
-    <div
-      data-testid={testId}
-      className="border-line flex min-h-[52px] items-center gap-3 border-b px-4 last:border-b-0"
-    >
-      <span className="text-muted w-20 shrink-0">{label}</span>
-      <span className="min-w-0 flex-1 truncate font-semibold">{value}</span>
-      <button
-        type="button"
-        onClick={onChange}
-        aria-label={`Cambiar ${label.toLowerCase()}`}
-        className="text-ink min-h-12 px-1 font-semibold underline"
-      >
-        Cambiar
-      </button>
     </div>
   );
 }

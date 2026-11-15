@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
-import { adminDb, SEED } from "./helpers";
+import { adminDb, confirmJoin, openJoinForm, SEED } from "./helpers";
 import { clsSlow4G, noHorizontalScroll, primaryButtons, smallTargets } from "./visual-helpers";
 
 /**
@@ -116,6 +116,30 @@ test.describe("T-162 pantallas del cliente con el sistema visual (REQ-078)", () 
     await noHorizontalScroll(page, `/${SEED.slug}/pantalla`, [1280]);
   });
 
+  test("REQ-090.3 los 3 pasos de tomar turno: sin desplazamiento, un botón principal y ≥ 48 px", async ({
+    page,
+  }) => {
+    test.setTimeout(120_000);
+    const { data: svc } = await adminDb()
+      .from("services")
+      .select("id, businesses!inner(slug)")
+      .eq("businesses.slug", SEED.slug)
+      .eq("name", "Corte")
+      .single();
+    const base = `/${SEED.slug}?paso=`;
+    for (const path of [
+      `${base}servicio`,
+      `${base}barbero&servicio=${svc!.id}`,
+      `${base}datos&servicio=${svc!.id}&barbero=libre`,
+    ]) {
+      await noHorizontalScroll(page, path);
+      await page.goto(path);
+      await page.waitForLoadState("networkidle");
+      expect(await primaryButtons(page), path).toBeLessThanOrEqual(1);
+      expect(await smallTargets(page), path).toEqual([]);
+    }
+  });
+
   test("REQ-078.15 Mi turno y la tarjeta de regalo sin desplazamiento horizontal", async ({
     page,
   }) => {
@@ -218,13 +242,13 @@ test.describe("T-162 pantallas del cliente con el sistema visual (REQ-078)", () 
     page,
     context,
   }) => {
-    await page.goto(`/${SEED.slug}`);
+    await openJoinForm(page);
     await page.getByRole("checkbox", { name: /Acepto el aviso/ }).check();
-    await expect(page.getByRole("button", { name: "Tomar turno" })).toBeEnabled();
+    await expect(confirmJoin(page)).toBeEnabled();
     await context.setOffline(true);
     try {
       await expect(page.getByText(/Sin conexión\. Mostrando lo último que vimos/)).toBeVisible();
-      await expect(page.getByRole("button", { name: "Tomar turno" })).toBeDisabled();
+      await expect(confirmJoin(page)).toBeDisabled();
       await expect(
         page.getByText("Necesitas señal para tomar turno.", { exact: false }),
       ).toBeVisible();

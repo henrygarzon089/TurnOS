@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { Avatar } from "@/components/media/Avatar";
 import { MenuList } from "@/components/public/MenuSheet";
 import { StampCard } from "@/components/loyalty/StampCard";
 import { Button } from "@/components/ui/Button";
@@ -23,7 +24,6 @@ import {
   aheadText,
   calledTitle,
   etaText,
-  initials,
   loyaltyLeftText,
   positionText,
   ticketStep,
@@ -115,6 +115,10 @@ export function MyTicket({
 
   const hasMenu = !!menu && menu.products.length > 0;
   const barber = ticket.assignedBarberName ?? ticket.preferredBarberName;
+  // REQ-085.5: la foto del mismo barbero que se nombra
+  const barberPhoto = ticket.assignedBarberName
+    ? ticket.assignedBarberPhoto
+    : ticket.preferredBarberPhoto;
 
   function cancel() {
     setConfirming(false);
@@ -169,7 +173,12 @@ export function MyTicket({
           <>
             <NumberCard ticket={ticket} />
             <WaitCells ticket={ticket} now={now} online={online} lastSeen={lastSeen} />
-            <BarberRow name={barber} service={ticket.serviceName} price={ticket.servicePrice} />
+            <BarberRow
+              name={barber}
+              photoPath={barberPhoto}
+              service={ticket.serviceName}
+              price={ticket.servicePrice}
+            />
             <Steps status={ticket.status} />
             <p className="text-ink">
               {online
@@ -441,21 +450,28 @@ function Cell({
 /** Fila del barbero: iniciales en `brand-soft`, nombre y "<servicio> · $ <precio>". */
 function BarberRow({
   name,
+  photoPath,
   service,
   price,
 }: {
   name: string | null;
+  /** REQ-085.5: la foto del barbero; sin foto, sus iniciales (REQ-085.4). */
+  photoPath: string | null;
   service: string;
   price: number | null;
 }) {
   return (
     <div className="border-line bg-card flex items-center gap-3 rounded-md border px-3 py-3">
-      <span
-        aria-hidden="true"
-        className="bg-brand-soft text-brand flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold"
-      >
-        {name ? initials(name) : <Icon name="users" className="size-5" />}
-      </span>
+      {name ? (
+        <Avatar name={name} photoPath={photoPath} size="sm" />
+      ) : (
+        <span
+          aria-hidden="true"
+          className="bg-brand-soft text-brand flex size-10 shrink-0 items-center justify-center rounded-full"
+        >
+          <Icon name="users" className="size-5" />
+        </span>
+      )}
       <div className="min-w-0">
         <p className="font-bold break-words">{name ?? "El primero libre"}</p>
         <p className="text-muted text-sm break-words">

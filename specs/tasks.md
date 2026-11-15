@@ -2851,33 +2851,70 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 > Aprobada por Henry el 2026-11-14. Orden: T-220 → T-221, T-222 y T-223
 > (independientes) → T-224 → T-225 y T-226 → T-227 → T-228.
 
-### [ ] T-220 · Datos y almacenamiento de fotos
-- REQ: REQ-090.2 · Migración `0074_brand_images.sql`, bucket `brand`, funciones de §26.1, pgTAP.
+### [x] T-220 · Datos y almacenamiento de fotos
+- REQ: REQ-090.2 · Migración `0074_brand_images.sql`, rutas en `media`, lecturas de §26.1, pgTAP.
+- Hecha 2026-11-14. Desvío: se reutiliza el bucket `media` en lugar de uno nuevo `brand` (design
+  §26.1, ADR-063).
 - Modelo: Opus 5.5. Complejidad: media.
 
-### [ ] T-221 · Foto del barbero (dueño y barbero)
+### [x] T-221 · Foto del barbero (dueño y barbero)
 - REQ: REQ-085.1, REQ-085.2, REQ-085.3, REQ-085.4 · `uploadBrandImage`, `ImagePicker`, Barberos y
   "Mi foto". Modelo: Opus 5.5. Complejidad: media.
+- Hecha 2026-11-14: `src/lib/media/brand.ts`, `src/lib/actions/brand.ts` (sirve también a T-222 y
+  T-223), `Avatar`, `ImagePicker` (guarda al escoger, sin botón "Guardar"). El dueño la cambia en
+  la hoja de editar de Barberos; el barbero en "Mi foto", arriba de "Mis números". El recorte y la
+  reducción van en el celular con canvas (`resizeToBox`, `coverCrop`). Pruebas:
+  `tests/unit/brand-images.test.tsx`.
 
-### [ ] T-222 · Fotos de servicios
+### [x] T-222 · Fotos de servicios
 - REQ: REQ-086.1 · Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-14: `ImagePicker kind="service"` en la hoja de editar de Servicios (un servicio
+  nuevo se guarda primero y luego se le pone foto). Pruebas en `tests/unit/brand-images.test.tsx`.
 
-### [ ] T-223 · Logo y portada del negocio
+### [x] T-223 · Logo y portada del negocio
 - REQ: REQ-087.1, REQ-087.2, REQ-087.3 · Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-14: tarjeta "Logo y portada" en Mi negocio. REQ-087.2 (la portada los trae) quedó
+  en 0074 y su pgTAP; mostrarlos en la página del cliente y REQ-087.3 (colores) van con
+  `PublicHero` en T-224.
 
-### [ ] T-224 · Portada y tomar turno paso a paso
+### [x] T-224 · Portada y tomar turno paso a paso
 - REQ: REQ-085.5, REQ-086.2, REQ-088.1…REQ-088.7 · `PublicHero`, `Avatar`, `BarberCard`,
   `ServiceCard`, `StepHeader`, `JoinFlow`; E2E de tomar turno. Modelo: Opus 5.5. Complejidad: alta.
+- Hecha 2026-11-14: `JoinFlow` (en `JoinForm.tsx`, mismo estado y `joinQueue`), `PublicHero`,
+  `ServiceCard`/`BarberCard`/`AnyBarberCard`/`StepHeader` (`src/components/public/JoinSteps.tsx`) y
+  la lógica pura en `src/lib/domain/join-steps.ts`. El paso, el servicio y el barbero van en la
+  dirección (`?paso=…&servicio=…&barbero=…|libre`) con `history.pushState` (sin ir al servidor);
+  "Atrás" usa el historial si venimos del paso anterior. "Ver cortes" va bajo la tarjeta de cada
+  barbero con fotos. Notas explícitas en REQ-003.1, REQ-078.21 y NFR-007 (ADR-063). Pruebas:
+  `tests/unit/join-steps.test.ts`, `tests/unit/public-home.test.tsx`, `tests/e2e/join-steps.spec.ts`
+  y las E2E de tomar turno con `openJoinForm`. El botón de la foto del barbero dice "Poner foto"
+  (no choca con "Subir foto" de las fotos de cortes).
 
-### [ ] T-225 · Reservar una cita paso a paso
+### [x] T-225 · Reservar una cita paso a paso
 - REQ: REQ-089.1, REQ-089.2, REQ-089.3 · `BookFlow`; E2E de reservar. Depende de T-210 y T-224.
+- Hecha 2026-11-14. `src/lib/domain/book-steps.ts` (pasos y dirección `?paso=…&servicio=…&barbero=…
+  &dia=…&hora=…`) y `BookFlow` en `AppointmentForm.tsx`. Las filas "Servicio · Cambiar" y
+  "Barbero · Cambiar" con hojas de REQ-078.24 se cambian por los pasos 1 y 2; "Probar con otro
+  barbero" lleva al paso 2 en lugar de abrir la hoja. Tocar una hora pasa a "Tus datos"; si la hora
+  ya no está libre al cargar, vuelve al paso 3. E2E de reservar (REQ-050.1) y del tablero
+  Cliente-Cita (REQ-078.24) actualizados.
 - Modelo: Opus 5.5. Complejidad: media.
 
-### [ ] T-226 · Mi turno y Mi cita con la foto del barbero
+### [x] T-226 · Mi turno y Mi cita con la foto del barbero
 - REQ: REQ-085.5 · Modelo: Haiku 5.5. Complejidad: baja.
+- Hecha 2026-11-14. Desvío aprobado por Henry: `get_appointment_by_token` no traía la foto, así que
+  la migración `0075_appointment_barber_photo.sql` le suma `barberPhoto` (design §26.1); sale a
+  producción junto con 0074. "Mi turno" usa `assignedBarberPhoto` o `preferredBarberPhoto` según el
+  barbero que nombra; las dos pantallas usan `Avatar` (iniciales sin foto, REQ-085.4).
 
-### [ ] T-227 · Rapidez y accesibilidad de las fotos
+### [x] T-227 · Rapidez y accesibilidad de las fotos
 - REQ: REQ-090.1, REQ-090.3 · Lighthouse móvil ≥ 80, 360/390/1280 px sin desplazamiento.
+- Hecha 2026-11-14. `tests/unit/photos-speed.test.tsx` (REQ-090.1, REQ-087.3) y un E2E de
+  REQ-090.3 con fotos en la portada y en los pasos de reservar. Lighthouse móvil de la portada lo
+  mide `pnpm lighthouse` en el CI (NFR-001). Nota sobre REQ-090.1 "en WebP": el celular codifica
+  WebP y, si el navegador no sabe (Safari viejo entrega PNG), JPEG, como las fotos de productos
+  desde el Hito 5 (`encodeUnderLimit`); la ruta sigue terminando en `.webp`. Pedir solo WebP
+  dejaría sin subir fotos a esos iPhone.
 - Modelo: Sonnet 5.5. Complejidad: baja.
 
 ### [ ] T-228 · Validación Hito 20

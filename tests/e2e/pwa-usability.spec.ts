@@ -1,7 +1,15 @@
 import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { CALL, loginAsBarber, loginAsOwner, SEED, addProduct } from "./helpers";
+import {
+  CALL,
+  addProduct,
+  confirmJoin,
+  loginAsBarber,
+  loginAsOwner,
+  openJoinForm,
+  SEED,
+} from "./helpers";
 
 /**
  * T-029 · REQ-032.1 (instalable), REQ-032.2 y NFR-008 (botones ≥ 48 px abajo, fuente ≥ 16 px,
@@ -122,12 +130,16 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
   test("REQ-032.2 / NFR-008 portada y formulario del cliente: botones ≥ 48 px abajo, fuente 16 px, zoom 200 %", async ({
     page,
   }) => {
-    // Portada y formulario son una sola pantalla (T-173, ADR-052)
+    // Portada con "Tomar turno" abajo; el formulario es el paso 3 (T-224, ADR-063)
     await page.goto(`/${SEED.slug}`);
     await expectThumbButton(page, page.getByRole("button", { name: "Tomar turno" }));
     await expectAllTargets48(page);
     await expectBaseFont16(page);
     await expectZoom200(page);
+    await openJoinForm(page);
+    await expectThumbButton(page, confirmJoin(page));
+    await expectAllTargets48(page);
+    await expectBaseFont16(page);
   });
 
   test("REQ-032.2 / NFR-008 portada con una fuente ancha (la de Linux en CI) también cabe con zoom 200 %", async ({

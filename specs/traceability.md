@@ -109,7 +109,7 @@
 | REQ-020.4 | Clientes para recordar (inactivos) | T-024 (hecha), T-031 (hecha), T-037 (hecha) | reminders.spec.ts, 0013_customers_loyalty.sql, 0018_reminders.sql | cubierto |
 | REQ-020.5 | Clientes para recordar (inactivos) | T-024 (hecha), T-031 (hecha), T-037 (hecha) | reminders.spec.ts, 0013_customers_loyalty.sql, 0018_reminders.sql, 0043_membership_reports.sql | cubierto |
 | REQ-021.1 | Clientes nuevos vs. que repiten | T-031 (hecha), T-048 (hecha) | 0013_customers_loyalty.sql, 0027_weekly.sql | cubierto |
-| REQ-022.1 | Barbero preferido en la ficha | T-019 (hecha), T-038 (hecha), T-039 (hecha) | preferred-barber.spec.ts, preferred-barber.test.ts | cubierto |
+| REQ-022.1 | Barbero preferido en la ficha | T-019 (hecha), T-038 (hecha), T-039 (hecha) | join-steps.spec.ts, preferred-barber.spec.ts, preferred-barber.test.ts | cubierto |
 | REQ-023.1 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (hecha), T-140 (hecha) | checkout.spec.ts, daviplata.test.ts, 0021_cash.sql, 0022_register_sale.sql, 0068_daviplata.sql | cubierto |
 | REQ-023.2 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (hecha), T-140 (hecha) | checkout.spec.ts, commission.test.ts, 0022_register_sale.sql | cubierto |
 | REQ-023.3 | Cobrar un servicio | T-040 (hecha), T-041 (hecha), T-042 (hecha), T-043 (hecha), T-044 (hecha), T-050 (hecha), T-140 (hecha) | checkout.spec.ts, 0021_cash.sql, 0022_register_sale.sql | cubierto |
@@ -156,7 +156,7 @@
 | REQ-035.4 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | 0030_barber_services.sql | cubierto |
 | REQ-035.5 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | 0030_barber_services.sql | cubierto |
 | REQ-035.6 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | services-by-barber.spec.ts, public-queue.test.ts, barber-services.test.ts, 0032_estimate_by_service.sql | cubierto |
-| REQ-035.7 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | services-by-barber.spec.ts, public-queue.test.ts, barber-services.test.ts, 0031_queue_by_service.sql | cubierto |
+| REQ-035.7 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | services-by-barber.spec.ts, public-queue.test.ts, barber-services.test.ts, join-steps.test.ts, 0031_queue_by_service.sql | cubierto |
 | REQ-035.8 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | public-queue.test.ts, 0031_queue_by_service.sql | cubierto |
 | REQ-035.9 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | barber-queue-by-service.spec.ts, queue-estimate.test.ts, 0030_barber_services.sql, 0031_queue_by_service.sql | cubierto |
 | REQ-035.10 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | barber-queue-by-service.spec.ts, queue-estimate.test.ts, 0031_queue_by_service.sql, 0032_estimate_by_service.sql | cubierto |
@@ -483,26 +483,26 @@
 | REQ-084.2 | Citas encendidas en Gamma Club | T-210 (hecha) | proxy.test.ts | cubierto |
 | REQ-084.3 | Citas encendidas en Gamma Club | T-210 (hecha) | modules.test.ts | cubierto |
 | REQ-084.4 | Citas encendidas en Gamma Club | T-210 (hecha) | modules.test.ts | cubierto |
-| REQ-085.1 | Foto del barbero | T-221 (pendiente), T-224 (pendiente), T-226 (pendiente) | — | sin prueba |
-| REQ-085.2 | Foto del barbero | T-221 (pendiente), T-224 (pendiente), T-226 (pendiente) | — | sin prueba |
-| REQ-085.3 | Foto del barbero | T-221 (pendiente), T-224 (pendiente), T-226 (pendiente) | — | sin prueba |
-| REQ-085.4 | Foto del barbero | T-221 (pendiente), T-224 (pendiente), T-226 (pendiente) | — | sin prueba |
-| REQ-085.5 | Foto del barbero | T-221 (pendiente), T-224 (pendiente), T-226 (pendiente) | — | sin prueba |
-| REQ-086.1 |  | T-222 (pendiente), T-224 (pendiente) | — | sin prueba |
-| REQ-086.2 |  | T-222 (pendiente), T-224 (pendiente) | — | sin prueba |
-| REQ-087.1 |  | T-223 (pendiente) | — | sin prueba |
-| REQ-087.2 |  | T-223 (pendiente) | — | sin prueba |
-| REQ-087.3 |  | T-223 (pendiente) | — | sin prueba |
-| REQ-088.1 | Tomar turno paso a paso | T-224 (pendiente) | — | sin prueba |
-| REQ-088.2 | Tomar turno paso a paso | T-224 (pendiente) | — | sin prueba |
-| REQ-088.3 | Tomar turno paso a paso | T-224 (pendiente) | — | sin prueba |
-| REQ-088.4 | Tomar turno paso a paso | T-224 (pendiente) | — | sin prueba |
-| REQ-088.5 | Tomar turno paso a paso | T-224 (pendiente) | — | sin prueba |
-| REQ-088.6 | Tomar turno paso a paso | T-224 (pendiente) | — | sin prueba |
-| REQ-088.7 | Tomar turno paso a paso | T-224 (pendiente) | — | sin prueba |
-| REQ-089.1 | Reservar una cita paso a paso | T-225 (pendiente) | — | sin prueba |
-| REQ-089.2 | Reservar una cita paso a paso | T-225 (pendiente) | — | sin prueba |
-| REQ-089.3 | Reservar una cita paso a paso | T-225 (pendiente) | — | sin prueba |
-| REQ-090.1 | Fotos rápidas y seguras | T-220 (pendiente), T-227 (pendiente) | — | sin prueba |
-| REQ-090.2 | Fotos rápidas y seguras | T-220 (pendiente), T-227 (pendiente) | — | sin prueba |
-| REQ-090.3 | Fotos rápidas y seguras | T-220 (pendiente), T-227 (pendiente) | — | sin prueba |
+| REQ-085.1 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
+| REQ-085.2 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
+| REQ-085.3 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | brand-images.test.tsx | cubierto |
+| REQ-085.4 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | brand-images.test.tsx, my-appointment.test.tsx, my-ticket.test.tsx, 0075_appointment_barber_photo.sql | cubierto |
+| REQ-085.5 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | visual-cliente-cita.spec.ts, my-appointment.test.tsx, my-ticket.test.tsx, public-home.test.tsx, 0074_brand_images.sql, 0075_appointment_barber_photo.sql | cubierto |
+| REQ-086.1 |  | T-222 (hecha), T-224 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
+| REQ-086.2 |  | T-222 (hecha), T-224 (hecha) | visual-cliente-cita.spec.ts, 0074_brand_images.sql | cubierto |
+| REQ-087.1 |  | T-223 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
+| REQ-087.2 |  | T-223 (hecha) | public-home.test.tsx, 0074_brand_images.sql | cubierto |
+| REQ-087.3 |  | T-223 (hecha) | photos-speed.test.tsx | cubierto |
+| REQ-088.1 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, join-steps.test.ts, public-home.test.tsx | cubierto |
+| REQ-088.2 | Tomar turno paso a paso | T-224 (hecha) | helpers.ts, join-steps.spec.ts, join-steps.test.ts, public-home.test.tsx | cubierto |
+| REQ-088.3 | Tomar turno paso a paso | T-224 (hecha) | appointments-public.spec.ts, join-steps.spec.ts, join-steps.test.ts | cubierto |
+| REQ-088.4 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, privacy.spec.ts, visual-cliente-cita.spec.ts, join-steps.test.ts, public-home.test.tsx | cubierto |
+| REQ-088.5 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts | cubierto |
+| REQ-088.6 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, join-steps.test.ts | cubierto |
+| REQ-088.7 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, public-home.test.tsx | cubierto |
+| REQ-089.1 | Reservar una cita paso a paso | T-225 (hecha) | appointments-public.spec.ts, visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
+| REQ-089.2 | Reservar una cita paso a paso | T-225 (hecha) | visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
+| REQ-089.3 | Reservar una cita paso a paso | T-225 (hecha) | appointments-public.spec.ts, visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
+| REQ-090.1 | Fotos rápidas y seguras | T-220 (hecha), T-227 (pendiente) | photos-speed.test.tsx | prueba escrita |
+| REQ-090.2 | Fotos rápidas y seguras | T-220 (hecha), T-227 (pendiente) | brand-images.test.tsx, 0074_brand_images.sql | prueba escrita |
+| REQ-090.3 | Fotos rápidas y seguras | T-220 (hecha), T-227 (pendiente) | visual-cliente-cita.spec.ts, visual-cliente.spec.ts | prueba escrita |
