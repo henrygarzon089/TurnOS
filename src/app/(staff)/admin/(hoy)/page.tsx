@@ -85,7 +85,10 @@ export default async function TodayPage() {
         </div>
         <TodayShortcuts modules={modules} />
       </div>
-      <div className="group grid gap-2 max-lg:-mx-4 md:grid-cols-2 md:items-start lg:mt-6 lg:grid-cols-12 lg:items-stretch lg:gap-5">
+      {/* REQ-091.5: `grid-cols-1` y `*:min-w-0` dejan que las tarjetas se encojan; sin ellos una
+          fila con `truncate` larga ("Andrés Pulgarín cumple el miércoles") estira la columna y la
+          página se corre de lado a 360 px */}
+      <div className="group grid grid-cols-1 gap-2 *:min-w-0 max-lg:-mx-4 md:grid-cols-2 md:items-start lg:mt-6 lg:grid-cols-12 lg:items-stretch lg:gap-5">
         <div className="flex flex-col gap-2 lg:contents">
           <div className={`max-lg:has-[[data-empty]]:hidden ${layout.alerts}`}>
             <Suspense fallback={<TodayCardSkeleton rows={3} />}>
