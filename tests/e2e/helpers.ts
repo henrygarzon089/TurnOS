@@ -71,7 +71,7 @@ export async function openJoinForm(page: Page, opts: { service?: RegExp; barber?
 }
 
 /** De la portada al paso 2 ("¿Con quién?") de tomar turno (REQ-088.2). */
-export async function openBarberStep(page: Page, service: RegExp = /^Corte\s+\$/) {
+export async function openBarberStep(page: Page, service: RegExp = /^Corte\s+\d+ min/) {
   await page.goto(`/${SEED.slug}`);
   await waitForContent(page);
   await page.getByRole("button", { name: "Tomar turno" }).click();
