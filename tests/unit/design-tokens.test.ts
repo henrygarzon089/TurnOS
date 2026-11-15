@@ -26,6 +26,11 @@ const PAIRS: [string, string, number][] = [
   ["warn", "card", 4.5],
   ["warn", "warn-soft", 4.5],
   ["line-strong", "card", 3],
+  ["line-strong", "surface", 3], // REQ-091.1: el fondo de página ahora es crema
+  ["danger", "surface", 4.5],
+  ["link", "card", 4.5], // REQ-091.3: Azul Gamma en enlaces y foco
+  ["link", "surface", 4.5],
+  ["accent-mark", "brand", 3], // tornillo del logo sobre navy: no es texto
 ];
 
 describe("REQ-078.2 contraste de los tokens", () => {
@@ -38,6 +43,27 @@ describe("REQ-078.2 contraste de los tokens", () => {
     expect(colors[fg], `falta --color-${fg}`).toBeDefined();
     expect(colors[bg], `falta --color-${bg}`).toBeDefined();
     expect(contrastRatio(colors[fg], colors[bg])).toBeGreaterThanOrEqual(min);
+  });
+
+  it("REQ-091.1 los tokens toman los colores del manual de Gamma Club (design §27.1)", () => {
+    const manual: Record<string, string> = {
+      brand: "#14254a", // Navy Gamma
+      ink: "#14254a",
+      surface: "#f3f0ea", // Crema
+      card: "#ffffff",
+      muted: "#4a4f5c", // Gris grafito
+      accent: "#e02b3b", // Rojo Gamma
+      called: "#e02b3b",
+      "accent-mark": "#f0394a", // rojo del tornillo sobre navy
+      link: "#2d55d6", // Azul Gamma
+    };
+    for (const [token, hex] of Object.entries(manual))
+      expect([token, colors[token]?.toLowerCase()]).toEqual([token, hex]);
+  });
+
+  it("REQ-091.2 el Rojo Gamma no alcanza 4,5:1 como texto sobre crema (por eso nunca es texto)", () => {
+    expect(contrastRatio(colors.accent, colors.surface)).toBeLessThan(4.5);
+    expect(contrastRatio(colors["accent-ink"], colors.accent)).toBeGreaterThanOrEqual(4.5);
   });
 
   it("REQ-078.1 los colores del manifiesto salen de los mismos tokens", () => {

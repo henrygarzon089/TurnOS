@@ -33,7 +33,7 @@ const DOT: Record<TodayBarberState, string> = {
 };
 const TEXT: Record<TodayBarberState, string> = {
   serving: "text-ink font-semibold",
-  called: "text-accent font-semibold",
+  called: "text-danger font-semibold",
   paused: "text-warn font-semibold",
   free: "text-ok font-semibold",
   off: "text-muted",

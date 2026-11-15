@@ -39,6 +39,7 @@ const HITOS: Record<string, [number, number][]> = {
   "18": [[82, 83]], // cobro y pantallas sin módulos apagados (ADR-060)
   "19": [[84, 84]], // Citas encendido en modo esencial (ADR-062)
   "20": [[85, 90]], // cliente con fotos y paso a paso (ADR-063)
+  "21": [[91, 91]], // marca Gamma Club en la app (ADR-065)
 };
 
 const req = readFileSync("specs/requirements.md", "utf8");

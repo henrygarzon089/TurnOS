@@ -13,7 +13,7 @@ export function EditCustomerSheet({ view }: { view: CustomerView }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-brand min-h-12 shrink-0 px-1 text-sm font-semibold underline underline-offset-2"
+        className="text-link min-h-12 shrink-0 px-1 text-sm font-semibold underline underline-offset-2"
         aria-label="Editar datos del cliente"
       >
         Editar

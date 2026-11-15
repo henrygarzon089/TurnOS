@@ -416,7 +416,7 @@
 | REQ-077.4 | Menú del dueño por grupos | T-150 (hecha), T-152 (hecha), T-154 (hecha) | admin-nav.test.tsx | cubierto |
 | REQ-077.5 | Menú del dueño por grupos | T-150 (hecha), T-152 (hecha), T-154 (hecha) | admin-nav.spec.ts, admin-nav.test.tsx | cubierto |
 | REQ-077.6 | Menú del dueño por grupos | T-150 (hecha), T-152 (hecha), T-154 (hecha) | today.spec.ts, today.test.tsx | cubierto |
-| REQ-078.1 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (hecha), T-170 (hecha), T-171 (hecha), T-177 (hecha), T-178 (hecha), T-179 (hecha), T-180 (hecha), T-181 (hecha), T-172 (hecha), T-173 (hecha), T-174 (hecha), T-175 (hecha), T-176 (hecha), T-168 (hecha), T-195 (hecha), T-196 (hecha) | design-tokens.test.ts, lint-design.test.ts | cubierto |
+| REQ-078.1 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (hecha), T-170 (hecha), T-171 (hecha), T-177 (hecha), T-178 (hecha), T-179 (hecha), T-180 (hecha), T-181 (hecha), T-172 (hecha), T-173 (hecha), T-174 (hecha), T-175 (hecha), T-176 (hecha), T-168 (hecha), T-195 (hecha), T-196 (hecha) | brand-mark.test.tsx, design-tokens.test.ts, lint-design.test.ts | cubierto |
 | REQ-078.2 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (hecha), T-170 (hecha), T-171 (hecha), T-177 (hecha), T-178 (hecha), T-179 (hecha), T-180 (hecha), T-181 (hecha), T-172 (hecha), T-173 (hecha), T-174 (hecha), T-175 (hecha), T-176 (hecha), T-168 (hecha), T-195 (hecha), T-196 (hecha) | design-tokens.test.ts | cubierto |
 | REQ-078.3 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (hecha), T-170 (hecha), T-171 (hecha), T-177 (hecha), T-178 (hecha), T-179 (hecha), T-180 (hecha), T-181 (hecha), T-172 (hecha), T-173 (hecha), T-174 (hecha), T-175 (hecha), T-176 (hecha), T-168 (hecha), T-195 (hecha), T-196 (hecha) | appointments-agenda.spec.ts, helpers.ts, ui-components.spec.ts, visual-cliente.spec.ts, visual-dueno-config.spec.ts, visual-dueno-fila-caja.spec.ts, visual-dueno-modulos.spec.ts, lint-design.test.ts, ui-components.test.tsx | cubierto |
 | REQ-078.4 | Sistema visual nuevo | T-160 (hecha), T-161 (hecha), T-162 (hecha), T-163 (hecha), T-164 (hecha), T-165 (hecha), T-166 (hecha), T-167 (hecha), T-169 (hecha), T-170 (hecha), T-171 (hecha), T-177 (hecha), T-178 (hecha), T-179 (hecha), T-180 (hecha), T-181 (hecha), T-172 (hecha), T-173 (hecha), T-174 (hecha), T-175 (hecha), T-176 (hecha), T-168 (hecha), T-195 (hecha), T-196 (hecha) | visual-acceso.spec.ts, visual-barbero.spec.ts, visual-cliente.spec.ts, visual-dueno-config.spec.ts, visual-dueno-fila-caja.spec.ts, visual-dueno-modulos.spec.ts, visual-helpers.ts | cubierto |
@@ -490,21 +490,33 @@
 | REQ-085.3 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | brand-images.test.tsx | cubierto |
 | REQ-085.4 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | brand-images.test.tsx, my-appointment.test.tsx, my-ticket.test.tsx, 0075_appointment_barber_photo.sql | cubierto |
 | REQ-085.5 | Foto del barbero | T-221 (hecha), T-224 (hecha), T-226 (hecha) | visual-cliente-cita.spec.ts, my-appointment.test.tsx, my-ticket.test.tsx, public-home.test.tsx, 0074_brand_images.sql, 0075_appointment_barber_photo.sql | cubierto |
-| REQ-086.1 |  | T-222 (hecha), T-224 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
-| REQ-086.2 |  | T-222 (hecha), T-224 (hecha) | visual-cliente-cita.spec.ts, 0074_brand_images.sql | cubierto |
+| REQ-086.1 |  | T-222 (hecha), T-224 (hecha), T-230 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
+| REQ-086.2 |  | T-222 (hecha), T-224 (hecha), T-230 (hecha) | visual-cliente-cita.spec.ts, public-home.test.tsx, service-card.test.tsx, 0074_brand_images.sql | cubierto |
 | REQ-087.1 |  | T-223 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
-| REQ-087.2 |  | T-223 (hecha) | public-home.test.tsx, 0074_brand_images.sql | cubierto |
+| REQ-087.2 |  | T-223 (hecha) | brand-mark.test.tsx, public-home.test.tsx, 0074_brand_images.sql | cubierto |
 | REQ-087.3 |  | T-223 (hecha) | photos-speed.test.tsx | cubierto |
 | REQ-088.1 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, join-steps.test.ts, public-home.test.tsx | cubierto |
 | REQ-088.2 | Tomar turno paso a paso | T-224 (hecha) | helpers.ts, join-steps.spec.ts, join-steps.test.ts, public-home.test.tsx | cubierto |
 | REQ-088.3 | Tomar turno paso a paso | T-224 (hecha) | appointments-public.spec.ts, join-steps.spec.ts, join-steps.test.ts | cubierto |
-| REQ-088.4 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, privacy.spec.ts, visual-cliente-cita.spec.ts, join-steps.test.ts, public-home.test.tsx | cubierto |
-| REQ-088.5 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts | cubierto |
+| REQ-088.4 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, privacy.spec.ts, services-by-barber.spec.ts, visual-cliente-cita.spec.ts, join-steps.test.ts, public-home.test.tsx | cubierto |
+| REQ-088.5 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, preferred-barber.spec.ts | cubierto |
 | REQ-088.6 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, join-steps.test.ts | cubierto |
 | REQ-088.7 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, public-home.test.tsx | cubierto |
+| REQ-088.8 | Tomar turno paso a paso | T-224 (hecha) | public-home.test.tsx | cubierto |
 | REQ-089.1 | Reservar una cita paso a paso | T-225 (hecha) | appointments-public.spec.ts, visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
 | REQ-089.2 | Reservar una cita paso a paso | T-225 (hecha) | visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
 | REQ-089.3 | Reservar una cita paso a paso | T-225 (hecha) | appointments-public.spec.ts, visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
 | REQ-090.1 | Fotos rápidas y seguras | T-220 (hecha), T-227 (hecha) | photos-speed.test.tsx | cubierto |
 | REQ-090.2 | Fotos rápidas y seguras | T-220 (hecha), T-227 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
 | REQ-090.3 | Fotos rápidas y seguras | T-220 (hecha), T-227 (hecha) | visual-cliente-cita.spec.ts, visual-cliente.spec.ts | cubierto |
+| REQ-091.1 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | design-tokens.test.ts, photos-speed.test.tsx | cubierto |
+| REQ-091.2 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | design-tokens.test.ts, lint-design.test.ts | cubierto |
+| REQ-091.3 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-link.test.ts, design-tokens.test.ts | cubierto |
+| REQ-091.4 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-font.test.ts, lint-design.test.ts, vitals-reporter.test.tsx | cubierto |
+| REQ-091.5 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | marca-gamma.spec.ts | cubierto |
+| REQ-091.6 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | pwa-usability.spec.ts, brand-mark.test.tsx | cubierto |
+| REQ-091.7 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-mark.test.tsx | cubierto |
+| REQ-091.8 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-icons.test.ts | cubierto |
+| REQ-091.9 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-mark.test.tsx, public-home.test.tsx | cubierto |
+| REQ-091.10 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | screen-board.test.tsx | cubierto |
+| REQ-091.11 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-lighthouse.test.ts | cubierto |

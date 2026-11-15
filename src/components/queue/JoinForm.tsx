@@ -272,7 +272,8 @@ export function JoinFlow({ business, now, canBook = false, lines, stateText }: P
         compact={inSteps}
         aside={
           <div className="hidden items-center gap-8 lg:flex">
-            {canBook && (
+            {/* REQ-088.8: en la portada ya está el botón; arriba solo durante los pasos */}
+            {canBook && inSteps && (
               <Link
                 href={citaHref}
                 className="text-ink inline-flex min-h-12 items-center font-semibold underline underline-offset-4"
@@ -372,7 +373,7 @@ export function JoinFlow({ business, now, canBook = false, lines, stateText }: P
                         <button
                           type="button"
                           aria-label={`Ver cortes de ${b.name}`}
-                          className="text-brand min-h-12 self-start text-sm font-medium underline"
+                          className="text-link min-h-12 self-start text-sm font-medium underline"
                           onClick={() => setCutsOf({ id: b.id, name: b.name })}
                         >
                           Ver cortes
@@ -467,7 +468,7 @@ export function JoinFlow({ business, now, canBook = false, lines, stateText }: P
                   {alreadyAccepted ? (
                     <p className="text-muted text-sm">
                       Ya aceptaste nuestra política de datos.{" "}
-                      <Link href={`/${business.slug}/privacidad`} className="text-brand underline">
+                      <Link href={`/${business.slug}/privacidad`} className="text-link underline">
                         Leerla
                       </Link>
                     </p>
@@ -520,9 +521,6 @@ export function JoinFlow({ business, now, canBook = false, lines, stateText }: P
           )}
         </div>
       </main>
-      <footer className="text-muted mx-auto hidden w-full max-w-6xl px-16 pt-10 pb-8 text-sm lg:block">
-        Fila con TurnOS
-      </footer>
     </>
   );
 }

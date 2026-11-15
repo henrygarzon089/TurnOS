@@ -45,7 +45,7 @@ export function OptionList({
           return (
             <label
               key={o.value}
-              className={`has-focus-visible:outline-brand flex min-h-12 cursor-pointer items-center gap-3 rounded-sm px-3 py-2 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-disabled:cursor-not-allowed ${layout === "grid" ? "justify-center text-center" : ""} ${look}`}
+              className={`has-focus-visible:outline-link flex min-h-12 cursor-pointer items-center gap-3 rounded-sm px-3 py-2 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-disabled:cursor-not-allowed ${layout === "grid" ? "justify-center text-center" : ""} ${look}`}
             >
               <input
                 type="radio"

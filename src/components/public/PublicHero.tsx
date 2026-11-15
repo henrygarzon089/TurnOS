@@ -1,12 +1,13 @@
 import Image from "next/image";
-import { businessMark } from "@/lib/domain/public-view";
+import { GammaMark } from "@/components/brand/GammaMark";
 import { mediaUrl } from "@/lib/media/paths";
 
 /**
  * REQ-087.2 / REQ-088.1 (design.md §26.3): la cabecera de la portada. La foto del local arriba (si
  * la hay; es la imagen grande del primer pantallazo, por eso `priority`), el logo o la marca en
  * azul marino, el nombre (el `h1`) y el estado. `compact` la deja en una línea durante los pasos.
- * Colores de TurnOS (REQ-087.3, PA-H20-1).
+ * Sin logo subido, el símbolo de Gamma Club en negativo sobre navy y el nombre en mayúsculas
+ * espaciadas, como el logo del manual (REQ-091.9, ADR-065).
  */
 export function PublicHero({
   name,
@@ -47,18 +48,20 @@ export function PublicHero({
             width={compact ? 48 : 64}
             height={compact ? 48 : 64}
             unoptimized
-            className={`${compact ? "size-12" : `size-16 ${showCover ? "ring-card -mt-10 ring-4" : ""}`} bg-card shrink-0 rounded-md object-cover`}
+            className={`${compact ? "size-12" : `size-16 ${showCover ? "ring-card relative z-10 -mt-10 ring-4" : ""}`} bg-card shrink-0 rounded-md object-cover`}
           />
         ) : (
           <span
             aria-hidden="true"
-            className={`${compact ? "size-12 text-lg" : `size-16 text-xl ${showCover ? "ring-card -mt-10 ring-4" : ""}`} bg-brand text-brand-ink flex shrink-0 items-center justify-center rounded-md font-bold tabular-nums`}
+            className={`${compact ? "size-12" : `size-16 ${showCover ? "ring-card relative z-10 -mt-10 ring-4" : ""}`} bg-brand flex shrink-0 items-center justify-center rounded-md`}
           >
-            {businessMark(name)}
+            <GammaMark variant="negativo" size={compact ? 40 : 48} decorative />
           </span>
         )}
         <div className="min-w-0 flex-1">
-          <h1 className={`truncate leading-tight font-bold ${compact ? "text-lg" : "text-2xl"}`}>
+          <h1
+            className={`truncate leading-tight font-semibold tracking-[0.3em] uppercase ${compact ? "text-base" : "text-xl"}`}
+          >
             {name}
           </h1>
           {subtitle && <p className="text-muted truncate text-sm">{subtitle}</p>}

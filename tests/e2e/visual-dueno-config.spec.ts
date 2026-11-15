@@ -26,7 +26,7 @@ const ROUTES = [
   "/admin/privacidad",
 ];
 
-const ACCENT = "rgb(194, 30, 47)"; // --color-accent (#C21E2F)
+const ACCENT = "rgb(224, 43, 59)"; // --color-accent (#E02B3B, Rojo Gamma)
 
 /** Botones o enlaces con forma de píldora o con rojo relleno (REQ-078.3). */
 async function pillsAndRedActions(page: Page) {
@@ -210,7 +210,7 @@ async function brandHeader(page: Page, text: string) {
           (el.textContent ?? "").includes(text)
         );
       }),
-    { text, brand: "rgb(14, 30, 61)" },
+    { text, brand: "rgb(20, 37, 74)" },
   );
 }
 

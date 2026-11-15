@@ -1,15 +1,17 @@
 import type { MetadataRoute } from "next";
+import { BRAND_NAME } from "@/lib/brand";
 import { PWA_BACKGROUND_COLOR, PWA_THEME_COLOR } from "@/lib/pwa";
 
 /**
  * PWA instalable (REQ-032.1). El nombre por negocio (marca blanca, PA-22) se resuelve en
- * /[slug]/manifest.webmanifest (T-029); este es el manifest base de la app del personal.
+ * /[slug]/manifest.webmanifest (T-029); este es el manifest base de la app del personal, que se
+ * llama como el negocio único (REQ-091.6).
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "TurnOS",
-    short_name: "TurnOS",
-    description: "Fila virtual, clientes y caja para negocios de barrio.",
+    name: BRAND_NAME,
+    short_name: BRAND_NAME,
+    description: `Fila, clientes y caja de ${BRAND_NAME}.`,
     lang: "es-CO",
     start_url: "/app",
     display: "standalone",

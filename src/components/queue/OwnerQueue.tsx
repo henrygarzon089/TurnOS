@@ -259,7 +259,7 @@ export function OwnerQueue({
               disabled={busy}
               onClick={() => presence(b.id, true)}
               aria-label={`Marcar a ${b.name} presente`}
-              className="text-brand min-h-12 px-1 font-semibold underline underline-offset-4"
+              className="text-link min-h-12 px-1 font-semibold underline underline-offset-4"
             >
               {b.name}
             </button>
@@ -565,7 +565,7 @@ function LaneColumn({
               type="button"
               disabled={menu.busy}
               onClick={() => presence(b.id, false)}
-              className="text-brand min-h-12 px-4 text-sm font-semibold underline underline-offset-4"
+              className="text-link min-h-12 px-4 text-sm font-semibold underline underline-offset-4"
             >
               {b.name} no vino hoy
             </button>

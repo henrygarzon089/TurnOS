@@ -13,6 +13,8 @@ vi.mock("@vercel/speed-insights/next", () => ({
 }));
 vi.mock("@/components/ui/ServiceWorker", () => ({ ServiceWorker: () => null }));
 vi.mock("@/app/globals.css", () => ({}));
+// next/font solo existe al compilar con Next (REQ-091.4)
+vi.mock("@/app/fonts", () => ({ montserrat: { variable: "font-montserrat" } }));
 
 const { default: RootLayout } = await import("@/app/layout");
 

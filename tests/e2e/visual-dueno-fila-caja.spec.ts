@@ -184,7 +184,7 @@ test.describe("T-165 fila y caja del dueño con el sistema visual (REQ-078)", ()
       name: "Cancelar turno",
     });
     expect(await cancel.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe(
-      "rgb(194, 30, 47)",
+      "rgb(224, 43, 59)",
     );
     await cancel.click();
     const sheet = page.getByRole("dialog", { name: /¿Cancelar el turno .* de Visual Cancelar\?/ });
@@ -249,7 +249,7 @@ test.describe("T-165 fila y caja del dueño con el sistema visual (REQ-078)", ()
     await expect(sheet).toBeVisible();
     const confirm = sheet.getByRole("button", { name: "Anular venta" });
     expect(await confirm.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe(
-      "rgb(194, 30, 47)",
+      "rgb(224, 43, 59)",
     );
     await sheet.getByLabel("Motivo").fill("Prueba visual");
     await confirm.click();

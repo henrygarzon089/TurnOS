@@ -89,7 +89,7 @@ export default async function ProductsPage({
                 <span className="text-ink font-bold">{biz.product_commission_pct} %</span>
                 <Link
                   href="/admin/negocio"
-                  className="text-brand inline-flex min-h-12 items-center px-1 font-semibold underline underline-offset-4"
+                  className="text-link inline-flex min-h-12 items-center px-1 font-semibold underline underline-offset-4"
                 >
                   Cambiar
                 </Link>

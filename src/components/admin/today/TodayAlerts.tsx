@@ -25,7 +25,7 @@ export async function TodayAlerts({
       title="Piden tu atención"
       data-empty={alerts?.length === 0 || undefined}
       className={alerts?.length === 0 ? "max-lg:hidden" : "max-lg:bg-accent-soft"}
-      titleClassName={alerts && alerts.length > 0 ? "max-lg:text-accent" : ""}
+      titleClassName={alerts && alerts.length > 0 ? "max-lg:text-danger" : ""}
       badge={
         alerts && alerts.length > 0 ? <CountBadge count={alerts.length} label="alertas" /> : null
       }

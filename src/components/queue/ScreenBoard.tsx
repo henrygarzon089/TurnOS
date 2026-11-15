@@ -3,7 +3,7 @@
 import QRCode from "qrcode";
 import { useCallback, useEffect, useState } from "react";
 import { getScreenQueue } from "@/lib/actions/public";
-import { businessMark } from "@/lib/domain/public-view";
+import { GammaMark } from "@/components/brand/GammaMark";
 import {
   activeCall,
   barberScreenState,
@@ -83,11 +83,9 @@ export function ScreenLayout({
     >
       {/* 1. Marca, nombre, esperando y hora */}
       <header className="flex h-[5em] shrink-0 items-center gap-[1.5em]">
-        <span
-          aria-hidden="true"
-          className="text-brand flex size-[5em] shrink-0 items-center justify-center rounded-md bg-white"
-        >
-          <span className="text-[2.25em] font-bold">{businessMark(view.name)}</span>
+        <span aria-hidden="true" className="flex size-[5em] shrink-0 items-center justify-center">
+          {/* REQ-091.10: el símbolo de Gamma Club en negativo, como en la portada */}
+          <GammaMark variant="negativo" size={64} decorative className="size-full" />
         </span>
         <h1 className="min-w-0 flex-1 truncate text-[3.5em] leading-tight font-bold">
           {view.name}

@@ -28,7 +28,7 @@ import {
   positionText,
   ticketStep,
 } from "@/lib/domain/my-ticket";
-import { businessMark } from "@/lib/domain/public-view";
+import { GammaMark } from "@/components/brand/GammaMark";
 import { formatTimeBogota } from "@/lib/domain/time";
 import { useBrowserOnline } from "@/lib/realtime/use-browser-online";
 import { useQueueSubscription } from "@/lib/realtime/use-queue-subscription";
@@ -356,9 +356,9 @@ function TicketHeader({ name, slug, online }: { name: string; slug: string; onli
       </Link>
       <span
         aria-hidden="true"
-        className="bg-brand text-brand-ink flex size-7 shrink-0 items-center justify-center rounded-xs text-xs font-bold tabular-nums"
+        className="bg-brand flex size-7 shrink-0 items-center justify-center rounded-xs"
       >
-        {businessMark(name)}
+        <GammaMark variant="negativo" size={22} decorative />
       </span>
       <h1 className="min-w-0 flex-1 truncate text-sm font-bold">{name}</h1>
       {online ? (
@@ -512,7 +512,7 @@ function Steps({ status }: { status: Ticket["status"] }) {
               />
             </span>
             <span
-              className={`mt-1 block text-xs ${current ? (status === "called" ? "text-called font-semibold" : "font-semibold") : "text-muted"}`}
+              className={`mt-1 block text-xs ${current ? (status === "called" ? "text-danger font-semibold" : "font-semibold") : "text-muted"}`}
             >
               {label}
             </span>
@@ -731,7 +731,7 @@ function Courtesy({
           {courtesy?.served && <span className="text-ok font-semibold"> · Servida ✓</span>}
         </p>
         {canChange && (
-          <button type="button" className="text-brand min-h-12 shrink-0 underline" onClick={toggle}>
+          <button type="button" className="text-link min-h-12 shrink-0 underline" onClick={toggle}>
             {courtesy ? "Cambiar bebida" : "Escoger bebida"}
           </button>
         )}
@@ -807,7 +807,7 @@ function WhatsappOptOut({
     <div className="text-sm">
       <button
         type="button"
-        className="text-brand min-h-12 underline"
+        className="text-link min-h-12 underline"
         onClick={optOut}
         disabled={saving}
       >

@@ -2942,6 +2942,76 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: `pnpm trace --hito=20` sin huecos; Henry sube las fotos de Pedro y Stiven, logo y
   portada, toma un turno y reserva una cita desde el celular; aprobación (ADR nuevo).
 
+## Hito 21 — Marca Gamma Club en la app (REQ-091, ADR-065)
+
+> Aprobada por Henry el 2026-11-15 (ADR-065). Orden: T-240 → T-241 → T-242 →
+> T-243 → T-244 → T-245. Sin migraciones.
+
+### [x] T-240 · Íconos y PNG de la marca
+- REQ: REQ-091.8 · `scripts/brand-icons.ts` genera los íconos de la app, el favicon y
+  `logo-negocio-256.png` desde `docs/marca/logos/` (design §27.4).
+- Terminado: PNG en `public/icons/`, `favicon.ico` nuevo; prueba de que el enmascarable deja el
+  símbolo en el 80 % central.
+- Hecha 2026-11-15. `sharp` pasa a dependencia de desarrollo (ya venía con Next). El favicon
+  trae 16 y 32 px con el ícono simplificado y 48 px con el completo; el ícono de Apple va a sangre
+  (iPhone no acepta transparencia).
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [x] T-241 · Colores del manual
+- REQ: REQ-091.1, REQ-091.2, REQ-091.3, REQ-091.10 · Tokens de design §27.1, token `link` en el
+  foco y los enlaces, `PWA_THEME_COLOR`/`PWA_BACKGROUND_COLOR`, `lint:design` sin `text-accent`.
+- Terminado: `design-tokens.test.ts` con la tabla nueva en verde; `/diseno` muestra la paleta nueva.
+- Hecha 2026-11-15. Desvío: `accent-on-brand` se queda en #FF5A68 porque es texto en el
+  televisor; el #F0394A del manual va en el token nuevo `accent-mark` (design §27.1). Tres textos
+  en rojo de marca pasan a `danger` ("Hoy" con alertas, turno llamado en la fila del dueño y en
+  "Mi turno"). El foco y los enlaces subrayados pasan a `link` en 21 archivos; una prueba revisa
+  que no vuelvan al navy. Las E2E visuales comparan los colores nuevos.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [x] T-242 · Letra Montserrat
+- REQ: REQ-091.4, REQ-091.5 · `next/font` en `layout.tsx` y `--font-sans` (design §27.2); ajustes
+  puntuales en 360 px si algo no cabe.
+- Terminado: E2E sin desplazamiento horizontal en 360/390/1280 en las pantallas de §27.5; CLS ≤ 0,1.
+- Hecha 2026-11-15. `src/app/fonts.ts` es el único archivo que puede usar `next/font`
+  (`lint:design` lo revisa). Revisado en el navegador: portada, pasos, invitación y "Hoy" sin
+  desplazamiento horizontal a 360 px; los botones largos caben sin ajustes. Las E2E de ancho
+  corren en el CI.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [x] T-243 · Logo y nombre Gamma Club
+- REQ: REQ-091.6, REQ-091.7, REQ-091.9 · `GammaMark`, `AuthCard`, `PublicHero` sin logo, título,
+  manifest, invitación y su WhatsApp; pie "Fila con TurnOS" según PA-H21-3 (design §27.3).
+- Terminado: pruebas de §27.5 en verde; `pnpm lint:texts` en verde.
+- Hecha 2026-11-15. `GammaMark` y `GammaWordmark` en `src/components/brand/`; el nombre visible
+  sale de `BRAND_NAME` (`src/lib/brand.ts`). Agregado: además de la portada, el encabezado de las
+  otras pantallas del cliente, "Mi turno" y el televisor cambian las iniciales por el símbolo
+  (REQ-091.9/091.10), para que no queden dos marcas distintas. En la portada el nombre va en
+  mayúsculas espaciadas.
+- Arreglo del 2026-11-15 (Henry lo vio en producción): con foto del local, el logo salía cortado
+  arriba porque la foto es `relative` y el logo no, y la foto se pintaba encima. El logo (y el
+  símbolo sin logo) llevan `relative z-10`; prueba REQ-087.2 en `brand-mark.test.tsx`.
+- Arreglo del 2026-11-15 (Henry, "arréglalo"): en escritorio "Reservar una cita" salía dos veces
+  en la portada (enlace del encabezado del Hito 16 y botón del Hito 20). El enlace queda solo
+  durante los pasos (REQ-088.8, nuevo).
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [x] T-244 · Rendimiento y capturas
+- REQ: REQ-091.11 · Lighthouse móvil de la portada en CI (≥ 80 / ≥ 90); capturas en
+  `docs/diseno/capturas/hito-21/`.
+- 2026-11-15: capturas hechas (portada, servicio, Entrar, Hoy, Mi fila, televisor) contra el
+  Postgres local.
+- Hecha 2026-11-15: Lighthouse móvil del CI del PR #192 (`0e59fa6`): portada `/la-33`
+  rendimiento 92 · accesibilidad 100 · LCP 2,8 s; "Mi turno" 91 · 100; Mi fila 95 · 100; Caja
+  91 · 100. La E2E de REQ-091.5 encontró que "Hoy" se corría de lado a 360 px con todos los
+  módulos encendidos (una fila larga de "Para recordar" estiraba la columna de la cuadrícula);
+  arreglado con `grid-cols-1` y `*:min-w-0` (`fcf515e`).
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-245 · Validación Hito 21
+- Terminado: `pnpm trace --hito=21` sin huecos; Henry sube el logo en "Negocio", reinstala la app en
+  su celular y revisa portada, Entrar, Mi fila, Hoy y televisor contra el manual; aprobación
+  (ADR nuevo).
+
 ---
 
 ## Dependencias principales

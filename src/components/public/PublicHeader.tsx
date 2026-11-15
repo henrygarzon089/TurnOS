@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { businessMark } from "@/lib/domain/public-view";
+import { GammaMark } from "@/components/brand/GammaMark";
 
 /**
- * Encabezado de las pantallas del cliente (tablero Cliente-Negocio): cuadro azul marino con la
- * marca del negocio (REQ-078.14, sin logo descargado), nombre y una línea de estado. `back` pone
+ * Encabezado de las pantallas del cliente (tablero Cliente-Negocio): cuadro navy con el símbolo
+ * de Gamma Club (REQ-091.9), nombre y una línea de estado. `back` pone
  * la flecha de volver en lugar del cuadro (reservar cita, privacidad). `aside` va a la derecha.
  * El nombre es el `h1` de la página.
  */
@@ -44,9 +44,9 @@ export function PublicHeader({
         ) : (
           <span
             aria-hidden="true"
-            className="bg-brand text-brand-ink flex size-12 shrink-0 items-center justify-center rounded-md text-lg font-bold tabular-nums"
+            className="bg-brand flex size-12 shrink-0 items-center justify-center rounded-md"
           >
-            {businessMark(name)}
+            <GammaMark variant="negativo" size={40} decorative />
           </span>
         )}
         <div className="min-w-0 flex-1">

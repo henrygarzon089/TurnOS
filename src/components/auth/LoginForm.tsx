@@ -73,7 +73,7 @@ export function LoginForm({
                 setCountry(country === "co" ? "other" : "co");
                 setPhone("");
               }}
-              className="text-brand flex min-h-12 items-center self-start text-base font-semibold underline underline-offset-4"
+              className="text-link flex min-h-12 items-center self-start text-base font-semibold underline underline-offset-4"
             >
               {country === "co" ? "Mi celular no es de Colombia" : "Mi celular es de Colombia"}
             </button>
@@ -117,7 +117,7 @@ export function LoginForm({
           {canSignup && (
             <Link
               href="/crear-negocio"
-              className="text-brand flex min-h-12 items-center justify-center text-base font-semibold underline underline-offset-4"
+              className="text-link flex min-h-12 items-center justify-center text-base font-semibold underline underline-offset-4"
             >
               ¿Nuevo negocio? Crear mi cuenta
             </Link>
