@@ -34,7 +34,7 @@
 | H16 | Sistema visual nuevo (ADR-047, ADR-051, ADR-053) — **aprobado** (ADR-050) | T-160…T-181 | REQ-078 |
 | H18 | Cobro y pantallas sin módulos apagados (ADR-060) | T-200…T-203 | REQ-082, REQ-083 |
 | H19 | Citas en modo esencial (ADR-062) | T-210…T-211 | REQ-084 |
-| H20 | Cliente con fotos y paso a paso (ADR-063) | T-220…T-228 | REQ-085…REQ-090 |
+| H20 | Cliente con fotos y paso a paso (ADR-063, ADR-064) | T-220…T-230 | REQ-085…REQ-090 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -2928,6 +2928,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `services-by-barber.spec.ts` (REQ-035.6, REQ-035.7) seguían esperando el formulario de una sola
   pantalla y fallaron en el CI del PR #189 (fusionado antes de que terminaran las E2E). Ahora usan
   los pasos de REQ-088; el comportamiento no cambió.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [x] T-230 · Tarjetas de servicio al estilo de Fresha
+- REQ: REQ-086.2 · Agregada 2026-11-15 a pedido de Henry (ADR-064). Nombre y duración arriba,
+  precio grande y botón "+"/"✓" abajo, foto como miniatura a la derecha; sin migraciones.
+- Hecha 2026-11-15. Solo cambia `ServiceCard` (sirve para tomar turno y reservar). El "+" es
+  decorativo: toda la tarjeta sigue siendo el radio y tocarla pasa al paso siguiente. La prueba de
+  la portada (`public-home.test.tsx`) cambió al orden nuevo del texto.
 - Modelo: Opus 5.5. Complejidad: baja.
 
 ### [ ] T-228 · Validación Hito 20

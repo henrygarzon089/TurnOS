@@ -1875,8 +1875,12 @@ calculan las horas libres.
 ### REQ-086 · Servicios con foto — S
 - REQ-086.1 El dueño DEBE poder subir, cambiar y quitar una foto por servicio desde "Servicios", con
   las reglas de REQ-085.3 (guardada en 600 × 400 px WebP).
-- REQ-086.2 Al tomar turno y al reservar, cada servicio DEBE mostrarse como tarjeta con su foto (o
-  un ícono de tijera si no tiene), el nombre, el precio y la duración ("30 min").
+- REQ-086.2 Al tomar turno y al reservar, cada servicio DEBE mostrarse como tarjeta, al estilo de
+  Fresha (ADR-064): arriba el nombre y debajo la duración ("30 min"); abajo el precio grande en
+  negrita y, a la derecha, un botón redondo "+" que pasa a "✓" cuando el servicio está escogido
+  (borde de la tarjeta en azul marino). La foto, si existe, va como miniatura cuadrada arriba a la
+  derecha; sin foto no se muestra nada en su lugar (ya no va el ícono de tijera). Sigue siendo un
+  solo servicio por turno y tocar la tarjeta pasa solo al paso siguiente (REQ-088.3).
 
 ### REQ-087 · Marca del negocio — S
 - REQ-087.1 El dueño DEBE poder subir el logo (cuadrado, 256 × 256 px WebP) y una foto de portada

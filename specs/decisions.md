@@ -1172,3 +1172,16 @@
 - Consecuencias: migración nueva (rutas de foto en `barbers`, `services` y `businesses`, y rutas
   nuevas en `media_can_write`); `get_public_business` devuelve las rutas. Las E2E de tomar turno y
   reservar cambian de selectores. El barbero tiene su primer formulario para subir una foto propia.
+
+## ADR-064 · Tarjetas de servicio al estilo de Fresha
+- Estado: **aceptada** (Henry, 2026-11-15: "Solo el look", "Foto pequeña a la derecha")
+- Contexto: Henry mostró la reserva de una barbería en Fresha y quiere que el paso "Servicio" se vea
+  parecido: tarjetas blancas con el nombre, la duración, el precio grande y un botón "+".
+- Decisión: solo cambia la tarjeta de servicio (REQ-086.2). La foto queda como miniatura a la
+  derecha; sin foto no hay ícono. No se copian las categorías, la descripción ni escoger varios
+  servicios: las dos primeras necesitan columnas nuevas y que el dueño las llene; lo tercero
+  rompería "un solo servicio por turno" (ADR de MVP) y tocaría la caja y las comisiones.
+- Alternativas: categorías y descripción (migración); varios servicios con total y "Continuar".
+  Quedan para después si Henry las pide.
+- Consecuencias: sin migraciones; cambia solo `ServiceCard` y sirve igual para tomar turno y
+  reservar. Los colores siguen siendo los de TurnOS (REQ-087.3).
