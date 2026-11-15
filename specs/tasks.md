@@ -2846,9 +2846,10 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: en modo esencial el dueño ve "Citas" y el cliente "Reservar una cita" (con barberos que
   las reciben); CI verde.
 
-### [ ] T-211 · Validación Hito 19
+### [x] T-211 · Validación Hito 19
 - Terminado: `pnpm trace --hito=19` sin huecos; Henry configura "Citas" en producción, reserva una
   cita para mañana desde el celular y la ve en la agenda; aprobación (ADR nuevo).
+- Hecha 2026-11-15: Henry aprueba ("Aprobados Hitos 19, 20 y 21"), ADR-067.
 
 ## Hito 20 — Cliente con fotos y paso a paso (REQ-085…090, ADR-063)
 
@@ -2942,9 +2943,10 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   la portada (`public-home.test.tsx`) cambió al orden nuevo del texto.
 - Modelo: Opus 5.5. Complejidad: baja.
 
-### [ ] T-228 · Validación Hito 20
+### [x] T-228 · Validación Hito 20
 - Terminado: `pnpm trace --hito=20` sin huecos; Henry sube las fotos de Pedro y Stiven, logo y
   portada, toma un turno y reserva una cita desde el celular; aprobación (ADR nuevo).
+- Hecha 2026-11-15: Henry aprueba ("Aprobados Hitos 19, 20 y 21"), ADR-068.
 
 ## Hito 21 — Marca Gamma Club en la app (REQ-091, ADR-065)
 
@@ -3015,10 +3017,11 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   arreglado con `grid-cols-1` y `*:min-w-0` (`fcf515e`).
 - Modelo: Opus 5.5. Complejidad: baja.
 
-### [ ] T-245 · Validación Hito 21
+### [x] T-245 · Validación Hito 21
 - Terminado: `pnpm trace --hito=21` sin huecos; Henry sube el logo en "Negocio", reinstala la app en
   su celular y revisa portada, Entrar, Mi fila, Hoy y televisor contra el manual; aprobación
   (ADR nuevo).
+- Hecha 2026-11-15: Henry aprueba ("Aprobados Hitos 19, 20 y 21"), ADR-069.
 
 ## Hito 22 — Harness de los agentes (REQ-092…095, ADR-066)
 
