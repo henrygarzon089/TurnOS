@@ -85,7 +85,8 @@
     }
   }
 
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* REQ-091.4: Montserrat (src/app/fonts.ts) y, mientras carga, la del sistema */
+  --font-sans: var(--font-montserrat), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 html {

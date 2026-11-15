@@ -36,6 +36,17 @@ describe("REQ-078.14 sin degradados, desenfoque ni fuentes descargadas", () => {
   });
 });
 
+describe("REQ-091.4 Montserrat servida desde el dominio propio", () => {
+  it("REQ-091.4 next/font solo en src/app/fonts.ts; fonts.googleapis en ningún lado", () => {
+    expect(
+      designViolations("src/app/fonts.ts", `import { Montserrat } from "next/font/google";`),
+    ).toEqual([]);
+    expect(
+      designViolations("src/app/fonts.ts", `const u = "https://fonts.googleapis.com/css2";`),
+    ).toHaveLength(1);
+  });
+});
+
 describe("REQ-078.3 rojo relleno solo donde se permite", () => {
   it("REQ-078.3 marca bg-accent fuera de los archivos permitidos", () => {
     expect(tsx(`<button className="bg-accent text-accent-ink">`)).toHaveLength(1);
