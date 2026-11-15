@@ -140,15 +140,15 @@
 | REQ-028.4 | Resumen semanal | T-011 (hecha), T-048 (hecha) | 0027_weekly.sql | cubierto |
 | REQ-029.1 | Vista del barbero sobre sus números | T-042 (hecha), T-047 (hecha), T-050 (hecha) | my-numbers.spec.ts, my-numbers.test.ts, rls-cash.test.ts, 0025_cash_summary.sql, 0027_weekly.sql | cubierto |
 | REQ-030.1 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts, onboarding.spec.ts, 0002_core.sql | cubierto |
-| REQ-030.2 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | onboarding.spec.ts, t.sql, 0004_invitations.sql, 0028_mvp_gaps.sql, 0029_function_grants.sql | cubierto |
+| REQ-030.2 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | onboarding.spec.ts, 0004_invitations.sql, 0028_mvp_gaps.sql, 0029_function_grants.sql | cubierto |
 | REQ-030.3 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts | cubierto |
 | REQ-030.4 | Acceso del personal (dueño y barberos) | T-006 (hecha), T-007 (hecha), T-030 (hecha) | auth.spec.ts, 0004_invitations.sql | cubierto |
-| REQ-031.1 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-cash.test.ts, t.sql, 0002_core.sql, 0003_rls_core.sql, 0017_loyalty_progress.sql, 0029_function_grants.sql, 0030_barber_services.sql, 0033_customer_experience.sql | cubierto |
+| REQ-031.1 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-cash.test.ts, 0002_core.sql, 0003_rls_core.sql, 0017_loyalty_progress.sql, 0029_function_grants.sql, 0030_barber_services.sql, 0033_customer_experience.sql | cubierto |
 | REQ-031.2 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | 0008_public_fns.sql, 0009_realtime.sql | cubierto |
 | REQ-031.3 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | 0028_mvp_gaps.sql | cubierto |
 | REQ-031.4 | Aislamiento multi-negocio | T-004 (hecha), T-005 (hecha), T-032 (hecha), T-042 (hecha) | rls-core.test.ts, 0003_rls_core.sql | cubierto |
-| REQ-032.1 | PWA instalable | T-001 (hecha), T-010 (en curso), T-029 (hecha) | pwa-usability.spec.ts, pwa.test.ts | prueba escrita |
-| REQ-032.2 | PWA instalable | T-001 (hecha), T-010 (en curso), T-029 (hecha) | pwa-usability.spec.ts | prueba escrita |
+| REQ-032.1 | PWA instalable | T-001 (hecha), T-010 (hecha), T-029 (hecha) | pwa-usability.spec.ts, pwa.test.ts | cubierto |
+| REQ-032.2 | PWA instalable | T-001 (hecha), T-010 (hecha), T-029 (hecha) | pwa-usability.spec.ts | cubierto |
 | REQ-033.1 | Plantillas de mensajes de WhatsApp | T-024 (hecha) | admin-config.spec.ts, render-template.test.ts, 0002_core.sql | cubierto |
 | REQ-034.1 | Datos de ejemplo (seed) | T-009 (hecha), T-030 (hecha) | 0009_seed.sql | cubierto |
 | REQ-035.1 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | services-by-barber.spec.ts, 0030_barber_services.sql | cubierto |
@@ -181,7 +181,7 @@
 | REQ-038.5 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (hecha), T-173 (hecha) | menu-courtesy.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
 | REQ-038.6 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (hecha), T-173 (hecha) | menu-courtesy.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
 | REQ-038.7 | Menú de la barbería y bebida de cortesía | T-058 (hecha), T-061 (hecha), T-173 (hecha) | menu-courtesy.spec.ts, public-queue.test.ts, 0033_customer_experience.sql | cubierto |
-| REQ-039.1 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, barber-photos.test.ts, t.sql, 0029_function_grants.sql, 0033_customer_experience.sql | cubierto |
+| REQ-039.1 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, barber-photos.test.ts, 0029_function_grants.sql, 0033_customer_experience.sql | cubierto |
 | REQ-039.2 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, 0033_customer_experience.sql | cubierto |
 | REQ-039.3 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, barber-photos.test.ts | cubierto |
 | REQ-039.4 | Fotos de cortes por barbero | T-058 (hecha), T-062 (hecha), T-063 (hecha) | barber-photos.spec.ts, barber-photos.test.ts, resize.test.ts, 0033_customer_experience.sql | cubierto |
@@ -506,7 +506,7 @@
 | REQ-089.1 | Reservar una cita paso a paso | T-225 (hecha) | appointments-public.spec.ts, visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
 | REQ-089.2 | Reservar una cita paso a paso | T-225 (hecha) | visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
 | REQ-089.3 | Reservar una cita paso a paso | T-225 (hecha) | appointments-public.spec.ts, visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
-| REQ-090.1 | Fotos rápidas y seguras | T-220 (hecha), T-227 (hecha) | photos-speed.test.tsx | cubierto |
+| REQ-090.1 | Fotos rápidas y seguras | T-220 (hecha), T-227 (hecha) | next-ids.test.ts, photos-speed.test.tsx | cubierto |
 | REQ-090.2 | Fotos rápidas y seguras | T-220 (hecha), T-227 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
 | REQ-090.3 | Fotos rápidas y seguras | T-220 (hecha), T-227 (hecha) | visual-cliente-cita.spec.ts, visual-cliente.spec.ts | cubierto |
 | REQ-091.1 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | design-tokens.test.ts, photos-speed.test.tsx | cubierto |
@@ -520,3 +520,24 @@
 | REQ-091.9 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-mark.test.tsx, public-home.test.tsx | cubierto |
 | REQ-091.10 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | screen-board.test.tsx | cubierto |
 | REQ-091.11 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-lighthouse.test.ts | cubierto |
+| REQ-092.1 | Guardias que hacen cumplir el método | T-250 (hecha), T-251 (hecha) | harness-guards.test.ts | cubierto |
+| REQ-092.2 | Guardias que hacen cumplir el método | T-250 (hecha), T-251 (hecha) | harness-guards.test.ts | cubierto |
+| REQ-092.3 | Guardias que hacen cumplir el método | T-250 (hecha), T-251 (hecha) | harness-guards.test.ts | cubierto |
+| REQ-092.4 | Guardias que hacen cumplir el método | T-250 (hecha), T-251 (hecha) | harness-guards.test.ts | cubierto |
+| REQ-092.5 | Guardias que hacen cumplir el método | T-250 (hecha), T-251 (hecha) | harness-guards.test.ts | cubierto |
+| REQ-092.6 | Guardias que hacen cumplir el método | T-250 (hecha), T-251 (hecha) | harness-guards.test.ts | cubierto |
+| REQ-092.7 | Guardias que hacen cumplir el método | T-250 (hecha), T-251 (hecha) | harness-guards.test.ts | cubierto |
+| REQ-092.8 | Guardias que hacen cumplir el método | T-250 (hecha), T-251 (hecha) | harness-guards.test.ts | cubierto |
+| REQ-093.1 | Puerta de calidad al terminar el turno | T-252 (hecha), T-253 (hecha) | harness-gate.test.ts | cubierto |
+| REQ-093.2 | Puerta de calidad al terminar el turno | T-252 (hecha), T-253 (hecha) | harness-gate.test.ts | cubierto |
+| REQ-093.3 | Puerta de calidad al terminar el turno | T-252 (hecha), T-253 (hecha) | harness-gate.test.ts | cubierto |
+| REQ-093.4 | Puerta de calidad al terminar el turno | T-252 (hecha), T-253 (hecha) | harness-gate.test.ts | cubierto |
+| REQ-094.1 |  | T-254 (hecha) | harness-agents.test.ts | cubierto |
+| REQ-094.2 |  | T-254 (hecha) | harness-agents.test.ts | cubierto |
+| REQ-094.3 |  | T-254 (hecha) | harness-agents.test.ts | cubierto |
+| REQ-094.4 |  | T-254 (hecha) | harness-agents.test.ts | cubierto |
+| REQ-094.5 |  | T-254 (hecha) | harness-agents.test.ts | cubierto |
+| REQ-095.1 |  | T-255 (hecha) | harness-agents.test.ts | cubierto |
+| REQ-095.2 |  | T-255 (hecha) | harness-agents.test.ts | cubierto |
+| REQ-095.3 |  | T-255 (hecha) | harness-agents.test.ts | cubierto |
+| REQ-095.4 |  | T-255 (hecha) | next-ids.test.ts | cubierto |

@@ -1216,3 +1216,23 @@
   con Lighthouse del CI (≥ 80). Montserrat es más ancha: se revisan los botones largos en 360 px.
   Los íconos ya instalados en los celulares cambian cuando el sistema refresca el manifest (puede
   tardar días en Android; en iPhone hay que quitar y volver a agregar el acceso).
+
+## ADR-066 · Hito 22: harness de los agentes
+- Estado: **aceptada** (Henry, 2026-11-15: "Aprobada, constrúyela")
+- Contexto: el método SDD y las reglas de seguridad y git viven como texto en `CLAUDE.md`; el
+  harness de Claude Code es una lista de permisos en `.claude/settings.json` (deny de `.env` con
+  la herramienta de lectura, `git add -A`, `rm -rf`, force push). Se han repetido choques de
+  numeración entre ramas paralelas (ADR-059, ADR-064/065) y cada sesión vuelve a descubrir los
+  comandos de verificación. Henry pidió hooks, subagentes, comandos y una puerta de calidad.
+- Decisión: (1) hooks de Claude Code en `.claude/settings.json` que llaman scripts de Node sin
+  dependencias en `.claude/hooks/` (PreToolUse para Bash, edición y MCP; PostToolUse para
+  formatear; SessionStart para el contexto; Stop para la puerta de calidad). La lógica de decisión
+  va en funciones puras (`.claude/hooks/lib.mjs`) probadas con Vitest en `tests/unit/harness-*.test.ts`.
+  (2) Subagentes en `.claude/agents/*.md`. (3) Comandos como skills del repo en
+  `.claude/skills/*/SKILL.md`. (4) `scripts/next-ids.ts` para los números libres.
+- Alternativas: dejarlo en `CLAUDE.md` (no se verifica y ya falló); un hook de git `pre-commit`
+  (no ve los comandos del agente antes de correr ni las herramientas MCP, y estorba a Henry en su
+  propia terminal); un plugin aparte (más difícil de versionar con el repo).
+- Consecuencias: los agentes que no cumplen el método se frenan solos; la puerta alarga el cierre
+  de cada turno con código (~30–90 s). `.claude/settings.local.json` sigue siendo de cada máquina.
+  Los hooks corren con permisos del usuario: son código del repo y se revisan como tal.

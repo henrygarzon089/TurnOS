@@ -31,7 +31,11 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 
 - **Hito 21 (marca Gamma Club, REQ-091, ADR-065)** aprobado como spec (2026-11-15): manual de
   marca en `docs/marca/` (fuente de verdad de logo, colores y letra); T-240…T-243 hechas, sin
-  migraciones; falta T-244 (Lighthouse en CI) y T-245 (validación de Henry).
+  migraciones; T-244 hecha (Lighthouse en CI); falta T-245 (validación de Henry,
+  `docs/guia-prueba-hito-21.md`).
+- **Hito 22 (harness de los agentes, REQ-092…095, ADR-066)**: T-250…T-255 hechas (2026-11-15),
+  sin migraciones ni cambios a la app; falta T-256 (Henry prueba el harness y aprueba). Ver
+  "Harness de los agentes" abajo.
 - **Hito 19 (Citas encendido, REQ-084, ADR-062)**: T-210 hecha (2026-11-14), sin migraciones;
   falta T-211 (Henry configura "Citas" y reserva una cita). **Hito 20 (cliente con fotos y paso a
   paso, REQ-085…090, ADR-063)** aprobado como spec, en construcción.
@@ -83,8 +87,8 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 - **Hito 4 (servicios por barbero, REQ-035, ADR-023)** aprobado (ADR-024, 2026-10-28): migraciones
   0030–0032. Filo (`/filo`) es el primer negocio real.
 - **MVP completo**: Hitos 0–3 aprobados por Henry (ADR-017, ADR-020) y en producción. Matriz: 144 CA,
-  0 sin prueba. Prueba de pasillo e instalación hechas (ADR-021). Abierta solo T-010 (E2E en CI,
-  proteger `main`).
+  0 sin prueba. Prueba de pasillo e instalación hechas (ADR-021). T-010 cerrada (2026-11-14):
+  `main` protegida, exige los checks de calidad, E2E móvil y Lighthouse.
 - Producción: https://www.gammaclub.co (también https://turnos-smoky-nine.vercel.app; Vercel `henry-garzons-projects/turnos` +
   Supabase `uucjmxdssnmvznibrafc`). CI en GitHub `henrygarzon089/TurnOS`.
 - Ver `docs/estado-del-proyecto.md` para el detalle y los pendientes externos.
@@ -118,7 +122,28 @@ pnpm db:test    # pgTAP
 supabase start && supabase db reset   # alternativa CON Docker (no aplica el shim)
 pnpm test:e2e   # Playwright móvil; necesita proyecto de Supabase en .env.local
 pnpm trace      # regenera specs/traceability.md
+pnpm next-ids   # siguiente REQ, ADR, tarea y migración libres en todas las ramas (--fetch)
 ```
+
+## Harness de los agentes (Hito 22, ADR-066)
+
+Lo que este archivo pide, los hooks de `.claude/settings.json` lo hacen cumplir
+(`.claude/hooks/`, lógica en `lib.mjs`, pruebas en `tests/unit/harness-*.test.ts`):
+
+- **Bloquean**: commit sin prefijo (`T-NNN`, `Hito`, `Spec`, `Estado`, `Cambio`, `Mezcla`,
+  `Guía`, `ADR-NNN`), atribución de IA en commits/PR/issues, `git add -A`/`.`/`--all` y
+  `git commit -a`, commit o push en `main` o hacia `main`, leer `.env*`/llaves/dumps por la
+  terminal y editar una migración que ya está en `main`.
+- **Piden confirmación de Henry**: `supabase db push`/`--linked`/`--db-url`, `psql` a un host
+  remoto, `vercel --prod`/`promote`/`rollback` y las herramientas MCP que escriben en producción.
+- **Al iniciar** inyectan rama, atraso contra `main`, cambios sin commit y la siguiente tarea.
+- **Al editar** pasan prettier por el archivo.
+- **Al terminar un turno** con código sin commit, la puerta de calidad corre `typecheck`,
+  `lint:texts`, `lint:design` y las pruebas relacionadas; si algo falla, el agente no termina.
+  `TURNOS_GATE=off` la apaga.
+- **Subagentes** (`.claude/agents/`): `revisor-spec`, `escritor-pruebas`, `revisor-sql`,
+  `revisor-textos`. **Comandos** (`.claude/skills/`): `/tarea T-NNN`, `/cerrar-hito N`,
+  `/nuevo-req`.
 
 ## Cosas que ya se decidieron (no reabrir sin ADR)
 

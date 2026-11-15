@@ -13,13 +13,13 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 
 ## Hecho
 
-| Hito                     | Tareas      | Estado                                                                  |
-| ------------------------ | ----------- | ----------------------------------------------------------------------- |
-| H0 Cimientos             | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (CI y E2E en verde; falta proteger `main`) |
-| H1 Fila virtual          | T-011…T-030 | **aprobado** (ADR-017); pasillo e instalación hechos (ADR-021)          |
-| H2 Clientes y fidelidad  | T-031…T-039 | **aprobado** (ADR-017)                                                  |
-| H3 Caja y comisiones     | T-040…T-050 | **aprobado** (ADR-020); pasillo con el dueño hecho (ADR-021)            |
-| H4 Servicios por barbero | T-051…T-057 | **aprobado** (ADR-024); PRs #4–#10 en `main`                            |
+| Hito                     | Tareas      | Estado                                                                              |
+| ------------------------ | ----------- | ----------------------------------------------------------------------------------- |
+| H0 Cimientos             | T-001…T-010 | T-001–009 `[x]`; T-010 `[x]` (CI y E2E en verde; `main` protegida desde 2026-11-14) |
+| H1 Fila virtual          | T-011…T-030 | **aprobado** (ADR-017); pasillo e instalación hechos (ADR-021)                      |
+| H2 Clientes y fidelidad  | T-031…T-039 | **aprobado** (ADR-017)                                                              |
+| H3 Caja y comisiones     | T-040…T-050 | **aprobado** (ADR-020); pasillo con el dueño hecho (ADR-021)                        |
+| H4 Servicios por barbero | T-051…T-057 | **aprobado** (ADR-024); PRs #4–#10 en `main`                                        |
 
 ### Hito 5 — experiencia del cliente (**aprobado**, ADR-026, 2026-11-01)
 
@@ -739,9 +739,12 @@ Pendientes (H3): `/admin/caja`,
 - Aprobado el 2026-11-14 (ADR-061, T-203): Henry desplegó `c8b7ebb` (`check:deploy` ✓), cobró
   una venta desde el celular sin "Tarjeta de regalo" ni membresías y la caja salió sin esos
   recuadros.
-- Pendientes externos que quedan: proteger `main` en GitHub (T-010, con la cuenta
-  `henrygarzon089`; el `gh` del agente no es administrador), los pasos de Meta para WhatsApp
-  (T-069), la revisión del aviso de privacidad por un abogado y el inventario de Gamma Club.
+- `main` protegida el 2026-11-14 (T-010 cerrada): Henry creó la regla con la cuenta
+  `henrygarzon089`; exige "Lint · typecheck · unit · pgTAP · integración", "E2E móvil (Pixel 7 +
+  iPhone 13)" y "Lighthouse móvil", sin force push ni borrado; el administrador puede saltarla en
+  una emergencia.
+- Pendientes externos que quedan: los pasos de Meta para WhatsApp (T-069), la revisión del aviso
+  de privacidad por un abogado y el inventario de Gamma Club.
 
 ### Hito 19 — Citas en modo esencial (en validación, REQ-084, ADR-062)
 
@@ -782,6 +785,23 @@ Pendientes (H3): `/admin/caja`,
   `grid-cols-1` y `*:min-w-0`. `pnpm trace --hito=21` sin huecos.
 - Falta: T-245 (Henry sigue `docs/guia-prueba-hito-21.md`: sube
   `docs/marca/logos/logo-negocio-256.png` en "Negocio", reinstala la app y aprueba).
+
+### Hito 22 — harness de los agentes (spec aprobada 2026-11-15, REQ-092…095, ADR-066)
+
+- Hooks de Claude Code en `.claude/settings.json` + `.claude/hooks/`: guardias de terminal,
+  edición y MCP (bloquean o piden confirmación), contexto al iniciar, prettier al editar y puerta
+  de calidad al terminar el turno. Subagentes en `.claude/agents/`, comandos `/tarea`,
+  `/cerrar-hito` y `/nuevo-req` en `.claude/skills/`, `pnpm next-ids`. Sin migraciones ni cambios
+  a la app. Rama `claude/harness-agentes`.
+- T-250…T-255 hechas; `pnpm trace --hito=22` sin huecos, 798 pruebas unitarias en verde.
+- Falta (Henry), T-256: abrir una sesión nueva de Claude Code en la rama y probar lo de la guía
+  (contexto al iniciar, commit sin prefijo bloqueado, `vercel --prod` pidiendo confirmación, la
+  puerta frenando un error de tipos); aprobar.
+- Ojo: la puerta corre en cualquier sesión con código sin commit, también si los cambios son de
+  otra sesión en la misma carpeta; prettier al editar puede reformatear archivos que en `main`
+  no estaban formateados (hoy hay 18).
+- Numeración: ADR-064 (Fresha) y ADR-065/REQ-091/T-240…245 (marca) están en ramas sin fusionar;
+  por eso este hito empieza en ADR-066, REQ-092 y T-250.
 
 ## Desvíos registrados respecto a la spec (todos explícitos)
 
