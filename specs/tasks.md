@@ -2995,11 +2995,16 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   durante los pasos (REQ-088.8, nuevo).
 - Modelo: Opus 5.5. Complejidad: baja.
 
-### [ ] T-244 · Rendimiento y capturas
+### [x] T-244 · Rendimiento y capturas
 - REQ: REQ-091.11 · Lighthouse móvil de la portada en CI (≥ 80 / ≥ 90); capturas en
   `docs/diseno/capturas/hito-21/`.
 - 2026-11-15: capturas hechas (portada, servicio, Entrar, Hoy, Mi fila, televisor) contra el
-  Postgres local. Falta el Lighthouse del CI del PR.
+  Postgres local.
+- Hecha 2026-11-15: Lighthouse móvil del CI del PR #192 (`0e59fa6`): portada `/la-33`
+  rendimiento 92 · accesibilidad 100 · LCP 2,8 s; "Mi turno" 91 · 100; Mi fila 95 · 100; Caja
+  91 · 100. La E2E de REQ-091.5 encontró que "Hoy" se corría de lado a 360 px con todos los
+  módulos encendidos (una fila larga de "Para recordar" estiraba la columna de la cuadrícula);
+  arreglado con `grid-cols-1` y `*:min-w-0` (`fcf515e`).
 - Modelo: Opus 5.5. Complejidad: baja.
 
 ### [ ] T-245 · Validación Hito 21
