@@ -11,6 +11,16 @@ async function clear() {
   await adminDb().from("businesses").update({ description: null }).eq("slug", SEED.slug);
 }
 
+/** Espera a que la base tenga la descripción (la hoja relee la página al guardar). */
+async function savedDescription() {
+  const { data } = await adminDb()
+    .from("businesses")
+    .select("description")
+    .eq("slug", SEED.slug)
+    .single();
+  return (data?.description as string | null) ?? null;
+}
+
 test.describe("REQ-097 descripción del negocio", () => {
   test.describe.configure({ mode: "serial" });
   test.beforeAll(clear);
@@ -28,15 +38,18 @@ test.describe("REQ-097 descripción del negocio", () => {
     await expect(form.getByText(`${TEXT.length}/200`)).toBeVisible();
     await form.getByRole("button", { name: "Guardar" }).click();
     await expect(form.getByText("Guardado.")).toBeVisible();
+    await expect.poll(savedDescription).toBe(TEXT);
 
-    await page.goto(`/${SEED.slug}`);
-    await waitForContent(page);
-    await expect(page.getByTestId("business-description")).toHaveText(TEXT);
+    // El cliente en otra pestaña, para no cruzarse con la relectura de "Negocio"
+    const client = await page.context().newPage();
+    await client.goto(`/${SEED.slug}`);
+    await waitForContent(client);
+    await expect(client.getByTestId("business-description")).toHaveText(TEXT);
 
     // REQ-097.3: en la cabecera compacta de los pasos no va
-    await page.getByRole("button", { name: "Tomar turno" }).click();
-    await expect(page.getByText("Paso 1 de 3")).toBeVisible();
-    await expect(page.getByTestId("business-description")).toHaveCount(0);
+    await client.getByRole("button", { name: "Tomar turno" }).click();
+    await expect(client.getByText("Paso 1 de 3")).toBeVisible();
+    await expect(client.getByTestId("business-description")).toHaveCount(0);
   });
 
   test("REQ-097.4 al borrarla, la portada se ve igual que hoy", async ({ page }) => {
@@ -46,10 +59,12 @@ test.describe("REQ-097 descripción del negocio", () => {
     await form.getByLabel("Descripción del negocio").fill("");
     await form.getByRole("button", { name: "Guardar" }).click();
     await expect(form.getByText("Guardado.")).toBeVisible();
+    await expect.poll(savedDescription).toBeNull();
 
-    await page.goto(`/${SEED.slug}`);
-    await waitForContent(page);
-    await expect(page.getByTestId("public-hero")).toBeVisible();
-    await expect(page.getByTestId("business-description")).toHaveCount(0);
+    const client = await page.context().newPage();
+    await client.goto(`/${SEED.slug}`);
+    await waitForContent(client);
+    await expect(client.getByTestId("public-hero")).toBeVisible();
+    await expect(client.getByTestId("business-description")).toHaveCount(0);
   });
 });

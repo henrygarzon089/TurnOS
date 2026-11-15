@@ -3118,6 +3118,9 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Hecha 2026-11-15: `DescriptionField` (de T-261) en `BusinessForm`, arriba de la dirección;
   `updateBusiness` valida la descripción aparte para dar el mensaje de REQ-097.2. Pruebas:
   `tests/unit/business-description.test.tsx`, `tests/e2e/business-description.spec.ts`.
+  Corrección del CI: `getPublicBusiness` arma el negocio campo por campo y no pasaba
+  `description`; se suma con `tests/unit/public-business-description.test.ts`. Las E2E abren al
+  cliente en otra pestaña y esperan el guardado en la base (la hoja relee la página al guardar).
 
 ### [ ] T-264 · Validación Hito 23
 - Terminado: `pnpm trace --hito=23` sin huecos; `docs/estado-del-proyecto.md` al día; guía

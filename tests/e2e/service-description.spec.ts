@@ -64,13 +64,17 @@ test.describe("REQ-096 descripción de los servicios", () => {
 
     // REQ-096.2: se guardó limpia
     const { db, biz } = await ids();
-    const { data } = await db
-      .from("services")
-      .select("description")
-      .eq("business_id", biz)
-      .eq("name", NAME)
-      .single();
-    expect(data!.description).toBe(TEXT);
+    await expect
+      .poll(async () => {
+        const { data } = await db
+          .from("services")
+          .select("description")
+          .eq("business_id", biz)
+          .eq("name", NAME)
+          .single();
+        return data?.description ?? null;
+      })
+      .toBe(TEXT);
   });
 
   test("REQ-096.4 al tomar turno, la tarjeta muestra la descripción", async ({ page }) => {
@@ -109,10 +113,25 @@ test.describe("REQ-096 descripción de los servicios", () => {
     await form.getByLabel("Descripción").fill("");
     await form.getByRole("button", { name: "Guardar" }).click();
     await expect(form).toBeHidden();
+    // Se espera a que quede guardada; la hoja relee /admin/servicios al cerrar (router.refresh),
+    // así que el cliente se abre en otra pestaña para no cruzarse con esa navegación.
+    const { db, biz } = await ids();
+    await expect
+      .poll(async () => {
+        const { data } = await db
+          .from("services")
+          .select("description")
+          .eq("business_id", biz)
+          .eq("name", NAME)
+          .single();
+        return data?.description ?? null;
+      })
+      .toBeNull();
 
-    await page.goto(`/${SEED.slug}?paso=servicio`);
-    await waitForContent(page);
-    const card = serviceCard(page);
+    const client = await page.context().newPage();
+    await client.goto(`/${SEED.slug}?paso=servicio`);
+    await waitForContent(client);
+    const card = serviceCard(client);
     await expect(card).toBeVisible();
     await expect(card.getByTestId("service-description")).toHaveCount(0);
   });

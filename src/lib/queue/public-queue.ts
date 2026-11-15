@@ -207,6 +207,8 @@ export async function getPublicBusiness(
     name: String(raw.name),
     slug: String(raw.slug),
     address: (raw.address as string | null) ?? null,
+    // REQ-097.3: la portada la muestra debajo del nombre
+    description: (raw.description as string | null) ?? null,
     pwaName: String(raw.pwaName ?? raw.name),
     isOpen: Boolean(raw.isOpen),
     nextOpening: (raw.nextOpening as string | null) ?? null,
