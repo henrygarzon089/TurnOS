@@ -1236,3 +1236,26 @@
 - Consecuencias: los agentes que no cumplen el método se frenan solos; la puerta alarga el cierre
   de cada turno con código (~30–90 s). `.claude/settings.local.json` sigue siendo de cada máquina.
   Los hooks corren con permisos del usuario: son código del repo y se revisan como tal.
+
+## ADR-067 · Hito 23: descripción de los servicios
+- Estado: **propuesta** (2026-11-15), espera la aprobación de Henry.
+- Contexto: ADR-064 copió de Fresha solo el aspecto de la tarjeta de servicio y dejó fuera, a
+  propósito, las categorías, la descripción y escoger varios servicios: las dos primeras
+  necesitaban columnas nuevas y que el dueño las llenara. Henry pide ahora la descripción: "se
+  tiene que agregar una descripción a cada servicio que se debe mostrar cuando se va a elegir".
+- Decisión: se reabre **solo la descripción** (REQ-096). (1) Columna `services.description text
+  null` con un `check` de 1 a 140 caracteres (migración 0076); null es "sin descripción", nunca
+  texto vacío. (2) Texto plano de una línea lógica: la acción limpia espacios y saltos de línea
+  antes de guardar. (3) La devuelve `get_public_business`, que alimenta el paso "Servicio" de tomar
+  turno y de reservar; no se toca `public_appointment_info`. (4) Se muestra completa en
+  `ServiceCard`, debajo de la duración; sin descripción, la tarjeta queda igual que hoy. (5) RLS
+  sin cambios: el dueño ya escribe `services`, el público lee por la función `security definer`.
+  Las categorías y escoger varios servicios siguen fuera de ADR-064.
+- Alternativas: (a) descripción larga con "Ver más": otro toque y otro estado en una pantalla que
+  se diseñó para pasar de un toque (REQ-088.3). (b) Recortarla a 2 líneas con `line-clamp`: el
+  cliente no lee el final y el dueño no sabe dónde se corta. (c) Guardarla en un JSON de ajustes
+  del negocio: sin `check` en la base de datos y más difícil de leer en la función pública.
+- Consecuencias: una migración pequeña (columna nueva y redefinición de `get_public_business`
+  copiada de 0074 con un campo más); Henry la aplica en producción antes del deploy. Las tarjetas
+  con descripción son más altas (hasta ≈ 3 líneas en 360 px). Mientras el dueño no escriba
+  descripciones, la app se ve igual que hoy.

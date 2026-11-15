@@ -3074,6 +3074,35 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   día; Henry abre una sesión y ve el contexto, un commit sin prefijo bloqueado, `vercel --prod`
   pidiendo confirmación y la puerta frenando un error de tipos; aprobación (ADR nuevo).
 
+
+## Hito 23 — Descripción de los servicios (REQ-096, ADR-067)
+
+> **PROPUESTA** (2026-11-15), espera la aprobación de Henry. Orden: T-260 → T-261 → T-262 →
+> T-263. La migración 0076 la aplica Henry en producción antes del deploy.
+
+### [ ] T-260 · Columna `description` y función pública
+- REQ: REQ-096.3 (base de datos), REQ-096.4 (datos) · Migración `0076_service_description.sql`
+  (design §29.1), pgTAP `0076_service_description.sql`. Revisión con `revisor-sql`.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-261 · El dueño escribe la descripción
+- REQ: REQ-096.1, REQ-096.2, REQ-096.3, REQ-096.7 · `normalizeServiceDescription`,
+  `serviceSchema`/`upsertService`, `ServiceRow`, `admin/servicios/page.tsx`, `ServiceForm`
+  (design §29.2–29.3). Unitarias y revisión con `revisor-textos`.
+- Modelo: Sonnet 5.5. Complejidad: baja.
+
+### [ ] T-262 · El cliente ve la descripción al escoger
+- REQ: REQ-096.4, REQ-096.5, REQ-096.6, REQ-096.7 · `PublicBusiness.services[]`, `ServiceCard`,
+  `JoinSteps`, `JoinForm`, `AppointmentForm` (design §29.3). Unitarias de `ServiceCard` y E2E de
+  tomar turno y reservar con descripción.
+- Modelo: Sonnet 5.5. Complejidad: baja.
+
+### [ ] T-263 · Validación Hito 23
+- Terminado: `pnpm trace --hito=23` sin huecos; `docs/estado-del-proyecto.md` al día; guía
+  `docs/guia-prueba-hito-23.md`; Henry aplica 0076 en producción, escribe la descripción de un
+  servicio de Gamma Club desde el celular, la ve al tomar turno y al reservar, y la borra;
+  aprobación (ADR nuevo).
+
 ---
 
 ## Dependencias principales
