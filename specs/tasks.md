@@ -3080,10 +3080,12 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 > Aprobada por Henry el 2026-11-15 ("Si dale"). Orden: T-260 → T-261, T-262 y
 > T-263 (independientes) → T-264. La migración 0076 la aplica Henry en producción antes del deploy.
 
-### [ ] T-260 · Columnas `description` y función pública
+### [x] T-260 · Columnas `description` y función pública
 - REQ: REQ-096.3 y REQ-097.2 (base de datos), REQ-096.4 y REQ-097.3 (datos) · Migración
   `0076_descriptions.sql` (design §29.1), pgTAP `0076_descriptions.sql`. Revisión con `revisor-sql`.
 - Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-15. Precisión de `revisor-sql`: el `check` rechaza también una descripción de
+  solo espacios (`btrim`), no solo la vacía (design §29.1).
 
 ### [ ] T-261 · El dueño escribe la descripción
 - REQ: REQ-096.1, REQ-096.2, REQ-096.3, REQ-096.7 · `normalizeDescription`,

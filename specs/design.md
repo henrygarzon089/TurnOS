@@ -3416,11 +3416,11 @@ numerar. Máximo ~15 líneas.
 
 ### 29.1 Datos (migración `0076_descriptions.sql`)
 - `alter table services add column description text null` con
-  `constraint services_description_len check (description is null or char_length(description)
-  between 1 and 140)`. Sin valor por defecto: los servicios que ya existen quedan sin descripción.
+  `constraint services_description_len check (description is null or
+  (char_length(btrim(description)) between 1 and 140 and char_length(description) <= 140))`:
+  ni vacía ni solo espacios (revisión de `revisor-sql`). Sin valor por defecto: los servicios que ya existen quedan sin descripción.
 - `alter table businesses add column description text null` con
-  `constraint businesses_description_len check (description is null or char_length(description)
-  between 1 and 200)` (REQ-097).
+  `constraint businesses_description_len check (…)` con la misma forma y 200 (REQ-097).
 - RLS sin cambios: las políticas de `services` y `businesses` (el dueño escribe los de su
   negocio, el personal lee) ya cubren las columnas; `anon` sigue sin acceso directo (ADR-009).
 - `get_public_business(p_slug)` se redefine copiando la versión de 0074 y agregando
