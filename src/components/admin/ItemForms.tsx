@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useActionState, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CheckList } from "@/components/admin/CheckList";
+import { DescriptionField } from "@/components/admin/DescriptionField";
 import { keepValuesOnSubmit, useRefreshOnOk } from "@/components/ui/form";
 import { ErrorText } from "@/components/auth/LoginForm";
 import { ImagePicker } from "@/components/media/ImagePicker";
@@ -14,6 +15,7 @@ import {
   upsertService,
   type FormState,
 } from "@/lib/actions/admin";
+import { SERVICE_DESCRIPTION_MAX } from "@/lib/domain/description";
 import { formatCOP } from "@/lib/domain/money";
 import { mediaUrl, newProductPhotoPath } from "@/lib/media/paths";
 import { resizePhoto } from "@/lib/media/resize";
@@ -30,6 +32,8 @@ export type ServiceRow = {
   barber_ids?: string[];
   /** REQ-086.1: foto que ve el cliente al escoger */
   photo_path?: string | null;
+  /** REQ-096.1: descripción que ve el cliente al escoger */
+  description?: string | null;
 };
 export type BarberOption = { id: string; name: string };
 export type ProductRow = {
@@ -114,6 +118,12 @@ export function ServiceForm({
           />
         </label>
       </div>
+      <DescriptionField
+        label="Descripción"
+        help="Opcional. La ve el cliente al escoger el servicio."
+        max={SERVICE_DESCRIPTION_MAX}
+        defaultValue={service?.description ?? null}
+      />
       <label className="flex min-h-12 items-center gap-3 text-base">
         <input
           type="checkbox"

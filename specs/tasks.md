@@ -3087,11 +3087,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Hecha 2026-11-15. Precisión de `revisor-sql`: el `check` rechaza también una descripción de
   solo espacios (`btrim`), no solo la vacía (design §29.1).
 
-### [ ] T-261 · El dueño escribe la descripción
+### [x] T-261 · El dueño escribe la descripción
 - REQ: REQ-096.1, REQ-096.2, REQ-096.3, REQ-096.7 · `normalizeDescription`,
   `serviceSchema`/`upsertService`, `ServiceRow`, `admin/servicios/page.tsx`, `ServiceForm`
   (design §29.2–29.3). Unitarias y revisión con `revisor-textos`.
 - Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-15: `src/lib/domain/description.ts` (`normalizeDescription`, cuenta caracteres
+  como `char_length`) y `DescriptionField` (etiqueta, ayuda y contador), que reusa T-263. Si el
+  formulario no trae el campo, `upsertService` no lo toca. Pruebas: `tests/unit/description.test.ts`,
+  `tests/unit/description-field.test.tsx`; el guardado de punta a punta va en la E2E de T-262.
 
 ### [ ] T-262 · El cliente ve la descripción al escoger
 - REQ: REQ-096.4, REQ-096.5, REQ-096.6, REQ-096.7 · `PublicBusiness.services[]`, `ServiceCard`,

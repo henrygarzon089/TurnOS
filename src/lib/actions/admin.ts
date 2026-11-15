@@ -6,6 +6,7 @@ import { getStaffSession } from "@/lib/auth/session";
 import { parseLoyaltyForm } from "@/lib/domain/loyalty";
 import { isModuleEnabled } from "@/lib/domain/modules";
 import { parseCOP } from "@/lib/domain/money";
+import { SERVICE_DESCRIPTION_MAX, normalizeDescription } from "@/lib/domain/description";
 import { normalizeBarberPhone, normalizePhoneCO, phoneCountryOf } from "@/lib/domain/phone";
 import { parseProductForm } from "@/lib/domain/product-form";
 import { parseGoogleReviewUrl } from "@/lib/domain/review-link";
@@ -300,9 +301,18 @@ export async function upsertService(_prev: FormState, formData: FormData): Promi
     counts_for_loyalty: formData.get("counts_for_loyalty") === "on",
   });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+  // REQ-096.2/.3: opcional; si el formulario no la trae, no se toca.
+  const description = formData.has("description")
+    ? normalizeDescription(String(formData.get("description") ?? ""), SERVICE_DESCRIPTION_MAX)
+    : null;
+  if (description && !description.ok) return { error: description.error };
   const id = formData.get("id");
   const supabase = await createSupabaseServerClient();
-  const row = { ...parsed.data, business_id: session.business.id };
+  const row = {
+    ...parsed.data,
+    ...(description?.ok ? { description: description.value } : {}),
+    business_id: session.business.id,
+  };
   const saved =
     typeof id === "string" && id
       ? await supabase.from("services").update(row).eq("id", id).select("id").single()
