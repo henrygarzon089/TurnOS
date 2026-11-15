@@ -198,7 +198,7 @@ test.describe("T-162 pantallas del cliente con el sistema visual (REQ-078)", () 
 
     const cancel = page.getByRole("button", { name: "Cancelar turno", exact: true });
     expect(await cancel.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe(
-      "rgb(194, 30, 47)",
+      "rgb(224, 43, 59)",
     );
     await cancel.click();
     const sheet = page.getByRole("dialog", { name: /Cancelar tu turno/ });

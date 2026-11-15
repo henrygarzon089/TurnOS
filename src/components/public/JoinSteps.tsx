@@ -55,7 +55,7 @@ export function StepHeader({
 }
 
 const CARD =
-  "focus-visible:ring-brand flex w-full items-center gap-3 rounded-lg p-3 text-left focus-visible:ring-2 focus-visible:outline-none";
+  "focus-visible:ring-link flex w-full items-center gap-3 rounded-lg p-3 text-left focus-visible:ring-2 focus-visible:outline-none";
 const cardState = (checked: boolean, disabled: boolean) =>
   disabled
     ? "border-line bg-surface text-muted cursor-not-allowed border"
@@ -94,7 +94,7 @@ export function ServiceCard({
       aria-disabled={disabled || undefined}
       disabled={disabled}
       onClick={onPick}
-      className={`focus-visible:ring-brand flex w-full flex-col gap-3 rounded-xl p-4 text-left focus-visible:ring-2 focus-visible:outline-none ${cardState(checked, disabled)}`}
+      className={`focus-visible:ring-link flex w-full flex-col gap-3 rounded-xl p-4 text-left focus-visible:ring-2 focus-visible:outline-none ${cardState(checked, disabled)}`}
     >
       <span className="flex w-full items-start gap-3">
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">

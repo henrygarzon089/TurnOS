@@ -512,7 +512,7 @@ function Steps({ status }: { status: Ticket["status"] }) {
               />
             </span>
             <span
-              className={`mt-1 block text-xs ${current ? (status === "called" ? "text-called font-semibold" : "font-semibold") : "text-muted"}`}
+              className={`mt-1 block text-xs ${current ? (status === "called" ? "text-danger font-semibold" : "font-semibold") : "text-muted"}`}
             >
               {label}
             </span>
@@ -731,7 +731,7 @@ function Courtesy({
           {courtesy?.served && <span className="text-ok font-semibold"> · Servida ✓</span>}
         </p>
         {canChange && (
-          <button type="button" className="text-brand min-h-12 shrink-0 underline" onClick={toggle}>
+          <button type="button" className="text-link min-h-12 shrink-0 underline" onClick={toggle}>
             {courtesy ? "Cambiar bebida" : "Escoger bebida"}
           </button>
         )}
@@ -807,7 +807,7 @@ function WhatsappOptOut({
     <div className="text-sm">
       <button
         type="button"
-        className="text-brand min-h-12 underline"
+        className="text-link min-h-12 underline"
         onClick={optOut}
         disabled={saving}
       >

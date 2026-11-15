@@ -3293,12 +3293,16 @@ quedan igual. Contrastes calculados con la fórmula de `design-tokens.test.ts`.
 | `brand` | #0E1E3D | **#14254A** (Navy Gamma) | acción principal, cabecera | 15,07 con `brand-ink` |
 | `brand-soft` | #E8ECF4 | **#E6E9F0** | opción elegida, destino activo | `ink` encima: 12,40 |
 | `accent` / `called` | #C21E2F | **#E02B3B** (Rojo Gamma) | **solo** atención ahora, siempre relleno | 4,59 con blanco |
-| `accent-on-brand` | #FF5A68 | **#F0394A** | punto "en vivo" y tornillo sobre navy | 3,87 (no es texto) |
+| `accent-on-brand` | #FF5A68 | #FF5A68 (igual) | "Llamando" en el televisor y punto en vivo sobre navy | 4,96 sobre el navy nuevo |
+| `accent-mark` (nuevo) | — | **#F0394A** | tornillo del logo sobre navy | 3,87 (no es texto) |
 | `skeleton` | #E3E8EF | **#E8E3D9** | esqueletos | — |
 | `link` (nuevo) | — | **#2D55D6** (Azul Gamma) | anillo de foco y enlaces de texto | 6,21 sobre `card` · 5,46 sobre `surface` |
 
 - Se quedan: `danger` #A8182A (6,53 sobre crema), `ok`, `warn`, `warn-on-brand` (9,25 sobre el navy
   nuevo), `ok-on-brand` (8,39), `accent-soft`, `flash`.
+- **Desvío del 2026-11-15 (T-241):** la spec ponía `accent-on-brand` en #F0394A, pero el televisor
+  lo usa como texto ("Llamando") y #F0394A da 3,87:1 sobre navy. Se queda #FF5A68 (4,96:1) y el
+  rojo del manual sobre navy va en el token nuevo `accent-mark`, solo para el tornillo del logo.
 - `accent` nunca como color de texto: sobre crema da 4,03 (REQ-091.2). `pnpm lint:design` se amplía
   para rechazar `text-accent` y `text-called`.
 - `PWA_THEME_COLOR` = `#14254A` y `PWA_BACKGROUND_COLOR` = `#F3F0EA` (`src/lib/pwa.ts`); la prueba de

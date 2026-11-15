@@ -29,7 +29,7 @@ export default async function BarberQueuePage() {
         <p className="text-muted mt-2">
           Tu cuenta no tiene una silla asignada.{" "}
           {session?.role === "owner" ? (
-            <Link href="/admin/fila" className="text-brand underline">
+            <Link href="/admin/fila" className="text-link underline">
               Ir a la fila del negocio
             </Link>
           ) : (

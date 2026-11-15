@@ -2957,10 +2957,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   (iPhone no acepta transparencia).
 - Modelo: Opus 5.5. Complejidad: baja.
 
-### [ ] T-241 · Colores del manual
+### [x] T-241 · Colores del manual
 - REQ: REQ-091.1, REQ-091.2, REQ-091.3, REQ-091.10 · Tokens de design §27.1, token `link` en el
   foco y los enlaces, `PWA_THEME_COLOR`/`PWA_BACKGROUND_COLOR`, `lint:design` sin `text-accent`.
 - Terminado: `design-tokens.test.ts` con la tabla nueva en verde; `/diseno` muestra la paleta nueva.
+- Hecha 2026-11-15. Desvío: `accent-on-brand` se queda en #FF5A68 porque es texto en el
+  televisor; el #F0394A del manual va en el token nuevo `accent-mark` (design §27.1). Tres textos
+  en rojo de marca pasan a `danger` ("Hoy" con alertas, turno llamado en la fila del dueño y en
+  "Mi turno"). El foco y los enlaces subrayados pasan a `link` en 21 archivos; una prueba revisa
+  que no vuelvan al navy. Las E2E visuales comparan los colores nuevos.
 - Modelo: Opus 5.5. Complejidad: baja.
 
 ### [ ] T-242 · Letra Montserrat

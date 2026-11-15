@@ -372,7 +372,7 @@ export function JoinFlow({ business, now, canBook = false, lines, stateText }: P
                         <button
                           type="button"
                           aria-label={`Ver cortes de ${b.name}`}
-                          className="text-brand min-h-12 self-start text-sm font-medium underline"
+                          className="text-link min-h-12 self-start text-sm font-medium underline"
                           onClick={() => setCutsOf({ id: b.id, name: b.name })}
                         >
                           Ver cortes
@@ -467,7 +467,7 @@ export function JoinFlow({ business, now, canBook = false, lines, stateText }: P
                   {alreadyAccepted ? (
                     <p className="text-muted text-sm">
                       Ya aceptaste nuestra política de datos.{" "}
-                      <Link href={`/${business.slug}/privacidad`} className="text-brand underline">
+                      <Link href={`/${business.slug}/privacidad`} className="text-link underline">
                         Leerla
                       </Link>
                     </p>

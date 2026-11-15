@@ -51,6 +51,15 @@ describe("REQ-078.3 rojo relleno solo donde se permite", () => {
   });
 });
 
+describe("REQ-091.2 el rojo de marca nunca es texto", () => {
+  it("REQ-091.2 marca text-accent y text-called, no text-accent-ink ni text-accent-on-brand", () => {
+    expect(tsx(`<p className="text-accent">`)).toHaveLength(1);
+    expect(tsx(`<p className="max-lg:text-called font-bold">`)).toHaveLength(1);
+    expect(tsx(`<p className="bg-called text-accent-ink">`)).toEqual([]);
+    expect(tsx(`<p className="text-accent-on-brand">`)).toEqual([]);
+  });
+});
+
 describe("REQ-078.1 REQ-078.14 el código de la app cumple", () => {
   it("REQ-078.1 REQ-078.14 pnpm lint:design pasa sobre src/", () => {
     const res = spawnSync("node_modules/.bin/tsx", ["scripts/lint-design.ts"], {

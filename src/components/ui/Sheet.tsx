@@ -78,7 +78,7 @@ function Header({
         onClick={onClose}
         aria-label="Cerrar ventana"
         data-sheet-close=""
-        className="text-muted hover:bg-surface hover:text-ink focus-visible:outline-brand -mt-1 -mr-2 flex size-12 shrink-0 items-center justify-center rounded-md focus-visible:outline-2"
+        className="text-muted hover:bg-surface hover:text-ink focus-visible:outline-link -mt-1 -mr-2 flex size-12 shrink-0 items-center justify-center rounded-md focus-visible:outline-2"
       >
         <Icon name="x" className="size-6" />
       </button>

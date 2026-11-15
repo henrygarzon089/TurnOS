@@ -1962,7 +1962,8 @@ local, los uniformes y las redes.
 - REQ-091.1 Los tokens de color de `globals.css` DEBEN tomar los colores del manual (design §27.1):
   acción y cabecera en **Navy Gamma** `#14254A`, fondo de página **Crema** `#F3F0EA`, tarjetas
   blancas, texto secundario **Gris grafito** `#4A4F5C`, rojo de "atención ahora" **Rojo Gamma**
-  `#E02B3B` y, sobre navy, `#F0394A`. Siguen rigiendo REQ-078.1 (solo tokens) y REQ-078.2
+  `#E02B3B` y, sobre navy, `#F0394A` en el tornillo del logo (el texto rojo sobre navy del
+  televisor queda en `#FF5A68`, design §27.1). Siguen rigiendo REQ-078.1 (solo tokens) y REQ-078.2
   (contraste ≥ 4,5:1 en texto, ≥ 3:1 en bordes de campo y puntos de estado).
 - REQ-091.2 El Rojo Gamma DEBE usarse solo como relleno con texto blanco (4,59:1) y en el punto
   del logo. El texto rojo (errores, acciones destructivas) DEBE seguir en `danger`, porque

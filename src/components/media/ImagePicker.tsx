@@ -87,7 +87,7 @@ export function ImagePicker({
           </span>
         )}
         <div className="flex flex-col items-start gap-1">
-          <label className="text-brand flex min-h-12 cursor-pointer items-center text-sm font-semibold underline">
+          <label className="text-link flex min-h-12 cursor-pointer items-center text-sm font-semibold underline">
             {pending ? "Subiendo foto…" : path ? "Cambiar foto" : "Poner foto"}
             <input
               type="file"

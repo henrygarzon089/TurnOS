@@ -21,6 +21,8 @@ const GRADIENT = /gradient/g;
 const BACKDROP = /backdrop-(?:blur|filter)|backdrop-filter/g;
 const FONTS = /next\/font|fonts\.googleapis/g;
 const ACCENT_FILL = /(?<![\w-])(?:[a-z0-9-]+:)*bg-accent(?![\w-])/g;
+/** REQ-091.2: el Rojo Gamma sobre crema da 4,03:1; el texto rojo es `text-danger`. */
+const ACCENT_TEXT = /(?<![\w-])(?:[a-z0-9-]+:)*text-(?:accent|called)(?![\w-])/g;
 
 export function designViolations(
   path: string,
@@ -42,6 +44,8 @@ export function designViolations(
       }
     for (const re of [GRADIENT, BACKDROP, FONTS])
       for (const m of line.matchAll(re)) out.push(`${at}: "${m[0]}" no se usa (REQ-078.14)`);
+    for (const m of line.matchAll(ACCENT_TEXT))
+      out.push(`${at}: "${m[0]}" el rojo de marca no es texto; usa text-danger (REQ-091.2)`);
     if (!accentOk)
       for (const m of line.matchAll(ACCENT_FILL))
         out.push(`${at}: "${m[0]}" solo para atención ahora (REQ-078.3, ACCENT_FILL_ALLOWED)`);

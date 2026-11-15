@@ -169,7 +169,7 @@ test.describe("T-166 operación y clientes del dueño con el sistema visual (REQ
       return { bg: s.backgroundColor, color: s.color };
     });
     expect(look.color).toBe("rgb(168, 24, 42)"); // danger
-    expect(look.bg).not.toBe("rgb(194, 30, 47)"); // nunca accent relleno
+    expect(look.bg).not.toBe("rgb(224, 43, 59)"); // nunca accent relleno
 
     await remove.click();
     const sheet = page.getByRole("dialog", { name: `¿Quitar a ${holder} de la familia?` });

@@ -4,7 +4,7 @@ import { expect, type Page } from "@playwright/test";
  * Revisiones de REQ-078 que comparten las pruebas visuales de cada superficie (design §22.5).
  */
 
-const BRAND = "rgb(14, 30, 61)"; // --color-brand (#0E1E3D)
+const BRAND = "rgb(20, 37, 74)"; // --color-brand (#14254A, Navy Gamma)
 
 /** REQ-078.15 sin desplazamiento horizontal en 360, 390 y 1280 px. */
 export async function noHorizontalScroll(page: Page, path: string, widths = [360, 390, 1280]) {

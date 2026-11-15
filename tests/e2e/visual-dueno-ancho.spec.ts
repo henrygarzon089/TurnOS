@@ -72,7 +72,7 @@ test.describe("T-177 marco del dueño en escritorio", () => {
     expect(box.height).toBe(56);
     expect(box.x).toBe(0);
     expect(box.width).toBe(1280);
-    await expect(bar).toHaveCSS("background-color", "rgb(14, 30, 61)");
+    await expect(bar).toHaveCSS("background-color", "rgb(20, 37, 74)");
     await expect(bar).toContainText("Barbería La 33");
     await expect(
       bar.getByText(/^(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo) \d+ de /),

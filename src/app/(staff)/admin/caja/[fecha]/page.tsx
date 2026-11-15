@@ -34,13 +34,13 @@ export default async function PastCashPage({ params }: { params: Promise<{ fecha
             <CashDayPicker day={fecha} today={businessDayBogota()} />
             <Link
               href="/admin/caja#cierres"
-              className="text-brand flex min-h-12 items-center font-semibold underline underline-offset-4"
+              className="text-link flex min-h-12 items-center font-semibold underline underline-offset-4"
             >
               Cierres anteriores
             </Link>
             <Link
               href="/admin/caja"
-              className="text-brand flex min-h-12 items-center font-semibold underline underline-offset-4"
+              className="text-link flex min-h-12 items-center font-semibold underline underline-offset-4"
             >
               Caja de hoy
             </Link>
