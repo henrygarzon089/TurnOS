@@ -2943,22 +2943,34 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 > Aprobada por Henry el 2026-11-15. Orden: T-250 → T-251 → T-252 → T-253 → T-254 y T-255
 > (independientes) → T-256.
 
-### [ ] T-250 · Guardias de la terminal
+### [x] T-250 · Guardias de la terminal
 - REQ: REQ-092.1, REQ-092.2, REQ-092.3, REQ-092.4, REQ-092.5, REQ-092.6 (Bash), REQ-092.8 ·
   `lib.mjs` (`classifyBash`, `checkCommitMessage`), `guard-bash.mjs`, hook en `settings.json`.
 - Modelo: Opus 5.5. Complejidad: media.
+- Hecha 2026-11-15: `lib.mjs` (`classifyBash`, `checkCommitMessage`, `isSecretPath`), `io.mjs`,
+  `guard-bash.mjs`. Precisiones: `.env.example`, `.env.sample` y `.env.template` sí se pueden leer
+  (no traen secretos); `supabase functions deploy` también pide confirmación. Pruebas:
+  `tests/unit/harness-guards.test.ts`.
 
-### [ ] T-251 · Guardias de edición y MCP
+### [x] T-251 · Guardias de edición y MCP
 - REQ: REQ-092.6 (MCP), REQ-092.7 · `guard-edit.mjs`, `guard-mcp.mjs`.
 - Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-15: además de Supabase, las herramientas MCP de Vercel que promueven, revierten
+  o despliegan a producción (`request_promote`, `request_rollback`, rolling release,
+  `create_deployment` con `target: production`) piden confirmación (REQ-092.6).
 
-### [ ] T-252 · Formato al editar y contexto al iniciar
+### [x] T-252 · Formato al editar y contexto al iniciar
 - REQ: — (apoyo de REQ-093) · `format.mjs` (prettier del archivo editado), `session.mjs` (§28.4).
 - Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-15: `format.mjs` (prettier respeta `.prettierignore`), `session.mjs`
+  (`sessionSummary`, `firstOpenTask`).
 
-### [ ] T-253 · Puerta de calidad
+### [x] T-253 · Puerta de calidad
 - REQ: REQ-093.1, REQ-093.2, REQ-093.3, REQ-093.4 · `gate.mjs`, `gateScope` en `lib.mjs`.
 - Modelo: Opus 5.5. Complejidad: media.
+- Hecha 2026-11-15: `gateScope`, `gateCommands`, `gateReport`; los cuatro comandos corren en
+  paralelo (~20 s con un error de tipos). Los hooks se conectan en `.claude/settings.json` en este
+  commit. Pruebas: `tests/unit/harness-gate.test.ts`.
 
 ### [ ] T-254 · Subagentes
 - REQ: REQ-094.1, REQ-094.2, REQ-094.3, REQ-094.4, REQ-094.5 · `.claude/agents/*.md`.
