@@ -2938,6 +2938,42 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: `pnpm trace --hito=20` sin huecos; Henry sube las fotos de Pedro y Stiven, logo y
   portada, toma un turno y reserva una cita desde el celular; aprobación (ADR nuevo).
 
+## Hito 22 — Harness de los agentes (REQ-092…095, ADR-066)
+
+> **Propuesta**, espera aprobación. Orden: T-250 → T-251 → T-252 → T-253 → T-254 y T-255
+> (independientes) → T-256.
+
+### [ ] T-250 · Guardias de la terminal
+- REQ: REQ-092.1, REQ-092.2, REQ-092.3, REQ-092.4, REQ-092.5, REQ-092.6 (Bash), REQ-092.8 ·
+  `lib.mjs` (`classifyBash`, `checkCommitMessage`), `guard-bash.mjs`, hook en `settings.json`.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [ ] T-251 · Guardias de edición y MCP
+- REQ: REQ-092.6 (MCP), REQ-092.7 · `guard-edit.mjs`, `guard-mcp.mjs`.
+- Modelo: Sonnet 5.5. Complejidad: baja.
+
+### [ ] T-252 · Formato al editar y contexto al iniciar
+- REQ: — (apoyo de REQ-093) · `format.mjs` (prettier del archivo editado), `session.mjs` (§28.4).
+- Modelo: Sonnet 5.5. Complejidad: baja.
+
+### [ ] T-253 · Puerta de calidad
+- REQ: REQ-093.1, REQ-093.2, REQ-093.3, REQ-093.4 · `gate.mjs`, `gateScope` en `lib.mjs`.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [ ] T-254 · Subagentes
+- REQ: REQ-094.1, REQ-094.2, REQ-094.3, REQ-094.4, REQ-094.5 · `.claude/agents/*.md`.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-255 · Comandos del método y números libres
+- REQ: REQ-095.1, REQ-095.2, REQ-095.3, REQ-095.4 · `.claude/skills/*`, `scripts/next-ids.ts`,
+  `pnpm next-ids`.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [ ] T-256 · Validación Hito 22
+- Terminado: `pnpm trace --hito=22` sin huecos; `CLAUDE.md` y `docs/estado-del-proyecto.md` al
+  día; Henry abre una sesión y ve el contexto, un commit sin prefijo bloqueado, `vercel --prod`
+  pidiendo confirmación y la puerta frenando un error de tipos; aprobación (ADR nuevo).
+
 ---
 
 ## Dependencias principales

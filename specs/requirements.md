@@ -1941,6 +1941,73 @@ reconstruir):
 Fuera de alcance del Hito 20: fotos de cortes (sigue apagado, REQ-039), colores por negocio, el
 televisor, las pantallas del personal salvo los formularios para subir fotos.
 
+## Hito 22 — Harness de los agentes (ADR-066)
+
+> **Propuesta**, espera aprobación de Henry. No cambia la app ni la base de datos: son reglas y
+> herramientas para los agentes que construyen TurnOS (Claude Code). Hoy el método vive solo como
+> texto en `CLAUDE.md` y el harness es una lista de permisos; aquí se vuelve verificable.
+> Numeración: REQ-091/ADR-065/T-240…245 son de la marca (Hito 21) y ADR-064/T-230 del PR de
+> servicios tipo Fresha, ambos en ramas sin fusionar.
+
+### REQ-092 · Guardias que hacen cumplir el método — M
+- REQ-092.1 Cuando un agente haga `git commit` con un mensaje que no empiece por `T-NNN`,
+  `Hito`, `Hitos`, `Spec`, `Estado`, `Cambio`, `Mezcla`, `Guía` o `ADR-NNN`, el harness DEBE
+  bloquearlo y decir qué prefijos valen.
+- REQ-092.2 Cuando un commit, PR o issue lleve atribución de IA (`Co-Authored-By: Claude…`,
+  "Generated with Claude Code" o similar), el harness DEBE bloquearlo (CLAUDE.md, Git).
+- REQ-092.3 `git add -A`, `git add .`, `git add --all` y `git commit -a` DEBEN bloquearse: el
+  staging es por rutas explícitas.
+- REQ-092.4 Un commit o push estando en `main` DEBE bloquearse: primero una rama.
+- REQ-092.5 Leer `.env*`, llaves (`*.pem`, `*.key`) o dumps por la terminal (`cat`, `head`,
+  `grep`, `source`…), no solo con la herramienta de lectura, DEBE bloquearse.
+- REQ-092.6 Lo que toca producción DEBE pedir la confirmación de Henry y nunca correr solo:
+  `supabase db push`, `supabase … --linked`, `psql` contra un host que no sea local,
+  `vercel --prod`/`vercel deploy --prod`/`vercel promote`, y las herramientas MCP de Supabase que
+  escriben (`execute_sql`, `apply_migration`, `deploy_edge_function`, `merge_branch`…) sobre el
+  proyecto de producción.
+- REQ-092.7 Editar o borrar una migración que ya está en `main` (`supabase/migrations/NNNN_*.sql`)
+  DEBE bloquearse: las migraciones solo se agregan.
+- REQ-092.8 Cada bloqueo DEBE explicar en una línea, en español, qué regla se rompió y qué hacer
+  en su lugar.
+
+### REQ-093 · Puerta de calidad al terminar el turno — M
+- REQ-093.1 Cuando un agente termine su turno con cambios sin commit en `src/`, `tests/`,
+  `scripts/` o `supabase/`, el harness DEBE correr `typecheck`, `lint:texts`, `lint:design` y las
+  pruebas unitarias relacionadas con los archivos cambiados, y si algo falla DEBE devolverle el
+  error al agente para que lo arregle antes de terminar.
+- REQ-093.2 Si solo cambiaron documentos (`docs/`, `specs/`, `*.md`) la puerta NO DEBE correr.
+- REQ-093.3 La puerta NO DEBE bloquear dos veces seguidas el mismo cierre (evita un bucle) y DEBE
+  terminar en menos de 120 s; si se pasa, avisa y deja terminar.
+- REQ-093.4 Con `TURNOS_GATE=off` la puerta DEBE apagarse (sesiones de exploración).
+
+### REQ-094 · Subagentes del proyecto — S
+- REQ-094.1 `revisor-spec` (solo lectura): compara el diff de la rama con los REQ, CA, `design.md`
+  y la tarea, y lista desvíos no anotados en `tasks.md`/`design.md`.
+- REQ-094.2 `escritor-pruebas`: escribe las pruebas que fallan para los CA de una tarea, con el CA
+  en el nombre (`it('REQ-NNN.n …')`, pgTAP `'REQ-NNN.n …'`), sin tocar código de la app.
+- REQ-094.3 `revisor-sql` (solo lectura): revisa migraciones y funciones SQL contra las reglas
+  multi-tenant (`business_id`, RLS forzada, `anon` sin acceso, `security definer` con
+  `search_path`, dinero en `integer`, `business_day_bogota()`) y pide la prueba pgTAP que falte.
+- REQ-094.4 `revisor-textos` (solo lectura): revisa los textos visibles nuevos en español
+  colombiano, claros para un barbero, sin inglés.
+- REQ-094.5 Cada subagente DEBE declarar nombre, descripción de cuándo usarlo, herramientas
+  permitidas y modelo; los de solo lectura NO DEBEN tener herramientas que escriben.
+
+### REQ-095 · Comandos del método — S
+- REQ-095.1 `/tarea T-NNN` DEBE guiar una tarea completa: leerla con sus CA, avisar si no es la
+  siguiente en orden, pruebas primero, código, puerta de calidad, marcar `[x]` (con nota si hubo
+  desvío), commit `T-NNN: …` y cómo probarla desde el celular.
+- REQ-095.2 `/cerrar-hito N` DEBE correr `pnpm trace --hito=N`, listar huecos, poner al día
+  `docs/estado-del-proyecto.md` y redactar la guía de prueba para Henry; no aprueba el hito.
+- REQ-095.3 `/nuevo-req` DEBE redactar REQ, ADR, sección de diseño y tareas como **propuesta** con
+  los siguientes números libres, y detenerse a esperar aprobación.
+- REQ-095.4 `pnpm next-ids` DEBE decir el siguiente REQ, ADR, T y migración libres mirando `main`
+  y todas las ramas remotas, para que dos ramas en paralelo no tomen el mismo número.
+
+Fuera de alcance del Hito 22: cambios a la app, al CI de GitHub o a la base de datos; hooks en la
+máquina de Federico más allá de lo que trae el repo.
+
+
 ---
 
 ## 6. Requisitos no funcionales
