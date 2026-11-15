@@ -520,9 +520,6 @@ export function JoinFlow({ business, now, canBook = false, lines, stateText }: P
           )}
         </div>
       </main>
-      <footer className="text-muted mx-auto hidden w-full max-w-6xl px-16 pt-10 pb-8 text-sm lg:block">
-        Fila con TurnOS
-      </footer>
     </>
   );
 }

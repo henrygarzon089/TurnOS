@@ -1,19 +1,20 @@
 import type { Metadata, Viewport } from "next";
 import { ServiceWorker } from "@/components/ui/ServiceWorker";
 import { VitalsReporter } from "@/components/ui/VitalsReporter";
+import { BRAND_NAME } from "@/lib/brand";
 import { PWA_THEME_COLOR } from "@/lib/pwa";
 import { montserrat } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "TurnOS",
-    template: "%s · TurnOS",
+    default: BRAND_NAME,
+    template: `%s · ${BRAND_NAME}`,
   },
   description: "Toma tu turno sin esperar en el local.",
-  applicationName: "TurnOS",
+  applicationName: BRAND_NAME,
   // REQ-032.1 iOS Safari "Agregar a inicio" (la app del personal; las públicas usan la del negocio)
-  appleWebApp: { capable: true, title: "TurnOS", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: BRAND_NAME, statusBarStyle: "default" },
   icons: { apple: "/icons/apple-touch-icon.png" },
 };
 

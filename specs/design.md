@@ -3333,6 +3333,8 @@ quedan igual. Contrastes calculados con la fórmula de `design-tokens.test.ts`.
   ("Te invito a la app de <negocio>…"). `src/app/page.tsx` (`/` con `TURNOS_MODULES=todos`) sigue
   diciendo TurnOS: es la página del producto y solo se ve en CI.
 - Pie "Fila con TurnOS" de `JoinForm`: se quita (PA-H21-3).
+- **Agregado del 2026-11-15 (T-243):** `PublicHeader`, el encabezado de "Mi turno" y el televisor
+  también cambian las iniciales del negocio (`businessMark`) por `GammaMark` negativo.
 
 ### 27.4 Íconos (REQ-091.8)
 - Script `scripts/brand-icons.ts` (una vez, con `sharp`, que ya trae Next) que genera desde

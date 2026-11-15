@@ -119,11 +119,14 @@ test.describe("REQ-032 / NFR-008 pulido móvil", () => {
     );
   });
 
-  test("REQ-032.1 la app del personal se instala como TurnOS", async ({ page, request }) => {
+  test("REQ-032.1 REQ-091.6 la app del personal se instala como Gamma Club", async ({
+    page,
+    request,
+  }) => {
     await page.goto("/entrar");
     const href = await page.locator('link[rel="manifest"]').getAttribute("href");
     const m = await (await request.get(href!)).json();
-    expect(m.name).toBe("TurnOS");
+    expect(m.name).toBe("Gamma Club");
     expect(m.start_url).toBe("/app");
   });
 

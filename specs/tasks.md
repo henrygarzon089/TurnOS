@@ -2968,16 +2968,25 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   que no vuelvan al navy. Las E2E visuales comparan los colores nuevos.
 - Modelo: Opus 5.5. Complejidad: baja.
 
-### [ ] T-242 · Letra Montserrat
+### [x] T-242 · Letra Montserrat
 - REQ: REQ-091.4, REQ-091.5 · `next/font` en `layout.tsx` y `--font-sans` (design §27.2); ajustes
   puntuales en 360 px si algo no cabe.
 - Terminado: E2E sin desplazamiento horizontal en 360/390/1280 en las pantallas de §27.5; CLS ≤ 0,1.
+- Hecha 2026-11-15. `src/app/fonts.ts` es el único archivo que puede usar `next/font`
+  (`lint:design` lo revisa). Revisado en el navegador: portada, pasos, invitación y "Hoy" sin
+  desplazamiento horizontal a 360 px; los botones largos caben sin ajustes. Las E2E de ancho
+  corren en el CI.
 - Modelo: Opus 5.5. Complejidad: media.
 
-### [ ] T-243 · Logo y nombre Gamma Club
+### [x] T-243 · Logo y nombre Gamma Club
 - REQ: REQ-091.6, REQ-091.7, REQ-091.9 · `GammaMark`, `AuthCard`, `PublicHero` sin logo, título,
   manifest, invitación y su WhatsApp; pie "Fila con TurnOS" según PA-H21-3 (design §27.3).
 - Terminado: pruebas de §27.5 en verde; `pnpm lint:texts` en verde.
+- Hecha 2026-11-15. `GammaMark` y `GammaWordmark` en `src/components/brand/`; el nombre visible
+  sale de `BRAND_NAME` (`src/lib/brand.ts`). Agregado: además de la portada, el encabezado de las
+  otras pantallas del cliente, "Mi turno" y el televisor cambian las iniciales por el símbolo
+  (REQ-091.9/091.10), para que no queden dos marcas distintas. En la portada el nombre va en
+  mayúsculas espaciadas.
 - Modelo: Opus 5.5. Complejidad: baja.
 
 ### [ ] T-244 · Rendimiento y capturas

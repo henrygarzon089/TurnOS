@@ -142,7 +142,8 @@ describe("T-173 portada y tomar turno en una pantalla (REQ-078.21, ADR-052)", ()
 
   it("REQ-078.21 encabezado: marca, nombre y 'Abierto hasta <hora>', sin la dirección", () => {
     const t = visible(html(<PublicHeader name={BIZ.name} subtitle="Abierto hasta 8:00 p. m." />));
-    expect(t).toContain("33 Barbería La 33 Abierto hasta 8:00 p. m.");
+    // El cuadro navy lleva el símbolo de Gamma Club, no las iniciales (REQ-091.9)
+    expect(t).toContain("Barbería La 33 Abierto hasta 8:00 p. m.");
     expect(t).not.toContain("Sabaneta");
   });
 
@@ -233,7 +234,8 @@ describe("T-173 portada y tomar turno en una pantalla (REQ-078.21, ADR-052)", ()
     expect(con).toContain('alt="Logo de Gamma Club"');
     const sin = html(<PublicHero name="Barbería La 33" logoPath={null} coverPath={null} />);
     expect(sin).not.toContain("<img");
-    expect(visible(sin)).toContain("33 Barbería La 33");
+    expect(visible(sin)).toContain("Barbería La 33");
+    expect(sin).toContain("data-gamma-mark");
     expect(sin).toContain("bg-brand");
     // en los pasos, una línea sin la foto grande
     expect(

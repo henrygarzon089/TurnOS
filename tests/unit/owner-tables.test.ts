@@ -142,8 +142,8 @@ describe("REQ-078.33 tablas del dueño como el tablero Dueno-Clientes (T-180)", 
     expect(b.c).toEqual({ loyalty: "10/10", membership: null });
     expect(b.d).toEqual({ loyalty: "—", membership: null });
     // programa apagado: sin sellos
-    expect(customerBadges(["a"], [{ customer_id: "a", stamps: 7 }], null, [], TODAY).a.loyalty).toBe(
-      "—",
-    );
+    expect(
+      customerBadges(["a"], [{ customer_id: "a", stamps: 7 }], null, [], TODAY).a.loyalty,
+    ).toBe("—");
   });
 });

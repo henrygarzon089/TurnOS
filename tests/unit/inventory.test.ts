@@ -15,17 +15,21 @@ describe("inventario: consumo esperado y alerta (design.md §18.3, ejemplo M)", 
   it("REQ-073.2 esperado = Σ servicios ÷ rendimiento, con 2 decimales", () => {
     expect(expectedUse([{ services: 30, servicesPerUnit: 40 }])).toBe(0.75);
     expect(expectedUse([{ services: 12, servicesPerUnit: 50 }])).toBe(0.24);
-    expect(expectedUse([
-      { services: 10, servicesPerUnit: 3 },
-      { services: 5, servicesPerUnit: 6 },
-    ])).toBe(4.17);
+    expect(
+      expectedUse([
+        { services: 10, servicesPerUnit: 3 },
+        { services: 5, servicesPerUnit: 6 },
+      ]),
+    ).toBe(4.17);
   });
 
-  it("REQ-073.2 los servicios en \"Midiendo\" no suman al esperado", () => {
-    expect(expectedUse([
-      { services: 30, servicesPerUnit: 40 },
-      { services: 20, servicesPerUnit: null },
-    ])).toBe(0.75);
+  it('REQ-073.2 los servicios en "Midiendo" no suman al esperado', () => {
+    expect(
+      expectedUse([
+        { services: 30, servicesPerUnit: 40 },
+        { services: 20, servicesPerUnit: null },
+      ]),
+    ).toBe(0.75);
     expect(expectedUse([])).toBe(0);
   });
 
@@ -136,8 +140,20 @@ describe("inventario: mensajes, orden de compra y plantilla", () => {
 
   it("REQ-074.2 la orden de compra se comparte por WhatsApp como texto plano, por proveedor", () => {
     const lines = [
-      { supplier: "Distri Sabaneta", name: "Cera mate", presentation: "Frasco 150 g", qty: 8, amount: 144000 },
-      { supplier: "Distri Sabaneta", name: "Gel", presentation: "Tarro 500 g", qty: 2, amount: 30000 },
+      {
+        supplier: "Distri Sabaneta",
+        name: "Cera mate",
+        presentation: "Frasco 150 g",
+        qty: 8,
+        amount: 144000,
+      },
+      {
+        supplier: "Distri Sabaneta",
+        name: "Gel",
+        presentation: "Tarro 500 g",
+        qty: 2,
+        amount: 30000,
+      },
       { supplier: null, name: "Alcohol", presentation: "Galón", qty: 3, amount: 90000 },
     ];
     expect(purchaseOrderText("Filo", "2026-11-09", lines)).toBe(
@@ -154,15 +170,19 @@ describe("inventario: mensajes, orden de compra y plantilla", () => {
         "Total estimado: $ 264.000",
       ].join("\n"),
     );
-    expect(purchaseOrderLink("Filo", "2026-11-09", lines)).toMatch(/^https:\/\/wa\.me\/\?text=Pedido%20de%20Filo/);
+    expect(purchaseOrderLink("Filo", "2026-11-09", lines)).toMatch(
+      /^https:\/\/wa\.me\/\?text=Pedido%20de%20Filo/,
+    );
   });
 
   it("REQ-070.1 la plantilla básica trae guantes, cuchillas y papel cuello, sin servicios", () => {
-    expect(BASIC_TEMPLATE.map((t) => `${t.name} · ${t.group} · rinde ${t.suggestedYield}`)).toEqual([
-      "Guantes de nitrilo (caja 50 pares) · biosafety · rinde 50",
-      "Cuchillas (paquete 10) · shave_beard · rinde 10",
-      "Papel cuello (rollo 100) · biosafety · rinde 100",
-    ]);
+    expect(BASIC_TEMPLATE.map((t) => `${t.name} · ${t.group} · rinde ${t.suggestedYield}`)).toEqual(
+      [
+        "Guantes de nitrilo (caja 50 pares) · biosafety · rinde 50",
+        "Cuchillas (paquete 10) · shave_beard · rinde 10",
+        "Papel cuello (rollo 100) · biosafety · rinde 100",
+      ],
+    );
     expect(BASIC_TEMPLATE.every((t) => t.use === "internal" && t.stationQty === 1)).toBe(true);
   });
 

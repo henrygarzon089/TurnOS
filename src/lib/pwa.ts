@@ -2,7 +2,7 @@ import type { Metadata, MetadataRoute } from "next";
 
 /**
  * PWA por negocio (REQ-032.1, PA-22: la app del cliente lleva el nombre de la barbería). La app
- * del personal usa el manifest base `src/app/manifest.ts` ("TurnOS").
+ * del personal usa el manifest base `src/app/manifest.ts` ("Gamma Club", REQ-091.6).
  */
 /** Mismos valores que `--color-brand` y `--color-surface` (prueba en design-tokens.test.ts). */
 export const PWA_THEME_COLOR = "#14254a";

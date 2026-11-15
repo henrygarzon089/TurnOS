@@ -28,7 +28,7 @@ import {
   positionText,
   ticketStep,
 } from "@/lib/domain/my-ticket";
-import { businessMark } from "@/lib/domain/public-view";
+import { GammaMark } from "@/components/brand/GammaMark";
 import { formatTimeBogota } from "@/lib/domain/time";
 import { useBrowserOnline } from "@/lib/realtime/use-browser-online";
 import { useQueueSubscription } from "@/lib/realtime/use-queue-subscription";
@@ -356,9 +356,9 @@ function TicketHeader({ name, slug, online }: { name: string; slug: string; onli
       </Link>
       <span
         aria-hidden="true"
-        className="bg-brand text-brand-ink flex size-7 shrink-0 items-center justify-center rounded-xs text-xs font-bold tabular-nums"
+        className="bg-brand flex size-7 shrink-0 items-center justify-center rounded-xs"
       >
-        {businessMark(name)}
+        <GammaMark variant="negativo" size={22} decorative />
       </span>
       <h1 className="min-w-0 flex-1 truncate text-sm font-bold">{name}</h1>
       {online ? (
