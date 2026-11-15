@@ -746,18 +746,17 @@ Pendientes (H3): `/admin/caja`,
 - Pendientes externos que quedan: los pasos de Meta para WhatsApp (T-069), la revisión del aviso
   de privacidad por un abogado y el inventario de Gamma Club.
 
-### Hito 19 — Citas en modo esencial (en validación, REQ-084, ADR-062)
+### Hito 19 — Citas en modo esencial (aprobado 2026-11-15, REQ-084, ADR-062, ADR-067)
 
 - Henry arranca con Gamma Club el martes 2026-11-17 y pidió ver la agenda de otros días. Citas
   estaba apagado desde el Hito 17. T-210 (2026-11-14) lo enciende en `modules.ts`, sin migraciones:
   "Citas" en el menú del dueño (14 destinos), las citas de hoy en "Hoy" y "Reservar una cita" en la
   portada cuando hay barberos que las reciben.
-- T-211 en curso (2026-11-15): Henry desplegó, activó "Recibir citas" y reservó desde el celular
-  una cita para el martes 17 a las 9:15 con Stiven; "Mi cita" se ve bien. Falta verla en la agenda
-  y decir "Aprobado" (ADR de aprobación del hito).
+- T-211 hecha (2026-11-15): Henry desplegó, activó "Recibir citas", reservó desde el celular una
+  cita para el martes 17 a las 9:15 con Stiven y la vio en la agenda. Aprobado (ADR-067).
 - Abierta PA-H19-1: si el barbero ve sus propias citas de los próximos días (hoy no, REQ-054.6).
 
-### Hito 20 — cliente con fotos y paso a paso (spec aprobada, REQ-085…090, ADR-063)
+### Hito 20 — cliente con fotos y paso a paso (aprobado 2026-11-15, REQ-085…090, ADR-063, ADR-068)
 
 - Fotos del barbero (dueño y barbero), de los servicios, logo y portada en el bucket público
   `media` (reutilizado, ADR-063); tomar turno en 3 pasos y reservar en 4. Tareas T-220…T-230.
@@ -775,14 +774,15 @@ Pendientes (H3): `/admin/caja`,
   nombre y duración arriba, precio grande y "+"/"✓" abajo, foto como miniatura a la derecha. Sigue
   un solo servicio por turno; sin migraciones. Categorías, descripción y varios servicios quedaron
   fuera (ADR-064).
-- Falta: T-228 (Henry sube fotos y prueba desde el celular; ADR de aprobación del hito).
+- T-228 hecha (2026-11-15): Henry subió fotos, tomó un turno y reservó una cita. Aprobado (ADR-068).
+- En propuesta (sesión aparte): descripción de cada servicio al elegirlo.
 - Reporte abierto (2026-11-15): "cancelo el turno, vuelvo a tomar turno y sigue saliendo el
   cancelado". No se reprodujo ni en desarrollo ni con el build de producción ("Tomar un turno
   nuevo" crea un turno con token nuevo; `join_queue` solo reutiliza turnos activos). Se espera la
   captura de Henry.
 - Idea sin spec: "Mi agenda" del barbero con sus citas de los próximos días (ver PA-H19-1).
 
-### Hito 21 — marca Gamma Club en la app (spec aprobada, REQ-091, ADR-065)
+### Hito 21 — marca Gamma Club en la app (aprobado 2026-11-15, REQ-091, ADR-065, ADR-069)
 
 - Fuente: manual de marca v1.0 de Henry (https://claude.ai/artifact/PJE1WJHQXCm3xhpUAm1Dha),
   resumido con los logos en SVG en `docs/marca/`.
@@ -798,8 +798,7 @@ Pendientes (H3): `/admin/caja`,
   de accesibilidad. La E2E de REQ-091.5 encontró que "Hoy" se corría de lado a 360 px con todos
   los módulos encendidos (una fila larga de "Para recordar" estiraba la cuadrícula); arreglado con
   `grid-cols-1` y `*:min-w-0`. `pnpm trace --hito=21` sin huecos.
-- Falta: T-245 (Henry sigue `docs/guia-prueba-hito-21.md`: sube
-  `docs/marca/logos/logo-negocio-256.png` en "Negocio", reinstala la app y aprueba).
+- T-245 hecha (2026-11-15): Henry revisó la app contra el manual de marca. Aprobado (ADR-069).
 
 ### Hito 22 — harness de los agentes (spec aprobada 2026-11-15, REQ-092…095, ADR-066)
 

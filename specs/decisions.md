@@ -1237,6 +1237,31 @@
   de cada turno con código (~30–90 s). `.claude/settings.local.json` sigue siendo de cada máquina.
   Los hooks corren con permisos del usuario: son código del repo y se revisan como tal.
 
+## ADR-067 · Aprobación del Hito 19 (Citas encendido en modo esencial)
+- Estado: **aceptada** (Henry, 2026-11-15)
+- Contexto: REQ-084 construido (T-210) y en producción, sin migraciones. `pnpm trace --hito=19`
+  sin huecos y CI en verde. Henry probó con `docs/guia-prueba-lunes.md`: configuró "Citas" en
+  Gamma Club, reservó una cita desde el celular y la vio en la agenda.
+- Decisión: Henry aprueba el Hito 19 ("Aprobados Hitos 19, 20 y 21", 2026-11-15). T-211 cerrada.
+- Consecuencias: Gamma Club recibe citas en modo esencial desde el arranque con los barberos.
+
+## ADR-068 · Aprobación del Hito 20 (cliente con fotos y paso a paso)
+- Estado: **aceptada** (Henry, 2026-11-15)
+- Contexto: REQ-085…090 construidos (T-220…T-227, T-229) y en producción. `pnpm trace --hito=20`
+  sin huecos y CI en verde. Henry subió fotos, logo y portada, tomó un turno y reservó una cita
+  desde el celular con el paso a paso nuevo.
+- Decisión: Henry aprueba el Hito 20 ("Aprobados Hitos 19, 20 y 21", 2026-11-15). T-228 cerrada.
+- Consecuencias: el cliente elige servicio y barbero con fotos en pasos. La descripción de cada
+  servicio, que ADR-064 dejó fuera, va en una propuesta aparte.
+
+## ADR-069 · Aprobación del Hito 21 (marca Gamma Club en la app)
+- Estado: **aceptada** (Henry, 2026-11-15)
+- Contexto: REQ-091 construido (T-240…T-244), sin migraciones, en producción en
+  https://www.gammaclub.co. `pnpm trace --hito=21` sin huecos y CI en verde (Lighthouse incluido).
+  Henry revisó logo, ícono, portada, Entrar, Hoy, Mi fila y televisor contra el manual de marca.
+- Decisión: Henry aprueba el Hito 21 ("Aprobados Hitos 19, 20 y 21", 2026-11-15). T-245 cerrada.
+- Consecuencias: `docs/marca/` sigue siendo la fuente de verdad de logo, colores y letra.
+
 ## ADR-070 · Hito 23: descripción de los servicios y del negocio
 - Estado: **aceptada** (Henry, 2026-11-15: "Si dale", con PA-H23-1…5 según la propuesta: 140 y
   200 caracteres, solo en la tarjeta y en la portada, Henry escribe las descripciones).
