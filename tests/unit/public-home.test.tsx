@@ -170,6 +170,19 @@ describe("T-173 portada y tomar turno en una pantalla (REQ-078.21, ADR-052)", ()
     expect(t).not.toContain("Tu nombre");
   });
 
+  it("REQ-088.8 en la portada 'Reservar una cita' sale una sola vez: el botón, no también el enlace de arriba", () => {
+    const h = flow("");
+    expect(h.match(/>Reservar una cita</g)).toHaveLength(1);
+    expect(h).toMatch(/btn-secondary[^"]*"[^>]*>Reservar una cita</);
+  });
+
+  it("REQ-088.8 durante los pasos, en escritorio, el encabezado sí ofrece 'Reservar una cita'", () => {
+    const h = flow("paso=servicio");
+    const hero = h.slice(0, h.indexOf("</header>"));
+    expect(hero).toContain(">Reservar una cita<");
+    expect(hero).toContain("hidden items-center gap-8 lg:flex");
+  });
+
   it("REQ-003.1 / REQ-088.2 paso 1: servicios con precio y duración, 'Paso 1 de 3' y 'Atrás'", () => {
     const h = flow("paso=servicio");
     const t = visible(h);

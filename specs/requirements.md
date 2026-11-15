@@ -1915,6 +1915,9 @@ terminar en pocos toques desde el celular.
   mensajes de error, junto al paso donde está el dato (un error del celular lleva al paso 3).
 - REQ-088.7 Desde 1024 px, la fila en vivo DEBE ir a la izquierda y los pasos en una tarjeta a la
   derecha (como ADR-052).
+- REQ-088.8 En escritorio, la portada NO DEBE mostrar "Reservar una cita" dos veces: va solo el
+  botón de REQ-088.1, no también el enlace del encabezado. Durante los pasos, cuando el botón no se
+  ve, el encabezado SÍ DEBE ofrecer el enlace (Henry, 2026-11-15).
 
 ### REQ-089 · Reservar una cita paso a paso — M
 - REQ-089.1 "Reservar una cita" DEBE tener 4 pasos con barra de avance y "Atrás": 1) **Servicio**;

@@ -2990,6 +2990,9 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Arreglo del 2026-11-15 (Henry lo vio en producción): con foto del local, el logo salía cortado
   arriba porque la foto es `relative` y el logo no, y la foto se pintaba encima. El logo (y el
   símbolo sin logo) llevan `relative z-10`; prueba REQ-087.2 en `brand-mark.test.tsx`.
+- Arreglo del 2026-11-15 (Henry, "arréglalo"): en escritorio "Reservar una cita" salía dos veces
+  en la portada (enlace del encabezado del Hito 16 y botón del Hito 20). El enlace queda solo
+  durante los pasos (REQ-088.8, nuevo).
 - Modelo: Opus 5.5. Complejidad: baja.
 
 ### [ ] T-244 · Rendimiento y capturas

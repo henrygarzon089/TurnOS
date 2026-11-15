@@ -272,7 +272,8 @@ export function JoinFlow({ business, now, canBook = false, lines, stateText }: P
         compact={inSteps}
         aside={
           <div className="hidden items-center gap-8 lg:flex">
-            {canBook && (
+            {/* REQ-088.8: en la portada ya está el botón; arriba solo durante los pasos */}
+            {canBook && inSteps && (
               <Link
                 href={citaHref}
                 className="text-ink inline-flex min-h-12 items-center font-semibold underline underline-offset-4"

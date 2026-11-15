@@ -493,7 +493,7 @@
 | REQ-086.1 |  | T-222 (hecha), T-224 (hecha), T-230 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
 | REQ-086.2 |  | T-222 (hecha), T-224 (hecha), T-230 (hecha) | visual-cliente-cita.spec.ts, public-home.test.tsx, service-card.test.tsx, 0074_brand_images.sql | cubierto |
 | REQ-087.1 |  | T-223 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
-| REQ-087.2 |  | T-223 (hecha) | public-home.test.tsx, 0074_brand_images.sql | cubierto |
+| REQ-087.2 |  | T-223 (hecha) | brand-mark.test.tsx, public-home.test.tsx, 0074_brand_images.sql | cubierto |
 | REQ-087.3 |  | T-223 (hecha) | photos-speed.test.tsx | cubierto |
 | REQ-088.1 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, join-steps.test.ts, public-home.test.tsx | cubierto |
 | REQ-088.2 | Tomar turno paso a paso | T-224 (hecha) | helpers.ts, join-steps.spec.ts, join-steps.test.ts, public-home.test.tsx | cubierto |
@@ -502,6 +502,7 @@
 | REQ-088.5 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, preferred-barber.spec.ts | cubierto |
 | REQ-088.6 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, join-steps.test.ts | cubierto |
 | REQ-088.7 | Tomar turno paso a paso | T-224 (hecha) | join-steps.spec.ts, public-home.test.tsx | cubierto |
+| REQ-088.8 | Tomar turno paso a paso | T-224 (hecha) | public-home.test.tsx | cubierto |
 | REQ-089.1 | Reservar una cita paso a paso | T-225 (hecha) | appointments-public.spec.ts, visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
 | REQ-089.2 | Reservar una cita paso a paso | T-225 (hecha) | visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
 | REQ-089.3 | Reservar una cita paso a paso | T-225 (hecha) | appointments-public.spec.ts, visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
