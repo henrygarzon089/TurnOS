@@ -752,20 +752,35 @@ Pendientes (H3): `/admin/caja`,
   estaba apagado desde el Hito 17. T-210 (2026-11-14) lo enciende en `modules.ts`, sin migraciones:
   "Citas" en el menú del dueño (14 destinos), las citas de hoy en "Hoy" y "Reservar una cita" en la
   portada cuando hay barberos que las reciben.
-- Falta (Henry), T-211: desplegar; en "Citas", activar "Recibir citas" y escoger a Pedro y Stiven;
-  reservar una cita para mañana desde el celular y verla en la agenda; aprobar.
+- T-211 en curso (2026-11-15): Henry desplegó, activó "Recibir citas" y reservó desde el celular
+  una cita para el martes 17 a las 9:15 con Stiven; "Mi cita" se ve bien. Falta verla en la agenda
+  y decir "Aprobado" (ADR de aprobación del hito).
 - Abierta PA-H19-1: si el barbero ve sus propias citas de los próximos días (hoy no, REQ-054.6).
 
 ### Hito 20 — cliente con fotos y paso a paso (spec aprobada, REQ-085…090, ADR-063)
 
 - Fotos del barbero (dueño y barbero), de los servicios, logo y portada en el bucket público
   `media` (reutilizado, ADR-063); tomar turno en 3 pasos y reservar en 4. Tareas T-220…T-230.
-- T-229 (2026-11-15, PR #190, fusionado): flecha "Volver a <negocio>" en "Mi turno" y "Mi cita".
+- T-220…T-227 hechas y en producción (PR #189, fusionado; migraciones 0074 y 0075 aplicadas por
+  Henry el 2026-11-15). T-225: reservar una cita en 4 pasos (`BookFlow`). T-226: la foto del
+  barbero en "Mi turno" y "Mi cita" (`get_appointment_by_token` devuelve `barberPhoto`, 0075).
+  T-227: fotos rápidas (WebP ≤ 1200 px, carga diferida). Desvío anotado en `tasks.md`: Safari no
+  codifica WebP y cae a JPEG; el servidor acepta cualquier imagen ≤ 300 KB (REQ-090.1).
+- T-229 (2026-11-15, PR #190, fusionado y en producción, `9966a60`): flecha "Volver a <negocio>"
+  en "Mi turno" (en cualquier estado, REQ-004.8) y "Mi cita" (REQ-051.7). Henry reportó que desde
+  "Mi cita" no se podía hacer nada. El PR también puso al día las E2E `preferred-barber` y
+  `services-by-barber`, que el paso a paso había dejado viejas (PR #189 se fusionó antes de que
+  terminaran).
 - T-230 (2026-11-15, PR #191): tarjetas de servicio al estilo de Fresha (REQ-086.2, ADR-064):
   nombre y duración arriba, precio grande y "+"/"✓" abajo, foto como miniatura a la derecha. Sigue
   un solo servicio por turno; sin migraciones. Categorías, descripción y varios servicios quedaron
   fuera (ADR-064).
 - Falta: T-228 (Henry sube fotos y prueba desde el celular; ADR de aprobación del hito).
+- Reporte abierto (2026-11-15): "cancelo el turno, vuelvo a tomar turno y sigue saliendo el
+  cancelado". No se reprodujo ni en desarrollo ni con el build de producción ("Tomar un turno
+  nuevo" crea un turno con token nuevo; `join_queue` solo reutiliza turnos activos). Se espera la
+  captura de Henry.
+- Idea sin spec: "Mi agenda" del barbero con sus citas de los próximos días (ver PA-H19-1).
 
 ### Hito 21 — marca Gamma Club en la app (spec aprobada, REQ-091, ADR-065)
 
