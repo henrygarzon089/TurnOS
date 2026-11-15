@@ -2942,6 +2942,46 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Terminado: `pnpm trace --hito=20` sin huecos; Henry sube las fotos de Pedro y Stiven, logo y
   portada, toma un turno y reserva una cita desde el celular; aprobación (ADR nuevo).
 
+## Hito 21 — Marca Gamma Club en la app (REQ-091, ADR-065)
+
+> Aprobada por Henry el 2026-11-15 (ADR-065). Orden: T-240 → T-241 → T-242 →
+> T-243 → T-244 → T-245. Sin migraciones.
+
+### [ ] T-240 · Íconos y PNG de la marca
+- REQ: REQ-091.8 · `scripts/brand-icons.ts` genera los íconos de la app, el favicon y
+  `logo-negocio-256.png` desde `docs/marca/logos/` (design §27.4).
+- Terminado: PNG en `public/icons/`, `favicon.ico` nuevo; prueba de que el enmascarable deja el
+  símbolo en el 80 % central.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-241 · Colores del manual
+- REQ: REQ-091.1, REQ-091.2, REQ-091.3, REQ-091.10 · Tokens de design §27.1, token `link` en el
+  foco y los enlaces, `PWA_THEME_COLOR`/`PWA_BACKGROUND_COLOR`, `lint:design` sin `text-accent`.
+- Terminado: `design-tokens.test.ts` con la tabla nueva en verde; `/diseno` muestra la paleta nueva.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-242 · Letra Montserrat
+- REQ: REQ-091.4, REQ-091.5 · `next/font` en `layout.tsx` y `--font-sans` (design §27.2); ajustes
+  puntuales en 360 px si algo no cabe.
+- Terminado: E2E sin desplazamiento horizontal en 360/390/1280 en las pantallas de §27.5; CLS ≤ 0,1.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [ ] T-243 · Logo y nombre Gamma Club
+- REQ: REQ-091.6, REQ-091.7, REQ-091.9 · `GammaMark`, `AuthCard`, `PublicHero` sin logo, título,
+  manifest, invitación y su WhatsApp; pie "Fila con TurnOS" según PA-H21-3 (design §27.3).
+- Terminado: pruebas de §27.5 en verde; `pnpm lint:texts` en verde.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-244 · Rendimiento y capturas
+- REQ: REQ-091.11 · Lighthouse móvil de la portada en CI (≥ 80 / ≥ 90); capturas en
+  `docs/diseno/capturas/hito-21/`.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-245 · Validación Hito 21
+- Terminado: `pnpm trace --hito=21` sin huecos; Henry sube el logo en "Negocio", reinstala la app en
+  su celular y revisa portada, Entrar, Mi fila, Hoy y televisor contra el manual; aprobación
+  (ADR nuevo).
+
 ---
 
 ## Dependencias principales

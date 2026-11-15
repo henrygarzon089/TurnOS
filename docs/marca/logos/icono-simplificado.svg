@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Gamma Club">
+  <polygon points="8,6 60,57 42,68" fill="#14254A"/>
+  <polygon points="92,6 40,57 58,68" fill="#14254A"/>
+  <circle cx="50" cy="82" r="13" fill="none" stroke="#E02B3B" stroke-width="12"/>
+</svg>

@@ -3272,3 +3272,80 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
 - Integración: subir y quitar contra el Postgres local con un doble de Storage.
 - E2E móvil: tomar turno en 3 pasos y reservar en 4, "atrás" del celular, cliente que vuelve.
 - Lighthouse móvil de la portada ≥ 80 (REQ-090.1).
+
+## 27. Hito 21 — Marca Gamma Club en la app (REQ-091, ADR-065)
+
+> **APROBADO** (Henry, 2026-11-15, ADR-065). Fuente: manual de marca v1.0 de Henry
+> (https://claude.ai/artifact/PJE1WJHQXCm3xhpUAm1Dha), resumido en `docs/marca/README.md` con los
+> SVG en `docs/marca/logos/`. Sin migraciones ni cambios de flujo.
+
+### 27.1 Tokens nuevos (`src/app/globals.css`) (REQ-091.1…091.3)
+Solo cambian estos valores de §22.1; los demás tokens (y las esquinas, sombras y movimiento)
+quedan igual. Contrastes calculados con la fórmula de `design-tokens.test.ts`.
+
+| Token | Antes | Ahora | Uso | Contraste |
+|---|---|---|---|---|
+| `surface` | #F5F7FA | **#F3F0EA** (Crema) | fondo de página | — |
+| `ink` | #14213A | **#14254A** (Navy Gamma) | texto principal | 13,25 sobre `surface` · 15,07 sobre `card` |
+| `muted` | #4A5872 | **#4A4F5C** (Gris grafito) | texto secundario | 7,20 sobre `surface` · 8,19 sobre `card` |
+| `line` | #DCE2EA | **#D6D1C7** | divisores | decorativo |
+| `line-strong` | #8593A8 | **#857F73** | borde de campos | 3,98 sobre `card` · 3,50 sobre `surface` |
+| `brand` | #0E1E3D | **#14254A** (Navy Gamma) | acción principal, cabecera | 15,07 con `brand-ink` |
+| `brand-soft` | #E8ECF4 | **#E6E9F0** | opción elegida, destino activo | `ink` encima: 12,40 |
+| `accent` / `called` | #C21E2F | **#E02B3B** (Rojo Gamma) | **solo** atención ahora, siempre relleno | 4,59 con blanco |
+| `accent-on-brand` | #FF5A68 | **#F0394A** | punto "en vivo" y tornillo sobre navy | 3,87 (no es texto) |
+| `skeleton` | #E3E8EF | **#E8E3D9** | esqueletos | — |
+| `link` (nuevo) | — | **#2D55D6** (Azul Gamma) | anillo de foco y enlaces de texto | 6,21 sobre `card` · 5,46 sobre `surface` |
+
+- Se quedan: `danger` #A8182A (6,53 sobre crema), `ok`, `warn`, `warn-on-brand` (9,25 sobre el navy
+  nuevo), `ok-on-brand` (8,39), `accent-soft`, `flash`.
+- `accent` nunca como color de texto: sobre crema da 4,03 (REQ-091.2). `pnpm lint:design` se amplía
+  para rechazar `text-accent` y `text-called`.
+- `PWA_THEME_COLOR` = `#14254A` y `PWA_BACKGROUND_COLOR` = `#F3F0EA` (`src/lib/pwa.ts`); la prueba de
+  tokens ya los compara con `brand` y `surface`.
+
+### 27.2 Letra (REQ-091.4, REQ-091.5)
+- `next/font/google` con `Montserrat`, pesos 400/600/700, `subsets: ["latin"]`, `display: "swap"`,
+  `adjustFontFallback` (por defecto) y `variable: "--font-sans"` en `<html>` (`src/app/layout.tsx`).
+  Next la descarga al compilar y la sirve desde el propio dominio: el celular no habla con Google.
+- `--font-sans` pasa a `var(--font-montserrat), system-ui, …`. Tamaños de §22.1 iguales.
+- Montserrat es más ancha que `system-ui`: revisar en 360 px los botones largos ("Terminar y
+  cobrar", "Confirmar turno", "Llamar a …") y los encabezados del televisor; si algo no cabe, se
+  baja `letter-spacing` o el tamaño de ese caso puntual, nunca el texto base (≥ 16 px).
+- Nombre `GAMMA CLUB`: 600, mayúsculas, `letter-spacing: 0.3em`. Subtítulos de marca: 400 en
+  mayúsculas espaciadas. Precios y etiquetas: 700.
+
+### 27.3 Logo y nombre (REQ-091.6…091.9)
+- Componente `GammaMark` (`src/components/brand/GammaMark.tsx`): SVG en el código con las cuatro
+  piezas del símbolo (`docs/marca/logos/simbolo-*.svg`) y la prop `variant`
+  (`positivo` | `negativo` | `simplificado`). Debajo de 40 px usa la versión simplificada. Con
+  `role="img"` y `aria-label="Gamma Club"`; si va junto al texto `GAMMA CLUB`, `aria-hidden`.
+- `AuthCard`: el texto "TurnOS" se reemplaza por `GammaMark` positivo (72 px) y `GAMMA CLUB`.
+- `PublicHero` sin `logoPath`: `GammaMark` negativo sobre `brand` con el nombre del negocio en
+  mayúsculas espaciadas. Con `logoPath`, igual que hoy.
+- Textos: `layout.tsx` (`default`/`template`/`applicationName`/`appleWebApp.title` →
+  "Gamma Club"), `manifest.ts` (nombre de la app del personal), invitación
+  ("<negocio> te invitó a su app. Elige un PIN…"), WhatsApp de `BarberForms`
+  ("Te invito a la app de <negocio>…"). `src/app/page.tsx` (`/` con `TURNOS_MODULES=todos`) sigue
+  diciendo TurnOS: es la página del producto y solo se ve en CI.
+- Pie "Fila con TurnOS" de `JoinForm`: se quita (PA-H21-3).
+
+### 27.4 Íconos (REQ-091.8)
+- Script `scripts/brand-icons.ts` (una vez, con `sharp`, que ya trae Next) que genera desde
+  `docs/marca/logos/icono-cuadro-navy.svg`: `public/icons/icon-192.png`, `icon-512.png`,
+  `apple-touch-icon.png` (180), `src/app/favicon.ico` (32 y 16, versión simplificada) e
+  `icon-512-maskable.png` (fondo navy a sangre, símbolo dentro del 80 % central, sin esquinas
+  redondeadas porque las pone el sistema). También `docs/marca/logos/logo-negocio-256.png` para que
+  Henry lo suba en "Negocio" (PA-H21-4). Los PNG se guardan en el repo; el script no corre en el
+  build.
+
+### 27.5 Pruebas
+- Unitarias: `design-tokens.test.ts` con la tabla de §27.1 (pares y mínimos, incluido `link`);
+  `GammaMark` (variantes, `aria-label`, simplificado bajo 40 px); `AuthCard` muestra "GAMMA CLUB" y
+  no "TurnOS"; metadatos y manifest dicen "Gamma Club"; `PublicHero` sin logo muestra el símbolo.
+- `pnpm lint:design` rechaza `text-accent`/`text-called`.
+- E2E móvil (360 y 390 px) y escritorio (1280): sin desplazamiento horizontal en portada, tomar
+  turno, Mi turno, Entrar, Mi fila, Hoy, Caja y televisor; los botones largos sin cortar palabras.
+- Lighthouse móvil de la portada en CI: rendimiento ≥ 80, accesibilidad ≥ 90, CLS ≤ 0,1.
+- Revisión visual: capturas de portada, tomar turno, Entrar, Mi fila, Hoy y televisor en
+  `docs/diseno/capturas/hito-21/` para que Henry las compare con el manual.

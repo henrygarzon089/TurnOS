@@ -1937,13 +1937,79 @@ terminar en pocos toques desde el celular.
 Preguntas del Hito 20 (Henry aprobó la spec con las propuestas el 2026-11-14; se pueden cambiar sin
 reconstruir):
 - **PA-H20-1**: ¿la portada usa los colores de Gamma Club (por ejemplo, negro y dorado) o los de
-  TurnOS? Propuesta: los de TurnOS ahora; color de marca por negocio, después.
+  TurnOS? Propuesta: los de TurnOS ahora; color de marca por negocio, después. **2026-11-15:** ya
+  existe el manual de Gamma Club; el Hito 21 (REQ-091, aprobado) pasa la app a sus colores.
 - **PA-H20-2**: ¿el televisor también muestra las fotos de los barberos? Propuesta: no en este hito.
 - **PA-H20-3**: ¿tienes logo y una foto del local listos? Si no, la portada sale con el nombre sobre
   azul marino hasta que los subas.
 
 Fuera de alcance del Hito 20: fotos de cortes (sigue apagado, REQ-039), colores por negocio, el
 televisor, las pantallas del personal salvo los formularios para subir fotos.
+
+### Hito 21 — Marca Gamma Club en la app (ADR-065)
+
+> Estado: **APROBADA** (Henry, 2026-11-15: "Aprobado, constrúyelo"; PA-H21-1…4 con la
+> propuesta). Sale del manual de marca de
+> Henry, v1.0 (https://claude.ai/artifact/PJE1WJHQXCm3xhpUAm1Dha), resumido con los logos en
+> `docs/marca/`. Cambia cómo se ve la app, no qué hace: mismos flujos, sin migraciones. Resuelve
+> PA-H20-1 (colores de Gamma Club, no los de TurnOS) y cambia REQ-078.14 y REQ-087.2/087.3.
+
+### REQ-091 · Marca Gamma Club en la app — M
+**Como** cliente, barbero o dueño de Gamma Club, **quiero** que la app se vea como Gamma Club
+(su logo, sus colores y su letra), **para** reconocer la barbería en el celular, igual que en el
+local, los uniformes y las redes.
+
+- REQ-091.1 Los tokens de color de `globals.css` DEBEN tomar los colores del manual (design §27.1):
+  acción y cabecera en **Navy Gamma** `#14254A`, fondo de página **Crema** `#F3F0EA`, tarjetas
+  blancas, texto secundario **Gris grafito** `#4A4F5C`, rojo de "atención ahora" **Rojo Gamma**
+  `#E02B3B` y, sobre navy, `#F0394A`. Siguen rigiendo REQ-078.1 (solo tokens) y REQ-078.2
+  (contraste ≥ 4,5:1 en texto, ≥ 3:1 en bordes de campo y puntos de estado).
+- REQ-091.2 El Rojo Gamma DEBE usarse solo como relleno con texto blanco (4,59:1) y en el punto
+  del logo. El texto rojo (errores, acciones destructivas) DEBE seguir en `danger`, porque
+  `#E02B3B` sobre crema da 4,03:1 y no pasa. Rige REQ-078.3: el rojo relleno sigue siendo solo
+  "atención ahora"; los precios van en navy negrita, no en rojo.
+- REQ-091.3 El **Azul Gamma** `#2D55D6` (apoyo digital) DEBE usarse solo en el anillo de foco y en
+  los enlaces de texto.
+- REQ-091.4 La letra de toda la interfaz DEBE ser **Montserrat** (400, 600 y 700), servida desde
+  el mismo dominio de la app (sin pedir nada a Google al abrirla), con letra de reemplazo ajustada
+  para que el cambio de letra no mueva nada (CLS ≤ 0,1). Cambia REQ-078.14 solo en "sin fuentes
+  descargadas": siguen sin degradados ni desenfoque, y los íconos siguen siendo SVG de trazo.
+- REQ-091.5 Con Montserrat, cada pantalla DEBE seguir sin desplazamiento horizontal en 360, 390 y
+  1280 px (REQ-078.15), y los botones DEBEN conservar su texto en una línea o crecer de alto sin
+  cortar palabras.
+- REQ-091.6 La app DEBE llamarse **Gamma Club** donde hoy dice "TurnOS" a la vista: título de la
+  pestaña (`<pantalla> · Gamma Club`), nombre de la app instalada del personal, tarjeta de
+  "Entrar", texto de la invitación del barbero y mensaje de WhatsApp de la invitación. El nombre
+  del producto en el código, el repositorio y los documentos sigue siendo TurnOS.
+- REQ-091.7 La tarjeta de "Entrar" y la de la invitación DEBEN mostrar arriba el símbolo de Gamma
+  Club (SVG en el código, versión positiva) con `GAMMA CLUB` en Montserrat 600 y mayúsculas
+  espaciadas, respetando el área de protección y el tamaño mínimo del manual (≥ 120 px de ancho
+  el logo completo; ≥ 24 px el ícono solo, con la versión simplificada).
+- REQ-091.8 Los íconos de la app instalada (192, 512, 512 enmascarable, Apple 180) y el favicon
+  DEBEN ser el **ícono en cuadro navy** del manual; el enmascarable DEBE dejar el símbolo dentro de
+  la zona segura (80 % central). El color de tema DEBE ser `#14254A` y el de fondo `#F3F0EA`.
+- REQ-091.9 Sin logo subido (REQ-087.1), la portada del negocio DEBE mostrar el símbolo negativo
+  de Gamma Club sobre navy con el nombre en `GAMMA CLUB`. Con logo subido manda el logo. Cambia
+  REQ-087.2 y deja sin efecto REQ-087.3.
+- REQ-091.10 El televisor, la fila del barbero y las pantallas del dueño DEBEN tomar los mismos
+  tokens; no hay un juego de colores aparte para el personal.
+- REQ-091.11 Lighthouse móvil de la portada DEBE seguir ≥ 80 en rendimiento y ≥ 90 en
+  accesibilidad con la letra nueva (NFR-001, NFR-008).
+
+Preguntas del Hito 21 (Henry aprobó las cuatro propuestas el 2026-11-15):
+- **PA-H21-1**: ¿la marca va en toda la app o solo en lo que ve el cliente? Propuesta: **toda**
+  (REQ-091.10). Hay un solo negocio (REQ-080) y los tokens son de toda la app; dos juegos de
+  colores duplicarían las pruebas de contraste.
+- **PA-H21-2**: ¿Montserrat en todo o solo en títulos y en el nombre? Propuesta: **en todo**, como
+  dice el manual ("familia única").
+- **PA-H21-3**: el pie "Fila con TurnOS" de la portada, ¿se queda, cambia a "by UTILIA" o se quita?
+  Propuesta: **se quita**. El manual deja "by UTILIA" para piezas institucionales, no para la app.
+- **PA-H21-4**: ¿Henry sube el ícono como logo del negocio desde "Negocio" (REQ-087.1)? Propuesta:
+  **sí**, con el PNG de 256 px que se genera en T-240. Mientras no lo suba, rige REQ-091.9.
+
+Fuera de alcance del Hito 21: colores por negocio (la marca es global porque hay un solo negocio),
+la versión horizontal del logo en la app, mensajes de WhatsApp con la marca (dependen de T-069),
+piezas impresas, uniformes y redes sociales (están en el manual, no son software).
 
 ---
 
