@@ -13,13 +13,13 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 
 ## Hecho
 
-| Hito                     | Tareas      | Estado                                                                  |
-| ------------------------ | ----------- | ----------------------------------------------------------------------- |
+| Hito                     | Tareas      | Estado                                                                              |
+| ------------------------ | ----------- | ----------------------------------------------------------------------------------- |
 | H0 Cimientos             | T-001…T-010 | T-001–009 `[x]`; T-010 `[x]` (CI y E2E en verde; `main` protegida desde 2026-11-14) |
-| H1 Fila virtual          | T-011…T-030 | **aprobado** (ADR-017); pasillo e instalación hechos (ADR-021)          |
-| H2 Clientes y fidelidad  | T-031…T-039 | **aprobado** (ADR-017)                                                  |
-| H3 Caja y comisiones     | T-040…T-050 | **aprobado** (ADR-020); pasillo con el dueño hecho (ADR-021)            |
-| H4 Servicios por barbero | T-051…T-057 | **aprobado** (ADR-024); PRs #4–#10 en `main`                            |
+| H1 Fila virtual          | T-011…T-030 | **aprobado** (ADR-017); pasillo e instalación hechos (ADR-021)                      |
+| H2 Clientes y fidelidad  | T-031…T-039 | **aprobado** (ADR-017)                                                              |
+| H3 Caja y comisiones     | T-040…T-050 | **aprobado** (ADR-020); pasillo con el dueño hecho (ADR-021)                        |
+| H4 Servicios por barbero | T-051…T-057 | **aprobado** (ADR-024); PRs #4–#10 en `main`                                        |
 
 ### Hito 5 — experiencia del cliente (**aprobado**, ADR-026, 2026-11-01)
 
@@ -766,6 +766,23 @@ Pendientes (H3): `/admin/caja`,
   un solo servicio por turno; sin migraciones. Categorías, descripción y varios servicios quedaron
   fuera (ADR-064).
 - Falta: T-228 (Henry sube fotos y prueba desde el celular; ADR de aprobación del hito).
+
+### Hito 22 — harness de los agentes (spec aprobada 2026-11-15, REQ-092…095, ADR-066)
+
+- Hooks de Claude Code en `.claude/settings.json` + `.claude/hooks/`: guardias de terminal,
+  edición y MCP (bloquean o piden confirmación), contexto al iniciar, prettier al editar y puerta
+  de calidad al terminar el turno. Subagentes en `.claude/agents/`, comandos `/tarea`,
+  `/cerrar-hito` y `/nuevo-req` en `.claude/skills/`, `pnpm next-ids`. Sin migraciones ni cambios
+  a la app. Rama `claude/harness-agentes`.
+- T-250…T-255 hechas; `pnpm trace --hito=22` sin huecos, 798 pruebas unitarias en verde.
+- Falta (Henry), T-256: abrir una sesión nueva de Claude Code en la rama y probar lo de la guía
+  (contexto al iniciar, commit sin prefijo bloqueado, `vercel --prod` pidiendo confirmación, la
+  puerta frenando un error de tipos); aprobar.
+- Ojo: la puerta corre en cualquier sesión con código sin commit, también si los cambios son de
+  otra sesión en la misma carpeta; prettier al editar puede reformatear archivos que en `main`
+  no estaban formateados (hoy hay 18).
+- Numeración: ADR-064 (Fresha) y ADR-065/REQ-091/T-240…245 (marca) están en ramas sin fusionar;
+  por eso este hito empieza en ADR-066, REQ-092 y T-250.
 
 ## Desvíos registrados respecto a la spec (todos explícitos)
 

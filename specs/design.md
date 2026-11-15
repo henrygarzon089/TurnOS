@@ -3272,3 +3272,59 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
 - Integración: subir y quitar contra el Postgres local con un doble de Storage.
 - E2E móvil: tomar turno en 3 pasos y reservar en 4, "atrás" del celular, cliente que vuelve.
 - Lighthouse móvil de la portada ≥ 80 (REQ-090.1).
+
+## 28. Hito 22 — Harness de los agentes (REQ-092…095, ADR-066)
+
+> Aprobada (ADR-066, 2026-11-15). Sin migraciones ni cambios a la app.
+
+### 28.1 Archivos
+
+```
+.claude/settings.json          permisos (los de hoy) + "hooks"
+.claude/hooks/lib.mjs          funciones puras: classifyBash, checkCommitMessage, classifyEdit,
+                               classifyMcp, gateScope… (sin dependencias, Node 22)
+.claude/hooks/guard-bash.mjs   PreToolUse "Bash"
+.claude/hooks/guard-edit.mjs   PreToolUse "Edit|Write|MultiEdit|NotebookEdit"
+.claude/hooks/guard-mcp.mjs    PreToolUse "mcp__.*"
+.claude/hooks/format.mjs       PostToolUse "Edit|Write|MultiEdit": prettier del archivo
+.claude/hooks/session.mjs      SessionStart: contexto
+.claude/hooks/gate.mjs         Stop: puerta de calidad
+.claude/agents/{revisor-spec,escritor-pruebas,revisor-sql,revisor-textos}.md
+.claude/skills/{tarea,cerrar-hito,nuevo-req}/SKILL.md
+scripts/next-ids.ts            pnpm next-ids
+```
+
+### 28.2 Contrato de los hooks
+Cada script lee el JSON del evento por stdin, llama una función pura de `lib.mjs` y responde:
+- bloquear (REQ-092.1…5, .7): `{"hookSpecificOutput":{"hookEventName":"PreToolUse",
+  "permissionDecision":"deny","permissionDecisionReason":"<regla> · <qué hacer>"}}`.
+- producción (REQ-092.6): `permissionDecision: "ask"` con el motivo; Henry decide.
+- `classifyBash` parte el comando por `&&`, `||`, `;` y `|` y revisa cada parte; el mensaje de
+  commit sale de `-m`/`-F`/heredoc. Ante la duda (no se puede leer el mensaje) pide confirmación,
+  no bloquea.
+- Producción en MCP: herramienta de Supabase que escribe y `project_id` igual al de producción
+  (constante en `lib.mjs`, el id público que ya está en `CLAUDE.md`), o sin `project_id`.
+- Migración ya en `main`: `git cat-file -e origin/main:<ruta>`; un archivo nuevo pasa.
+- Un error dentro del hook no bloquea (sale 0 y avisa por stderr): el harness no debe dejar a un
+  agente sin poder trabajar por un bug propio.
+
+### 28.3 Puerta de calidad (Stop)
+1. Si `stop_hook_active` es verdadero o `TURNOS_GATE=off` → deja terminar (REQ-093.3, .4).
+2. `git status --porcelain`: si no hay cambios en `src/ tests/ scripts/ supabase/` → deja
+   terminar (REQ-093.2).
+3. En paralelo: `pnpm typecheck`, `pnpm lint:texts`, `pnpm lint:design`,
+   `pnpm vitest related --run --project unit <archivos cambiados>`; tope de 120 s.
+4. Si algo falla → `{"decision":"block","reason":"<comando>: <últimas 40 líneas>"}`.
+   pgTAP, integración y E2E quedan para el CI (necesitan base de datos).
+
+### 28.4 SessionStart
+Inyecta: rama y si está atrasada contra `origin/main`; aviso si es `main`; cambios sin commit;
+la primera tarea `[ ]` del último hito de `tasks.md`; recordatorio de `pnpm next-ids` antes de
+numerar. Máximo ~15 líneas.
+
+### 28.5 Pruebas
+- Unitarias (`tests/unit/harness-guards.test.ts`, `harness-gate.test.ts`): tabla de comandos y
+  mensajes → decisión, con el CA en el nombre.
+- `tests/unit/harness-agents.test.ts`: frontmatter de cada subagente y skill (REQ-094.5).
+- `tests/unit/next-ids.test.ts`: con listas de títulos de varias ramas, el siguiente libre.
+- Manual (T-256): Henry abre una sesión y prueba un commit sin prefijo y un `vercel --prod`.
