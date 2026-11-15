@@ -514,7 +514,7 @@
 | REQ-091.3 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-link.test.ts, design-tokens.test.ts | cubierto |
 | REQ-091.4 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-font.test.ts, lint-design.test.ts, vitals-reporter.test.tsx | cubierto |
 | REQ-091.5 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | marca-gamma.spec.ts | cubierto |
-| REQ-091.6 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | pwa-usability.spec.ts, brand-mark.test.tsx | cubierto |
+| REQ-091.6 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | pwa-usability.spec.ts, brand-mark.test.tsx, brand-title.test.ts | cubierto |
 | REQ-091.7 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-mark.test.tsx | cubierto |
 | REQ-091.8 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-icons.test.ts | cubierto |
 | REQ-091.9 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-mark.test.tsx, public-home.test.tsx | cubierto |

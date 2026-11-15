@@ -27,18 +27,15 @@ comisión, venta de helados y bebidas). Dueño del producto: Henry Garzón.
 Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 …'`.
 `scripts/traceability.ts` las encuentra así. `--hito=N` falla si falta alguna.
 
-## Estado actual (2026-11-14)
+## Estado actual (2026-11-15)
 
-- **Hito 21 (marca Gamma Club, REQ-091, ADR-065)** aprobado como spec (2026-11-15): manual de
-  marca en `docs/marca/` (fuente de verdad de logo, colores y letra); T-240…T-243 hechas, sin
-  migraciones; T-244 hecha (Lighthouse en CI); falta T-245 (validación de Henry,
-  `docs/guia-prueba-hito-21.md`).
+- **Hitos 19, 20 y 21 aprobados** por Henry (2026-11-15): Citas encendido en modo esencial
+  (REQ-084, ADR-067), cliente con fotos y paso a paso (REQ-085…090, migraciones 0074–0075,
+  ADR-068) y marca Gamma Club (REQ-091, manual en `docs/marca/`, ADR-069); todo en producción.
+  En propuesta: descripción de cada servicio al elegirlo (lo que ADR-064 dejó fuera).
 - **Hito 22 (harness de los agentes, REQ-092…095, ADR-066)**: T-250…T-255 hechas (2026-11-15),
   sin migraciones ni cambios a la app; falta T-256 (Henry prueba el harness y aprueba). Ver
   "Harness de los agentes" abajo.
-- **Hito 19 (Citas encendido, REQ-084, ADR-062)**: T-210 hecha (2026-11-14), sin migraciones;
-  falta T-211 (Henry configura "Citas" y reserva una cita). **Hito 20 (cliente con fotos y paso a
-  paso, REQ-085…090, ADR-063)** aprobado como spec, en construcción.
 - **Hito 18 (cobro y pantallas sin módulos apagados, REQ-082…083, ADR-060)** aprobado (ADR-061,
   2026-11-14): el cobro, la caja, la fila y clientes no muestran tarjetas de regalo, membresías ni
   fotos apagadas; en producción (`c8b7ebb`), sin migraciones.
