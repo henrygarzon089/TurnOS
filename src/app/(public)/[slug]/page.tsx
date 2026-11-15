@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { LiveBanner, LiveStatusProvider } from "@/components/public/PublicHome";
 import { JoinFlow } from "@/components/queue/JoinForm";
 import { getPublicBusiness } from "@/lib/actions/public";
+import { publicTitle } from "@/lib/brand";
 import { getAppointmentInfo } from "@/lib/actions/public-appointments";
 import { hhmmTo12h, publicBarberLines } from "@/lib/domain/public-view";
 
@@ -14,7 +15,7 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const b = await getPublicBusiness(slug);
-  return { title: b ? `${b.name} · Fila` : "Negocio no encontrado" };
+  return { title: b ? publicTitle(b.name, "Fila") : "Negocio no encontrado" };
 }
 
 /**

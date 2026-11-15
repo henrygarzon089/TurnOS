@@ -2997,6 +2997,10 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Arreglo del 2026-11-15 (Henry, "arréglalo"): en escritorio "Reservar una cita" salía dos veces
   en la portada (enlace del encabezado del Hito 16 y botón del Hito 20). El enlace queda solo
   durante los pasos (REQ-088.8, nuevo).
+- Arreglo del 2026-11-15: la pestaña de la portada decía "Gamma Club · Fila · Gamma Club" porque
+  el negocio se llama igual que la app. `publicTitle` omite el nombre del negocio cuando es igual
+  a `BRAND_NAME`: queda "Fila · Gamma Club" (REQ-091.6); con otro negocio sigue "<negocio> · Fila
+  · Gamma Club". Prueba en `brand-title.test.ts`.
 - Modelo: Opus 5.5. Complejidad: baja.
 
 ### [x] T-244 · Rendimiento y capturas
