@@ -366,7 +366,7 @@ export function CashDay({
                 {limit < shownSales.length && (
                   <button
                     type="button"
-                    className="text-brand min-h-12 font-semibold underline underline-offset-4"
+                    className="text-link min-h-12 font-semibold underline underline-offset-4"
                     onClick={() => setLimit(limit + PAGE)}
                   >
                     Ver más
@@ -385,7 +385,7 @@ export function CashDay({
             <span className="font-bold">Por barbero</span>
             <Link
               href="/admin/semana"
-              className="text-brand flex min-h-12 items-center text-sm font-semibold underline underline-offset-4"
+              className="text-link flex min-h-12 items-center text-sm font-semibold underline underline-offset-4"
             >
               Liquidación semanal
             </Link>

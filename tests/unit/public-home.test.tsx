@@ -142,7 +142,8 @@ describe("T-173 portada y tomar turno en una pantalla (REQ-078.21, ADR-052)", ()
 
   it("REQ-078.21 encabezado: marca, nombre y 'Abierto hasta <hora>', sin la dirección", () => {
     const t = visible(html(<PublicHeader name={BIZ.name} subtitle="Abierto hasta 8:00 p. m." />));
-    expect(t).toContain("33 Barbería La 33 Abierto hasta 8:00 p. m.");
+    // El cuadro navy lleva el símbolo de Gamma Club, no las iniciales (REQ-091.9)
+    expect(t).toContain("Barbería La 33 Abierto hasta 8:00 p. m.");
     expect(t).not.toContain("Sabaneta");
   });
 
@@ -167,6 +168,19 @@ describe("T-173 portada y tomar turno en una pantalla (REQ-078.21, ADR-052)", ()
     expect(t).toContain("Tomar turno");
     expect(t).toContain("Reservar una cita");
     expect(t).not.toContain("Tu nombre");
+  });
+
+  it("REQ-088.8 en la portada 'Reservar una cita' sale una sola vez: el botón, no también el enlace de arriba", () => {
+    const h = flow("");
+    expect(h.match(/>Reservar una cita</g)).toHaveLength(1);
+    expect(h).toMatch(/btn-secondary[^"]*"[^>]*>Reservar una cita</);
+  });
+
+  it("REQ-088.8 durante los pasos, en escritorio, el encabezado sí ofrece 'Reservar una cita'", () => {
+    const h = flow("paso=servicio");
+    const hero = h.slice(0, h.indexOf("</header>"));
+    expect(hero).toContain(">Reservar una cita<");
+    expect(hero).toContain("hidden items-center gap-8 lg:flex");
   });
 
   it("REQ-003.1 / REQ-088.2 paso 1: servicios con precio y duración, 'Paso 1 de 3' y 'Atrás'", () => {
@@ -233,7 +247,8 @@ describe("T-173 portada y tomar turno en una pantalla (REQ-078.21, ADR-052)", ()
     expect(con).toContain('alt="Logo de Gamma Club"');
     const sin = html(<PublicHero name="Barbería La 33" logoPath={null} coverPath={null} />);
     expect(sin).not.toContain("<img");
-    expect(visible(sin)).toContain("33 Barbería La 33");
+    expect(visible(sin)).toContain("Barbería La 33");
+    expect(sin).toContain("data-gamma-mark");
     expect(sin).toContain("bg-brand");
     // en los pasos, una línea sin la foto grande
     expect(

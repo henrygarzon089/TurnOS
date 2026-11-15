@@ -7,7 +7,7 @@ import { BRAND_SIZES, checkReducedFile, newBrandPath } from "@/lib/media/brand";
 import { encodeUnderLimit } from "@/lib/media/resize";
 
 /**
- * T-227 · fotos rápidas (REQ-090.1) y colores de TurnOS (REQ-087.3). Lighthouse móvil de la
+ * T-227 · fotos rápidas (REQ-090.1) y colores de los tokens (REQ-087.3, hoy REQ-091). Lighthouse móvil de la
  * portada (≥ 80, NFR-001) lo mide `scripts/lighthouse.ts` en el CI.
  */
 const biz = "0f0e0d0c-0b0a-4908-8706-050403020100";
@@ -62,12 +62,12 @@ describe("REQ-090.1 fotos públicas reducidas, en WebP y diferidas", () => {
   });
 });
 
-describe("REQ-087.3 colores de TurnOS", () => {
-  it("REQ-087.3 sin portada, la marca va en el azul marino de TurnOS y sin colores del negocio", () => {
+describe("REQ-087.3 colores de la app, no del negocio", () => {
+  it("REQ-087.3 sin portada, la marca va en el navy de los tokens y sin colores sueltos (hoy los del manual de Gamma Club, REQ-091.1)", () => {
     const hero = renderToStaticMarkup(
       <PublicHero name="Gamma Club" logoPath={null} coverPath={null} />,
     );
-    expect(hero).toContain("bg-brand text-brand-ink");
+    expect(hero).toContain("bg-brand");
     expect(hero).not.toMatch(/style="[^"]*(color|background)/);
     expect(hero).not.toMatch(/#[0-9a-f]{3,8}\b/i);
   });

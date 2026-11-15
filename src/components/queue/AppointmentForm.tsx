@@ -258,7 +258,7 @@ export function BookFlow({ business, info, today }: Props) {
               return (
                 <label
                   key={d}
-                  className={`has-focus-visible:outline-brand relative flex h-[58px] w-[52px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-md has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-disabled:cursor-not-allowed ${
+                  className={`has-focus-visible:outline-link relative flex h-[58px] w-[52px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-md has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-disabled:cursor-not-allowed ${
                     on
                       ? "bg-brand text-brand-ink"
                       : off
@@ -335,7 +335,7 @@ export function BookFlow({ business, info, today }: Props) {
                           if (error?.field === "startsAt") setError(null);
                           go({ ...view, step: "datos", day, startsAt: s.startsAt });
                         }}
-                        className={`focus-visible:outline-brand flex h-[52px] items-center justify-center rounded-md text-base font-semibold tabular-nums focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                        className={`focus-visible:outline-link flex h-[52px] items-center justify-center rounded-md text-base font-semibold tabular-nums focus-visible:outline-2 focus-visible:outline-offset-2 ${
                           on
                             ? "border-brand bg-brand-soft border-2"
                             : "border-line-strong bg-card active:bg-surface border"
@@ -391,7 +391,7 @@ export function BookFlow({ business, info, today }: Props) {
           {alreadyAccepted ? (
             <p className="text-muted text-sm">
               Ya aceptaste nuestra política de datos.{" "}
-              <Link href={`/${business.slug}/privacidad`} className="text-brand underline">
+              <Link href={`/${business.slug}/privacidad`} className="text-link underline">
                 Leerla
               </Link>
             </p>
@@ -408,7 +408,7 @@ export function BookFlow({ business, info, today }: Props) {
                 Acepto el{" "}
                 <Link
                   href={`/${business.slug}/privacidad`}
-                  className="text-brand underline"
+                  className="text-link underline"
                   target="_blank"
                 >
                   aviso de privacidad

@@ -31,7 +31,7 @@ export default async function CashPage() {
             <CashDayPicker day={summary!.day} today={summary!.day} />
             <a
               href="#cierres"
-              className="text-brand flex min-h-12 items-center font-semibold underline underline-offset-4"
+              className="text-link flex min-h-12 items-center font-semibold underline underline-offset-4"
             >
               Cierres anteriores
             </a>

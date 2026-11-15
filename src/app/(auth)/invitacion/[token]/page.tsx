@@ -24,7 +24,7 @@ export default async function InvitationPage({ params }: { params: Promise<{ tok
       title={`Hola, ${info.barberName}`}
       subtitle={
         <>
-          <strong className="text-ink">{info.businessName}</strong> te invitó a TurnOS. Elige un PIN
+          <strong className="text-ink">{info.businessName}</strong> te invitó a su app. Elige un PIN
           de 6 números: con tu celular y ese PIN entrarás a tu fila.
         </>
       }

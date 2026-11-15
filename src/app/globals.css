@@ -4,35 +4,40 @@
 @custom-variant desk (@media (min-width: 64rem) and (pointer: fine));
 
 /*
-  Sistema visual de TurnOS (REQ-078, ADR-047, design §22.1; tableros en docs/diseno/tableros/).
+  Sistema visual de TurnOS (REQ-078, ADR-047, design §22.1; tableros en docs/diseno/tableros/),
+  con los colores del manual de marca de Gamma Club (REQ-091, ADR-065, design §27.1, docs/marca/).
+  - El Rojo Gamma (`accent`, `called`) es siempre relleno con texto blanco, nunca texto: sobre crema
+    da 4,03:1 (REQ-091.2). El texto rojo es `danger`.
   - La acción es azul marino (`brand`). El rojo relleno (`accent`, `called`) es solo "atención
     ahora"; lo destructivo va en contorno o texto `danger` (REQ-078.3).
   - Contraste >= 4.5:1 en texto: lo prueba tests/unit/design-tokens.test.ts (REQ-078.2).
   - Nada de colores de la paleta de Tailwind ni hex sueltos: pnpm lint:design (REQ-078.1).
 */
 @theme {
-  --color-surface: #f5f7fa; /* fondo de página */
+  --color-surface: #f3f0ea; /* fondo de página: Crema */
   --color-card: #ffffff; /* tarjetas, hojas, filas */
-  --color-ink: #14213a; /* texto principal (14,96:1 sobre surface) */
-  --color-muted: #4a5872; /* texto secundario (7,17:1 sobre card) */
-  --color-line: #dce2ea; /* divisores */
-  --color-line-strong: #8593a8; /* borde de campos (3,12:1, no es texto) */
-  --color-brand: #0e1e3d; /* acción principal y cabecera */
+  --color-ink: #14254a; /* texto principal: Navy Gamma (13,25:1 sobre surface) */
+  --color-muted: #4a4f5c; /* texto secundario: Gris grafito (7,20:1 sobre surface) */
+  --color-line: #d6d1c7; /* divisores */
+  --color-line-strong: #857f73; /* borde de campos (3,50:1 sobre surface, no es texto) */
+  --color-brand: #14254a; /* acción principal y cabecera: Navy Gamma */
   --color-brand-ink: #ffffff;
-  --color-brand-soft: #e8ecf4; /* opción elegida, destino activo */
-  --color-accent: #c21e2f; /* solo atención ahora (5,96:1 con blanco) */
+  --color-brand-soft: #e6e9f0; /* opción elegida, destino activo */
+  --color-accent: #e02b3b; /* Rojo Gamma: solo atención ahora, relleno (4,59:1 con blanco) */
   --color-accent-ink: #ffffff;
   --color-accent-soft: #fbeaec; /* fondo de alerta */
-  --color-accent-on-brand: #ff5a68; /* punto "en vivo" sobre azul marino */
+  --color-accent-on-brand: #ff5a68; /* "Llamando" y punto en vivo sobre navy (4,96:1, es texto en el televisor) */
+  --color-accent-mark: #f0394a; /* tornillo del logo sobre navy (3,87:1, no es texto) */
+  --color-link: #2d55d6; /* Azul Gamma: enlaces de texto y anillo de foco (REQ-091.3) */
   --color-warn-on-brand: #f2c46d; /* "En pausa" sobre azul marino (televisor) */
   --color-ok-on-brand: #7fd39a; /* "Libre" sobre azul marino (televisor) */
-  --color-called: #c21e2f; /* "¡Es tu turno!" y turno llamado */
+  --color-called: #e02b3b; /* "¡Es tu turno!" y turno llamado (relleno) */
   --color-danger: #a8182a; /* texto y contorno destructivo, errores */
   --color-ok: #1e6b3a; /* terminado, cuadra */
   --color-ok-soft: #e6f2ea;
   --color-warn: #8a4b00; /* sin conexión, por vencer */
   --color-warn-soft: #fbf0dc;
-  --color-skeleton: #e3e8ef; /* esqueletos */
+  --color-skeleton: #e8e3d9; /* esqueletos */
   --color-flash: #fff6d6; /* fila nueva por tiempo real */
 
   /* Esquinas: xs chips, sm opciones, md botones/campos/paneles, lg hojas. Sin píldoras. */
@@ -41,7 +46,7 @@
   --radius-md: 10px;
   --radius-lg: 20px;
 
-  --shadow-overlay: 0 -2px 12px rgb(14 30 61 / 0.14); /* solo hojas y diálogos */
+  --shadow-overlay: 0 -2px 12px rgb(20 37 74 / 0.14); /* solo hojas y diálogos */
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 
   /* Movimiento (REQ-078.13): solo transform y opacity, 150–250 ms. El resaltado de tiempo real
@@ -80,7 +85,8 @@
     }
   }
 
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* REQ-091.4: Montserrat (src/app/fonts.ts) y, mientras carga, la del sistema */
+  --font-sans: var(--font-montserrat), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 html {
@@ -111,7 +117,7 @@ body {
 
 /* Campos de formulario: altos, legibles con una mano (NFR-008); 40 px en escritorio (ADR-059) */
 .input {
-  @apply border-line-strong bg-card text-ink focus:border-brand focus:ring-brand-soft desk:min-h-10 min-h-12 w-full rounded-md border px-3 text-base outline-none focus:ring-2;
+  @apply border-line-strong bg-card text-ink focus:border-link focus:ring-link/25 desk:min-h-10 min-h-12 w-full rounded-md border px-3 text-base outline-none focus:ring-2;
 }
 
 /* REQ-078.36: casillas y opciones en el azul marino de acción, no en el azul del navegador */

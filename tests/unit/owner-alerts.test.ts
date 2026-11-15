@@ -110,8 +110,7 @@ describe("buildOwnerAlerts", () => {
 
 describe("todayAppointments", () => {
   const NOW = new Date("2026-11-05T20:00:00Z"); // 3:00 p. m. en Bogotá
-  const at = (h: number, m = 0) =>
-    new Date(Date.UTC(2026, 10, 5, h + 5, m)).toISOString(); // hora de Bogotá → UTC
+  const at = (h: number, m = 0) => new Date(Date.UTC(2026, 10, 5, h + 5, m)).toISOString(); // hora de Bogotá → UTC
   const item = (
     id: string,
     start: string,

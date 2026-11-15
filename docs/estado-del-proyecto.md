@@ -767,6 +767,25 @@ Pendientes (H3): `/admin/caja`,
   fuera (ADR-064).
 - Falta: T-228 (Henry sube fotos y prueba desde el celular; ADR de aprobación del hito).
 
+### Hito 21 — marca Gamma Club en la app (spec aprobada, REQ-091, ADR-065)
+
+- Fuente: manual de marca v1.0 de Henry (https://claude.ai/artifact/PJE1WJHQXCm3xhpUAm1Dha),
+  resumido con los logos en SVG en `docs/marca/`.
+- T-240…T-243 hechas (2026-11-15, rama `claude/marca-gamma`, encima de la de PR #191): íconos de la
+  app y favicon desde el ícono en cuadro navy (`scripts/brand-icons.ts`, `sharp` de desarrollo);
+  tokens con Navy `#14254A`, Crema, Gris grafito, Rojo `#E02B3B` solo relleno y Azul Gamma en foco
+  y enlaces; Montserrat por `next/font` (`src/app/fonts.ts`); símbolo `GammaMark` en Entrar,
+  invitación, portada, encabezados del cliente, "Mi turno" y televisor; la app se llama "Gamma
+  Club" (`BRAND_NAME`); sin "Fila con TurnOS". Desvío: el rojo de texto sobre navy del televisor
+  se queda en `#FF5A68` (el `#F0394A` del manual da 3,87:1); el del manual va en `accent-mark`.
+  Sin migraciones. Capturas en `docs/diseno/capturas/hito-21/`.
+- T-244 hecha (2026-11-15): Lighthouse móvil del CI del PR #192, portada 92 de rendimiento y 100
+  de accesibilidad. La E2E de REQ-091.5 encontró que "Hoy" se corría de lado a 360 px con todos
+  los módulos encendidos (una fila larga de "Para recordar" estiraba la cuadrícula); arreglado con
+  `grid-cols-1` y `*:min-w-0`. `pnpm trace --hito=21` sin huecos.
+- Falta: T-245 (Henry sigue `docs/guia-prueba-hito-21.md`: sube
+  `docs/marca/logos/logo-negocio-256.png` en "Negocio", reinstala la app y aprueba).
+
 ### Hito 22 — harness de los agentes (spec aprobada 2026-11-15, REQ-092…095, ADR-066)
 
 - Hooks de Claude Code en `.claude/settings.json` + `.claude/hooks/`: guardias de terminal,

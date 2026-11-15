@@ -14,7 +14,7 @@ import { useFormStatus } from "react-dom";
 type Variant = "primary" | "secondary" | "danger" | "text";
 
 const BASE =
-  "inline-flex min-h-12 items-center justify-center gap-2 rounded-md font-semibold select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed";
+  "inline-flex min-h-12 items-center justify-center gap-2 rounded-md font-semibold select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-link disabled:cursor-not-allowed";
 
 const VARIANT: Record<Variant, { idle: string; disabled: string; pending: string }> = {
   primary: {
@@ -33,7 +33,7 @@ const VARIANT: Record<Variant, { idle: string; disabled: string; pending: string
     pending: "border border-danger bg-card text-danger px-5 opacity-75",
   },
   text: {
-    idle: "text-brand px-1 underline underline-offset-4",
+    idle: "text-link px-1 underline underline-offset-4",
     disabled: "text-muted px-1 underline underline-offset-4",
     pending: "text-muted px-1 underline underline-offset-4",
   },

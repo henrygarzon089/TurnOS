@@ -1186,6 +1186,37 @@
 - Consecuencias: sin migraciones; cambia solo `ServiceCard` y sirve igual para tomar turno y
   reservar. Los colores siguen siendo los de TurnOS (REQ-087.3).
 
+## ADR-065 · Hito 21: la marca Gamma Club en la app
+- Estado: **aceptada** (Henry, 2026-11-15: "Aprobado, constrúyelo", con PA-H21-1…4 según la
+  propuesta: toda la app, Montserrat en todo, sin "Fila con TurnOS", Henry sube el logo).
+- Contexto: Henry compartió el manual de marca de Gamma Club v1.0
+  (https://claude.ai/artifact/PJE1WJHQXCm3xhpUAm1Dha; resumen y logos en `docs/marca/`): símbolo de
+  tijera en forma de γ con tornillo rojo, Navy `#14254A`, Rojo `#E02B3B`, Azul `#2D55D6`, Crema
+  `#F3F0EA`, Gris grafito `#4A4F5C` y Montserrat como familia única. La app usa la paleta de
+  TurnOS de ADR-047 (navy `#0E1E3D`, rojo `#C21E2F`, `system-ui`), dice "TurnOS" en la pestaña, en
+  "Entrar" y en la app instalada, y PA-H20-1 dejó pendiente usar los colores de Gamma Club. Desde
+  ADR-055/056 la app sirve a un solo negocio, Gamma Club, en www.gammaclub.co.
+- Decisión: (1) los tokens globales toman los colores del manual (design §27.1), sin un juego de
+  colores por negocio: hay un solo negocio y los tokens ya son de toda la app. (2) Se mantienen las
+  reglas de uso de ADR-047: el navy es la acción, el rojo relleno es solo "atención ahora" y nunca
+  texto (sobre crema da 4,03:1), los precios van en navy; el manual dice "botones y precios" en rojo
+  como acento de piezas de marca, y en la app esa regla cede ante REQ-078.3 por legibilidad y para
+  que el rojo siga significando "es tu turno". (3) Montserrat por `next/font`, servida desde el
+  dominio propio: cambia REQ-078.14 solo en "sin fuentes descargadas". (4) "TurnOS" desaparece de
+  lo que ve la gente; queda como nombre del producto en el código y los documentos. (5) Íconos de
+  la app y favicon desde el ícono en cuadro navy, generados una vez y guardados en el repo.
+- Alternativas: (a) marca solo en lo que ve el cliente y TurnOS para el personal: dos juegos de
+  tokens y el doble de pruebas de contraste, para un solo negocio. (b) Color de marca por negocio en
+  la base de datos: necesita migración y pantalla de configuración, y hoy no hay un segundo
+  negocio; queda para cuando lo haya. (c) Seguir con `system-ui`: cero riesgo de rendimiento, pero
+  la letra es la mitad de la identidad del manual.
+- Consecuencias: sin migraciones. Cambian `globals.css`, `pwa.ts`, `layout.tsx`, `manifest.ts`,
+  `AuthCard`, `PublicHero`, la invitación, el WhatsApp de la invitación, los PNG de `public/icons/`
+  y `favicon.ico`. Montserrat agrega ≈ 3 archivos de letra (≈ 20–30 KB c/u, en caché): se vigila
+  con Lighthouse del CI (≥ 80). Montserrat es más ancha: se revisan los botones largos en 360 px.
+  Los íconos ya instalados en los celulares cambian cuando el sistema refresca el manifest (puede
+  tardar días en Android; en iPhone hay que quitar y volver a agregar el acceso).
+
 ## ADR-066 · Hito 22: harness de los agentes
 - Estado: **aceptada** (Henry, 2026-11-15: "Aprobada, constrúyela")
 - Contexto: el método SDD y las reglas de seguridad y git viven como texto en `CLAUDE.md`; el

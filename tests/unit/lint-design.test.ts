@@ -36,6 +36,17 @@ describe("REQ-078.14 sin degradados, desenfoque ni fuentes descargadas", () => {
   });
 });
 
+describe("REQ-091.4 Montserrat servida desde el dominio propio", () => {
+  it("REQ-091.4 next/font solo en src/app/fonts.ts; fonts.googleapis en ningún lado", () => {
+    expect(
+      designViolations("src/app/fonts.ts", `import { Montserrat } from "next/font/google";`),
+    ).toEqual([]);
+    expect(
+      designViolations("src/app/fonts.ts", `const u = "https://fonts.googleapis.com/css2";`),
+    ).toHaveLength(1);
+  });
+});
+
 describe("REQ-078.3 rojo relleno solo donde se permite", () => {
   it("REQ-078.3 marca bg-accent fuera de los archivos permitidos", () => {
     expect(tsx(`<button className="bg-accent text-accent-ink">`)).toHaveLength(1);
@@ -48,6 +59,15 @@ describe("REQ-078.3 rojo relleno solo donde se permite", () => {
 
   it("REQ-078.3 no confunde bg-accent-soft con el rojo relleno", () => {
     expect(tsx(`<p className="bg-accent-soft text-danger">`)).toEqual([]);
+  });
+});
+
+describe("REQ-091.2 el rojo de marca nunca es texto", () => {
+  it("REQ-091.2 marca text-accent y text-called, no text-accent-ink ni text-accent-on-brand", () => {
+    expect(tsx(`<p className="text-accent">`)).toHaveLength(1);
+    expect(tsx(`<p className="max-lg:text-called font-bold">`)).toHaveLength(1);
+    expect(tsx(`<p className="bg-called text-accent-ink">`)).toEqual([]);
+    expect(tsx(`<p className="text-accent-on-brand">`)).toEqual([]);
   });
 });
 

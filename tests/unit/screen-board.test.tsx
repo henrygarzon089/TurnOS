@@ -115,7 +115,7 @@ describe("T-176 pantalla del televisor (REQ-078.25, REQ-013.4)", () => {
 
   it("REQ-078.25 arriba la marca, el nombre, ● N esperando y la hora; abajo el QR con sus dos líneas", () => {
     const text = visible(render(VIEW));
-    expect(text).toMatch(/^33 Barbería La 33/);
+    expect(text).toMatch(/^Barbería La 33/); // el símbolo de Gamma Club no es texto (REQ-091.10)
     expect(text).toContain("7 esperando");
     expect(text).toContain("3:52 p. m.");
     expect(text).toContain("Escanea para tomar turno");
@@ -155,5 +155,13 @@ describe("T-176 pantalla del televisor (REQ-078.25, REQ-013.4)", () => {
     expect(old.barbers[0].next).toEqual([{ name: "Pipe R.", number: null, scheduledAt: null }]);
     expect(old.anyone).toEqual([{ name: "Sara L.", number: null }]);
     expect(nextLabel(old.barbers[0].next[0])).toBe("");
+  });
+});
+
+describe("T-243 marca en el televisor (REQ-091.10)", () => {
+  it("REQ-091.10 el televisor lleva el símbolo de Gamma Club en negativo, no las iniciales", () => {
+    const html = render(VIEW);
+    expect(html).toContain('data-variant="negativo"');
+    expect(html).toContain("fill-accent-mark");
   });
 });

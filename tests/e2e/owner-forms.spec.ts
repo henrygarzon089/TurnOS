@@ -81,7 +81,7 @@ test.describe("REQ-078.34…36 hojas y formularios del dueño", () => {
   test("REQ-078.36 casillas en azul marino y campos de Negocio alineados", async ({ page }) => {
     await page.goto("/admin/fidelidad");
     const box = page.locator('input[type="checkbox"][name="counts"]').first();
-    await expect(box).toHaveCSS("accent-color", "rgb(14, 30, 61)");
+    await expect(box).toHaveCSS("accent-color", "rgb(20, 37, 74)");
 
     await page.goto("/admin/negocio");
     const nums = page.getByTestId("business-numbers");

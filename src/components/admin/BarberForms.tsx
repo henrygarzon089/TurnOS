@@ -7,6 +7,7 @@ import { CheckList } from "@/components/admin/CheckList";
 import { ErrorText, Field } from "@/components/auth/LoginForm";
 import { BarberPhotos } from "@/components/photos/BarberPhotos";
 import { ImagePicker } from "@/components/media/ImagePicker";
+import { BRAND_NAME } from "@/lib/brand";
 import {
   createBarber,
   inviteBarber,
@@ -62,7 +63,7 @@ export function BarberPhoneInputs({
           name="phone_country"
           value={country}
           onChange={(e) => setCountry(e.target.value === "other" ? "other" : "co")}
-          className="input h-12 desk:h-10"
+          className="input desk:h-10 h-12"
         >
           <option value="co">Colombia (+57)</option>
           <option value="other">Otro país</option>
@@ -171,7 +172,7 @@ export function NewBarberForm({ services }: { services: ServiceOption[] }) {
 
 function InviteButtons({ url }: { url: string }) {
   const [copied, setCopied] = useState(false);
-  const wa = `https://wa.me/?text=${encodeURIComponent(`Te invito a TurnOS. Entra aquí y crea tu PIN: ${url}`)}`;
+  const wa = `https://wa.me/?text=${encodeURIComponent(`Te invito a la app de ${BRAND_NAME}. Entra aquí y crea tu PIN: ${url}`)}`;
   return (
     <div className="flex gap-2">
       <button

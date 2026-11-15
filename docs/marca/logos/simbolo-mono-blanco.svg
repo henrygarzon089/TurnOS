@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Gamma Club">
+  <polygon points="12,10 55,57 46,63" fill="#FFFFFF"/>
+  <polygon points="88,10 45,57 54,63" fill="#FFFFFF"/>
+  <path d="M50 62 C36 78 40 96 50 96 C60 96 64 78 50 62" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round"/>
+  <circle cx="50" cy="60" r="5" fill="#FFFFFF"/>
+</svg>

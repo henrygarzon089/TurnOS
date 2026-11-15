@@ -29,6 +29,10 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 
 ## Estado actual (2026-11-14)
 
+- **Hito 21 (marca Gamma Club, REQ-091, ADR-065)** aprobado como spec (2026-11-15): manual de
+  marca en `docs/marca/` (fuente de verdad de logo, colores y letra); T-240…T-243 hechas, sin
+  migraciones; T-244 hecha (Lighthouse en CI); falta T-245 (validación de Henry,
+  `docs/guia-prueba-hito-21.md`).
 - **Hito 22 (harness de los agentes, REQ-092…095, ADR-066)**: T-250…T-255 hechas (2026-11-15),
   sin migraciones ni cambios a la app; falta T-256 (Henry prueba el harness y aprueba). Ver
   "Harness de los agentes" abajo.

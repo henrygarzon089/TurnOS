@@ -30,7 +30,7 @@ import { mediaUrl } from "@/lib/media/paths";
  * pantalla y las pruebas; se ve como interruptor y se mueve en 150 ms (REQ-078.13).
  */
 const SWITCH =
-  "relative h-7 w-12 shrink-0 cursor-pointer appearance-none rounded-full bg-line-strong transition-colors duration-150 checked:bg-brand before:absolute before:top-0.5 before:left-0.5 before:size-6 before:rounded-full before:bg-card before:transition-transform before:duration-150 checked:before:translate-x-5 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand motion-reduce:before:transition-none";
+  "relative h-7 w-12 shrink-0 cursor-pointer appearance-none rounded-full bg-line-strong transition-colors duration-150 checked:bg-brand before:absolute before:top-0.5 before:left-0.5 before:size-6 before:rounded-full before:bg-card before:transition-transform before:duration-150 checked:before:translate-x-5 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-link motion-reduce:before:transition-none";
 /** Fila blanca de ancho completo del tablero (56 px). */
 const ROW = "border-line bg-card flex min-h-14 items-center gap-3 border-b px-4";
 /** Enlace de texto de 48 px ("+ Agregar producto", "Cobrar después"). */
@@ -510,7 +510,7 @@ export function CheckoutSheet({
               <div key={l.key}>
                 <div className={ROW}>
                   {/* Tocar la fila cambia el servicio: el selector nativo va encima, invisible */}
-                  <div className="focus-within:outline-brand relative flex min-h-12 min-w-0 flex-1 items-center gap-3 rounded-sm focus-within:outline-2">
+                  <div className="focus-within:outline-link relative flex min-h-12 min-w-0 flex-1 items-center gap-3 rounded-sm focus-within:outline-2">
                     <span className="min-w-0 flex-1 font-semibold break-words">{nameOf(l)}</span>
                     <span className="shrink-0 font-semibold tabular-nums">
                       {off > 0 && (m || rewardOn(l)) ? (

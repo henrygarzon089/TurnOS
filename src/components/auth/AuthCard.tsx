@@ -1,6 +1,8 @@
+import { GammaMark, GammaWordmark } from "@/components/brand/GammaMark";
+
 /**
  * Marco de las pantallas de acceso (tablero Acceso): en el celular ocupa el ancho; en escritorio
- * es una tarjeta centrada sobre el fondo. Arriba la marca "TurnOS" en texto (REQ-078.14).
+ * es una tarjeta centrada sobre el fondo. Arriba el símbolo y el nombre de Gamma Club (REQ-091.7).
  */
 export function AuthCard({
   title,
@@ -23,10 +25,11 @@ export function AuthCard({
         data-testid="auth-card"
         className="sm:border-line sm:bg-card w-full max-w-md sm:rounded-lg sm:border sm:p-8"
       >
-        <p className="text-ink flex items-center gap-2 text-base font-bold">
-          <span aria-hidden="true" className="bg-brand size-2 rounded-xs" />
-          TurnOS
-        </p>
+        {/* Logo completo ≥ 120 px de ancho con su área de protección (manual, pág. 04) */}
+        <div className="text-ink flex flex-col items-center gap-3 py-2">
+          <GammaMark variant="positivo" size={64} decorative />
+          <GammaWordmark className="pl-[0.3em] text-base" />
+        </div>
         {eyebrow && <div className="mt-6">{eyebrow}</div>}
         <h1 className={`${eyebrow ? "mt-2" : "mt-6"} text-2xl font-bold break-words`}>{title}</h1>
         {subtitle && <div className="text-muted mt-1">{subtitle}</div>}
