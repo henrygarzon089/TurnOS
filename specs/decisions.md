@@ -1263,7 +1263,7 @@
 - Consecuencias: `docs/marca/` sigue siendo la fuente de verdad de logo, colores y letra.
 
 ## ADR-070 · Hito 23: descripción de los servicios y del negocio
-- Estado: **aceptada** (Henry, 2026-11-15: "Si dale", con PA-H23-1…5 según la propuesta: 140 y
+- Estado: **aceptada** (Henry, 2026-11-15: "Si dale" aquí y "Si sigue" en la sesión principal, con PA-H23-1…5 según la propuesta: 140 y
   200 caracteres, solo en la tarjeta y en la portada, Henry escribe las descripciones).
 - Contexto: ADR-064 copió de Fresha solo el aspecto de la tarjeta de servicio y dejó fuera, a
   propósito, las categorías, la descripción y escoger varios servicios: las dos primeras
