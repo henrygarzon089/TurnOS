@@ -509,14 +509,14 @@
 | REQ-090.1 | Fotos rápidas y seguras | T-220 (hecha), T-227 (hecha) | photos-speed.test.tsx | cubierto |
 | REQ-090.2 | Fotos rápidas y seguras | T-220 (hecha), T-227 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
 | REQ-090.3 | Fotos rápidas y seguras | T-220 (hecha), T-227 (hecha) | visual-cliente-cita.spec.ts, visual-cliente.spec.ts | cubierto |
-| REQ-091.1 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (pendiente) | design-tokens.test.ts, photos-speed.test.tsx | prueba escrita |
-| REQ-091.2 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (pendiente) | design-tokens.test.ts, lint-design.test.ts | prueba escrita |
-| REQ-091.3 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (pendiente) | brand-link.test.ts, design-tokens.test.ts | prueba escrita |
-| REQ-091.4 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (pendiente) | brand-font.test.ts, lint-design.test.ts, vitals-reporter.test.tsx | prueba escrita |
-| REQ-091.5 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (pendiente) | marca-gamma.spec.ts | prueba escrita |
-| REQ-091.6 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (pendiente) | pwa-usability.spec.ts, brand-mark.test.tsx | prueba escrita |
-| REQ-091.7 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (pendiente) | brand-mark.test.tsx | prueba escrita |
-| REQ-091.8 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (pendiente) | brand-icons.test.ts | prueba escrita |
-| REQ-091.9 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (pendiente) | brand-mark.test.tsx, public-home.test.tsx | prueba escrita |
-| REQ-091.10 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (pendiente) | screen-board.test.tsx | prueba escrita |
-| REQ-091.11 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (pendiente) | brand-lighthouse.test.ts | prueba escrita |
+| REQ-091.1 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | design-tokens.test.ts, photos-speed.test.tsx | cubierto |
+| REQ-091.2 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | design-tokens.test.ts, lint-design.test.ts | cubierto |
+| REQ-091.3 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-link.test.ts, design-tokens.test.ts | cubierto |
+| REQ-091.4 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-font.test.ts, lint-design.test.ts, vitals-reporter.test.tsx | cubierto |
+| REQ-091.5 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | marca-gamma.spec.ts | cubierto |
+| REQ-091.6 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | pwa-usability.spec.ts, brand-mark.test.tsx | cubierto |
+| REQ-091.7 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-mark.test.tsx | cubierto |
+| REQ-091.8 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-icons.test.ts | cubierto |
+| REQ-091.9 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-mark.test.tsx, public-home.test.tsx | cubierto |
+| REQ-091.10 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | screen-board.test.tsx | cubierto |
+| REQ-091.11 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-lighthouse.test.ts | cubierto |

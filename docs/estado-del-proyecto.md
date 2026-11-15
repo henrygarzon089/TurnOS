@@ -776,7 +776,11 @@ Pendientes (H3): `/admin/caja`,
   Club" (`BRAND_NAME`); sin "Fila con TurnOS". Desvío: el rojo de texto sobre navy del televisor
   se queda en `#FF5A68` (el `#F0394A` del manual da 3,87:1); el del manual va en `accent-mark`.
   Sin migraciones. Capturas en `docs/diseno/capturas/hito-21/`.
-- Falta: T-244 (Lighthouse móvil en el CI del PR), T-245 (Henry sube
+- T-244 hecha (2026-11-15): Lighthouse móvil del CI del PR #192, portada 92 de rendimiento y 100
+  de accesibilidad. La E2E de REQ-091.5 encontró que "Hoy" se corría de lado a 360 px con todos
+  los módulos encendidos (una fila larga de "Para recordar" estiraba la cuadrícula); arreglado con
+  `grid-cols-1` y `*:min-w-0`. `pnpm trace --hito=21` sin huecos.
+- Falta: T-245 (Henry sigue `docs/guia-prueba-hito-21.md`: sube
   `docs/marca/logos/logo-negocio-256.png` en "Negocio", reinstala la app y aprueba).
 
 ## Desvíos registrados respecto a la spec (todos explícitos)
