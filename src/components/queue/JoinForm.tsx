@@ -325,6 +325,7 @@ export function JoinFlow({ business, now, canBook = false, lines, stateText }: P
                         price={s.price}
                         durationMin={s.durationMin}
                         photoPath={s.photoPath}
+                        description={s.description}
                         checked={serviceId === s.id}
                         disabled={nobody || pending}
                         disabledText="Hoy no hay quién lo haga"

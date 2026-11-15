@@ -49,6 +49,8 @@ export type PublicBusiness = {
     barberIds?: string[];
     /** REQ-086.2: ruta en el bucket `media`, o null sin foto. */
     photoPath?: string | null;
+    /** REQ-096.4: descripción corta, o null sin descripción. */
+    description?: string | null;
   }[];
   /** REQ-038.2: activos a la venta. `photoPath` es la ruta en el bucket `media`. */
   products: { id: string; name: string; price: number; photoPath: string | null }[];

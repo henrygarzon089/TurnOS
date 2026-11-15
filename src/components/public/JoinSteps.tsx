@@ -66,12 +66,14 @@ const cardState = (checked: boolean, disabled: boolean) =>
 /**
  * REQ-086.2 (ADR-064): al estilo de Fresha. Nombre y duración arriba, precio grande abajo con el
  * botón "+" / "✓" a la derecha; la foto, si hay, como miniatura arriba a la derecha.
+ * REQ-096.4…096.6 (ADR-070): la descripción, si hay, completa debajo de la duración.
  */
 export function ServiceCard({
   name,
   price,
   durationMin,
   photoPath,
+  description,
   checked,
   disabled = false,
   disabledText,
@@ -81,6 +83,7 @@ export function ServiceCard({
   price: number;
   durationMin: number;
   photoPath: string | null | undefined;
+  description?: string | null;
   checked: boolean;
   disabled?: boolean;
   disabledText?: string;
@@ -102,6 +105,11 @@ export function ServiceCard({
           <span data-testid="service-duration" className="text-muted text-sm tabular-nums">
             {disabled && disabledText ? disabledText : `${durationMin} min`}
           </span>
+          {description && (
+            <span data-testid="service-description" className="text-muted text-sm break-words">
+              {description}
+            </span>
+          )}
         </span>
         {photoPath && (
           <Image

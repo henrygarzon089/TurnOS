@@ -3097,11 +3097,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   formulario no trae el campo, `upsertService` no lo toca. Pruebas: `tests/unit/description.test.ts`,
   `tests/unit/description-field.test.tsx`; el guardado de punta a punta va en la E2E de T-262.
 
-### [ ] T-262 · El cliente ve la descripción al escoger
+### [x] T-262 · El cliente ve la descripción al escoger
 - REQ: REQ-096.4, REQ-096.5, REQ-096.6, REQ-096.7 · `PublicBusiness.services[]`, `ServiceCard`,
   `JoinSteps`, `JoinForm`, `AppointmentForm` (design §29.3). Unitarias de `ServiceCard` y E2E de
   tomar turno y reservar con descripción.
 - Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-15: `ServiceCard` recibe `description` (JoinForm y AppointmentForm se la pasan;
+  JoinSteps solo define la tarjeta). Pruebas: `tests/unit/service-card.test.tsx`,
+  `tests/e2e/service-description.spec.ts` (con un servicio de prueba por proyecto).
 
 ### [ ] T-263 · Descripción del negocio en la portada
 - REQ: REQ-097.1, REQ-097.2, REQ-097.3, REQ-097.4, REQ-097.5 · `businessSettingsSchema`/
