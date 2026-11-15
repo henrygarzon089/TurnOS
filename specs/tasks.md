@@ -3077,6 +3077,57 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   día; Henry abre una sesión y ve el contexto, un commit sin prefijo bloqueado, `vercel --prod`
   pidiendo confirmación y la puerta frenando un error de tipos; aprobación (ADR nuevo).
 
+
+## Hito 23 — Descripción de los servicios y del negocio (REQ-096, REQ-097, ADR-070)
+
+> Aprobada por Henry el 2026-11-15 ("Si dale"). Orden: T-260 → T-261, T-262 y
+> T-263 (independientes) → T-264. La migración 0076 la aplica Henry en producción antes del deploy.
+
+### [x] T-260 · Columnas `description` y función pública
+- REQ: REQ-096.3 y REQ-097.2 (base de datos), REQ-096.4 y REQ-097.3 (datos) · Migración
+  `0076_descriptions.sql` (design §29.1), pgTAP `0076_descriptions.sql`. Revisión con `revisor-sql`.
+- Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-15. Precisión de `revisor-sql`: el `check` rechaza también una descripción de
+  solo espacios (`btrim`), no solo la vacía (design §29.1).
+
+### [x] T-261 · El dueño escribe la descripción
+- REQ: REQ-096.1, REQ-096.2, REQ-096.3, REQ-096.7 · `normalizeDescription`,
+  `serviceSchema`/`upsertService`, `ServiceRow`, `admin/servicios/page.tsx`, `ServiceForm`
+  (design §29.2–29.3). Unitarias y revisión con `revisor-textos`.
+- Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-15: `src/lib/domain/description.ts` (`normalizeDescription`, cuenta caracteres
+  como `char_length`) y `DescriptionField` (etiqueta, ayuda y contador), que reusa T-263. Si el
+  formulario no trae el campo, `upsertService` no lo toca. Pruebas: `tests/unit/description.test.ts`,
+  `tests/unit/description-field.test.tsx`; el guardado de punta a punta va en la E2E de T-262.
+
+### [x] T-262 · El cliente ve la descripción al escoger
+- REQ: REQ-096.4, REQ-096.5, REQ-096.6, REQ-096.7 · `PublicBusiness.services[]`, `ServiceCard`,
+  `JoinSteps`, `JoinForm`, `AppointmentForm` (design §29.3). Unitarias de `ServiceCard` y E2E de
+  tomar turno y reservar con descripción.
+- Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-15: `ServiceCard` recibe `description` (JoinForm y AppointmentForm se la pasan;
+  JoinSteps solo define la tarjeta). Pruebas: `tests/unit/service-card.test.tsx`,
+  `tests/e2e/service-description.spec.ts` (con un servicio de prueba por proyecto).
+
+### [x] T-263 · Descripción del negocio en la portada
+- REQ: REQ-097.1, REQ-097.2, REQ-097.3, REQ-097.4, REQ-097.5 · `businessSettingsSchema`/
+  `updateBusiness`, `BusinessForm`, `admin/negocio/page.tsx`, `PublicBusiness`, `PublicHero`,
+  portada (design §29.2–29.3). Unitarias de `PublicHero`, E2E de "Negocio" → portada y revisión
+  con `revisor-textos`.
+- Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-15: `DescriptionField` (de T-261) en `BusinessForm`, arriba de la dirección;
+  `updateBusiness` valida la descripción aparte para dar el mensaje de REQ-097.2. Pruebas:
+  `tests/unit/business-description.test.tsx`, `tests/e2e/business-description.spec.ts`.
+  Corrección del CI: `getPublicBusiness` arma el negocio campo por campo y no pasaba
+  `description`; se suma con `tests/unit/public-business-description.test.ts`. Las E2E abren al
+  cliente en otra pestaña y esperan el guardado en la base (la hoja relee la página al guardar).
+
+### [ ] T-264 · Validación Hito 23
+- Terminado: `pnpm trace --hito=23` sin huecos; `docs/estado-del-proyecto.md` al día; guía
+  `docs/guia-prueba-hito-23.md`; Henry aplica 0076 en producción, escribe desde el celular la
+  descripción de un servicio y la del negocio de Gamma Club, ve la del servicio al tomar turno y al
+  reservar y la del negocio en la portada, y las borra; aprobación (ADR nuevo).
+
 ---
 
 ## Dependencias principales

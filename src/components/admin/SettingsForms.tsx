@@ -2,6 +2,8 @@
 
 import { useActionState, useMemo, useState } from "react";
 import { ErrorText, Field } from "@/components/auth/LoginForm";
+import { DescriptionField } from "@/components/admin/DescriptionField";
+import { BUSINESS_DESCRIPTION_MAX } from "@/lib/domain/description";
 import { keepValuesOnSubmit } from "@/components/ui/form";
 import {
   saveGoogleReviewUrl,
@@ -154,6 +156,8 @@ export type BusinessSettings = {
   staff_discount_pct: number;
   pwa_name: string | null;
   slug: string;
+  /** REQ-097.1: sale en la portada, debajo del nombre */
+  description?: string | null;
 };
 
 export function BusinessForm({ business }: { business: BusinessSettings }) {
@@ -195,6 +199,12 @@ export function BusinessForm({ business }: { business: BusinessSettings }) {
       <p className="text-muted -mt-2 text-sm">
         Enlace de la fila: /{business.slug} (no se puede cambiar).
       </p>
+      <DescriptionField
+        label="Descripción del negocio"
+        help="Opcional. Sale en la portada, debajo del nombre."
+        max={BUSINESS_DESCRIPTION_MAX}
+        defaultValue={business.description ?? null}
+      />
       <Field label="Dirección" htmlFor="address">
         <input
           id="address"

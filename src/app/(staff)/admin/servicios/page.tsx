@@ -14,7 +14,7 @@ export default async function ServicesPage() {
   const [{ data }, { data: brb }, { data: rel }] = await Promise.all([
     supabase
       .from("services")
-      .select("id, name, duration_min, price, is_active, counts_for_loyalty, photo_path")
+      .select("id, name, duration_min, price, is_active, counts_for_loyalty, photo_path, description")
       .eq("business_id", session.business.id)
       .order("is_active", { ascending: false })
       .order("sort_order")

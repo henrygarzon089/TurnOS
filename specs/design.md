@@ -3411,3 +3411,72 @@ numerar. Máximo ~15 líneas.
 - `tests/unit/harness-agents.test.ts`: frontmatter de cada subagente y skill (REQ-094.5).
 - `tests/unit/next-ids.test.ts`: con listas de títulos de varias ramas, el siguiente libre.
 - Manual (T-256): Henry abre una sesión y prueba un commit sin prefijo y un `vercel --prod`.
+
+## 29. Hito 23 — Descripción de los servicios y del negocio (REQ-096, REQ-097, ADR-070)
+
+### 29.1 Datos (migración `0076_descriptions.sql`)
+- `alter table services add column description text null` con
+  `constraint services_description_len check (description is null or
+  (char_length(btrim(description)) between 1 and 140 and char_length(description) <= 140))`:
+  ni vacía ni solo espacios (revisión de `revisor-sql`). Sin valor por defecto: los servicios que ya existen quedan sin descripción.
+- `alter table businesses add column description text null` con
+  `constraint businesses_description_len check (…)` con la misma forma y 200 (REQ-097).
+- RLS sin cambios: las políticas de `services` y `businesses` (el dueño escribe los de su
+  negocio, el personal lee) ya cubren las columnas; `anon` sigue sin acceso directo (ADR-009).
+- `get_public_business(p_slug)` se redefine copiando la versión de 0074 y agregando
+  `'description', z.description` en el negocio y `'description', s.description` en cada
+  servicio, con `create or replace`: conserva
+  `security definer`, `search_path` y los permisos de 0008 (sin `public`/`anon`, solo
+  `service_role`); la prueba pgTAP lo verifica. Es la función que
+  alimenta `?paso=servicio` en `JoinFlow` y en `BookFlow`; `public_appointment_info` no cambia.
+
+### 29.2 Validación y guardado
+- Lógica pura en `src/lib/domain/description.ts`:
+  `normalizeDescription(raw: string, max: number): { ok: true; value: string | null } | { ok:
+  false; error: string }`. Pasos: `trim`, `replace(/\s+/g, " ")`, vacía → `null`, más de `max` →
+  "La descripción puede tener hasta <max> letras." Constantes `SERVICE_DESCRIPTION_MAX = 140` y
+  `BUSINESS_DESCRIPTION_MAX = 200`, compartidas con los formularios.
+- `upsertService` (`src/lib/actions/admin.ts`) valida `description` con `normalizeDescription`
+  aparte de `serviceSchema` (que comparte `addInitialServices`, sin descripción) y la guarda en la
+  misma fila (insert o update); si el formulario no trae el campo, no la toca. El error sale en
+  `state.error`, debajo de los campos del formulario como los demás del servicio: ese es el
+  "junto al campo" de REQ-096.3 y REQ-097.2 (precisión de T-261).
+- `businessSettingsSchema` suma `description` igual (máx. 200); `updateBusiness` la guarda. Como
+  hoy esa acción responde "Revisa los datos del negocio." ante cualquier error, para la
+  descripción se devuelve el mensaje propio de REQ-097.2.
+
+### 29.3 Tipos y pantallas
+- `PublicBusiness` (`src/lib/queue/public-queue.ts`) suma `description?: string | null` y
+  `services[]` también (falta en datos viejos = sin descripción).
+- `BusinessForm` (`SettingsForms.tsx`) suma el `<textarea name="description" rows={3}
+  maxLength={200}>` con la etiqueta, la ayuda y el contador de REQ-097.1; `admin/negocio/page.tsx`
+  agrega `description` al `select`.
+- `PublicHero` recibe `description?: string | null` y, si viene y no es `compact`, la pinta en
+  `<p data-testid="business-description" className="text-muted text-sm break-words">` debajo del
+  nombre y el estado (REQ-097.3/.4). Se la pasa `JoinFlow` (`JoinForm.tsx`), que es quien pinta
+  `PublicHero` en la portada y la deja compacta durante los pasos (precisión de T-263).
+- `ServiceRow` (`ItemForms.tsx`) suma `description?: string | null`; `admin/servicios/page.tsx`
+  la agrega al `select`.
+- `ServiceForm`: `<textarea name="description" rows={3} maxLength={140}>` con la etiqueta
+  "Descripción", la ayuda de REQ-096.1 y el contador "N/140" (`aria-live="polite"`), debajo de la
+  fila nombre-minutos-precio. El `maxLength` del navegador es una ayuda; la regla la pone el
+  servidor (§29.2) y la base de datos (§29.1).
+- `ServiceCard` (`src/components/public/JoinSteps.tsx`) recibe `description?: string | null` y,
+  si viene, la pinta en `<span data-testid="service-description" className="text-muted text-sm
+  break-words">` debajo de la duración, dentro del mismo botón (así forma parte del nombre de la
+  opción, REQ-096.6). Sin descripción no se pinta nada (REQ-096.5). `JoinSteps`, `JoinForm` y
+  `AppointmentForm` le pasan `s.description`.
+
+### 29.4 Pruebas
+- pgTAP `supabase/tests/0076_descriptions.sql`: `services.description` acepta null, 1 y 140
+  caracteres y rechaza '' y 141 (REQ-096.3); `businesses.description` igual con 200 y 201
+  (REQ-097.2); `get_public_business` devuelve las dos (null y con texto) (REQ-096.4, REQ-097.3).
+- Unitarias: `tests/unit/description.test.ts` (limpieza, vacía, 140/141 y 200/201,
+  REQ-096.2/.3, REQ-097.2); `PublicHero` con y sin descripción y compacta (REQ-097.3/.4);
+  `tests/unit/service-card.test.tsx` (con y sin descripción, orden nombre → descripción en el
+  nombre accesible, apagada, REQ-096.4/.5/.6); `ServiceForm` con el campo y el contador
+  (REQ-096.1).
+- E2E móvil: el dueño escribe una descripción en "Servicios" y el cliente la ve en
+  `?paso=servicio` al tomar turno y al reservar; al borrarla, la tarjeta vuelve a verse como antes.
+  El dueño escribe la descripción del negocio en "Negocio" y sale en la portada, no en los pasos.
+- `pnpm lint:texts` y `pnpm lint:design` (REQ-096.7, REQ-097.5).

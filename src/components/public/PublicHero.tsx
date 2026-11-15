@@ -7,13 +7,15 @@ import { mediaUrl } from "@/lib/media/paths";
  * la hay; es la imagen grande del primer pantallazo, por eso `priority`), el logo o la marca en
  * azul marino, el nombre (el `h1`) y el estado. `compact` la deja en una línea durante los pasos.
  * Sin logo subido, el símbolo de Gamma Club en negativo sobre navy y el nombre en mayúsculas
- * espaciadas, como el logo del manual (REQ-091.9, ADR-065).
+ * espaciadas, como el logo del manual (REQ-091.9, ADR-065). La descripción del negocio, si hay, va
+ * completa debajo, solo en la portada y no en la cabecera compacta (REQ-097.3/097.4, ADR-070).
  */
 export function PublicHero({
   name,
   subtitle,
   logoPath,
   coverPath,
+  description,
   compact = false,
   aside,
 }: {
@@ -21,6 +23,7 @@ export function PublicHero({
   subtitle?: React.ReactNode;
   logoPath: string | null;
   coverPath: string | null;
+  description?: string | null;
   compact?: boolean;
   aside?: React.ReactNode;
 }) {
@@ -68,6 +71,14 @@ export function PublicHero({
         </div>
         {aside}
       </div>
+      {description && !compact && (
+        <p
+          data-testid="business-description"
+          className="text-muted mx-auto w-full max-w-6xl px-4 pb-3 text-sm break-words lg:px-16"
+        >
+          {description}
+        </p>
+      )}
     </header>
   );
 }

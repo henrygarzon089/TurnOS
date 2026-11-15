@@ -52,3 +52,45 @@ describe("REQ-086.2 tarjeta de servicio al estilo de Fresha", () => {
     expect(html).toContain("disabled");
   });
 });
+
+/** T-262 · descripción del servicio en la tarjeta (REQ-096.4…096.6, ADR-070). */
+describe("REQ-096 descripción en la tarjeta de servicio", () => {
+  const text = "Máquina y tijera, lavado y peinado";
+
+  it("REQ-096.4 con descripción, la muestra completa en texto secundario debajo de la duración y arriba del precio", () => {
+    const html = card({ description: text });
+    expect(html).toMatch(
+      new RegExp(
+        `data-testid="service-description"[^>]*class="[^"]*text-muted[^"]*text-sm[^"]*"[^>]*>${text}<`,
+      ),
+    );
+    const iDuration = html.indexOf('data-testid="service-duration"');
+    const iDescription = html.indexOf('data-testid="service-description"');
+    const iPrice = html.indexOf('data-testid="service-price"');
+    expect(iDuration).toBeLessThan(iDescription);
+    expect(iDescription).toBeLessThan(iPrice);
+  });
+
+  it("REQ-096.4 en una tarjeta que no se puede escoger, la descripción sigue saliendo, apagada", () => {
+    const html = card({
+      description: text,
+      disabled: true,
+      disabledText: "Hoy no hay quién lo haga",
+    });
+    expect(html).toContain(text);
+    expect(html).toContain("text-muted");
+  });
+
+  it("REQ-096.5 sin descripción, la tarjeta se ve igual que hoy", () => {
+    expect(card({ description: null })).toBe(card());
+    expect(card({ description: undefined })).toBe(card());
+    expect(card()).not.toContain("service-description");
+  });
+
+  it("REQ-096.6 el nombre va antes que la descripción, dentro de la misma opción", () => {
+    const html = card({ description: text });
+    const button = html.match(/<button[^>]*role="radio"[\s\S]*<\/button>/)?.[0] ?? "";
+    expect(button).toContain(text);
+    expect(button.indexOf("Corte moderno")).toBeLessThan(button.indexOf(text));
+  });
+});

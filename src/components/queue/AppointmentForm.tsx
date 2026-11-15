@@ -214,6 +214,7 @@ export function BookFlow({ business, info, today }: Props) {
               price={s.price}
               durationMin={s.durationMin}
               photoPath={s.photoPath}
+              description={s.description}
               checked={serviceId === s.id}
               onPick={() =>
                 go({ step: "barbero", serviceId: s.id, barberId, day: null, startsAt: null })

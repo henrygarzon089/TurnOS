@@ -38,6 +38,8 @@ export type PublicBusiness = {
   nextOpening: string | null;
   closesAt: string | null;
   privacyVersion: number | null;
+  /** REQ-097.3: descripción del negocio para la portada, o null sin descripción. */
+  description?: string | null;
   /** REQ-043.3: flag del negocio; la acción lo apaga si faltan credenciales del servidor. */
   whatsappAutoEnabled: boolean;
   /** barberIds: quienes hacen el servicio (REQ-035.6); falta en datos viejos = todos. */
@@ -49,6 +51,8 @@ export type PublicBusiness = {
     barberIds?: string[];
     /** REQ-086.2: ruta en el bucket `media`, o null sin foto. */
     photoPath?: string | null;
+    /** REQ-096.4: descripción corta, o null sin descripción. */
+    description?: string | null;
   }[];
   /** REQ-038.2: activos a la venta. `photoPath` es la ruta en el bucket `media`. */
   products: { id: string; name: string; price: number; photoPath: string | null }[];
@@ -203,6 +207,8 @@ export async function getPublicBusiness(
     name: String(raw.name),
     slug: String(raw.slug),
     address: (raw.address as string | null) ?? null,
+    // REQ-097.3: la portada la muestra debajo del nombre
+    description: (raw.description as string | null) ?? null,
     pwaName: String(raw.pwaName ?? raw.name),
     isOpen: Boolean(raw.isOpen),
     nextOpening: (raw.nextOpening as string | null) ?? null,

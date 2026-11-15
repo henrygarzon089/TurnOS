@@ -2081,6 +2081,79 @@ piezas impresas, uniformes y redes sociales (están en el manual, no son softwar
 Fuera de alcance del Hito 22: cambios a la app, al CI de GitHub o a la base de datos; hooks en la
 máquina de Federico más allá de lo que trae el repo.
 
+## Hito 23 — Descripción de los servicios y del negocio (ADR-070)
+
+> Estado: **APROBADA** (Henry, 2026-11-15: "Si dale"; PA-H23-1…5 con la propuesta). Henry: "se tiene que agregar
+> una descripción a cada servicio que se debe mostrar cuando se va a elegir"; después sumó una
+> descripción del negocio en la portada (REQ-097). Reabre solo la descripción de lo que ADR-064
+> dejó fuera; las categorías y escoger varios servicios siguen fuera.
+
+### REQ-096 · Descripción de los servicios — S
+**Como** dueño, **quiero** escribir una descripción corta de cada servicio, **para** que el
+cliente sepa qué incluye antes de escogerlo (por ejemplo, "Corte con máquina y tijera, lavado y
+peinado").
+
+- REQ-096.1 En la hoja de editar servicio (pantalla "Servicios"), el dueño DEBE poder escribir,
+  cambiar y borrar una **Descripción** en un campo de varias líneas, debajo de nombre, minutos y
+  precio, con la ayuda "Opcional. La ve el cliente al escoger el servicio." y un contador
+  "N/140". El campo DEBE estar también al crear un servicio nuevo.
+- REQ-096.2 La descripción DEBE ser opcional. Al guardar, el sistema DEBE quitar los espacios del
+  principio y del final y cambiar los saltos de línea y los espacios repetidos por un solo
+  espacio; si queda vacía, DEBE guardarse como sin descripción.
+- REQ-096.3 Cuando la descripción, ya limpia, pase de **140 caracteres**, el sistema NO DEBE
+  guardar el servicio y DEBE mostrar "La descripción puede tener hasta 140 letras." junto al
+  campo. La base de datos DEBE rechazar también una descripción vacía o de más de 140 caracteres
+  aunque no venga de la app (NFR-010).
+- REQ-096.4 Cuando un servicio tenga descripción, la tarjeta de servicio (REQ-086.2) DEBE
+  mostrarla completa, en texto secundario (`text-muted`, 14 px), debajo de la duración y arriba
+  del precio, al tomar turno y al reservar una cita (`?paso=servicio`, REQ-088.2 y REQ-089.1).
+  En una tarjeta que no se puede escoger (REQ-089), la descripción DEBE verse igual de apagada que
+  el resto.
+- REQ-096.5 Cuando un servicio no tenga descripción, la tarjeta DEBE verse igual que hoy, sin
+  espacio vacío ni texto de relleno.
+- REQ-096.6 Un lector de pantalla DEBE leer primero el nombre del servicio y después la
+  descripción, como parte de la misma opción (NFR-008).
+- REQ-096.7 Todos los textos nuevos DEBEN estar en español colombiano (NFR-006, `pnpm lint:texts`).
+
+Preguntas del Hito 23:
+- **PA-H23-1**: ¿cuál es el largo máximo? Propuesta: **140 caracteres**. En un celular de 360 px
+  son unas 3 líneas en la tarjeta: alcanza para "qué incluye" sin que la lista de servicios se
+  vuelva larga. Más largo pide "Ver más", y eso es otro paso.
+- **PA-H23-2**: ¿la descripción se ve también en otras pantallas (lista de "Servicios" del dueño,
+  "Mi turno", "Mi cita", el televisor, la caja)? Propuesta: **no**, solo en la tarjeta donde el
+  cliente escoge; en "Servicios" el dueño la ve al abrir la hoja.
+- **PA-H23-3**: ¿Henry escribe las descripciones de Gamma Club o se dejan vacías al salir?
+  Propuesta: **las escribe Henry** desde "Servicios" y "Negocio" cuando esté en producción;
+  vacías, la app se ve igual que hoy (REQ-096.5, REQ-097.4).
+- **PA-H23-4**: ¿cuál es el largo máximo de la descripción del negocio? Propuesta: **200
+  caracteres**: unas 4 líneas en 360 px, suficiente para "qué es y qué ofrece" sin empujar muy
+  abajo el botón "Tomar turno".
+- **PA-H23-5**: ¿la descripción del negocio se ve también durante los pasos de tomar turno y
+  reservar, o en el televisor? Propuesta: **no**; durante los pasos la cabecera va compacta
+  (REQ-088) y el televisor es para la fila.
+
+### REQ-097 · Descripción del negocio en la portada — S
+**Como** dueño, **quiero** escribir una descripción corta del negocio, **para** que quien escanea
+el QR sepa qué es el lugar antes de tomar turno (por ejemplo, "Barbería en Sabaneta. Cortes
+clásicos y modernos, barba y cejas.").
+
+- REQ-097.1 En "Negocio", el dueño DEBE poder escribir, cambiar y borrar una **Descripción del
+  negocio** en un campo de varias líneas, con la ayuda "Opcional. Sale en la portada, debajo del
+  nombre." y un contador "N/200".
+- REQ-097.2 La descripción del negocio DEBE ser opcional y limpiarse igual que la del servicio
+  (REQ-096.2). Cuando pase de **200 caracteres**, el sistema NO DEBE guardar y DEBE mostrar "La
+  descripción puede tener hasta 200 letras."; la base de datos DEBE rechazar también una vacía o
+  de más de 200.
+- REQ-097.3 Cuando el negocio tenga descripción, la portada (`/<negocio>`, REQ-088.1) DEBE
+  mostrarla completa, en texto secundario, debajo del nombre y el estado en la cabecera (REQ-087.2),
+  y arriba del bloque en vivo. En la cabecera compacta de los pasos (`?paso=…`) NO DEBE mostrarse.
+- REQ-097.4 Cuando el negocio no tenga descripción, la portada DEBE verse igual que hoy.
+- REQ-097.5 REQ-096.7 (español colombiano) aplica igual.
+
+Fuera de alcance del Hito 23: categorías de servicios, escoger varios servicios, "Ver más",
+descripción en otros idiomas o con formato (negrita, listas, emojis especiales), descripción de
+productos de la vitrina y descripción del negocio en otras pantallas (pasos, televisor, "Mi turno").
+
 ---
 
 ## 6. Requisitos no funcionales
