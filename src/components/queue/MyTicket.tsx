@@ -165,7 +165,7 @@ export function MyTicket({
       {ticket.status === "called" ? (
         <CalledBlock ticket={ticket} />
       ) : (
-        <TicketHeader name={ticket.business.name} online={online} />
+        <TicketHeader name={ticket.business.name} slug={ticket.business.slug} online={online} />
       )}
 
       <div className="flex flex-col gap-3 px-4 pt-4">
@@ -340,10 +340,20 @@ export function MyTicket({
   );
 }
 
-/** Encabezado de 48 px: marca 28×28, nombre del negocio y "● En vivo" (sin red, "sin señal"). */
-function TicketHeader({ name, online }: { name: string; online: boolean }) {
+/**
+ * Encabezado de 48 px: "‹" para volver a la portada (REQ-004.8), marca 28×28, nombre del negocio y
+ * "● En vivo" (sin red, "sin señal"). Volver no cancela ni cambia el turno.
+ */
+function TicketHeader({ name, slug, online }: { name: string; slug: string; online: boolean }) {
   return (
-    <header className="border-line bg-card flex h-12 items-center gap-2 border-b px-4">
+    <header className="border-line bg-card flex h-12 items-center gap-2 border-b pr-4 pl-1">
+      <Link
+        href={`/${slug}`}
+        aria-label={`Volver a ${name}`}
+        className="text-ink flex size-12 shrink-0 items-center justify-center rounded-md"
+      >
+        <Icon name="back" className="size-5" />
+      </Link>
       <span
         aria-hidden="true"
         className="bg-brand text-brand-ink flex size-7 shrink-0 items-center justify-center rounded-xs text-xs font-bold tabular-nums"
@@ -518,8 +528,16 @@ function CalledBlock({ ticket }: { ticket: Ticket }) {
   return (
     <section
       aria-live="assertive"
-      className="bg-called text-accent-ink flex min-h-[380px] flex-col items-center justify-center px-4 py-8 text-center"
+      className="bg-called text-accent-ink relative flex min-h-[380px] flex-col items-center justify-center px-4 py-8 text-center"
     >
+      {/* REQ-004.8: también llamado hay cómo volver a la portada */}
+      <Link
+        href={`/${ticket.business.slug}`}
+        aria-label={`Volver a ${ticket.business.name}`}
+        className="absolute top-0 left-1 flex size-12 items-center justify-center rounded-md"
+      >
+        <Icon name="back" className="size-5" />
+      </Link>
       <Icon name="bell" className="size-10" />
       <h1 className="mt-3 text-[32px] leading-tight font-bold">¡Es tu turno!</h1>
       <p

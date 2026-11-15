@@ -2917,6 +2917,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   dejaría sin subir fotos a esos iPhone.
 - Modelo: Sonnet 5.5. Complejidad: baja.
 
+### [x] T-229 · Volver a la portada desde "Mi turno" y "Mi cita"
+- REQ: REQ-004.8, REQ-051.7 · Agregada 2026-11-15 a pedido de Henry (probando el Hito 20: después de
+  "Mi cita" no se podía hacer nada). Flecha "Volver a <negocio>" en el encabezado de las dos
+  pantallas; sin migraciones.
+- Hecha 2026-11-15. En "Mi turno" la flecha va en el encabezado y, llamado, arriba a la izquierda
+  del bloque rojo "¡Es tu turno!" (ese estado no tiene encabezado). "Mi cita" usa la flecha de
+  `PublicHeader` en lugar del cuadro de la marca.
+- Modelo: Opus 5.5. Complejidad: baja.
+
 ### [ ] T-228 · Validación Hito 20
 - Terminado: `pnpm trace --hito=20` sin huecos; Henry sube las fotos de Pedro y Stiven, logo y
   portada, toma un turno y reserva una cita desde el celular; aprobación (ADR nuevo).

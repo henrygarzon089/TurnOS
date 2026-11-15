@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-14.
+> Generada por `scripts/traceability.ts` el 2026-11-15.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -22,13 +22,14 @@
 | REQ-003.5 | Tomar turno | T-003 (hecha), T-011 (hecha), T-014 (hecha), T-017 (hecha), T-019 (hecha), T-173 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0005_queue.sql, 0008_public_fns.sql | cubierto |
 | REQ-003.6 | Tomar turno | T-003 (hecha), T-011 (hecha), T-014 (hecha), T-017 (hecha), T-019 (hecha), T-173 (hecha) | 0012_hito1_gaps.sql | cubierto |
 | REQ-003.7 | Tomar turno | T-003 (hecha), T-011 (hecha), T-014 (hecha), T-017 (hecha), T-019 (hecha), T-173 (hecha) | customer-flow.spec.ts | cubierto |
-| REQ-004.1 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha) | customer-flow.spec.ts, public-queue.test.ts, my-ticket.test.tsx, queue-estimate.test.ts, 0008_public_fns.sql, 0072_public_ticket_times.sql | cubierto |
-| REQ-004.2 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha) | customer-flow.spec.ts, queue-subscription.test.ts | cubierto |
-| REQ-004.3 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha) | customer-flow.spec.ts, my-ticket.test.tsx | cubierto |
-| REQ-004.4 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha) | hito1-gaps.spec.ts | cubierto |
-| REQ-004.5 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha) | domain-branches.test.ts, queue-estimate.test.ts, time.test.ts | cubierto |
-| REQ-004.6 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha) | customer-flow.spec.ts | cubierto |
-| REQ-004.7 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0008_public_fns.sql, 0033_customer_experience.sql | cubierto |
+| REQ-004.1 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha), T-229 (hecha) | customer-flow.spec.ts, public-queue.test.ts, my-ticket.test.tsx, queue-estimate.test.ts, 0008_public_fns.sql, 0072_public_ticket_times.sql | cubierto |
+| REQ-004.2 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha), T-229 (hecha) | customer-flow.spec.ts, queue-subscription.test.ts | cubierto |
+| REQ-004.3 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha), T-229 (hecha) | customer-flow.spec.ts, my-ticket.test.tsx | cubierto |
+| REQ-004.4 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha), T-229 (hecha) | hito1-gaps.spec.ts | cubierto |
+| REQ-004.5 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha), T-229 (hecha) | domain-branches.test.ts, queue-estimate.test.ts, time.test.ts | cubierto |
+| REQ-004.6 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha), T-229 (hecha) | customer-flow.spec.ts | cubierto |
+| REQ-004.7 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha), T-229 (hecha) | customer-flow.spec.ts, public-queue.test.ts, 0008_public_fns.sql, 0033_customer_experience.sql | cubierto |
+| REQ-004.8 | Ver mi turno en tiempo real | T-003 (hecha), T-014 (hecha), T-015 (hecha), T-016 (hecha), T-017 (hecha), T-020 (hecha), T-053 (hecha), T-174 (hecha), T-229 (hecha) | my-ticket.test.tsx | cubierto |
 | REQ-005.1 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | hito1-gaps.spec.ts | cubierto |
 | REQ-005.2 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | customer-flow.spec.ts, helpers.ts, public-queue.test.ts, 0006_transitions.sql, 0008_public_fns.sql | cubierto |
 | REQ-005.3 | Cancelar mi turno | T-012 (hecha), T-017 (hecha), T-020 (hecha) | hito1-gaps.spec.ts, public-queue.test.ts | cubierto |
@@ -254,12 +255,13 @@
 | REQ-050.5 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (hecha) | appointments.test.ts, 0045_appointments.sql | cubierto |
 | REQ-050.6 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (hecha) | appointments-agenda.spec.ts, appointments.test.ts, appointments.test.ts, 0045_appointments.sql | cubierto |
 | REQ-050.7 | Reservar una cita | T-078 (hecha), T-082 (hecha), T-085 (hecha) | appointments.test.ts | cubierto |
-| REQ-051.1 | Mi cita | T-080 (hecha), T-083 (hecha) | appointments-public.spec.ts, appointments.test.ts, appointments.test.ts | cubierto |
-| REQ-051.2 | Mi cita | T-080 (hecha), T-083 (hecha) | appointments-public.spec.ts, appointments.test.ts, 0045_appointments.sql | cubierto |
-| REQ-051.3 | Mi cita | T-080 (hecha), T-083 (hecha) | appointments-public.spec.ts, appointments.test.ts | cubierto |
-| REQ-051.4 | Mi cita | T-080 (hecha), T-083 (hecha) | appointments.test.ts | cubierto |
-| REQ-051.5 | Mi cita | T-080 (hecha), T-083 (hecha) | appointments.test.ts, appointments.test.ts | cubierto |
-| REQ-051.6 | Mi cita | T-080 (hecha), T-083 (hecha) | appointments-public.spec.ts, appointments.test.ts | cubierto |
+| REQ-051.1 | Mi cita | T-080 (hecha), T-083 (hecha), T-229 (hecha) | appointments-public.spec.ts, appointments.test.ts, appointments.test.ts | cubierto |
+| REQ-051.2 | Mi cita | T-080 (hecha), T-083 (hecha), T-229 (hecha) | appointments-public.spec.ts, appointments.test.ts, 0045_appointments.sql | cubierto |
+| REQ-051.3 | Mi cita | T-080 (hecha), T-083 (hecha), T-229 (hecha) | appointments-public.spec.ts, appointments.test.ts | cubierto |
+| REQ-051.4 | Mi cita | T-080 (hecha), T-083 (hecha), T-229 (hecha) | appointments.test.ts | cubierto |
+| REQ-051.5 | Mi cita | T-080 (hecha), T-083 (hecha), T-229 (hecha) | appointments.test.ts, appointments.test.ts | cubierto |
+| REQ-051.6 | Mi cita | T-080 (hecha), T-083 (hecha), T-229 (hecha) | appointments-public.spec.ts, appointments.test.ts | cubierto |
+| REQ-051.7 | Mi cita | T-080 (hecha), T-083 (hecha), T-229 (hecha) | my-appointment.test.tsx | cubierto |
 | REQ-052.1 | Llegada y prioridad en la fila | T-079 (hecha), T-084 (hecha) | appointments-queue.spec.ts, 0046_appointments_queue.sql | cubierto |
 | REQ-052.2 | Llegada y prioridad en la fila | T-079 (hecha), T-084 (hecha) | appointments-queue.spec.ts, appointments.test.ts, appointments.test.ts, queue-actions.test.ts, 0046_appointments_queue.sql | cubierto |
 | REQ-052.3 | Llegada y prioridad en la fila | T-079 (hecha), T-084 (hecha) | 0046_appointments_queue.sql | cubierto |
@@ -503,6 +505,6 @@
 | REQ-089.1 | Reservar una cita paso a paso | T-225 (hecha) | appointments-public.spec.ts, visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
 | REQ-089.2 | Reservar una cita paso a paso | T-225 (hecha) | visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
 | REQ-089.3 | Reservar una cita paso a paso | T-225 (hecha) | appointments-public.spec.ts, visual-cliente-cita.spec.ts, book-steps.test.ts | cubierto |
-| REQ-090.1 | Fotos rápidas y seguras | T-220 (hecha), T-227 (pendiente) | photos-speed.test.tsx | prueba escrita |
-| REQ-090.2 | Fotos rápidas y seguras | T-220 (hecha), T-227 (pendiente) | brand-images.test.tsx, 0074_brand_images.sql | prueba escrita |
-| REQ-090.3 | Fotos rápidas y seguras | T-220 (hecha), T-227 (pendiente) | visual-cliente-cita.spec.ts, visual-cliente.spec.ts | prueba escrita |
+| REQ-090.1 | Fotos rápidas y seguras | T-220 (hecha), T-227 (hecha) | photos-speed.test.tsx | cubierto |
+| REQ-090.2 | Fotos rápidas y seguras | T-220 (hecha), T-227 (hecha) | brand-images.test.tsx, 0074_brand_images.sql | cubierto |
+| REQ-090.3 | Fotos rápidas y seguras | T-220 (hecha), T-227 (hecha) | visual-cliente-cita.spec.ts, visual-cliente.spec.ts | cubierto |
