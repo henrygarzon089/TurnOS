@@ -2972,14 +2972,20 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   paralelo (~20 s con un error de tipos). Los hooks se conectan en `.claude/settings.json` en este
   commit. Pruebas: `tests/unit/harness-gate.test.ts`.
 
-### [ ] T-254 · Subagentes
+### [x] T-254 · Subagentes
 - REQ: REQ-094.1, REQ-094.2, REQ-094.3, REQ-094.4, REQ-094.5 · `.claude/agents/*.md`.
 - Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-15. Precisión de REQ-094.5: los revisores no tienen Edit, Write, MultiEdit ni
+  NotebookEdit; sí tienen Bash para leer (`git diff`, `pnpm trace`), con las guardias de REQ-092
+  encima. Pruebas: `tests/unit/harness-agents.test.ts`.
 
-### [ ] T-255 · Comandos del método y números libres
+### [x] T-255 · Comandos del método y números libres
 - REQ: REQ-095.1, REQ-095.2, REQ-095.3, REQ-095.4 · `.claude/skills/*`, `scripts/next-ids.ts`,
   `pnpm next-ids`.
 - Modelo: Opus 5.5. Complejidad: media.
+- Hecha 2026-11-15: `/tarea`, `/cerrar-hito`, `/nuevo-req`; `pnpm next-ids [--fetch]` mira
+  `main`, las ramas remotas, `HEAD` y el árbol de trabajo. Pruebas:
+  `tests/unit/harness-agents.test.ts`, `tests/unit/next-ids.test.ts`.
 
 ### [ ] T-256 · Validación Hito 22
 - Terminado: `pnpm trace --hito=22` sin huecos; `CLAUDE.md` y `docs/estado-del-proyecto.md` al
