@@ -152,7 +152,7 @@
 | REQ-033.1 | Plantillas de mensajes de WhatsApp | T-024 (hecha) | admin-config.spec.ts, render-template.test.ts, 0002_core.sql | cubierto |
 | REQ-034.1 | Datos de ejemplo (seed) | T-009 (hecha), T-030 (hecha) | 0009_seed.sql | cubierto |
 | REQ-035.1 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | services-by-barber.spec.ts, 0030_barber_services.sql | cubierto |
-| REQ-035.2 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | services-by-barber.spec.ts, 0030_barber_services.sql | cubierto |
+| REQ-035.2 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | service-description.spec.ts, services-by-barber.spec.ts, 0030_barber_services.sql | cubierto |
 | REQ-035.3 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | services-by-barber.spec.ts, 0030_barber_services.sql | cubierto |
 | REQ-035.4 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | 0030_barber_services.sql | cubierto |
 | REQ-035.5 | Servicios por barbero | T-051 (hecha), T-052 (hecha), T-053 (hecha), T-054 (hecha), T-055 (hecha), T-056 (hecha), T-057 (hecha) | 0030_barber_services.sql | cubierto |
@@ -514,7 +514,7 @@
 | REQ-091.3 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-link.test.ts, design-tokens.test.ts | cubierto |
 | REQ-091.4 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-font.test.ts, lint-design.test.ts, vitals-reporter.test.tsx | cubierto |
 | REQ-091.5 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | marca-gamma.spec.ts | cubierto |
-| REQ-091.6 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | pwa-usability.spec.ts, brand-mark.test.tsx | cubierto |
+| REQ-091.6 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | pwa-usability.spec.ts, brand-mark.test.tsx, brand-title.test.ts | cubierto |
 | REQ-091.7 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-mark.test.tsx | cubierto |
 | REQ-091.8 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-icons.test.ts | cubierto |
 | REQ-091.9 | Marca Gamma Club en la app | T-240 (hecha), T-241 (hecha), T-242 (hecha), T-243 (hecha), T-244 (hecha) | brand-mark.test.tsx, public-home.test.tsx | cubierto |
@@ -541,3 +541,15 @@
 | REQ-095.2 |  | T-255 (hecha) | harness-agents.test.ts | cubierto |
 | REQ-095.3 |  | T-255 (hecha) | harness-agents.test.ts | cubierto |
 | REQ-095.4 |  | T-255 (hecha) | next-ids.test.ts | cubierto |
+| REQ-096.1 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | service-description.spec.ts, description-field.test.tsx | cubierto |
+| REQ-096.2 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | service-description.spec.ts, description.test.ts | cubierto |
+| REQ-096.3 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | description.test.ts, 0076_descriptions.sql | cubierto |
+| REQ-096.4 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | service-description.spec.ts, service-card.test.tsx, 0076_descriptions.sql | cubierto |
+| REQ-096.5 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | service-description.spec.ts, service-card.test.tsx | cubierto |
+| REQ-096.6 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | service-description.spec.ts, service-card.test.tsx | cubierto |
+| REQ-096.7 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | description-texts.test.ts | cubierto |
+| REQ-097.1 |  | T-260 (hecha), T-263 (hecha) | business-description.spec.ts, description-field.test.tsx | cubierto |
+| REQ-097.2 |  | T-260 (hecha), T-263 (hecha) | description.test.ts, 0076_descriptions.sql | cubierto |
+| REQ-097.3 |  | T-260 (hecha), T-263 (hecha) | business-description.spec.ts, business-description.test.tsx, 0076_descriptions.sql | cubierto |
+| REQ-097.4 |  | T-260 (hecha), T-263 (hecha) | business-description.spec.ts, business-description.test.tsx | cubierto |
+| REQ-097.5 |  | T-260 (hecha), T-263 (hecha) | description-texts.test.ts | cubierto |

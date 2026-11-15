@@ -41,6 +41,7 @@ const HITOS: Record<string, [number, number][]> = {
   "20": [[85, 90]], // cliente con fotos y paso a paso (ADR-063)
   "21": [[91, 91]], // marca Gamma Club en la app (ADR-065)
   "22": [[92, 95]], // harness de los agentes (ADR-066)
+  "23": [[96, 97]], // descripción de los servicios y del negocio (ADR-070)
 };
 
 const req = readFileSync("specs/requirements.md", "utf8");

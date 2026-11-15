@@ -3436,9 +3436,11 @@ numerar. Máximo ~15 líneas.
   false; error: string }`. Pasos: `trim`, `replace(/\s+/g, " ")`, vacía → `null`, más de `max` →
   "La descripción puede tener hasta <max> letras." Constantes `SERVICE_DESCRIPTION_MAX = 140` y
   `BUSINESS_DESCRIPTION_MAX = 200`, compartidas con los formularios.
-- `serviceSchema` en `src/lib/actions/admin.ts` suma `description` con ese `transform`;
-  `upsertService` lo guarda en la misma fila (insert o update). El error sale en `state.error`,
-  como los demás del servicio.
+- `upsertService` (`src/lib/actions/admin.ts`) valida `description` con `normalizeDescription`
+  aparte de `serviceSchema` (que comparte `addInitialServices`, sin descripción) y la guarda en la
+  misma fila (insert o update); si el formulario no trae el campo, no la toca. El error sale en
+  `state.error`, debajo de los campos del formulario como los demás del servicio: ese es el
+  "junto al campo" de REQ-096.3 y REQ-097.2 (precisión de T-261).
 - `businessSettingsSchema` suma `description` igual (máx. 200); `updateBusiness` la guarda. Como
   hoy esa acción responde "Revisa los datos del negocio." ante cualquier error, para la
   descripción se devuelve el mensaje propio de REQ-097.2.
@@ -3451,7 +3453,8 @@ numerar. Máximo ~15 líneas.
   agrega `description` al `select`.
 - `PublicHero` recibe `description?: string | null` y, si viene y no es `compact`, la pinta en
   `<p data-testid="business-description" className="text-muted text-sm break-words">` debajo del
-  nombre y el estado (REQ-097.3/.4). La portada (`[slug]/page.tsx`) se la pasa.
+  nombre y el estado (REQ-097.3/.4). Se la pasa `JoinFlow` (`JoinForm.tsx`), que es quien pinta
+  `PublicHero` en la portada y la deja compacta durante los pasos (precisión de T-263).
 - `ServiceRow` (`ItemForms.tsx`) suma `description?: string | null`; `admin/servicios/page.tsx`
   la agrega al `select`.
 - `ServiceForm`: `<textarea name="description" rows={3} maxLength={140}>` con la etiqueta
