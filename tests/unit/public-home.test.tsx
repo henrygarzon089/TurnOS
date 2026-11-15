@@ -174,7 +174,7 @@ describe("T-173 portada y tomar turno en una pantalla (REQ-078.21, ADR-052)", ()
     const t = visible(h);
     expect(t).toContain("Atrás Paso 1 de 3");
     expect(t).toContain("¿Qué te vas a hacer?");
-    expect(t).toContain("Corte + barba $ 35.000 · 45 min");
+    expect(t).toContain("Corte + barba 45 min $ 35.000"); // REQ-086.2 (ADR-064)
     expect(h).toContain('role="progressbar"');
     // REQ-088.7: durante los pasos, en el celular solo el paso; en escritorio la fila a la izquierda
     expect(h).toContain('class="hidden lg:block"');
