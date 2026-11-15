@@ -74,7 +74,7 @@ test.describe("Hito 1 · criterios de interfaz", () => {
   }) => {
     const cctx = await browser.newContext();
     const c = await cctx.newPage();
-    await openJoinForm(c, { service: /^Barba\s+\$/, barber: "Pedro" });
+    await openJoinForm(c, { service: /^Barba\s+\d+ min/, barber: "Pedro" });
     await c.getByLabel("Tu nombre").fill("Detalle Fila");
     await c.getByLabel("Tu celular").fill(phone());
     await c.getByRole("checkbox", { name: /Acepto el aviso/ }).check();

@@ -1,4 +1,4 @@
-# Estado del proyecto — traspaso (2026-11-14)
+# Estado del proyecto — traspaso (2026-11-15)
 
 Este documento resume la conversación en la que se construyó todo hasta aquí, para que cualquier
 persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `specs/`.
@@ -759,7 +759,13 @@ Pendientes (H3): `/admin/caja`,
 ### Hito 20 — cliente con fotos y paso a paso (spec aprobada, REQ-085…090, ADR-063)
 
 - Fotos del barbero (dueño y barbero), de los servicios, logo y portada en el bucket público
-  `media` (reutilizado, ADR-063); tomar turno en 3 pasos y reservar en 4. Tareas T-220…T-228; en construcción.
+  `media` (reutilizado, ADR-063); tomar turno en 3 pasos y reservar en 4. Tareas T-220…T-230.
+- T-229 (2026-11-15, PR #190, fusionado): flecha "Volver a <negocio>" en "Mi turno" y "Mi cita".
+- T-230 (2026-11-15, PR #191): tarjetas de servicio al estilo de Fresha (REQ-086.2, ADR-064):
+  nombre y duración arriba, precio grande y "+"/"✓" abajo, foto como miniatura a la derecha. Sigue
+  un solo servicio por turno; sin migraciones. Categorías, descripción y varios servicios quedaron
+  fuera (ADR-064).
+- Falta: T-228 (Henry sube fotos y prueba desde el celular; ADR de aprobación del hito).
 
 ## Desvíos registrados respecto a la spec (todos explícitos)
 

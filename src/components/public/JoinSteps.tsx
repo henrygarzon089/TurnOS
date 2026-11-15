@@ -63,7 +63,10 @@ const cardState = (checked: boolean, disabled: boolean) =>
       ? "border-brand bg-brand-soft border-2"
       : "border-line-strong bg-card active:bg-surface border";
 
-/** REQ-086.2: foto (o tijeras), nombre, precio y duración. */
+/**
+ * REQ-086.2 (ADR-064): al estilo de Fresha. Nombre y duración arriba, precio grande abajo con el
+ * botón "+" / "✓" a la derecha; la foto, si hay, como miniatura arriba a la derecha.
+ */
 export function ServiceCard({
   name,
   price,
@@ -91,30 +94,44 @@ export function ServiceCard({
       aria-disabled={disabled || undefined}
       disabled={disabled}
       onClick={onPick}
-      className={`${CARD} ${cardState(checked, disabled)}`}
+      className={`focus-visible:ring-brand flex w-full flex-col gap-3 rounded-xl p-4 text-left focus-visible:ring-2 focus-visible:outline-none ${cardState(checked, disabled)}`}
     >
-      {photoPath ? (
-        <Image
-          src={mediaUrl(photoPath)}
-          alt=""
-          width={96}
-          height={64}
-          unoptimized
-          loading="lazy"
-          className={`h-16 w-24 shrink-0 rounded-md object-cover ${disabled ? "opacity-50 grayscale" : ""}`}
-        />
-      ) : (
+      <span className="flex w-full items-start gap-3">
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="text-lg leading-tight font-semibold break-words">{name}</span>
+          <span data-testid="service-duration" className="text-muted text-sm tabular-nums">
+            {disabled && disabledText ? disabledText : `${durationMin} min`}
+          </span>
+        </span>
+        {photoPath && (
+          <Image
+            src={mediaUrl(photoPath)}
+            alt=""
+            width={64}
+            height={64}
+            unoptimized
+            loading="lazy"
+            className={`size-16 shrink-0 rounded-lg object-cover ${disabled ? "opacity-50 grayscale" : ""}`}
+          />
+        )}
+      </span>
+      <span className="flex w-full items-center justify-between gap-3">
+        <span data-testid="service-price" className="text-xl font-bold tabular-nums">
+          {formatCOP(price)}
+        </span>
         <span
           aria-hidden="true"
-          className="bg-brand-soft text-brand flex h-16 w-24 shrink-0 items-center justify-center rounded-md"
+          data-testid="service-pick"
+          data-picked={checked ? "true" : "false"}
+          className={`flex size-11 shrink-0 items-center justify-center rounded-full border ${
+            checked
+              ? "border-brand bg-brand text-brand-ink"
+              : disabled
+                ? "border-line text-muted"
+                : "border-line-strong bg-card text-ink"
+          }`}
         >
-          <Icon name="scissors" className="size-7" />
-        </span>
-      )}
-      <span className="flex min-w-0 flex-1 flex-col">
-        <span className="text-lg leading-tight font-semibold break-words">{name}</span>
-        <span className="text-muted text-sm tabular-nums">
-          {disabled && disabledText ? disabledText : `${formatCOP(price)} · ${durationMin} min`}
+          <Icon name={checked ? "check" : "plus"} className="size-5" />
         </span>
       </span>
     </button>
