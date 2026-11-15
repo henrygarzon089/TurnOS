@@ -29,15 +29,15 @@ Una tijera abierta cuyas hojas y anillo dibujan la letra griega **γ** (gamma).
 
 Usa siempre la principal; las demás solo cuando el fondo o el espacio lo exijan.
 
-| Versión | Uso | Archivo |
-| --- | --- | --- |
-| Principal positivo | Por defecto, fondos claros | `logo-principal-positivo.svg`, `simbolo-positivo.svg` |
-| Negativo | Sobre navy u oscuros (tijera crema, tornillo `#F0394A`) | `logo-principal-negativo.svg`, `simbolo-negativo.svg` |
-| Horizontal | Fachadas y encabezados (símbolo a la izquierda, nombre y subtítulo a la derecha) | — |
-| Monocromo navy | Sellos, grabados, una tinta | `simbolo-mono-navy.svg` |
-| Monocromo blanco | Sobre fotos o vinilo | `simbolo-mono-blanco.svg` |
-| Ícono en cuadro navy | Redes, app, favicon, mangas (radio 24/100) | `icono-cuadro-navy.svg` |
-| Ícono simplificado | Tamaños menores a ~40 px | `icono-simplificado.svg` |
+| Versión              | Uso                                                                              | Archivo                                               |
+| -------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Principal positivo   | Por defecto, fondos claros                                                       | `logo-principal-positivo.svg`, `simbolo-positivo.svg` |
+| Negativo             | Sobre navy u oscuros (tijera crema, tornillo `#F0394A`)                          | `logo-principal-negativo.svg`, `simbolo-negativo.svg` |
+| Horizontal           | Fachadas y encabezados (símbolo a la izquierda, nombre y subtítulo a la derecha) | —                                                     |
+| Monocromo navy       | Sellos, grabados, una tinta                                                      | `simbolo-mono-navy.svg`                               |
+| Monocromo blanco     | Sobre fotos o vinilo                                                             | `simbolo-mono-blanco.svg`                             |
+| Ícono en cuadro navy | Redes, app, favicon, mangas (radio 24/100)                                       | `icono-cuadro-navy.svg`                               |
+| Ícono simplificado   | Tamaños menores a ~40 px                                                         | `icono-simplificado.svg`                              |
 
 > Los SVG de logo completo usan texto en Montserrat; para imprenta conviene convertir el texto a
 > curvas en un editor vectorial.
@@ -57,13 +57,13 @@ brillos ni efectos · no usar sobre fondos sin contraste · no cambiar la tipogr
 
 ## Colores
 
-| Nombre | Rol | HEX | RGB | CMYK | Pantone (ref.) |
-| --- | --- | --- | --- | --- | --- |
-| Navy Gamma | Principal | `#14254A` | 20 · 37 · 74 | 73 · 50 · 0 · 71 | 2767 C |
-| Rojo Gamma | Acento | `#E02B3B` | 224 · 43 · 59 | 0 · 81 · 74 · 12 | 1788 C |
-| Azul Gamma | Apoyo digital | `#2D55D6` | 45 · 85 · 214 | 79 · 60 · 0 · 16 | 2728 C |
-| Crema | Fondo | `#F3F0EA` | 243 · 240 · 234 | 0 · 1 · 4 · 5 | — |
-| Gris grafito | Texto | `#4A4F5C` | 74 · 79 · 92 | 20 · 14 · 0 · 64 | — |
+| Nombre       | Rol           | HEX       | RGB             | CMYK             | Pantone (ref.) |
+| ------------ | ------------- | --------- | --------------- | ---------------- | -------------- |
+| Navy Gamma   | Principal     | `#14254A` | 20 · 37 · 74    | 73 · 50 · 0 · 71 | 2767 C         |
+| Rojo Gamma   | Acento        | `#E02B3B` | 224 · 43 · 59   | 0 · 81 · 74 · 12 | 1788 C         |
+| Azul Gamma   | Apoyo digital | `#2D55D6` | 45 · 85 · 214   | 79 · 60 · 0 · 16 | 2728 C         |
+| Crema        | Fondo         | `#F3F0EA` | 243 · 240 · 234 | 0 · 1 · 4 · 5    | —              |
+| Gris grafito | Texto         | `#4A4F5C` | 74 · 79 · 92    | 20 · 14 · 0 · 64 | —              |
 
 Auxiliares usados en el manual: texto de párrafo `#2B3446`, líneas `#D6D1C7`, rojo sobre oscuro
 en pantalla `#F0394A`, texto suave sobre navy `#D5DBE8` / `#A9B3C7`.
@@ -76,13 +76,13 @@ en pantalla `#F0394A`, texto suave sobre navy `#D5DBE8` / `#A9B3C7`.
 
 Familia única: **Montserrat** (Google Fonts, gratuita).
 
-| Uso | Peso | Estilo |
-| --- | --- | --- |
-| Nombre GAMMA CLUB | SemiBold 600 | Mayúsculas, espaciado 0,3 em |
-| Títulos | SemiBold 600 | — |
-| Subtítulos | Regular 400 | Mayúsculas espaciadas |
-| Texto | Regular 400 | — |
-| Etiquetas y precios | Bold 700 | Mayúsculas |
+| Uso                 | Peso         | Estilo                       |
+| ------------------- | ------------ | ---------------------------- |
+| Nombre GAMMA CLUB   | SemiBold 600 | Mayúsculas, espaciado 0,3 em |
+| Títulos             | SemiBold 600 | —                            |
+| Subtítulos          | Regular 400  | Mayúsculas espaciadas        |
+| Texto               | Regular 400  | —                            |
+| Etiquetas y precios | Bold 700     | Mayúsculas                   |
 
 ## Uniformes
 
@@ -107,14 +107,14 @@ Familia única: **Montserrat** (Google Fonts, gratuita).
 
 ## Diferencias con la app hoy (pendiente de decidir, sin aplicar)
 
-| Tema | App (`src/app/globals.css`, REQ-078/ADR-047) | Manual |
-| --- | --- | --- |
-| Azul principal | `--color-brand: #0e1e3d` | `#14254A` |
-| Rojo | `--color-accent: #c21e2f` (5,96:1 con blanco) | `#E02B3B` (4,59:1 con blanco: pasa AA justo) |
-| Rojo sobre navy | `--color-accent-on-brand: #ff5a68` | `#F0394A` (3,87:1 sobre navy: sirve para el punto del logo, no para texto pequeño) |
-| Fondo | — | Crema `#F3F0EA` |
-| Tipografía | `system-ui` | Montserrat |
-| Íconos PWA / favicon | `public/icons/*.png` actuales | Ícono en cuadro navy |
+| Tema                 | App (`src/app/globals.css`, REQ-078/ADR-047)  | Manual                                                                             |
+| -------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Azul principal       | `--color-brand: #0e1e3d`                      | `#14254A`                                                                          |
+| Rojo                 | `--color-accent: #c21e2f` (5,96:1 con blanco) | `#E02B3B` (4,59:1 con blanco: pasa AA justo)                                       |
+| Rojo sobre navy      | `--color-accent-on-brand: #ff5a68`            | `#F0394A` (3,87:1 sobre navy: sirve para el punto del logo, no para texto pequeño) |
+| Fondo                | —                                             | Crema `#F3F0EA`                                                                    |
+| Tipografía           | `system-ui`                                   | Montserrat                                                                         |
+| Íconos PWA / favicon | `public/icons/*.png` actuales                 | Ícono en cuadro navy                                                               |
 
 Aplicarlo en la app es el **Hito 21** (REQ-091, ADR-065, design §27, tareas T-240…T-245),
 aprobado por Henry el 2026-11-15.

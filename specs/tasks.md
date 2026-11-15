@@ -2992,6 +2992,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 ### [ ] T-244 · Rendimiento y capturas
 - REQ: REQ-091.11 · Lighthouse móvil de la portada en CI (≥ 80 / ≥ 90); capturas en
   `docs/diseno/capturas/hito-21/`.
+- 2026-11-15: capturas hechas (portada, servicio, Entrar, Hoy, Mi fila, televisor) contra el
+  Postgres local. Falta el Lighthouse del CI del PR.
 - Modelo: Opus 5.5. Complejidad: baja.
 
 ### [ ] T-245 · Validación Hito 21

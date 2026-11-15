@@ -29,6 +29,9 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 
 ## Estado actual (2026-11-14)
 
+- **Hito 21 (marca Gamma Club, REQ-091, ADR-065)** aprobado como spec (2026-11-15): manual de
+  marca en `docs/marca/` (fuente de verdad de logo, colores y letra); T-240…T-243 hechas, sin
+  migraciones; falta T-244 (Lighthouse en CI) y T-245 (validación de Henry).
 - **Hito 19 (Citas encendido, REQ-084, ADR-062)**: T-210 hecha (2026-11-14), sin migraciones;
   falta T-211 (Henry configura "Citas" y reserva una cita). **Hito 20 (cliente con fotos y paso a
   paso, REQ-085…090, ADR-063)** aprobado como spec, en construcción.
