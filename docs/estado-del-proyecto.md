@@ -15,7 +15,7 @@ persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `s
 
 | Hito                     | Tareas      | Estado                                                                  |
 | ------------------------ | ----------- | ----------------------------------------------------------------------- |
-| H0 Cimientos             | T-001…T-010 | T-001–009 `[x]`; T-010 `[~]` (CI y E2E en verde; falta proteger `main`) |
+| H0 Cimientos             | T-001…T-010 | T-001–009 `[x]`; T-010 `[x]` (CI y E2E en verde; `main` protegida desde 2026-11-14) |
 | H1 Fila virtual          | T-011…T-030 | **aprobado** (ADR-017); pasillo e instalación hechos (ADR-021)          |
 | H2 Clientes y fidelidad  | T-031…T-039 | **aprobado** (ADR-017)                                                  |
 | H3 Caja y comisiones     | T-040…T-050 | **aprobado** (ADR-020); pasillo con el dueño hecho (ADR-021)            |
@@ -739,9 +739,12 @@ Pendientes (H3): `/admin/caja`,
 - Aprobado el 2026-11-14 (ADR-061, T-203): Henry desplegó `c8b7ebb` (`check:deploy` ✓), cobró
   una venta desde el celular sin "Tarjeta de regalo" ni membresías y la caja salió sin esos
   recuadros.
-- Pendientes externos que quedan: proteger `main` en GitHub (T-010, con la cuenta
-  `henrygarzon089`; el `gh` del agente no es administrador), los pasos de Meta para WhatsApp
-  (T-069), la revisión del aviso de privacidad por un abogado y el inventario de Gamma Club.
+- `main` protegida el 2026-11-14 (T-010 cerrada): Henry creó la regla con la cuenta
+  `henrygarzon089`; exige "Lint · typecheck · unit · pgTAP · integración", "E2E móvil (Pixel 7 +
+  iPhone 13)" y "Lighthouse móvil", sin force push ni borrado; el administrador puede saltarla en
+  una emergencia.
+- Pendientes externos que quedan: los pasos de Meta para WhatsApp (T-069), la revisión del aviso
+  de privacidad por un abogado y el inventario de Gamma Club.
 
 ### Hito 19 — Citas en modo esencial (en validación, REQ-084, ADR-062)
 
