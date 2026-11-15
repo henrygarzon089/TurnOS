@@ -142,6 +142,9 @@ tiempo al local.
   mostrar el estado actual del mismo turno (el estado vive en el servidor, no en el navegador).
 - REQ-004.7 SI el token no existe, ENTONCES EL SISTEMA DEBE responder "Este turno no existe o ya
   terminó" sin revelar datos.
+- REQ-004.8 "Mi turno" DEBE tener arriba a la izquierda una flecha "Volver a <negocio>" que lleva a
+  la portada del negocio, en cualquier estado del turno; volver no cancela ni cambia el turno.
+  (Agregado 2026-11-15, aprobado por Henry: con el turno activo no había cómo salir.)
 
 ### REQ-005 · Cancelar mi turno — M
 **Como** cliente, **quiero** cancelar mi turno, **para** no hacer esperar a nadie si no voy a ir.
@@ -941,6 +944,10 @@ límite por persona, recordatorio automático de pago y beneficios en productos.
   decirlo y ofrecer "Reservar otra".
 - REQ-051.6 "Mi cita" NO DEBE mostrar el celular; la pantalla del local (REQ-013) NO DEBE mostrar
   citas que no han llegado.
+- REQ-051.7 "Mi cita" DEBE tener arriba a la izquierda una flecha "Volver a <negocio>" que lleva a
+  la portada del negocio (tomar turno o reservar otra), en cualquier estado de la cita; volver no
+  cancela la cita. (Agregado 2026-11-15, aprobado por Henry: con la cita pendiente no había cómo
+  salir.)
 
 ### REQ-052 · Llegada y prioridad en la fila — M
 **Como** barbero, **quiero** que la cita pase de primera cuando llega, **para** cumplirle la hora.

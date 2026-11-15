@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { adminDb, loginAsOwner, SEED } from "./helpers";
+import { adminDb, barberCard, loginAsOwner, openBarberStep, SEED } from "./helpers";
 
 /**
  * T-054 · REQ-035.6 / REQ-035.7: el formulario del cliente según quién hace cada servicio.
@@ -58,26 +58,26 @@ test.describe("REQ-035 formulario según quién hace cada servicio", () => {
   test("REQ-035.6 al escoger el servicio solo aparecen los barberos que lo hacen", async ({
     page,
   }) => {
-    await page.goto(`/${SEED.slug}`);
-    await page.getByRole("radio", { name: new RegExp(CEPILLADO) }).check();
-    const barberos = page.getByRole("group", { name: "¿Con quién?" });
-    await expect(barberos.getByRole("radio", { name: "Mateo", exact: true })).toBeVisible();
-    await expect(barberos.getByRole("radio", { name: "Juan", exact: true })).toHaveCount(0);
+    await openBarberStep(page, new RegExp(`^${CEPILLADO}`));
+    await expect(barberCard(page, "Mateo")).toBeVisible();
+    await expect(barberCard(page, "Juan")).toHaveCount(0);
   });
 
   test("REQ-035.6 si el barbero escogido no hace el servicio nuevo, vuelve 'El primero libre'", async ({
     page,
   }) => {
-    await page.goto(`/${SEED.slug}`);
-    await page.getByRole("radio", { name: /^Corte\s+\$/ }).check();
-    const barberos = page.getByRole("group", { name: "¿Con quién?" });
-    await barberos.getByRole("radio", { name: "Juan", exact: true }).click();
-    await expect(barberos.getByRole("radio", { name: "Juan", exact: true })).toHaveAttribute(
-      "aria-checked",
-      "true",
-    );
-    await page.getByRole("radio", { name: new RegExp(CEPILLADO) }).check();
-    await expect(barberos.getByRole("radio", { name: "El primero libre" })).toHaveAttribute(
+    // Con Juan en la dirección y un servicio que Juan no hace (REQ-088.4: la dirección se corrige)
+    const { db, biz, juan } = await ids();
+    const { data: cep } = await db
+      .from("services")
+      .select("id")
+      .eq("business_id", biz)
+      .eq("name", CEPILLADO)
+      .single();
+    await page.goto(`/${SEED.slug}?paso=barbero&servicio=${cep!.id}&barbero=${juan}`);
+    await expect(page.getByText("Paso 2 de 3")).toBeVisible();
+    await expect(barberCard(page, "Juan")).toHaveCount(0);
+    await expect(page.getByRole("radio", { name: /^El primero libre,/ })).toHaveAttribute(
       "aria-checked",
       "true",
     );
@@ -86,12 +86,10 @@ test.describe("REQ-035 formulario según quién hace cada servicio", () => {
   test("REQ-035.7 un servicio que hoy nadie hace sale en gris y no se puede escoger", async ({
     page,
   }) => {
-    await page.goto(`/${SEED.slug}`);
-    const tinte = page.getByRole("radio", { name: new RegExp(TINTE) });
+    await page.goto(`/${SEED.slug}?paso=servicio`);
+    const tinte = page.getByRole("radio", { name: new RegExp(`^${TINTE}`) });
     await expect(tinte).toBeDisabled();
-    await expect(
-      page.locator("label").filter({ hasText: TINTE }).getByText("Hoy no hay quién lo haga"),
-    ).toBeVisible();
+    await expect(tinte).toContainText("Hoy no hay quién lo haga");
   });
 });
 

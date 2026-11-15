@@ -44,4 +44,12 @@ describe("Mi cita con la foto del barbero (T-226)", () => {
     expect(row).toContain('data-testid="avatar-initials"');
     expect(row).toContain("JU");
   });
+
+  it("REQ-051.7 una flecha 'Volver a <negocio>' lleva a la portada, también con la cita pendiente", () => {
+    for (const status of ["booked", "cancelled"] as const) {
+      const h = render({ status });
+      const link = h.match(/<a[^>]*aria-label="Volver a Barbería La 33"[^>]*>/)?.[0];
+      expect(link, status).toContain('href="/la-33"');
+    }
+  });
 });

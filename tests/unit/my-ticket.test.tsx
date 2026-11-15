@@ -189,6 +189,14 @@ describe("Mi turno como el tablero (T-174)", () => {
     expect(h).toMatch(/border-danger[^"]*"[^>]*>Cancelar turno/);
   });
 
+  it("REQ-004.8 una flecha 'Volver a <negocio>' lleva a la portada en cualquier estado del turno", () => {
+    for (const status of ["waiting", "called", "in_service", "cancelled"] as const) {
+      const h = render({ status, assignedBarberName: "Andrés", estimate: null });
+      const link = h.match(/<a[^>]*aria-label="Volver a Barbería La 33"[^>]*>/)?.[0];
+      expect(link, status).toContain('href="/la-33"');
+    }
+  });
+
   it("REQ-085.5 Mi turno muestra la foto del barbero en lugar de sus iniciales", () => {
     const path = "b1/barbers/a/0f0e0d0c-0b0a-4908-8706-050403020100.webp";
     const withPhoto = render({ preferredBarberPhoto: path });

@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
-import { SEED } from "./helpers";
+import { barberCard, openBarberStep, SEED } from "./helpers";
 
 /**
  * REQ-022.1. Mateo Londoño (+573002000005) tiene a Juan como preferido en el seed. El estado de
@@ -35,6 +35,7 @@ async function setup(status: "available" | "paused") {
   await admin.from("barbers").update({ status, present_day: today }).eq("id", juan!.id);
 }
 
+/** El cliente que vuelve (nombre y celular guardados en el navegador), en el paso 2 (REQ-088.5). */
 async function asReturningCustomer(page: Page) {
   await page.addInitScript(() => {
     localStorage.setItem(
@@ -42,9 +43,10 @@ async function asReturningCustomer(page: Page) {
       JSON.stringify({ name: "Mateo Londoño", phone: "+573002000005" }),
     );
   });
-  await page.goto(`/${SEED.slug}`);
-  await expect(page.getByLabel("Tu celular")).toHaveValue(/300 200 0005/);
+  await openBarberStep(page);
 }
+
+const anyBarber = (page: Page) => page.getByRole("radio", { name: /^El primero libre,/ });
 
 test.describe("REQ-022.1 barbero preferido preseleccionado", () => {
   test.afterAll(async () => {
@@ -54,14 +56,13 @@ test.describe("REQ-022.1 barbero preferido preseleccionado", () => {
   test("REQ-022.1 el cliente que vuelve ve a su barbero preseleccionado", async ({ page }) => {
     await setup("available");
     await asReturningCustomer(page);
-    await expect(page.getByRole("radio", { name: /^Juan/ })).toHaveAttribute(
-      "aria-checked",
-      "true",
-    );
-    await expect(page.getByRole("radio", { name: "El primero libre" })).toHaveAttribute(
-      "aria-checked",
-      "false",
-    );
+    await expect(barberCard(page, "Juan")).toHaveAttribute("aria-checked", "true", {
+      timeout: 10_000,
+    });
+    await expect(anyBarber(page)).toHaveAttribute("aria-checked", "false");
+    // Su celular sale ya escrito en "Tus datos"
+    await barberCard(page, "Juan").click();
+    await expect(page.getByLabel("Tu celular")).toHaveValue(/300 200 0005/);
   });
 
   test("REQ-022.1 si su barbero está en pausa, queda 'El primero libre'", async ({ page }) => {
@@ -69,22 +70,14 @@ test.describe("REQ-022.1 barbero preferido preseleccionado", () => {
     await asReturningCustomer(page);
     // Esperar a que la consulta del preferido termine sin cambiar la selección
     await page.waitForLoadState("networkidle");
-    await expect(page.getByRole("radio", { name: "El primero libre" })).toHaveAttribute(
-      "aria-checked",
-      "true",
-    );
-    await expect(page.getByRole("radio", { name: /^Juan/ })).toHaveAttribute(
-      "aria-checked",
-      "false",
-    );
+    await expect(anyBarber(page)).toHaveAttribute("aria-checked", "true");
+    await expect(barberCard(page, "Juan")).toHaveAttribute("aria-checked", "false");
   });
 
   test("REQ-022.1 un cliente nuevo no tiene preseleccionado a nadie", async ({ page }) => {
     await setup("available");
-    await page.goto(`/${SEED.slug}`);
-    await expect(page.getByRole("radio", { name: "El primero libre" })).toHaveAttribute(
-      "aria-checked",
-      "true",
-    );
+    await openBarberStep(page);
+    await page.waitForLoadState("networkidle");
+    await expect(anyBarber(page)).toHaveAttribute("aria-checked", "true");
   });
 });

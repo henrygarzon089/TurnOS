@@ -51,7 +51,11 @@ export function MyAppointment({
 
   return (
     <div className="flex flex-1 flex-col">
-      <PublicHeader name={a.business.name} />
+      <PublicHeader
+        name={a.business.name}
+        // REQ-051.7: siempre hay cómo volver a la portada; volver no cancela la cita
+        back={{ href: `/${a.business.slug}`, label: `Volver a ${a.business.name}` }}
+      />
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col pb-40">
         {alreadyHad && pendingAppt && (
           <p
