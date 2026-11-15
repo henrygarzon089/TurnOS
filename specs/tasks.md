@@ -2940,7 +2940,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ## Hito 22 — Harness de los agentes (REQ-092…095, ADR-066)
 
-> **Propuesta**, espera aprobación. Orden: T-250 → T-251 → T-252 → T-253 → T-254 y T-255
+> Aprobada por Henry el 2026-11-15. Orden: T-250 → T-251 → T-252 → T-253 → T-254 y T-255
 > (independientes) → T-256.
 
 ### [ ] T-250 · Guardias de la terminal

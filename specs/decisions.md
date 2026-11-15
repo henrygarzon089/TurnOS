@@ -1174,7 +1174,7 @@
   reservar cambian de selectores. El barbero tiene su primer formulario para subir una foto propia.
 
 ## ADR-066 · Hito 22: harness de los agentes
-- Estado: **propuesta** (2026-11-15)
+- Estado: **aceptada** (Henry, 2026-11-15: "Aprobada, constrúyela")
 - Contexto: el método SDD y las reglas de seguridad y git viven como texto en `CLAUDE.md`; el
   harness de Claude Code es una lista de permisos en `.claude/settings.json` (deny de `.env` con
   la herramienta de lectura, `git add -A`, `rm -rf`, force push). Se han repetido choques de

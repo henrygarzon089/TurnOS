@@ -39,6 +39,7 @@ const HITOS: Record<string, [number, number][]> = {
   "18": [[82, 83]], // cobro y pantallas sin módulos apagados (ADR-060)
   "19": [[84, 84]], // Citas encendido en modo esencial (ADR-062)
   "20": [[85, 90]], // cliente con fotos y paso a paso (ADR-063)
+  "22": [[92, 95]], // harness de los agentes (ADR-066); el 21 (marca) está en otra rama
 };
 
 const req = readFileSync("specs/requirements.md", "utf8");

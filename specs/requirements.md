@@ -1943,7 +1943,7 @@ televisor, las pantallas del personal salvo los formularios para subir fotos.
 
 ## Hito 22 — Harness de los agentes (ADR-066)
 
-> **Propuesta**, espera aprobación de Henry. No cambia la app ni la base de datos: son reglas y
+> Aprobada por Henry el 2026-11-15. No cambia la app ni la base de datos: son reglas y
 > herramientas para los agentes que construyen TurnOS (Claude Code). Hoy el método vive solo como
 > texto en `CLAUDE.md` y el harness es una lista de permisos; aquí se vuelve verificable.
 > Numeración: REQ-091/ADR-065/T-240…245 son de la marca (Hito 21) y ADR-064/T-230 del PR de

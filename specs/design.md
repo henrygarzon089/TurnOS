@@ -3275,7 +3275,7 @@ con bloques de borde izquierdo azul (verde si llegó) y "No trabaja" en gris; Aj
 
 ## 28. Hito 22 — Harness de los agentes (REQ-092…095, ADR-066)
 
-> Propuesta. Sin migraciones ni cambios a la app.
+> Aprobada (ADR-066, 2026-11-15). Sin migraciones ni cambios a la app.
 
 ### 28.1 Archivos
 
