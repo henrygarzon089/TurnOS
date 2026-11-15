@@ -3077,7 +3077,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ## Hito 23 — Descripción de los servicios y del negocio (REQ-096, REQ-097, ADR-070)
 
-> **PROPUESTA** (2026-11-15), espera la aprobación de Henry. Orden: T-260 → T-261, T-262 y
+> Aprobada por Henry el 2026-11-15 ("Si dale"). Orden: T-260 → T-261, T-262 y
 > T-263 (independientes) → T-264. La migración 0076 la aplica Henry en producción antes del deploy.
 
 ### [ ] T-260 · Columnas `description` y función pública

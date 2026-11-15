@@ -2083,7 +2083,7 @@ máquina de Federico más allá de lo que trae el repo.
 
 ## Hito 23 — Descripción de los servicios y del negocio (ADR-070)
 
-> Estado: **PROPUESTA** (2026-11-15), espera la aprobación de Henry. Henry: "se tiene que agregar
+> Estado: **APROBADA** (Henry, 2026-11-15: "Si dale"; PA-H23-1…5 con la propuesta). Henry: "se tiene que agregar
 > una descripción a cada servicio que se debe mostrar cuando se va a elegir"; después sumó una
 > descripción del negocio en la portada (REQ-097). Reabre solo la descripción de lo que ADR-064
 > dejó fuera; las categorías y escoger varios servicios siguen fuera.

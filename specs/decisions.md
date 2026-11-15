@@ -1238,7 +1238,8 @@
   Los hooks corren con permisos del usuario: son código del repo y se revisan como tal.
 
 ## ADR-070 · Hito 23: descripción de los servicios y del negocio
-- Estado: **propuesta** (2026-11-15), espera la aprobación de Henry.
+- Estado: **aceptada** (Henry, 2026-11-15: "Si dale", con PA-H23-1…5 según la propuesta: 140 y
+  200 caracteres, solo en la tarjeta y en la portada, Henry escribe las descripciones).
 - Contexto: ADR-064 copió de Fresha solo el aspecto de la tarjeta de servicio y dejó fuera, a
   propósito, las categorías, la descripción y escoger varios servicios: las dos primeras
   necesitaban columnas nuevas y que el dueño las llenara. Henry pide ahora la descripción: "se
