@@ -817,6 +817,19 @@ Pendientes (H3): `/admin/caja`,
 - Numeración: ADR-064 (Fresha) y ADR-065/REQ-091/T-240…245 (marca) están en ramas sin fusionar;
   por eso este hito empieza en ADR-066, REQ-092 y T-250.
 
+### Hito 23 — descripción de los servicios y del negocio (aprobado 2026-11-16, REQ-096…097, ADR-070, ADR-071)
+
+- Pedido de Henry: "se tiene que agregar una descripción a cada servicio que se debe mostrar
+  cuando se va a elegir"; después sumó la del negocio en la portada. Reabre solo la descripción de
+  lo que ADR-064 dejó fuera; las categorías y escoger varios servicios siguen fuera.
+- Migración `0076_descriptions.sql`: `services.description` (1–140) y `businesses.description`
+  (1–200), sin vacías ni solo espacios; `get_public_business` las devuelve. En producción.
+- T-260…T-263 (PR #199): `normalizeDescription`, `DescriptionField` con contador en "Servicios" y
+  "Negocio", `ServiceCard` (tomar turno y reservar) y `PublicHero` (solo la portada, no en los
+  pasos). Corrección del CI: `getPublicBusiness` no pasaba la descripción del negocio.
+- T-264 (2026-11-16): Henry probó con `docs/guia-prueba-hito-23.md` y aprobó (ADR-071).
+- Gamma Club: Henry escribe las descripciones definitivas desde el celular.
+
 ## Desvíos registrados respecto a la spec (todos explícitos)
 
 - Next.js 16: `middleware.ts` → `src/proxy.ts`; `cacheComponents` desactivado.

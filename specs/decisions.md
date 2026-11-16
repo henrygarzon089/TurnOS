@@ -1290,3 +1290,14 @@
   con descripción son más altas (hasta ≈ 3 líneas en 360 px). Mientras el dueño no escriba
   descripciones, la app se ve igual que hoy. La portada con descripción empuja un poco hacia abajo
   "Tomar turno"; Lighthouse del CI sigue vigilando la portada (REQ-090.1).
+
+## ADR-071 · Aprobación del Hito 23 (descripción de los servicios y del negocio)
+- Estado: **aceptada** (Henry, 2026-11-16)
+- Contexto: REQ-096 y REQ-097 construidos (T-260…T-263) y fusionados en `main` con el PR #199 (CI
+  en verde, E2E incluidas). La migración 0076 se aplicó en producción y `88e142e` se desplegó en
+  https://www.gammaclub.co. `pnpm trace --hito=23` sin huecos. Henry siguió
+  `docs/guia-prueba-hito-23.md` desde el celular.
+- Decisión: Henry aprueba el Hito 23 ("Hito 23 aprobado", 2026-11-16). T-264 cerrada.
+- Consecuencias: el dueño escribe desde "Servicios" y "Negocio" las descripciones que ve el
+  cliente; sin descripción, las pantallas se ven como antes. Las categorías y escoger varios
+  servicios siguen fuera (ADR-064, ADR-070).
