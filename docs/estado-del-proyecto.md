@@ -817,6 +817,21 @@ Pendientes (H3): `/admin/caja`,
 - Numeración: ADR-064 (Fresha) y ADR-065/REQ-091/T-240…245 (marca) están en ramas sin fusionar;
   por eso este hito empieza en ADR-066, REQ-092 y T-250.
 
+### Hito 23 — descripción de los servicios y del negocio (en producción, REQ-096…097, ADR-070)
+
+- Henry pidió (2026-11-15) una descripción en cada servicio al elegirlo y otra del negocio en la
+  portada. ADR-070 reabre solo la descripción de lo que ADR-064 dejó fuera; sin categorías.
+- T-260…T-263 hechas (PR #199, fusionado en `main` `88e142e`, CI 7/7 en verde): migración 0076
+  (`services.description` ≤ 140 y `businesses.description` ≤ 200, opcionales;
+  `get_public_business` las devuelve), "Servicios" y "Negocio" con contador, `ServiceCard` al
+  tomar turno y reservar, y `PublicHero` en la portada. Las E2E encontraron que
+  `getPublicBusiness` no pasaba la descripción del negocio; corregido con prueba.
+- 2026-11-16: 0076 aplicada en producción y `88e142e` desplegado en https://www.gammaclub.co a
+  pedido de Henry, que estaba solo con el celular (`supabase db push` y `vercel --prod` desde
+  `turnOS-prod`). Portada y `?paso=servicio` responden 200.
+- Falta (Henry), T-264: escribir las descripciones en Gamma Club y seguir
+  `docs/guia-prueba-hito-23.md` desde el paso 2; aprobar.
+
 ## Desvíos registrados respecto a la spec (todos explícitos)
 
 - Next.js 16: `middleware.ts` → `src/proxy.ts`; `cacheComponents` desactivado.
