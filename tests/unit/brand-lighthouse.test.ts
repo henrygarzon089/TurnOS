@@ -23,3 +23,14 @@ describe("REQ-091.11 Lighthouse con la marca nueva", () => {
     expect(ci).toMatch(/lhci|lighthouse/i);
   });
 });
+
+describe("REQ-101.10 Lighthouse de la web", () => {
+  const script = readFileSync("scripts/lighthouse.ts", "utf8");
+
+  it("REQ-101.10 el CI mide la web `/` en móvil con SEO ≥ 90, además de rendimiento y accesibilidad", () => {
+    expect(rc.ci.collect.url.some((u: string) => /:\d+\/$/.test(u))).toBe(true);
+    expect(script).toContain('run(`${BASE}/`, "web", undefined, true)');
+    expect(script).toMatch(/seo: 0\.9/);
+    expect(ci).toContain("TURNOS_HOME_SLUG=la-33");
+  });
+});

@@ -79,6 +79,8 @@ jobs:
             echo "E2E_BASE_URL=http://localhost:3000"
             echo "DESIGN_SHOWCASE=1" # /diseno en el build de producción del CI (ui-components.spec)
             echo "TURNOS_MODULES=todos" # REQ-079.8: módulos apagados encendidos (build y servidor)
+            echo "TURNOS_HOME_SLUG=la-33" # REQ-101.1: la web de la portada con el seed
+            echo "TURNOS_WEB_ANALYTICS=off" # REQ-101.8: sin analítica en el CI
           } >> "$GITHUB_ENV"
       - run: pnpm build
       - name: Servidor de producción
@@ -139,6 +141,8 @@ jobs:
             echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY"
             echo "NEXT_PUBLIC_APP_URL=http://localhost:3100"
             echo "TURNOS_MODULES=todos" # REQ-079.8: Lighthouse mide con todo encendido (build y servidor)
+            echo "TURNOS_HOME_SLUG=la-33" # REQ-101.10: Lighthouse mide la web de la portada
+            echo "TURNOS_WEB_ANALYTICS=off"
           } >> "$GITHUB_ENV"
       - run: pnpm build
       - name: Servidor de producción
