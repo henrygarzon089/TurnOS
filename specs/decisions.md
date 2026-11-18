@@ -1301,3 +1301,24 @@
 - Consecuencias: el dueño escribe desde "Servicios" y "Negocio" las descripciones que ve el
   cliente; sin descripción, las pantallas se ven como antes. Las categorías y escoger varios
   servicios siguen fuera (ADR-064, ADR-070).
+
+## ADR-072 · Hito 24: descripción de los productos del menú
+- Estado: **aceptada** (Henry, 2026-11-17: "Sí, constrúyelo", con PA-H24-1…3 según la propuesta:
+  140 caracteres, solo en el menú, Henry escribe las descripciones).
+- Contexto: el Hito 23 (ADR-070) agregó la descripción de los servicios y del negocio y dejó fuera
+  la de los productos de la vitrina. Henry quiere subir a la web la descripción de cada producto
+  (helados, bebidas, ceras, aceites…), que hoy el menú muestra solo con foto, nombre y precio
+  (REQ-038.2).
+- Decisión: (1) Columna `products.description text null` con un `check` de 1 a 140 caracteres
+  sin contar espacios de los bordes (migración 0077), igual que `services.description`.
+  (2) Se reusan `normalizeDescription` y `DescriptionField` del Hito 23; `parseProductForm` la
+  valida y `saveProduct` la guarda. (3) `get_public_business` la devuelve en `products[]` (no en
+  `courtesies[]`). (4) `MenuList` la pinta debajo del nombre; la usan la portada ("Ver menú") y
+  "Mi turno" ("Ver menú del local"). (5) RLS sin cambios.
+- Alternativas: (a) un largo distinto (200 como el negocio): una regla más que recordar y filas
+  del menú muy altas. (b) Mostrarla también en la cortesía: el paso de tomar turno se alarga para
+  algo gratis que se escoge con un toque. (c) Una hoja de detalle por producto: otro toque para
+  algo que se compra en el local.
+- Consecuencias: una migración pequeña (una columna y `get_public_business` copiada de 0076 con
+  un campo más); Henry la aplica en producción antes del deploy. Sin descripciones, el menú se ve
+  como hoy.

@@ -2155,6 +2155,48 @@ Fuera de alcance del Hito 23: categorías de servicios, escoger varios servicios
 descripción en otros idiomas o con formato (negrita, listas, emojis especiales), descripción de
 productos de la vitrina y descripción del negocio en otras pantallas (pasos, televisor, "Mi turno").
 
+## Hito 24 — Descripción de los productos del menú (ADR-072)
+
+> Estado: **APROBADA** (Henry, 2026-11-17: "Sí, constrúyelo"; PA-H24-1…3 con la propuesta). Henry pidió subir a la web la
+> descripción de la barbería y de cada producto; el Hito 23 dejó fuera, a propósito, la descripción
+> de los productos de la vitrina. Este hito la agrega con la misma forma que REQ-096.
+
+### REQ-098 · Descripción de los productos en el menú — S
+**Como** dueño, **quiero** escribir una descripción corta de cada producto, **para** que el
+cliente sepa qué es antes de pedirlo en el local (por ejemplo, "Cera mate de fijación fuerte, para
+peinados con textura y sin brillo").
+
+- REQ-098.1 En la hoja de crear y de editar producto (pantalla "Productos"), el dueño DEBE poder
+  escribir, cambiar y borrar una **Descripción** en un campo de varias líneas, debajo de nombre y
+  precio, con la ayuda "Opcional. La ve el cliente en el menú." y un contador "N/140".
+- REQ-098.2 La descripción DEBE ser opcional y limpiarse igual que la del servicio (REQ-096.2).
+  Cuando pase de **140 caracteres**, el sistema NO DEBE guardar el producto y DEBE mostrar "La
+  descripción puede tener hasta 140 letras."; la base de datos DEBE rechazar también una vacía, de
+  solo espacios o de más de 140 aunque no venga de la app (NFR-010).
+- REQ-098.3 Cuando un producto a la venta tenga descripción, "Lo que vendemos" (REQ-038.2), en la
+  hoja "Ver menú" de la portada y en "Ver menú del local" de "Mi turno", DEBE mostrarla completa,
+  en texto secundario (`text-muted`, 14 px), debajo del nombre y en la misma fila del precio.
+- REQ-098.4 Cuando un producto no tenga descripción, su fila del menú DEBE verse igual que hoy, sin
+  espacio vacío ni texto de relleno.
+- REQ-098.5 Un lector de pantalla DEBE leer el nombre del producto, después la descripción y
+  después el precio.
+- REQ-098.6 Todos los textos nuevos DEBEN estar en español colombiano (NFR-006, `pnpm lint:texts`).
+
+Preguntas del Hito 24:
+- **PA-H24-1**: ¿cuál es el largo máximo? Propuesta: **140 caracteres**, igual que los servicios
+  (PA-H23-1): unas 3 líneas en 360 px y una sola regla para el dueño.
+- **PA-H24-2**: ¿la descripción se ve también en la "Bebida de cortesía" al tomar turno, en la
+  vitrina de "Nueva venta" de la caja o en "Mi estación"? Propuesta: **no**; solo en el menú, que
+  es donde el cliente mira qué venden. La cortesía se escoge con un toque y la caja la usa el
+  personal, que ya conoce los productos.
+- **PA-H24-3**: ¿quién escribe las descripciones de Gamma Club? Propuesta: **Henry** desde
+  "Productos" cuando esté en producción (o el agente le prepara los textos); vacías, el menú se ve
+  igual que hoy (REQ-098.4).
+
+Fuera de alcance del Hito 24: descripción en la cortesía, en la caja o en el inventario; "Ver más";
+descripción con formato o en otros idiomas; vender o reservar productos por la web (REQ-038.2:
+se compran en el local).
+
 ---
 
 ## 6. Requisitos no funcionales

@@ -1,3 +1,4 @@
+import { normalizeDescription, PRODUCT_DESCRIPTION_MAX } from "@/lib/domain/description";
 import { parseCOP } from "@/lib/domain/money";
 import { isProductPhotoPath } from "@/lib/media/paths";
 
@@ -12,6 +13,8 @@ export type ProductFormInput = {
   commissionable?: boolean;
   /** REQ-065.3 categoría opcional de la vitrina. */
   category?: string;
+  /** REQ-098.1 descripción del menú; sin el campo en el formulario, no se toca. */
+  description?: string;
 };
 
 export type ProductRowInput = {
@@ -22,6 +25,8 @@ export type ProductRowInput = {
   photo_path: string | null;
   commissionable: boolean;
   category: string | null;
+  /** Solo si el formulario trae el campo (REQ-098.2). */
+  description?: string | null;
 };
 
 /**
@@ -46,6 +51,11 @@ export function parseProductForm(
   if (category && category.length > 30) {
     return { ok: false, error: "La categoría tiene máximo 30 letras." };
   }
+  const description =
+    form.description === undefined
+      ? undefined
+      : normalizeDescription(form.description, PRODUCT_DESCRIPTION_MAX);
+  if (description && !description.ok) return { ok: false, error: description.error };
   const photoPath = form.photoPath || null;
   if (photoPath && !isProductPhotoPath(businessId, photoPath)) {
     return { ok: false, error: "No se pudo guardar la foto. Vuelve a subirla." };
@@ -60,6 +70,7 @@ export function parseProductForm(
       photo_path: photoPath,
       commissionable: form.commissionable ?? false,
       category,
+      ...(description ? { description: description.value } : {}),
     },
   };
 }

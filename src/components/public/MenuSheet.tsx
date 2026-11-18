@@ -56,7 +56,15 @@ export function MenuList({ address, products }: MenuProps) {
                   className="size-12 shrink-0 rounded-sm object-cover"
                 />
               )}
-              <span className="min-w-0 flex-1 break-words">{p.name}</span>
+              <span className="min-w-0 flex-1 break-words">
+                {p.name}
+                {p.description && (
+                  // REQ-098.3/.5: debajo del nombre y antes del precio en el orden de lectura
+                  <span data-testid="product-description" className="text-muted block text-sm">
+                    {p.description}
+                  </span>
+                )}
+              </span>
               <span className="shrink-0 font-semibold tabular-nums">{formatCOP(p.price)}</span>
             </li>
           ))}

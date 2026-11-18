@@ -3480,3 +3480,47 @@ numerar. Máximo ~15 líneas.
   `?paso=servicio` al tomar turno y al reservar; al borrarla, la tarjeta vuelve a verse como antes.
   El dueño escribe la descripción del negocio en "Negocio" y sale en la portada, no en los pasos.
 - `pnpm lint:texts` y `pnpm lint:design` (REQ-096.7, REQ-097.5).
+
+## 30. Hito 24 — Descripción de los productos del menú (REQ-098, ADR-072)
+
+### 30.1 Datos (migración `0077_product_description.sql`)
+- `alter table products add column description text null` con
+  `constraint products_description_len check (description is null or
+  (char_length(btrim(description)) between 1 and 140 and char_length(description) <= 140))`,
+  la misma forma de §29.1. Sin valor por defecto: los productos que ya existen quedan sin
+  descripción.
+- RLS sin cambios: las políticas de `products` ya cubren la columna; `anon` sigue sin acceso
+  directo (ADR-009).
+- `get_public_business(p_slug)` se redefine copiando la versión de 0076 y agregando
+  `'description', p.description` solo en `products[]` (no en `courtesies[]`), con
+  `create or replace`: conserva `security definer`, `search_path` y los permisos de 0008.
+
+### 30.2 Validación y guardado
+- `ProductFormInput` suma `description?: string` y `ProductRowInput` suma
+  `description?: string | null`. `parseProductForm` la limpia con
+  `normalizeDescription(raw, PRODUCT_DESCRIPTION_MAX)` (constante nueva = 140 en
+  `src/lib/domain/description.ts`) y devuelve su error tal cual (REQ-098.2).
+- `saveProduct` lee `description` del formulario; si el campo no viene (otros formularios), no la
+  toca, igual que `upsertService` (§29.2).
+
+### 30.3 Tipos y pantallas
+- `ProductRow` (`ItemForms.tsx`) suma `description?: string | null`; `admin/productos/page.tsx` la
+  agrega al `select`.
+- `ProductForm` suma `DescriptionField` (etiqueta "Descripción", ayuda de REQ-098.1, `max` 140)
+  debajo de la fila nombre-precio; al guardar un producto nuevo, el campo se limpia como los demás.
+- `PublicBusiness.products[]` (`public-queue.ts`) suma `description?: string | null` (falta en
+  datos viejos = sin descripción).
+- `MenuList` (`MenuSheet.tsx`): el nombre pasa a un bloque
+  `<span className="min-w-0 flex-1 break-words">` con el nombre y, si hay descripción,
+  `<span data-testid="product-description" className="text-muted block text-sm">` debajo; el
+  precio sigue a la derecha. El orden del DOM (nombre → descripción → precio) da el de REQ-098.5.
+
+### 30.4 Pruebas
+- pgTAP `supabase/tests/0077_product_description.sql`: acepta null, 1 y 140 caracteres y rechaza
+  '', '   ' y 141 (REQ-098.2); `get_public_business` la devuelve en `products[]` (REQ-098.3).
+- Unitarias: `tests/unit/product-form.test.ts` suma limpieza, vacía y 140/141 (REQ-098.2);
+  `tests/unit/menu-list.test.tsx` con y sin descripción y el orden de lectura (REQ-098.3/.4/.5);
+  `ProductForm` con el campo y el contador (REQ-098.1).
+- E2E móvil: el dueño escribe la descripción de un producto en "Productos", el cliente la ve en
+  "Ver menú" de la portada; al borrarla, la fila vuelve a verse como antes.
+- `pnpm lint:texts` y `pnpm lint:design` (REQ-098.6).

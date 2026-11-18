@@ -15,7 +15,7 @@ import {
   upsertService,
   type FormState,
 } from "@/lib/actions/admin";
-import { SERVICE_DESCRIPTION_MAX } from "@/lib/domain/description";
+import { PRODUCT_DESCRIPTION_MAX, SERVICE_DESCRIPTION_MAX } from "@/lib/domain/description";
 import { formatCOP } from "@/lib/domain/money";
 import { mediaUrl, newProductPhotoPath } from "@/lib/media/paths";
 import { resizePhoto } from "@/lib/media/resize";
@@ -46,6 +46,8 @@ export type ProductRow = {
   photo_path: string | null;
   commissionable: boolean;
   category: string | null;
+  /** REQ-098.1 descripción que ve el cliente en el menú. */
+  description?: string | null;
 };
 
 /** Fila editable de servicio (REQ-015.1) con activar/desactivar (REQ-015.2). */
@@ -320,6 +322,12 @@ export function ProductForm({
           />
         </label>
       </div>
+      <DescriptionField
+        label="Descripción"
+        help="Opcional. La ve el cliente en el menú."
+        max={PRODUCT_DESCRIPTION_MAX}
+        defaultValue={product?.description ?? null}
+      />
       <label className="flex min-h-12 items-center gap-3 text-base">
         <input
           type="checkbox"
