@@ -27,7 +27,7 @@ comisión, venta de helados y bebidas). Dueño del producto: Henry Garzón.
 Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 …'`.
 `scripts/traceability.ts` las encuentra así. `--hito=N` falla si falta alguna.
 
-## Estado actual (2026-11-15)
+## Estado actual (2026-11-18)
 
 - **Hitos 19, 20 y 21 aprobados** por Henry (2026-11-15): Citas encendido en modo esencial
   (REQ-084, ADR-067), cliente con fotos y paso a paso (REQ-085…090, migraciones 0074–0075,
@@ -40,6 +40,7 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
   0077 en producción.
 - **Hito 25 ("Mi agenda" del barbero, REQ-099, ADR-073)** aprobado (ADR-075, 2026-11-18): el
   barbero ve en "Agenda" sus citas de hoy a +7, solo de lectura; migración 0078 en producción.
+  Textos "Perdió la hora" y "No recibes citas" (PR #207, en producción).
 - **Hito 22 (harness de los agentes, REQ-092…095, ADR-066)**: T-250…T-255 hechas (2026-11-15),
   sin migraciones ni cambios a la app; falta T-256 (Henry prueba el harness y aprueba). Ver
   "Harness de los agentes" abajo.
