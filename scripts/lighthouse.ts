@@ -4,7 +4,7 @@
  *   pnpm build && pnpm start -p 3100          # en otra terminal
  *   LH_BASE_URL=http://localhost:3100 pnpm lighthouse
  *
- * Mide /[slug], /t/[token], /app/fila (barbero) y /admin/caja (dueño, T-049) y falla si
+ * Mide / (la web, REQ-101.10: además SEO ≥ 90), /[slug], /t/[token], /app/fila (barbero) y /admin/caja (dueño, T-049) y falla si
  * rendimiento < 80 o accesibilidad < 90. Crea un turno con service_role para /t/[token] y lo
  * cancela al final.
  */
@@ -16,7 +16,7 @@ import { chromium } from "@playwright/test";
 if (existsSync(".env.local")) process.loadEnvFile(".env.local");
 const BASE = process.env.LH_BASE_URL ?? "http://localhost:3100";
 const SLUG = process.env.LH_SLUG ?? "la-33";
-const MIN = { performance: 0.8, accessibility: 0.9 };
+const MIN = { performance: 0.8, accessibility: 0.9, seo: 0.9 };
 
 async function ticketToken(): Promise<string> {
   const db = createClient(
@@ -67,15 +67,22 @@ async function staffCookie(who: "barber" | "owner"): Promise<string> {
   return cookies.map((c) => `${c.name}=${c.value}`).join("; ");
 }
 
-type Result = { url: string; performance: number; accessibility: number; lcpMs: number };
+type Result = {
+  url: string;
+  performance: number;
+  accessibility: number;
+  /** Solo en la web (REQ-101.10); null en las demás. */
+  seo: number | null;
+  lcpMs: number;
+};
 
-function run(url: string, name: string, headers?: Record<string, string>): Result {
+function run(url: string, name: string, headers?: Record<string, string>, seo = false): Result {
   mkdirSync(".lighthouse", { recursive: true });
   const out = `.lighthouse/${name}.json`;
   const args = [
     url,
     "--quiet",
-    "--only-categories=performance,accessibility",
+    `--only-categories=performance,accessibility${seo ? ",seo" : ""}`,
     "--form-factor=mobile",
     "--throttling-method=simulate",
     "--chrome-flags=--headless=new --no-sandbox",
@@ -93,6 +100,7 @@ function run(url: string, name: string, headers?: Record<string, string>): Resul
     url,
     performance: r.categories.performance.score,
     accessibility: r.categories.accessibility.score,
+    seo: seo ? r.categories.seo.score : null,
     lcpMs: Math.round(r.audits["largest-contentful-paint"].numericValue),
   };
 }
@@ -101,6 +109,7 @@ const token = await ticketToken();
 const barber = await staffCookie("barber");
 const owner = await staffCookie("owner");
 const results = [
+  run(`${BASE}/`, "web", undefined, true), // REQ-101.10
   run(`${BASE}/${SLUG}`, "portada"),
   run(`${BASE}/t/${token}`, "mi-turno"),
   run(`${BASE}/app/fila`, "mi-fila", { Cookie: barber }),
@@ -113,11 +122,16 @@ await createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_S
 
 let ok = true;
 for (const r of results) {
-  const pass = r.performance >= MIN.performance && r.accessibility >= MIN.accessibility;
+  const pass =
+    r.performance >= MIN.performance &&
+    r.accessibility >= MIN.accessibility &&
+    (r.seo === null || r.seo >= MIN.seo);
   ok &&= pass;
   console.log(
     `${pass ? "✓" : "✗"} ${r.url.replace(BASE, "")}  rendimiento ${Math.round(r.performance * 100)}` +
-      ` · accesibilidad ${Math.round(r.accessibility * 100)} · LCP ${(r.lcpMs / 1000).toFixed(1)} s`,
+      ` · accesibilidad ${Math.round(r.accessibility * 100)}` +
+      (r.seo === null ? "" : ` · SEO ${Math.round(r.seo * 100)}`) +
+      ` · LCP ${(r.lcpMs / 1000).toFixed(1)} s`,
   );
 }
 process.exit(ok ? 0 : 1);

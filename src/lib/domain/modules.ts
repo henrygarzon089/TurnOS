@@ -62,6 +62,14 @@ const EVERYTHING: ReadonlySet<ModuleId> = new Set<ModuleId>(ALL_MODULES);
 /** Página pública del único negocio (REQ-080.2, design §23.5). */
 export const HOME_SLUG = "gamma-club";
 
+/**
+ * Negocio que muestra la web de la portada (REQ-101.1, ADR-077). `TURNOS_HOME_SLUG` lo cambia para
+ * que el CI pruebe la web con La 33; vacío o sin la variable, Gamma Club.
+ */
+export function homeSlug(env: string | undefined = process.env.TURNOS_HOME_SLUG): string {
+  return env?.trim() || HOME_SLUG;
+}
+
 function isAll(env: string | undefined): boolean {
   return env?.trim().toLowerCase() === "todos";
 }
@@ -95,8 +103,8 @@ export function isEssentialMode(env: string | undefined = process.env.TURNOS_MOD
 }
 
 /**
- * Rutas que no pertenecen a ningún módulo y no se apagan nunca: `/` (la portada, que en modo
- * esencial redirige a `HOME_SLUG` por su cuenta, REQ-080.2), `/entrar` (el ingreso del personal) y
+ * Rutas que no pertenecen a ningún módulo y no se apagan nunca: `/` (la portada con la web del
+ * negocio, REQ-101.1), `/entrar` (el ingreso del personal) y
  * `/diseno` (galería interna de componentes, solo con `DESIGN_SHOWCASE`). Devuelven `null` a
  * propósito; la prueba de las `page.tsx` las acepta solo si están aquí.
  */

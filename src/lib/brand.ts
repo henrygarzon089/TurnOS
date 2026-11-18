@@ -12,3 +12,13 @@ export function publicTitle(businessName: string, screen: string): string {
   const same = businessName.trim().toLowerCase() === BRAND_NAME.toLowerCase();
   return same ? screen : `${businessName} · ${screen}`;
 }
+
+/**
+ * Datos de la web de Gamma Club que no están en la base (REQ-101, PA-H27-1). La dirección, el
+ * horario, los servicios y las fotos salen de la base (REQ-101.4).
+ */
+export const SITE_URL = "https://www.gammaclub.co";
+export const SITE_TAGLINE = "Cuidado personal premium en San Remo, Sabaneta";
+export const INSTAGRAM_URL = "https://www.instagram.com/urusbarbershop.col/";
+/** WhatsApp del local en E.164 (Henry, 2026-11-18). null: la web no muestra el botón de WhatsApp. */
+export const SHOP_WHATSAPP_E164: string | null = "+573116959879";

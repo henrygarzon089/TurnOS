@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { SiteAnalytics } from "@/components/site/SiteAnalytics";
 import { ServiceWorker } from "@/components/ui/ServiceWorker";
 import { VitalsReporter } from "@/components/ui/VitalsReporter";
 import { BRAND_NAME } from "@/lib/brand";
@@ -31,6 +32,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {children}
         <ServiceWorker />
         <VitalsReporter />
+        {/* REQ-101.8: visitas de la web; TURNOS_WEB_ANALYTICS=off la apaga */}
+        {process.env.TURNOS_WEB_ANALYTICS !== "off" && <SiteAnalytics />}
       </body>
     </html>
   );

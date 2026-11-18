@@ -2,7 +2,11 @@
   "ci": {
     "collect": {
       "startServerCommand": "pnpm start",
-      "url": ["http://localhost:3000/la-33", "http://localhost:3000/entrar"],
+      "url": [
+        "http://localhost:3000/",
+        "http://localhost:3000/la-33",
+        "http://localhost:3000/entrar"
+      ],
       "settings": { "preset": "mobile" },
       "numberOfRuns": 1
     },

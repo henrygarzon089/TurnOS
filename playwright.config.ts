@@ -40,6 +40,11 @@ export default defineConfig({
         timeout: 120_000,
         // REQ-043.4: el aviso automático corre con el canal falso (cloud-api.ts)
         // REQ-079.8: los módulos apagados corren encendidos en las pruebas
-        env: { WHATSAPP_FAKE_CHANNEL: "1", TURNOS_MODULES: "todos" },
+        env: {
+          WHATSAPP_FAKE_CHANNEL: "1",
+          TURNOS_MODULES: "todos",
+          TURNOS_HOME_SLUG: "la-33", // REQ-101.1
+          TURNOS_WEB_ANALYTICS: "off",
+        },
       },
 });

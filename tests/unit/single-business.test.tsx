@@ -16,6 +16,8 @@ vi.mock("@/lib/actions/auth", () => ({ signInBarber: vi.fn(), signInOwner: vi.fn
 vi.mock("@/lib/supabase/admin", () => ({
   createSupabaseAdminClient: () => ({ auth: { admin: { createUser: m.createUser } } }),
 }));
+const site = vi.hoisted(() => ({ getSiteHome: vi.fn() }));
+vi.mock("@/lib/actions/site", () => ({ getSiteHome: site.getSiteHome }));
 vi.mock("@/lib/supabase/server", () => ({
   createSupabaseServerClient: async () => ({ auth: { getUser: m.getUser }, rpc: m.rpc }),
 }));
@@ -64,15 +66,20 @@ describe("un solo negocio (REQ-080)", () => {
     expect(m.rpc).toHaveBeenCalledWith("create_business", expect.anything());
   });
 
-  it("REQ-080.2 la portada en modo esencial redirige al negocio único", () => {
+  // REQ-101.1 cambia REQ-080.2: la portada ya no redirige, muestra la web del negocio
+  it("REQ-101.1 la portada no redirige y pide la web del negocio de HOME_SLUG", async () => {
     vi.stubEnv("TURNOS_MODULES", "");
-    expect(() => HomePage()).toThrow(`NEXT_REDIRECT /${HOME_SLUG}`);
+    site.getSiteHome.mockResolvedValue(null);
+    await HomePage();
+    expect(redirect).not.toHaveBeenCalled();
+    expect(site.getSiteHome).toHaveBeenCalledWith(HOME_SLUG);
   });
 
-  it("REQ-080.2 con todos los módulos la portada de hoy se muestra", () => {
+  it("REQ-101.1 si el negocio no existe se muestra la portada genérica", async () => {
     vi.stubEnv("TURNOS_MODULES", "todos");
-    const out = renderToStaticMarkup(HomePage() as React.ReactElement);
+    site.getSiteHome.mockResolvedValue(null);
+    const out = renderToStaticMarkup((await HomePage()) as React.ReactElement);
     expect(out).toContain("TurnOS");
-    expect(redirect).not.toHaveBeenCalled();
+    expect(out).toContain('href="/entrar"');
   });
 });
