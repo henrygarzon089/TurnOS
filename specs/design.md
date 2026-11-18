@@ -3580,7 +3580,9 @@ numerar. Máximo ~15 líneas.
 ## 33. Hito 27 — Web de Gamma Club (REQ-101, ADR-077)
 
 ### 33.1 Datos
-- Sin migraciones ni tablas nuevas. Fuentes: `getPublicBusiness(homeSlug())` (nombre, dirección,
+- Sin tablas nuevas. Corrección al construir (T-300): migración `0080_public_site.sql` con
+  `get_public_site(p_slug) returns jsonb` (`reviewUrl`, `hours`, `loyalty` o null, `team`), `stable
+  security definer`, solo `service_role`. Las lecturas de abajo son esa función. Fuentes: `getPublicBusiness(homeSlug())` (nombre, dirección,
   descripción, logo, portada, servicios con foto/descripción, productos, barberos con foto, abierto,
   `closesAt`, `nextOpening`, `waitingCount`), `getAppointmentInfo` (¿se puede reservar?), el horario
   de la semana (`business_hours`, lectura nueva en el gateway público si `getPublicBusiness` no lo
@@ -3603,7 +3605,7 @@ numerar. Máximo ~15 líneas.
 - `redactAnalyticsUrl(url)`: reutiliza `redactVitalsUrl` (tokens de `/t/`, `/c/`, `/regalo/`).
 
 ### 33.3 Rutas y componentes
-- `src/app/page.tsx`: `export const revalidate = 300`; si no hay negocio → portada genérica de hoy
+- `src/app/page.tsx`: `force-dynamic` (corrección de T-301: con ISR el build leería la base); si no hay negocio → portada genérica de hoy
   (REQ-101.1). Si hay → `<SiteHome>` server component con secciones en
   `src/components/site/` (`SiteHeader`, `Hero`, `Services`, `HowItWorks`, `Team`, `Loyalty`,
   `Menu`, `HoursLocation`, `Contact`, `SiteFooter`, `StickyCta`). `OpenNow` es componente cliente
@@ -3616,9 +3618,9 @@ numerar. Máximo ~15 líneas.
 - `src/app/sitemap.ts` (`/` y `/<slug>`), `src/app/robots.ts` (disallow `/admin`, `/app`,
   `/entrar`, `/t/`, `/c/`, `/regalo/`), `generateMetadata` en `page.tsx` con `alternates.canonical`,
   `openGraph.images` = portada; JSON-LD en `<script type="application/ld+json">`.
-- Analítica: `<SiteAnalytics>` (cliente) con `@vercel/analytics/next` y `beforeSend` →
-  `redactAnalyticsUrl`; se monta en `page.tsx` y en el `layout.tsx` de `(public)/[slug]`, nunca en
-  `(staff)`; no se monta si `TURNOS_WEB_ANALYTICS=off`.
+- Analítica: `<SiteAnalytics>` (cliente) con `@vercel/analytics/next`, montado en el layout raíz
+  (corrección de T-303); `beforeSend` = `shouldTrackPath` (solo `/` y `/<slug>…`, nunca personal ni
+  rutas con token) + `redactVitalsUrl`; no se monta si `TURNOS_WEB_ANALYTICS=off`.
 - `modules.ts`: `/` sigue en `UNGATED_PATHS`; se borra la redirección de REQ-080.2 y su prueba
   cambia a REQ-101.1.
 

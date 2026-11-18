@@ -44,6 +44,7 @@ const HITOS: Record<string, [number, number][]> = {
   "23": [[96, 97]], // descripción de los servicios y del negocio (ADR-070)
   "24": [[98, 98]], // descripción de los productos del menú (ADR-072)
   "25": [[99, 99]], // Mi agenda del barbero (ADR-073)
+  "27": [[101, 101]], // web de Gamma Club en gammaclub.co (ADR-077); el 26 es Fresha, en paralelo
 };
 
 const req = readFileSync("specs/requirements.md", "utf8");

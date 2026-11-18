@@ -3225,26 +3225,48 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 ## Hito 27 — Web de Gamma Club en gammaclub.co (REQ-101, ADR-077)
 
 > Aprobada por Henry el 2026-11-18 ("Aprobada, constrúyela"). Orden: T-300 → T-301 → T-302 → T-303 →
-> T-304. Sin migraciones.
+> T-304. Al construir hizo falta una migración de solo lectura, `0080_public_site.sql` (ver T-300);
+> Henry la aplica en producción antes del deploy.
 
-### [ ] T-300 · Datos y lógica de la web
+### [x] T-300 · Datos y lógica de la web
 - REQ: REQ-101.1, REQ-101.4, REQ-101.6, REQ-101.7 · `homeSlug()`, lecturas públicas de horario y
   fidelidad, `domain/site.ts` con sus pruebas (design §33.1–33.2).
 - Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-18. Desvío: la propuesta decía "sin migraciones", pero el gateway público solo
+  llama funciones SQL (ADR-009) y ninguna traía el horario de la semana, la fidelidad ni el equipo.
+  Migración `0080_public_site.sql` con `get_public_site(p_slug)` (solo lectura, solo
+  `service_role`, sin celulares; trae también el enlace de reseñas). Se usa 0080 y no 0079 porque
+  la 0079 la tiene apartada el Hito 26 (Fresha). pgTAP `0080_public_site.sql` (13) y la suite
+  completa (1757) en verde. Sin la migración la web sale igual, sin horario, equipo ni fidelidad
+  (`getSiteHome` atrapa el error), para que la vista previa de Vercel no se rompa.
 
-### [ ] T-301 · Portada con las secciones
+### [x] T-301 · Portada con las secciones
 - REQ: REQ-101.1…101.6, REQ-101.9, REQ-101.11 · `page.tsx` con ISR, `components/site/*`, barra fija,
   abierto/cerrado en el navegador; unit y E2E `site-home.spec.ts`. Revisión con `revisor-textos`.
 - Modelo: Opus 5.5. Complejidad: media.
+- Hecha 2026-11-18. Desvío: `page.tsx` queda `force-dynamic` en vez de ISR de 5 minutos: con ISR
+  `next build` tendría que leer la base al compilar, y en cada visita ya se lee como en
+  `/<slug>`; así el abierto/cerrado sale del servidor (`is_business_open`) y no hace falta el
+  componente del navegador. REQ-101.4 se cumple de sobra (al instante). Unit `site-home.test.tsx`
+  (12) y E2E `site-home.spec.ts` (4, móvil 360 × 640). `single-business.test.tsx` pasa de
+  REQ-080.2 a REQ-101.1.
 
-### [ ] T-302 · SEO local
+### [x] T-302 · SEO local
 - REQ: REQ-101.7 · `generateMetadata`, JSON-LD, `sitemap.ts`, `robots.ts`, imagen Open Graph.
 - Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-18. El sitemap suma `/<slug>/cita`. `site-seo.test.ts`.
 
-### [ ] T-303 · Analítica y rendimiento
+### [x] T-303 · Analítica y rendimiento
 - REQ: REQ-101.8, REQ-101.10 · `@vercel/analytics` con `beforeSend`, variable para apagarla,
   `/` en Lighthouse CI.
 - Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-18. Desvío: `<SiteAnalytics>` va en el `layout.tsx` raíz (no en dos layouts) y
+  `beforeSend` descarta todo lo que no sea la portada o una página pública del negocio; las
+  páginas con token (`/t/`, `/c/`, `/regalo/`, `/invitacion/`) tampoco se envían, más estricto que
+  limpiar la dirección. `TURNOS_WEB_ANALYTICS=off` la apaga (CI y Playwright la apagan).
+  `scripts/lighthouse.ts` mide `/` con SEO ≥ 90; CI y Playwright usan `TURNOS_HOME_SLUG=la-33`.
+  WhatsApp del local pendiente (PA-H27-1): `SHOP_WHATSAPP_E164` en `brand.ts` queda en null y el
+  botón no sale hasta que Henry pase el número.
 
 ### [ ] T-304 · Validación Hito 27
 - Terminado: `pnpm trace --hito=27` sin huecos; guía `docs/guia-prueba-hito-27.md` con los pasos

@@ -1393,3 +1393,5 @@
 - Consecuencias: cambia REQ-080.2. La raíz de gammaclub.co pasa a ser la puerta de Google e
   Instagram; el QR del local sigue llevando a `/gamma-club`. Una dependencia nueva
   (`@vercel/analytics`) y, según el plan de Vercel, un posible costo que se vigila (PA-H27-3).
+  Al construir (T-300) hizo falta la migración de solo lectura `0080_public_site.sql`, que Henry
+  aplica antes del deploy, y la portada quedó `force-dynamic` en vez de ISR (T-301).
