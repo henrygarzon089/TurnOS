@@ -3133,7 +3133,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ## Hito 24 — Descripción de los productos del menú (REQ-098, ADR-072)
 
-> **Propuesta** (2026-11-17), espera la aprobación de Henry. Orden: T-270 → T-271 y T-272
+> Aprobada por Henry el 2026-11-17 ("Sí, constrúyelo"). Orden: T-270 → T-271 y T-272
 > (independientes) → T-273. La migración 0077 la aplica Henry en producción antes del deploy.
 
 ### [ ] T-270 · Columna `products.description` y función pública

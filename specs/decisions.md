@@ -1303,7 +1303,8 @@
   servicios siguen fuera (ADR-064, ADR-070).
 
 ## ADR-072 · Hito 24: descripción de los productos del menú
-- Estado: **propuesta** (2026-11-17), espera la aprobación de Henry.
+- Estado: **aceptada** (Henry, 2026-11-17: "Sí, constrúyelo", con PA-H24-1…3 según la propuesta:
+  140 caracteres, solo en el menú, Henry escribe las descripciones).
 - Contexto: el Hito 23 (ADR-070) agregó la descripción de los servicios y del negocio y dejó fuera
   la de los productos de la vitrina. Henry quiere subir a la web la descripción de cada producto
   (helados, bebidas, ceras, aceites…), que hoy el menú muestra solo con foto, nombre y precio
