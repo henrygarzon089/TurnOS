@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
@@ -197,5 +199,16 @@ describe("web del negocio (REQ-101)", () => {
       /(?<!\p{L})(Submit|Cancel|Loading|Login|Logout|Sign in|Password|Email|Name|Phone|Save|Next|Back|Welcome|Search|Close|Open|Book|Menu|Team|Services|Hours|Contact|Barber|Queue|Ticket)(?!\p{L})/u;
     const bad = out.split("\n").filter((t) => english.test(t));
     expect(bad).toEqual([]);
+  });
+  it("REQ-101.12 franja de servicios en bucle (copia oculta al lector) y bloques que aparecen al bajar", () => {
+    const out = html();
+    expect(out).toContain("animate-marquee");
+    expect(out).toMatch(/aria-hidden="true"[^>]*><div class="animate-marquee/);
+    expect(out).toContain("reveal");
+    expect(out).toContain("Tu corte, ");
+    const css = readFileSync(join(process.cwd(), "src/app/globals.css"), "utf8");
+    const reduced = css.slice(css.indexOf("prefers-reduced-motion"));
+    expect(reduced).toMatch(/\.reveal,\s*\.animate-marquee\s*\{\s*animation:\s*none/);
+    expect(css).not.toMatch(/gradient|backdrop-filter|blur\(/);
   });
 });

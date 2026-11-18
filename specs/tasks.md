@@ -3313,6 +3313,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `scripts/lighthouse.ts` mide `/` con SEO ≥ 90; CI y Playwright usan `TURNOS_HOME_SLUG=la-33`.
   WhatsApp del local (PA-H27-1): Henry lo pasó el 2026-11-18; `SHOP_WHATSAPP_E164` en `brand.ts`.
 
+### [x] T-305 · Rediseño de la web (REQ-101.12, ADR-078 propuesta)
+- REQ: REQ-101.12 · `SiteHome.tsx` con héroe a pantalla completa, menú flotante, franja de
+  servicios, bloques con foto y aparición al bajar; `globals.css` con `marquee`, `reveal` y su
+  apagado con movimiento reducido.
+- Modelo: Opus 5.5. Complejidad: media.
+- Hecha 2026-11-18. Henry la pidió al ver la web en producción ("esta muy simple"). Las pruebas de
+  REQ-101 siguen igual; suma `REQ-101.12` en `site-home.test.tsx`.
+
 ### [ ] T-304 · Validación Hito 27
 - Terminado: `pnpm trace --hito=27` sin huecos; guía `docs/guia-prueba-hito-27.md` con los pasos
   para publicar (fusionar, desplegar, activar Web Analytics en Vercel, enviar el sitemap a Google

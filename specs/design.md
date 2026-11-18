@@ -3704,6 +3704,19 @@ numerar. Máximo ~15 líneas.
 - `modules.ts`: `/` sigue en `UNGATED_PATHS`; se borra la redirección de REQ-080.2 y su prueba
   cambia a REQ-101.1.
 
+### 33.3.1 Rediseño (T-305, REQ-101.12, ADR-078 propuesta)
+- Encabezado flotante (`fixed top-3`, píldora blanca con sombra) con logo, anclas en escritorio,
+  "Entrar" y el botón principal desde 640 px.
+- Héroe `min-h-[100svh]` navy: portada de fondo con capa `bg-brand/70`, estado en píldora,
+  "Barbería · San Remo, Sabaneta", nombre a `clamp(2.5rem, 11vw, 7rem)`, "Tu corte, sin hacer
+  fila." y los dos botones en dos columnas para que quepan a 360×640.
+- Franja `animate-marquee` (40 s, `translateX(-50%)`) con los servicios dos veces; la copia es
+  `aria-hidden`. Bloques con `.reveal` (`animation-timeline: view()` dentro de `@supports`).
+  `prefers-reduced-motion` las apaga.
+- Secciones con título en dos tonos (tinta + `text-muted`), tarjetas `rounded-[2rem]`: servicios
+  con foto y tarjeta blanca encima, equipo en retrato, fidelidad con número gigante y puntos, menú
+  en carrusel horizontal en el celular, horario en bloque navy y contacto como panel final.
+
 ### 33.4 Pruebas
 - Unit `site.test.ts`: horario de la semana, botones con y sin citas, fidelidad apagada, JSON-LD
   (dirección, horario, rango de precios), `whatsappLink`, `redactAnalyticsUrl`.
