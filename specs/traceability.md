@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-16.
+> Generada por `scripts/traceability.ts` el 2026-11-18.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -553,3 +553,9 @@
 | REQ-097.3 |  | T-260 (hecha), T-263 (hecha) | business-description.spec.ts, business-description.test.tsx, public-business-description.test.ts, 0076_descriptions.sql | cubierto |
 | REQ-097.4 |  | T-260 (hecha), T-263 (hecha) | business-description.spec.ts, business-description.test.tsx, public-business-description.test.ts | cubierto |
 | REQ-097.5 |  | T-260 (hecha), T-263 (hecha) | description-texts.test.ts | cubierto |
+| REQ-098.1 |  | T-270 (hecha), T-271 (hecha), T-272 (hecha) | product-description.spec.ts, product-description.test.tsx | cubierto |
+| REQ-098.2 |  | T-270 (hecha), T-271 (hecha), T-272 (hecha) | product-description.spec.ts, product-description.test.tsx, 0077_product_description.sql | cubierto |
+| REQ-098.3 |  | T-270 (hecha), T-271 (hecha), T-272 (hecha) | product-description.spec.ts, menu-list.test.tsx, 0077_product_description.sql | cubierto |
+| REQ-098.4 |  | T-270 (hecha), T-271 (hecha), T-272 (hecha) | product-description.spec.ts, menu-list.test.tsx, 0077_product_description.sql | cubierto |
+| REQ-098.5 |  | T-270 (hecha), T-271 (hecha), T-272 (hecha) | menu-list.test.tsx | cubierto |
+| REQ-098.6 |  | T-270 (hecha), T-271 (hecha), T-272 (hecha) | description-texts.test.ts | cubierto |

@@ -3151,10 +3151,13 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Hecha 2026-11-17: `parseProductForm` limpia la descripción con `normalizeDescription` y solo la
   pone en la fila si el formulario trae el campo. Pruebas: `tests/unit/product-description.test.tsx`.
 
-### [ ] T-272 · El cliente ve la descripción en el menú
+### [x] T-272 · El cliente ve la descripción en el menú
 - REQ: REQ-098.3, REQ-098.4, REQ-098.5, REQ-098.6 · `PublicBusiness.products[]`, `MenuList`
   (design §30.3). Unitarias de `MenuList` y E2E de "Productos" → "Ver menú".
 - Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-17: `MenuList` pinta la descripción dentro del bloque del nombre (sirve para la
+  portada y para "Mi turno"). Pruebas: `tests/unit/menu-list.test.tsx`,
+  `tests/e2e/product-description.spec.ts`.
 
 ### [ ] T-273 · Validación Hito 24
 - Terminado: `pnpm trace --hito=24` sin huecos; `docs/estado-del-proyecto.md` al día; guía

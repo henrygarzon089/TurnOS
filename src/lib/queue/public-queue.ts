@@ -55,7 +55,14 @@ export type PublicBusiness = {
     description?: string | null;
   }[];
   /** REQ-038.2: activos a la venta. `photoPath` es la ruta en el bucket `media`. */
-  products: { id: string; name: string; price: number; photoPath: string | null }[];
+  products: {
+    id: string;
+    name: string;
+    price: number;
+    photoPath: string | null;
+    /** REQ-098.3: falta en datos viejos = sin descripción. */
+    description?: string | null;
+  }[];
   /** REQ-038.3: activos de cortesía. */
   courtesies: CourtesyOption[];
   /** REQ-039.5: fotos por barbero activo que tenga alguna. */
