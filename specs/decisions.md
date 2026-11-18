@@ -1344,3 +1344,13 @@
   "Mi fila": esa pantalla es de hoy y ya está llena.
 - Consecuencias: cambia REQ-054.6 (el barbero ve sus citas futuras, no las de otros). "Mi estación"
   baja a "Más" en modo esencial. Una migración nueva que Henry aplica antes del deploy.
+
+## ADR-074 · Aprobación del Hito 24 (descripción de los productos del menú)
+- Estado: **aceptada** (Henry, 2026-11-17)
+- Contexto: REQ-098 construido (T-270…T-272) y fusionado en `main` con el PR #202 (CI en verde,
+  E2E incluidas). La migración 0077 se aplicó en producción y `6c4d4c0` se desplegó en
+  https://www.gammaclub.co. `pnpm trace --hito=24` sin huecos. Guía: `docs/guia-prueba-hito-24.md`.
+- Decisión: Henry aprueba el Hito 24 ("Hito 24 aprobado", 2026-11-17). T-273 cerrada.
+- Consecuencias: el dueño escribe desde "Productos" la descripción que ve el cliente en el menú;
+  sin descripción, el menú se ve como antes. La cortesía, la caja y el inventario siguen sin
+  descripción (PA-H24-2). ADR-073 lo tiene otra rama sin fusionar.

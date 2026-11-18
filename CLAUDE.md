@@ -35,6 +35,9 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 - **Hito 23 (descripción de los servicios y del negocio, REQ-096…097, ADR-070)** aprobado
   (ADR-071, 2026-11-16): el dueño escribe una descripción opcional por servicio (máx. 140, la ve
   el cliente al escoger) y del negocio (máx. 200, en la portada); migración 0076 en producción.
+- **Hito 24 (descripción de los productos del menú, REQ-098, ADR-072)** aprobado (ADR-074,
+  2026-11-17): descripción opcional por producto (máx. 140) en "Ver menú" y "Mi turno"; migración
+  0077 en producción.
 - **Hito 25 ("Mi agenda" del barbero, REQ-099, ADR-073)**: T-280…T-282 hechas (2026-11-17),
   migración 0078; falta T-283 (0078 en producción, deploy y prueba de Henry).
 - **Hito 22 (harness de los agentes, REQ-092…095, ADR-066)**: T-250…T-255 hechas (2026-11-15),
