@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-16.
+> Generada por `scripts/traceability.ts` el 2026-11-18.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -553,3 +553,12 @@
 | REQ-097.3 |  | T-260 (hecha), T-263 (hecha) | business-description.spec.ts, business-description.test.tsx, public-business-description.test.ts, 0076_descriptions.sql | cubierto |
 | REQ-097.4 |  | T-260 (hecha), T-263 (hecha) | business-description.spec.ts, business-description.test.tsx, public-business-description.test.ts | cubierto |
 | REQ-097.5 |  | T-260 (hecha), T-263 (hecha) | description-texts.test.ts | cubierto |
+| REQ-099.1 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.spec.ts, barber-nav.test.tsx, modules.test.ts | cubierto |
+| REQ-099.2 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.spec.ts, barber-agenda.test.tsx, 0078_barber_agenda.sql | cubierto |
+| REQ-099.3 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.spec.ts, barber-agenda.test.tsx, 0078_barber_agenda.sql | cubierto |
+| REQ-099.4 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.spec.ts, barber-agenda.test.tsx | cubierto |
+| REQ-099.5 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.test.tsx, 0078_barber_agenda.sql | cubierto |
+| REQ-099.6 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.test.tsx, 0078_barber_agenda.sql | cubierto |
+| REQ-099.7 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.spec.ts, 0078_barber_agenda.sql | cubierto |
+| REQ-099.8 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | 0078_barber_agenda.sql | cubierto |
+| REQ-099.9 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.test.tsx | cubierto |

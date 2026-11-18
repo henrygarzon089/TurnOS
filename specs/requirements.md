@@ -2164,7 +2164,7 @@ tengo clientes reservados y organizar mi día sin preguntarle al dueño.
   de "Mi fila"; el destino que quede de quinto pasa a "Más" (REQ-079.3). Con Citas apagado NO DEBE
   aparecer y la ruta DEBE responder como las demás rutas apagadas.
 - REQ-099.2 "Mi agenda" DEBE listar las citas **pendientes del barbero que entró**, de hoy y de los
-  7 días siguientes, agrupadas por día ("Hoy", "Mañana" y luego "martes 18 de nov."), en orden de
+  7 días siguientes, agrupadas por día ("Hoy", "Mañana" y luego "jueves 19 de noviembre"), en orden de
   hora, cada una con hora de inicio y fin, nombre del cliente, servicio y duración.
 - REQ-099.3 El barbero NO DEBE ver en "Mi agenda" citas de otros barberos, ni el celular del cliente,
   ni el enlace de "Mi cita", ni citas canceladas, atendidas o de días pasados. Cambia REQ-054.6:

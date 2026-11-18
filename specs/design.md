@@ -3509,8 +3509,9 @@ numerar. Máximo ~15 líneas.
 - `getMyAgenda()` en `src/lib/actions/appointments.ts`: sesión de barbero (`getStaffSession`),
   días con `time.ts` (hoy Bogotá → +7), llama a `barber_agenda` con el cliente de la sesión (no
   `service_role`).
-- Lógica pura en `src/lib/domain/agenda.ts`: `groupAgendaByDay(items, today)` → grupos con título
-  "Hoy", "Mañana" o `formatDayCO` ("martes 18 de nov.").
+- Lógica pura en `src/lib/domain/appointments.ts` (junto a la agenda del dueño):
+  `agendaDayTitle(day, today)` → "Hoy", "Mañana" o `formatDateLong` ("jueves 19 de noviembre") y
+  `barberAgendaGroups(items, today)` → días de hoy a +7 con citas, sin los vacíos.
 - `src/app/(staff)/app/agenda/page.tsx` (+ `loading.tsx` con esqueleto, REQ-075): lista por día con
   filas de 56 px (hora inicio–fin en `tabular-nums`, cliente, servicio · duración), marca
   "Atrasada" con `Badge` de atención; vacío y aviso de REQ-099.6; nota final de REQ-099.4.

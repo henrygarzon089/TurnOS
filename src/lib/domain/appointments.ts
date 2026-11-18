@@ -330,3 +330,26 @@ export function appointmentErrorMessage(e: {
   if (msg.includes("FORBIDDEN") || e.code === "42501") return "No tienes permiso para eso.";
   return "No se pudo completar. Inténtalo de nuevo.";
 }
+
+// ------------------------------------------------------ Mi agenda (T-282) ----
+
+/** REQ-099.2 título del día en "Mi agenda": "Hoy", "Mañana" o "viernes 20 de noviembre". */
+export function agendaDayTitle(day: string, today: string): string {
+  if (day === today) return "Hoy";
+  if (day === addDays(today, 1)) return "Mañana";
+  return formatDateLong(day);
+}
+
+/** REQ-099.2 de hoy a +7, por día y en el orden en que llegan; sin los días vacíos. */
+export function barberAgendaGroups<T extends { day: string }>(
+  items: T[],
+  today: string,
+): { day: string; title: string; items: T[] }[] {
+  return bookingDays(today)
+    .map((day) => ({
+      day,
+      title: agendaDayTitle(day, today),
+      items: items.filter((i) => i.day === day),
+    }))
+    .filter((g) => g.items.length > 0);
+}

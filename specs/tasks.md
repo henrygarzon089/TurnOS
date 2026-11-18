@@ -3158,11 +3158,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   punto rojo de "falta la apertura" (REQ-078.16) sale entonces en el botón "Más" y junto a
   Limpieza en la hoja.
 
-### [ ] T-282 · Pantalla "Mi agenda"
+### [x] T-282 · Pantalla "Mi agenda"
 - REQ: REQ-099.2, REQ-099.4…099.7, REQ-099.9 · `getMyAgenda`, `domain/agenda.ts`,
   `/app/agenda` con esqueleto y refresco en vivo; unit y E2E `barber-agenda.spec.ts`. Revisión con
   `revisor-textos`.
 - Modelo: Opus 5.5. Complejidad: media.
+- Hecha 2026-11-17. Precisión: la lógica pura quedó en `domain/appointments.ts` (no en un
+  `agenda.ts` nuevo) junto a `groupAgendaByDay` del dueño; el día largo usa `formatDateLong`
+  ("jueves 19 de noviembre"). Componente `BarberAgenda`, `getMyAgenda`, `/app/agenda` con
+  `LiveRefresh` y esqueleto. Unit `barber-agenda.test.tsx` (9) y E2E `barber-agenda.spec.ts` (2).
 
 ### [ ] T-283 · Validación Hito 25
 - Terminado: `pnpm trace --hito=25` sin huecos; `docs/estado-del-proyecto.md` al día; guía
