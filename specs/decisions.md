@@ -1390,9 +1390,9 @@
   fidelidad de Fresha no pasan (PA-H26-2). Desactivar Fresha también apaga su vitrina de clientes
   nuevos (PA-H26-4).
 
-## ADR-078 · Rediseño de la web de Gamma Club (propuesta)
+## ADR-078 · Rediseño de la web de Gamma Club
 
-- Estado: **propuesta** (2026-11-18), espera la aprobación de Henry al revisar el PR.
+- Estado: **aprobada** por Henry el 2026-11-18 ("Approved, merge it") tras ver la vista previa.
 - Contexto: Henry vio la web del Hito 27 en producción y la encontró "muy simple"; pidió algo más
   parecido a boss.technology (héroe grande, títulos enormes, bloques con fotos, movimiento al bajar).
 - Decisión: REQ-101.12. Misma estructura, datos y pruebas de REQ-101; cambia solo la presentación

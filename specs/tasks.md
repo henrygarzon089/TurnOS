@@ -3313,7 +3313,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `scripts/lighthouse.ts` mide `/` con SEO ≥ 90; CI y Playwright usan `TURNOS_HOME_SLUG=la-33`.
   WhatsApp del local (PA-H27-1): Henry lo pasó el 2026-11-18; `SHOP_WHATSAPP_E164` en `brand.ts`.
 
-### [x] T-305 · Rediseño de la web (REQ-101.12, ADR-078 propuesta)
+### [x] T-305 · Rediseño de la web (REQ-101.12, ADR-078)
 - REQ: REQ-101.12 · `SiteHome.tsx` con héroe a pantalla completa, menú flotante, franja de
   servicios, bloques con foto y aparición al bajar; `globals.css` con `marquee`, `reveal` y su
   apagado con movimiento reducido.

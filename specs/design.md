@@ -3704,7 +3704,7 @@ numerar. Máximo ~15 líneas.
 - `modules.ts`: `/` sigue en `UNGATED_PATHS`; se borra la redirección de REQ-080.2 y su prueba
   cambia a REQ-101.1.
 
-### 33.3.1 Rediseño (T-305, REQ-101.12, ADR-078 propuesta)
+### 33.3.1 Rediseño (T-305, REQ-101.12, ADR-078)
 - Encabezado flotante (`fixed top-3`, píldora blanca con sombra) con logo, anclas en escritorio,
   "Entrar" y el botón principal desde 640 px.
 - Héroe `min-h-[100svh]` navy: portada de fondo con capa `bg-brand/70`, estado en píldora,
