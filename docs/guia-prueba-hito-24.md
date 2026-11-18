@@ -41,4 +41,4 @@ Marca cada casilla. Si algo falla, anota la pantalla, qué tocaste y qué pasó,
 
 ## 5. Aprobación
 
-- [ ] Si todo salió bien, dime "Hito 24 aprobado" y lo dejo anotado (ADR nuevo y T-273).
+- [x] Si todo salió bien, dime "Hito 24 aprobado" y lo dejo anotado (ADR nuevo y T-273).

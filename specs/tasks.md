@@ -3159,13 +3159,13 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   portada y para "Mi turno"). Pruebas: `tests/unit/menu-list.test.tsx`,
   `tests/e2e/product-description.spec.ts`.
 
-### [ ] T-273 · Validación Hito 24
+### [x] T-273 · Validación Hito 24
 - Terminado: `pnpm trace --hito=24` sin huecos; `docs/estado-del-proyecto.md` al día; guía
   `docs/guia-prueba-hito-24.md`; Henry aplica 0077 en producción, escribe desde el celular la
   descripción de un producto de Gamma Club, la ve en "Ver menú" de la portada y en "Mi turno", y
   la borra; aprobación (ADR nuevo).
 - 2026-11-17: 0077 aplicada en producción y `6c4d4c0` desplegado; guía
-  `docs/guia-prueba-hito-24.md`. Falta la prueba y la aprobación de Henry.
+  `docs/guia-prueba-hito-24.md`. Henry probó con la guía: "Hito 24 aprobado" (ADR-074).
 
 ---
 
