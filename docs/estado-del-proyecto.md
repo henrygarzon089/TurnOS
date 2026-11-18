@@ -798,6 +798,15 @@ Pendientes (H3): `/admin/caja`,
   de accesibilidad. La E2E de REQ-091.5 encontró que "Hoy" se corría de lado a 360 px con todos
   los módulos encendidos (una fila larga de "Para recordar" estiraba la cuadrícula); arreglado con
   `grid-cols-1` y `*:min-w-0`. `pnpm trace --hito=21` sin huecos.
+- Dos arreglos en el mismo PR #192 (2026-11-15), a partir de una captura de Henry en producción:
+  - **Logo cortado en la portada:** con foto del local, la foto (`relative`) se pintaba encima del
+    logo, que sube sobre ella con `-mt-10`, y el logo salía cortado arriba. El logo, y el símbolo
+    cuando no hay logo, llevan ahora `relative z-10` en `PublicHero` (prueba REQ-087.2 en
+    `brand-mark.test.tsx`).
+  - **"Reservar una cita" dos veces en escritorio:** salía como enlace en el encabezado (Hito 16)
+    y como botón en la tarjeta (Hito 20). En la portada queda solo el botón; el enlace de arriba
+    aparece solo durante los pasos, cuando el botón no se ve (REQ-088.8, nuevo; pruebas en
+    `public-home.test.tsx`).
 - T-245 hecha (2026-11-15): Henry revisó la app contra el manual de marca. Aprobado (ADR-069).
 
 ### Hito 22 — harness de los agentes (spec aprobada 2026-11-15, REQ-092…095, ADR-066)
