@@ -32,7 +32,7 @@ export function BarberAgenda({
     <>
       {!acceptsAppointments && (
         <p className="bg-warn-soft mx-4 mt-2 rounded-sm px-3 py-2 text-sm">
-          Hoy no recibes citas. El dueño lo activa en Citas.
+          No recibes citas. El dueño lo activa en Citas.
         </p>
       )}
       {groups.length === 0 ? (
@@ -64,7 +64,7 @@ export function BarberAgenda({
                       {a.serviceName} · {a.durationMin} min
                     </p>
                   </div>
-                  {a.late && <Tag tone="warn">Atrasada</Tag>}
+                  {a.late && <Tag tone="warn">Perdió la hora</Tag>}
                 </li>
               ))}
             </ul>

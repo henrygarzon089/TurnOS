@@ -64,7 +64,7 @@ describe("T-282 Mi agenda del barbero", () => {
     expect(h).toContain("Para cambiar o cancelar una cita, habla con el dueño.");
   });
 
-  it("REQ-099.5 la cita que pasó la tolerancia sale Atrasada", () => {
+  it("REQ-099.5 la cita que pasó la tolerancia sale Perdió la hora", () => {
     const h = renderToStaticMarkup(
       <BarberAgenda
         today={TODAY}
@@ -72,13 +72,14 @@ describe("T-282 Mi agenda del barbero", () => {
         items={[item({ id: "x", late: true }), item({ id: "y", day: "2026-11-18" })]}
       />,
     );
-    expect(h.match(/Atrasada/g)).toHaveLength(1);
+    expect(h.match(/Perdió la hora/g)).toHaveLength(1);
+    expect(h).not.toContain("Atrasada");
   });
 
   it("REQ-099.6 sin citas avisa que no hay reservas", () => {
     const h = renderToStaticMarkup(<BarberAgenda today={TODAY} acceptsAppointments items={[]} />);
     expect(h).toContain("No tienes citas reservadas en los próximos días.");
-    expect(h).not.toContain("Hoy no recibes citas");
+    expect(h).not.toContain("No recibes citas");
   });
 
   it("REQ-099.6 si el barbero no recibe citas lo dice", () => {
@@ -86,7 +87,8 @@ describe("T-282 Mi agenda del barbero", () => {
       <BarberAgenda today={TODAY} acceptsAppointments={false} items={[]} />,
     );
     expect(h).toContain("No tienes citas reservadas en los próximos días.");
-    expect(h).toContain("Hoy no recibes citas. El dueño lo activa en Citas.");
+    expect(h).toContain("No recibes citas. El dueño lo activa en Citas.");
+    expect(h).not.toContain("Hoy no recibes");
   });
 
   it("REQ-099.9 los textos de la pantalla están en español", () => {

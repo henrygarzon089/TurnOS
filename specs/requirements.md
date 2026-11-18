@@ -2215,10 +2215,11 @@ tengo clientes reservados y organizar mi día sin preguntarle al dueño.
 - REQ-099.4 "Mi agenda" DEBE ser solo de lectura: sin botones para cancelar, mover ni avisar. Debajo
   de la lista DEBE decir "Para cambiar o cancelar una cita, habla con el dueño."
 - REQ-099.5 Cuando una cita de hoy ya pasó la tolerancia (REQ-052, `late`), DEBE verse con la marca
-  "Atrasada"; las de hoy que ya llegaron a la fila no DEBEN aparecer (dejan de estar pendientes).
+  "Perdió la hora", como en "Mi fila" y en la agenda del dueño; las de hoy que ya llegaron a la fila no DEBEN aparecer (dejan de estar pendientes).
 - REQ-099.6 Cuando el barbero no tenga citas pendientes en esos 8 días, DEBE ver "No tienes citas
-  reservadas en los próximos días." Si el barbero no recibe citas (REQ-049.2), DEBE ver además "Hoy
-  no recibes citas. El dueño lo activa en Citas."
+  reservadas en los próximos días." Si el barbero no recibe citas (REQ-049.2), DEBE ver además "No
+  recibes citas. El dueño lo activa en Citas." (Henry, 2026-11-18: mismos textos que el resto
+  de la app).
 - REQ-099.7 La lista DEBE ponerse al día sola cuando se reserve o cancele una cita del barbero
   (canal `queue:<business_id>`, ADR-008) y al volver a la pestaña.
 - REQ-099.8 La base de datos DEBE entregarle al barbero solo sus citas por una función

@@ -3211,6 +3211,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   Con todos los módulos (CI), Limpieza queda quinta y va a "Más": REQ-062.6 se cumple por "Más"
   y por "Hacerla" en el aviso de apertura; se ajustaron `barbero-tablero` y `cleaning-barber`.
   En producción Limpieza está apagada.
+  2026-11-18 (Henry): "Perdió la hora" en vez de "Atrasada" (igual que "Mi fila" y la agenda
+  del dueño) y "No recibes citas" en vez de "Hoy no recibes citas" (REQ-099.5, REQ-099.6).
 
 ### [ ] T-283 · Validación Hito 25
 - Terminado: `pnpm trace --hito=25` sin huecos; `docs/estado-del-proyecto.md` al día; guía
