@@ -32,7 +32,9 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 - **Hitos 19, 20 y 21 aprobados** por Henry (2026-11-15): Citas encendido en modo esencial
   (REQ-084, ADR-067), cliente con fotos y paso a paso (REQ-085…090, migraciones 0074–0075,
   ADR-068) y marca Gamma Club (REQ-091, manual en `docs/marca/`, ADR-069); todo en producción.
-  En propuesta: descripción de cada servicio al elegirlo (lo que ADR-064 dejó fuera).
+- **Hito 23 (descripción de los servicios y del negocio, REQ-096…097, ADR-070)** aprobado
+  (ADR-071, 2026-11-16): el dueño escribe una descripción opcional por servicio (máx. 140, la ve
+  el cliente al escoger) y del negocio (máx. 200, en la portada); migración 0076 en producción.
 - **Hito 22 (harness de los agentes, REQ-092…095, ADR-066)**: T-250…T-255 hechas (2026-11-15),
   sin migraciones ni cambios a la app; falta T-256 (Henry prueba el harness y aprueba). Ver
   "Harness de los agentes" abajo.

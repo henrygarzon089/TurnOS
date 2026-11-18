@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-15.
+> Generada por `scripts/traceability.ts` el 2026-11-16.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -544,12 +544,12 @@
 | REQ-096.1 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | service-description.spec.ts, description-field.test.tsx | cubierto |
 | REQ-096.2 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | service-description.spec.ts, description.test.ts | cubierto |
 | REQ-096.3 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | description.test.ts, 0076_descriptions.sql | cubierto |
-| REQ-096.4 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | service-description.spec.ts, service-card.test.tsx, 0076_descriptions.sql | cubierto |
+| REQ-096.4 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | service-description.spec.ts, public-business-description.test.ts, service-card.test.tsx, 0076_descriptions.sql | cubierto |
 | REQ-096.5 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | service-description.spec.ts, service-card.test.tsx | cubierto |
 | REQ-096.6 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | service-description.spec.ts, service-card.test.tsx | cubierto |
 | REQ-096.7 |  | T-260 (hecha), T-261 (hecha), T-262 (hecha) | description-texts.test.ts | cubierto |
 | REQ-097.1 |  | T-260 (hecha), T-263 (hecha) | business-description.spec.ts, description-field.test.tsx | cubierto |
 | REQ-097.2 |  | T-260 (hecha), T-263 (hecha) | description.test.ts, 0076_descriptions.sql | cubierto |
-| REQ-097.3 |  | T-260 (hecha), T-263 (hecha) | business-description.spec.ts, business-description.test.tsx, 0076_descriptions.sql | cubierto |
-| REQ-097.4 |  | T-260 (hecha), T-263 (hecha) | business-description.spec.ts, business-description.test.tsx | cubierto |
+| REQ-097.3 |  | T-260 (hecha), T-263 (hecha) | business-description.spec.ts, business-description.test.tsx, public-business-description.test.ts, 0076_descriptions.sql | cubierto |
+| REQ-097.4 |  | T-260 (hecha), T-263 (hecha) | business-description.spec.ts, business-description.test.tsx, public-business-description.test.ts | cubierto |
 | REQ-097.5 |  | T-260 (hecha), T-263 (hecha) | description-texts.test.ts | cubierto |

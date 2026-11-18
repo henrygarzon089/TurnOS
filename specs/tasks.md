@@ -3122,11 +3122,14 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `description`; se suma con `tests/unit/public-business-description.test.ts`. Las E2E abren al
   cliente en otra pestaña y esperan el guardado en la base (la hoja relee la página al guardar).
 
-### [ ] T-264 · Validación Hito 23
+### [x] T-264 · Validación Hito 23
 - Terminado: `pnpm trace --hito=23` sin huecos; `docs/estado-del-proyecto.md` al día; guía
   `docs/guia-prueba-hito-23.md`; Henry aplica 0076 en producción, escribe desde el celular la
   descripción de un servicio y la del negocio de Gamma Club, ve la del servicio al tomar turno y al
   reservar y la del negocio en la portada, y las borra; aprobación (ADR nuevo).
+- Hecha 2026-11-16: la sesión principal aplicó 0076 con `supabase db push` y desplegó `88e142e`
+  porque Henry no podía hacerlo desde el celular (2026-11-15). Henry probó con la guía: "Hito 23
+  aprobado" (ADR-071).
 
 ---
 
