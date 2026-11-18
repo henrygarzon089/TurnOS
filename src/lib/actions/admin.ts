@@ -354,6 +354,7 @@ export async function saveProduct(_prev: FormState, formData: FormData): Promise
       photoPath: String(formData.get("photo_path") ?? ""),
       commissionable: formData.get("commissionable") === "on",
       category: String(formData.get("category") ?? ""),
+      description: formData.has("description") ? String(formData.get("description")) : undefined,
     },
     session.business.id,
   );

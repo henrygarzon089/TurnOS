@@ -23,7 +23,7 @@ export default async function ProductsPage({
     supabase
       .from("products")
       .select(
-        "id, name, price, is_active, for_sale, is_courtesy, photo_path, commissionable, category",
+        "id, name, price, is_active, for_sale, is_courtesy, photo_path, commissionable, category, description",
       )
       .eq("business_id", session.business.id)
       .order("is_active", { ascending: false })

@@ -3143,11 +3143,13 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Hecha 2026-11-17. `revisor-sql` sin bloqueos; se sumó la prueba de que `get_public_business`
   no trae productos de otro negocio.
 
-### [ ] T-271 · El dueño escribe la descripción del producto
+### [x] T-271 · El dueño escribe la descripción del producto
 - REQ: REQ-098.1, REQ-098.2, REQ-098.6 · `PRODUCT_DESCRIPTION_MAX`, `parseProductForm`,
   `saveProduct`, `ProductRow`, `admin/productos/page.tsx`, `ProductForm` (design §30.2–30.3).
   Unitarias y revisión con `revisor-textos`.
 - Modelo: Sonnet 5.5. Complejidad: baja.
+- Hecha 2026-11-17: `parseProductForm` limpia la descripción con `normalizeDescription` y solo la
+  pone en la fila si el formulario trae el campo. Pruebas: `tests/unit/product-description.test.tsx`.
 
 ### [ ] T-272 · El cliente ve la descripción en el menú
 - REQ: REQ-098.3, REQ-098.4, REQ-098.5, REQ-098.6 · `PublicBusiness.products[]`, `MenuList`

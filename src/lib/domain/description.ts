@@ -5,6 +5,8 @@
  */
 export const SERVICE_DESCRIPTION_MAX = 140;
 export const BUSINESS_DESCRIPTION_MAX = 200;
+/** REQ-098.2 (ADR-072): descripción del producto en el menú, mismo largo que el servicio. */
+export const PRODUCT_DESCRIPTION_MAX = 140;
 
 export type DescriptionResult = { ok: true; value: string | null } | { ok: false; error: string };
 
