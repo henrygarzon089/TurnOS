@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ModuleHeader } from "@/components/admin/ModulePage";
 import { CustomerSearch } from "@/components/customers/CustomerSearch";
 import { OwnerCustomerTable } from "@/components/customers/OwnerCustomerTable";
@@ -35,7 +36,12 @@ export default async function CustomersPage({
     const [initial, meta] = await Promise.all([searchOwnerCustomers(""), getOwnerCustomersMeta()]);
     return (
       <main className="pb-6">
-        <ModuleHeader title="Clientes" subtitle="Búsqueda, filtros y celular oculto en la lista" />
+        <ModuleHeader title="Clientes" subtitle="Búsqueda, filtros y celular oculto en la lista">
+          {/* REQ-100.1 */}
+          <Link href="/app/clientes/importar" className="text-link font-semibold underline underline-offset-4">
+            Importar de Fresha
+          </Link>
+        </ModuleHeader>
         {eliminado === "1" && <Deleted />}
         <OwnerCustomerTable
           initial={initial}

@@ -568,6 +568,18 @@
 | REQ-099.7 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.spec.ts, 0078_barber_agenda.sql | cubierto |
 | REQ-099.8 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | 0078_barber_agenda.sql | cubierto |
 | REQ-099.9 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.test.tsx | cubierto |
+| REQ-100.1 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | fresha-import.spec.ts, fresha-xlsx.test.ts, 0079_fresha_import.sql | cubierto |
+| REQ-100.2 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | fresha-import.test.ts, fresha-xlsx.test.ts, 0079_fresha_import.sql | cubierto |
+| REQ-100.3 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | fresha-import.test.ts, 0079_fresha_import.sql | cubierto |
+| REQ-100.4 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | fresha-import.test.ts, 0079_fresha_import.sql | cubierto |
+| REQ-100.5 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | 0079_fresha_import.sql | cubierto |
+| REQ-100.6 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | fresha-import.test.ts, 0079_fresha_import.sql | cubierto |
+| REQ-100.7 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | fresha-import.spec.ts, fresha-import.test.ts | cubierto |
+| REQ-100.8 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | fresha-import.spec.ts, 0079_fresha_import.sql | cubierto |
+| REQ-100.9 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | 0079_fresha_import.sql | cubierto |
+| REQ-100.10 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | fresha-import.spec.ts, 0079_fresha_import.sql | cubierto |
+| REQ-100.11 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | 0079_fresha_import.sql | cubierto |
+| REQ-100.12 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | fresha-import.test.ts | cubierto |
 | REQ-101.1 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | site-home.spec.ts, single-business.test.tsx, site.test.ts, 0080_public_site.sql | cubierto |
 | REQ-101.2 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | site-home.spec.ts, site-home.test.tsx, site.test.ts | cubierto |
 | REQ-101.3 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | site-home.spec.ts, site-home.test.tsx, site.test.ts, 0080_public_site.sql | cubierto |

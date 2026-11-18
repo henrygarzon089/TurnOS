@@ -3577,6 +3577,86 @@ numerar. Máximo ~15 líneas.
   entrar como ese barbero → aparece en "Mañana"; otro barbero no la ve; el dueño la cancela → se va
   de la agenda sin recargar.
 
+## 32. Hito 26 — Importar clientes y citas de Fresha (REQ-100, ADR-076)
+
+### 32.1 Datos (migración `0079_fresha_import.sql`)
+- Tabla `customer_imports`: `id`, `business_id`, `created_by` (usuario), `created_at`, `source`
+  (`'fresha'`), `customers_new`, `customers_existing`, `appointments_created`,
+  `appointments_rejected`, `rows_skipped` (todos `int`). Sin datos personales. RLS forzada: solo el dueño lee; nadie escribe
+  directo (`revoke`), solo las funciones.
+- `customers.imported_from text null check (imported_from in ('fresha'))` para saber de dónde vino
+  la ficha (REQ-100.5).
+- Una sola llamada del dueño, `import_fresha(p_business_id uuid, p_customers jsonb, p_appointments
+  jsonb, p_rows_skipped int) returns jsonb`, `security definer`, solo `is_owner_of` con sesión; todo
+  en una transacción. Adentro llama a dos funciones internas (sin `grant`):
+  - `import_customers_rows`: por cada `{name, phone, birthdayDay, birthdayMonth, notes}` inserta la
+    ficha con `imported_from = 'fresha'`; si el celular ya existe solo completa el cumpleaños si
+    estaba vacío y agrega "Fresha: <nota>" si no está (REQ-100.3/.4/.10). `privacy_accepted_at`
+    queda null. No usa `upsert_customer` porque esa cambia el nombre.
+  - `import_appointments_rows`: por cada `{ref, phone, name, barberId, serviceId, startsAt,
+    durationMin}` crea la cita con `source = 'owner'`. Desvío anotado: **no** exige la grilla de 15
+    minutos ni el límite de 7 días de `appointment_time_valid` (las de Fresha pueden estar a
+    cualquier hora y más lejos), pero sí que el negocio tenga Citas encendido, que el barbero esté
+    activo y sea del negocio, y el servicio activo. Motivos de rechazo: `PAST`, `DAY_CLOSED` (día
+    sin horario o cerrado a mano), `OUTSIDE_HOURS`, `SLOT_TAKEN` (`barber_time_free`, con candado
+    por barbero), `HAS_BOOKING` (REQ-050.5), `INVALID` (barbero, servicio o celular que no sirve).
+    `external_ref` (id de Fresha o, si no viene, `celular|hora`) es único por negocio: la misma
+    cita otra vez cuenta como "ya estaba" (REQ-100.10). No hay bloqueos de agenda en la app: el
+    "bloqueo" de REQ-100.8 es una cita del mismo barbero.
+  - Devuelve `{customersNew, customersExisting, appointmentsCreated, appointmentsAlready,
+    rejected: [{index, reason}]}`: solo posiciones y motivos, sin datos del cliente; el servidor
+    ya tiene las filas para mostrarlas. Registra la fila de `customer_imports`.
+  - Robustez (revisión `revisor-sql`): un candado por negocio pone en fila dos importaciones a la
+    vez; clientes con `on conflict do nothing` y la cita dentro de un bloque que convierte un
+    `unique_violation` en `HAS_BOOKING`; cada valor se valida antes de convertirlo (un dato roto es
+    `INVALID`, no tumba la importación) y `startsAt` debe traer la zona horaria. La cita lleva el
+    nombre de la ficha cuando ya existe.
+- `appointments.external_ref text null` con índice único `(business_id, external_ref)`.
+- Las listas de "Clientes para recordar" y "Cumplen esta semana" filtran
+  `privacy_accepted_at is not null or imported_from is null` (REQ-100.5).
+
+### 32.2 Lectura del archivo y resumen
+- `src/lib/domain/fresha-import.ts` (puro): `parseFreshaClients(rows)` y
+  `parseFreshaAppointments(rows)` reconocen los títulos en español e inglés (lista en el archivo,
+  ajustada a los de Gamma Club por PA-H26-1), normalizan celular, nombre (60), cumpleaños y hora
+  (`America/Bogota`), y devuelven `{ ok[], skipped[{row, reason}] }`. `matchByName(name, options)`
+  compara sin mayúsculas ni tildes.
+- Lectura: CSV con un lector pequeño propio (comillas y `;` o `,`) y `.xlsx` con una librería que
+  corre en el servidor (se escoge en T-291; sin librerías en el cliente).
+- `src/lib/actions/customer-import.ts`: `previewFreshaImport(formData)` (solo dueño, ≤ 2 MB por archivo, no
+  guarda) → resumen + nombres sin pareja; `confirmFreshaImport(formData, mapping)` vuelve a leer los
+  archivos, aplica las parejas escogidas y llama a `import_fresha`.
+- Si el archivo de citas no trae el celular, se busca el cliente por nombre en el archivo de
+  clientes (solo si hay uno con ese nombre); si no, la cita sale en "No se importaron".
+- Notas de la construcción (revisión `revisor-spec`, 2026-11-18):
+  - `confirmFreshaImport(formData)`: las parejas viajan dentro del mismo `FormData`
+    (`barberChoice`, `serviceChoice`).
+  - Si el celular de la cita no es colombiano, se trata como si no lo trajera (se busca por nombre).
+  - Cuentan como "reservadas o confirmadas" también los estados nuevo/nueva/pendiente de Fresha y
+    las filas sin estado (Fresha no exporta canceladas sin estado).
+  - El resumen dice cuántas citas quedan listas para crear, cuántas esperan pareja y cuántas no
+    tienen celular; los choques, días cerrados y citas pendientes solo se saben al importar (los
+    revisa la base con el candado puesto) y salen en "No se importaron".
+  - La nota de Fresha se guarda hasta 500 letras; `rows_skipped` cuenta las filas descartadas del
+    archivo de clientes.
+  - El E2E revisa la cita y la ficha en la base; que la cita salga en la agenda y en "Mi agenda" lo
+    cubren las pruebas de 0078 (es una cita normal de `appointments`).
+- Pantalla `/app/clientes/importar` (módulo `customers`; las pantallas del personal viven en `/app`): pasos para exportar desde Fresha,
+  dos campos de archivo, resumen con conteos, selectores para los nombres sin pareja, botón
+  **Importar** y, al final, "No se importaron" con motivo.
+
+### 32.3 Pruebas
+- pgTAP `supabase/tests/0079_fresha_import.sql`: solo el dueño; nuevo vs existente sin pisar
+  nombre ni notas; cumpleaños solo si vacío; dos veces el mismo archivo no duplica; cita futura
+  creada; choques, día cerrado y cliente con cita pendiente rechazados con motivo; el barbero y
+  `anon` no ejecutan; `customer_imports` sin datos personales.
+- Unit: lector de CSV (comillas, `;`, BOM), títulos en español e inglés, celulares extranjeros y
+  vacíos descartados, nombres con tildes, horas de Bogotá, parejas por nombre; listas de recordar y
+  cumpleaños sin importados no aceptados.
+- E2E `fresha-import.spec.ts` con archivos de ejemplo inventados (sin datos reales): resumen,
+  escoger un barbero sin pareja, importar, ver la cita en la agenda y la ficha en Clientes; importar
+  otra vez no duplica.
+
 ## 33. Hito 27 — Web de Gamma Club (REQ-101, ADR-077)
 
 ### 33.1 Datos
