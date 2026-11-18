@@ -3131,6 +3131,33 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   porque Henry no podía hacerlo desde el celular (2026-11-15). Henry probó con la guía: "Hito 23
   aprobado" (ADR-071).
 
+## Hito 24 — Descripción de los productos del menú (REQ-098, ADR-072)
+
+> **Propuesta** (2026-11-17), espera la aprobación de Henry. Orden: T-270 → T-271 y T-272
+> (independientes) → T-273. La migración 0077 la aplica Henry en producción antes del deploy.
+
+### [ ] T-270 · Columna `products.description` y función pública
+- REQ: REQ-098.2 (base de datos), REQ-098.3 (datos) · Migración `0077_product_description.sql`
+  (design §30.1), pgTAP `0077_product_description.sql`. Revisión con `revisor-sql`.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-271 · El dueño escribe la descripción del producto
+- REQ: REQ-098.1, REQ-098.2, REQ-098.6 · `PRODUCT_DESCRIPTION_MAX`, `parseProductForm`,
+  `saveProduct`, `ProductRow`, `admin/productos/page.tsx`, `ProductForm` (design §30.2–30.3).
+  Unitarias y revisión con `revisor-textos`.
+- Modelo: Sonnet 5.5. Complejidad: baja.
+
+### [ ] T-272 · El cliente ve la descripción en el menú
+- REQ: REQ-098.3, REQ-098.4, REQ-098.5, REQ-098.6 · `PublicBusiness.products[]`, `MenuList`
+  (design §30.3). Unitarias de `MenuList` y E2E de "Productos" → "Ver menú".
+- Modelo: Sonnet 5.5. Complejidad: baja.
+
+### [ ] T-273 · Validación Hito 24
+- Terminado: `pnpm trace --hito=24` sin huecos; `docs/estado-del-proyecto.md` al día; guía
+  `docs/guia-prueba-hito-24.md`; Henry aplica 0077 en producción, escribe desde el celular la
+  descripción de un producto de Gamma Club, la ve en "Ver menú" de la portada y en "Mi turno", y
+  la borra; aprobación (ADR nuevo).
+
 ---
 
 ## Dependencias principales
