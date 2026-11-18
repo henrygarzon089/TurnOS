@@ -29,6 +29,7 @@ begin
   insert into products (business_id, name, price) values (p_biz, 'Gaseosa', 5000) returning id into v_product;
   insert into business_hours (business_id, weekday, is_closed) values (p_biz, 1, true);
   insert into business_pct_changes (business_id, kind, new_pct) values (p_biz, 'staff_discount', 10);
+  insert into customer_imports (business_id, customers_new) values (p_biz, 1);
   insert into commission_changes (business_id, barber_id, new_pct) values (p_biz, v_barber, 55);
   insert into invitations (business_id, barber_id) values (p_biz, v_barber);
   insert into privacy_policy_versions (business_id, version, body) values (p_biz, 1, 'Política');

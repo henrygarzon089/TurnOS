@@ -36,7 +36,7 @@
 | H19 | Citas en modo esencial (ADR-062) | T-210…T-211 | REQ-084 |
 | H20 | Cliente con fotos y paso a paso (ADR-063, ADR-064) | T-220…T-230 | REQ-085…REQ-090 |
 | H25 | "Mi agenda" del barbero (ADR-073) | T-280…T-283 | REQ-099 |
-| H26 | Importar clientes y citas de Fresha (ADR-076) — **propuesta** | T-290…T-294 | REQ-100 |
+| H26 | Importar clientes y citas de Fresha (ADR-076) | T-290…T-294 | REQ-100 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -3227,14 +3227,17 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ## Hito 26 — Importar clientes y citas de Fresha (REQ-100, ADR-076)
 
-> **Propuesta** (2026-11-18), espera la aprobación de Henry. Antes de T-291, Henry pasa los títulos
-> de las columnas de sus archivos de Fresha (PA-H26-1). Orden: T-290 → T-291 → T-292 → T-293 →
+> Aprobado por Henry (2026-11-18, ADR-076). El lector reconoce los títulos que Fresha usa en español
+> e inglés; los de los archivos de Gamma Club se confirman en T-294 (PA-H26-1). Orden: T-290 → T-291 → T-292 → T-293 →
 > T-294. La migración 0079 se aplica en producción antes del deploy.
 
-### [ ] T-290 · Base de datos de la importación
+### [x] T-290 · Base de datos de la importación
 - REQ: REQ-100.3, REQ-100.5, REQ-100.6, REQ-100.8…100.11 · Migración `0079_fresha_import.sql`
   (design §32.1), pgTAP `0079_fresha_import.sql`. Revisión con `revisor-sql`.
 - Modelo: Opus 5.5. Complejidad: media.
+- Hecho (2026-11-18): una sola llamada `import_fresha` en vez de dos (design §32.1); las citas
+  importadas no siguen la grilla de 15 minutos ni el límite de 7 días; `delete_business.sql` llena
+  `customer_imports`. 32 pruebas pgTAP.
 
 ### [ ] T-291 · Leer los archivos de Fresha
 - REQ: REQ-100.3, REQ-100.4, REQ-100.6 · `domain/fresha-import.ts`, lector de CSV y de `.xlsx`,
@@ -3247,9 +3250,11 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `revisor-textos`.
 - Modelo: Opus 5.5. Complejidad: media.
 
-### [ ] T-293 · Sin avisos a los importados hasta aceptar el aviso
+### [x] T-293 · Sin avisos a los importados hasta aceptar el aviso
 - REQ: REQ-100.5, REQ-100.9 · filtros de "Clientes para recordar" y "Cumplen esta semana"; pruebas.
 - Modelo: Opus 5.5. Complejidad: baja.
+- Hecho (2026-11-18) antes de T-291, dentro de la migración 0079 (el diseño ya la ponía ahí) y sus
+  pruebas pgTAP; no toca pantallas.
 
 ### [ ] T-294 · Validación Hito 26
 - Terminado: `pnpm trace --hito=26` sin huecos; guía `docs/guia-prueba-hito-26.md` (exportar de

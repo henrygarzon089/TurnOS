@@ -3586,17 +3586,26 @@ numerar. Máximo ~15 líneas.
   directo (`revoke`), solo las funciones.
 - `customers.imported_from text null check (imported_from in ('fresha'))` para saber de dónde vino
   la ficha (REQ-100.5).
-- `import_customers(p_business_id uuid, p_rows jsonb) returns jsonb`, `security definer`, solo
-  `is_owner_of`: por cada `{name, phone, birthdayDay, birthdayMonth, notes}` hace
-  `insert … on conflict (business_id, phone_e164) do update` que solo completa el cumpleaños si
-  estaba vacío y agrega la nota si no está (REQ-100.3/.4/.10). Devuelve `{new, existing}` y el id por
-  celular. `privacy_accepted_at` queda null.
-- `import_appointments(p_business_id uuid, p_rows jsonb, p_import_id uuid) returns jsonb`: por cada
-  `{phone, name, barberId, serviceId, startsAt}` reusa `appointment_time_valid` (0045) y la regla de
-  una cita pendiente por celular; crea con `source = 'owner'` y un `external_ref` (id de Fresha o
-  hash de celular+hora) único por negocio para no duplicar (REQ-100.10). Devuelve las creadas y las
-  rechazadas con motivo (`SLOT_TAKEN`, `HAS_BOOKING`, `DAY_CLOSED`, `PAST`). El trigger de 0078 avisa
-  a la fila; no se manda WhatsApp (REQ-100.9).
+- Una sola llamada del dueño, `import_fresha(p_business_id uuid, p_customers jsonb, p_appointments
+  jsonb, p_rows_skipped int) returns jsonb`, `security definer`, solo `is_owner_of` con sesión; todo
+  en una transacción. Adentro llama a dos funciones internas (sin `grant`):
+  - `import_customers_rows`: por cada `{name, phone, birthdayDay, birthdayMonth, notes}` inserta la
+    ficha con `imported_from = 'fresha'`; si el celular ya existe solo completa el cumpleaños si
+    estaba vacío y agrega "Fresha: <nota>" si no está (REQ-100.3/.4/.10). `privacy_accepted_at`
+    queda null. No usa `upsert_customer` porque esa cambia el nombre.
+  - `import_appointments_rows`: por cada `{ref, phone, name, barberId, serviceId, startsAt,
+    durationMin}` crea la cita con `source = 'owner'`. Desvío anotado: **no** exige la grilla de 15
+    minutos ni el límite de 7 días de `appointment_time_valid` (las de Fresha pueden estar a
+    cualquier hora y más lejos), pero sí que el negocio tenga Citas encendido, que el barbero esté
+    activo y sea del negocio, y el servicio activo. Motivos de rechazo: `PAST`, `DAY_CLOSED` (día
+    sin horario o cerrado a mano), `OUTSIDE_HOURS`, `SLOT_TAKEN` (`barber_time_free`, con candado
+    por barbero), `HAS_BOOKING` (REQ-050.5), `INVALID` (barbero, servicio o celular que no sirve).
+    `external_ref` (id de Fresha o, si no viene, `celular|hora`) es único por negocio: la misma
+    cita otra vez cuenta como "ya estaba" (REQ-100.10). No hay bloqueos de agenda en la app: el
+    "bloqueo" de REQ-100.8 es una cita del mismo barbero.
+  - Devuelve `{customersNew, customersExisting, appointmentsCreated, appointmentsAlready,
+    rejected: [{index, reason}]}`: solo posiciones y motivos, sin datos del cliente; el servidor
+    ya tiene las filas para mostrarlas. Registra la fila de `customer_imports`.
 - `appointments.external_ref text null` con índice único `(business_id, external_ref)`.
 - Las listas de "Clientes para recordar" y "Cumplen esta semana" filtran
   `privacy_accepted_at is not null or imported_from is null` (REQ-100.5).
@@ -3611,8 +3620,9 @@ numerar. Máximo ~15 líneas.
   corre en el servidor (se escoge en T-291; sin librerías en el cliente).
 - `src/lib/actions/customer-import.ts`: `previewFreshaImport(formData)` (solo dueño, ≤ 4 MB, no
   guarda) → resumen + nombres sin pareja; `confirmFreshaImport(formData, mapping)` vuelve a leer los
-  archivos, aplica las parejas escogidas y llama a las dos funciones en ese orden; registra
-  `customer_imports`.
+  archivos, aplica las parejas escogidas y llama a `import_fresha`.
+- Si el archivo de citas no trae el celular, se busca el cliente por nombre en el archivo de
+  clientes (solo si hay uno con ese nombre); si no, la cita sale en "No se importaron".
 - Pantalla `/admin/clientes/importar` (módulo `customers`): pasos para exportar desde Fresha,
   dos campos de archivo, resumen con conteos, selectores para los nombres sin pareja, botón
   **Importar** y, al final, "No se importaron" con motivo.

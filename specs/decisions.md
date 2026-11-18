@@ -1367,7 +1367,8 @@
   recibes citas" van aparte en el PR #207.
 
 ## ADR-076 · Hito 26: importar clientes y citas de Fresha
-- Estado: **propuesta** (2026-11-18), espera la aprobación de Henry.
+- Estado: **aceptada** (2026-11-18). Henry: "Aprobada, constrúyela". PA-H26-2…4 quedan como se
+  propusieron; PA-H26-1 (títulos de las columnas) se confirma con los archivos de Gamma Club.
 - Contexto: Gamma Club venía con Fresha para las citas. Henry pregunta cómo juntarlo con la app.
   Fresha no tiene una API pública: solo exporta clientes, citas y servicios en CSV o Excel; la API
   es para socios aprobados y las herramientas no oficiales entran con la sesión del dueño (frágiles
