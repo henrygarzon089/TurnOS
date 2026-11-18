@@ -44,5 +44,14 @@ end $$;
 revoke all on function appointments_notify_queue() from public, anon, authenticated;
 
 create trigger appointments_notify_queue
-  after insert or update of status, barber_id, starts_at on appointments
+  after insert on appointments
   for each row execute function appointments_notify_queue();
+
+-- Solo si cambió algo que se ve en la agenda o en la fila (como `tickets_broadcast`, 0009): el
+-- cierre diario que marca no llegadas no repite avisos por filas que no cambian.
+create trigger appointments_notify_queue_update
+  after update of status, barber_id, starts_at on appointments
+  for each row
+  when (old.status is distinct from new.status or old.barber_id is distinct from new.barber_id
+        or old.starts_at is distinct from new.starts_at)
+  execute function appointments_notify_queue();

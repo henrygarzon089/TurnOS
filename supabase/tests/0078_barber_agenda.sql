@@ -1,6 +1,6 @@
 -- T-280 · "Mi agenda" del barbero (REQ-099, ADR-073, design §31.1)
 begin;
-select plan(14);
+select plan(26);
 
 -- Mediodía fijo de hoy en Bogotá (como 0046) para que las citas de "hoy" no cambien de día.
 do $$
@@ -52,6 +52,15 @@ select pg_temp.cita('dia7', (select pedro from ctx), 7, 9, '+573101100003');
 select pg_temp.cita('dia8', (select pedro from ctx), 8, 9, '+573101100004');
 select pg_temp.cita('cancelada', (select pedro from ctx), 2, 11, '+573101100005', 'cancelled');
 select pg_temp.cita('juan', (select juan from ctx), 1, 11, '+573101100006');
+select pg_temp.cita('llego', (select pedro from ctx), 3, 9, '+573101100007', 'arrived');
+select pg_temp.cita('nollego', (select pedro from ctx), 4, 9, '+573101100008', 'no_show');
+select pg_temp.cita('dia3', (select pedro from ctx), 3, 14, '+573101100009');
+-- Cita de hoy que empezó hace 30 minutos (pasó la tolerancia de 10, REQ-052)
+insert into appointments (business_id, customer_name, customer_phone_e164, service_id, service_name,
+                          service_duration_min, service_price, barber_id, any_barber, starts_at, ends_at,
+                          business_day, source)
+select biz, 'Cliente atrasado', '+573101100010', corte, 'Corte', 30, 25000, pedro, false,
+       now() - interval '30 minutes', now(), today, 'owner' from ctx;
 
 create temp table r (j jsonb);
 grant all on r to public;
@@ -59,13 +68,32 @@ grant all on r to public;
 select auth.test_login((select pedro_u from ctx));
 insert into r select barber_agenda((select biz from ctx), (select today from ctx), (select today from ctx) + 7);
 
-select is((select array_agg(e->>'customerName' order by e->>'startsAt') from r, jsonb_array_elements(j->'items') e),
-  array['Cliente hoy', 'Cliente manana', 'Cliente dia7'],
-  'REQ-099.2 el barbero ve sus citas pendientes de hoy a 7 días, en orden de hora');
+select is((select array_agg(e->>'customerName' order by e->>'customerName') from r, jsonb_array_elements(j->'items') e),
+  array['Cliente atrasado', 'Cliente dia3', 'Cliente dia7', 'Cliente hoy', 'Cliente manana'],
+  'REQ-099.2 el barbero ve sus citas pendientes de hoy a 7 días');
+select ok((select bool_and(a <= b) from (
+             select e->>'startsAt' as a, lead(e->>'startsAt') over (order by n) as b
+             from r, jsonb_array_elements(j->'items') with ordinality as x(e, n)) t where b is not null),
+  'REQ-099.2 vienen en orden de hora');
 select is((select count(*)::int from r, jsonb_array_elements(j->'items') e where e->>'customerName' = 'Cliente juan'), 0,
   'REQ-099.3 no ve las citas de otro barbero');
 select is((select count(*)::int from r, jsonb_array_elements(j->'items') e where e->>'customerName' = 'Cliente cancelada'), 0,
   'REQ-099.3 no ve las citas canceladas');
+select is((select count(*)::int from r, jsonb_array_elements(j->'items') e
+           where e->>'customerName' in ('Cliente llego', 'Cliente nollego')), 0,
+  'REQ-099.5 no salen las que ya llegaron a la fila ni las que no llegaron');
+select is((select (e->>'late')::boolean from r, jsonb_array_elements(j->'items') e where e->>'customerName' = 'Cliente atrasado'), true,
+  'REQ-099.5 la de hoy que pasó la tolerancia sale atrasada');
+select is((select (e->>'late')::boolean from r, jsonb_array_elements(j->'items') e where e->>'customerName' = 'Cliente manana'), false,
+  'REQ-099.5 las demás no salen atrasadas');
+select is((select array_agg(e->>'customerName' order by e->>'startsAt')
+           from jsonb_array_elements(barber_agenda((select biz from ctx), (select today from ctx) + 3, (select today from ctx) + 7)->'items') e),
+  array['Cliente dia3', 'Cliente dia7'],
+  'REQ-099.2 un rango que empieza más adelante trae solo esos días');
+select throws_ok($$ select barber_agenda((select biz from ctx), (select today from ctx) + 2, (select today from ctx) + 1) $$,
+  '22023', null, 'REQ-099.2 un rango al revés da error');
+select throws_ok($$ select barber_agenda((select biz from ctx), null, null) $$,
+  '22023', null, 'REQ-099.2 un rango vacío da error');
 select ok(not exists (select 1 from r, jsonb_array_elements(j->'items') e
                       where e ? 'phone' or e ? 'customerPhone' or e ? 'token' or e ? 'price'),
   'REQ-099.3 sin celular, enlace ni precio');
@@ -99,6 +127,28 @@ select ok(has_function_privilege('authenticated', 'barber_agenda(uuid, date, dat
   'REQ-099.8 el personal con sesión sí');
 select has_trigger('appointments', 'appointments_notify_queue',
   'REQ-099.7 reservar, cancelar o mover una cita avisa al canal de la fila');
+
+-- REQ-099.7 los avisos de verdad (como 0009_realtime)
+delete from realtime.messages_local;
+select pg_temp.cita('rt', (select pedro from ctx), 2, 16, '+573101100011');
+select is((select count(*)::int from realtime.messages_local
+           where topic = 'queue:' || (select biz from ctx) and payload->>'kind' = 'appointment'), 1,
+  'REQ-099.7 reservar una cita avisa al canal del negocio');
+select ok((select bool_and(not (payload ? 'customer_name') and not (payload ? 'customer_phone_e164')) from realtime.messages_local),
+  'REQ-099.7 el aviso no lleva datos del cliente');
+delete from realtime.messages_local;
+update appointments set status = 'cancelled', cancel_reason = 'business' where id = pg_temp.id('rt');
+select is((select count(*)::int from realtime.messages_local where payload->>'kind' = 'appointment'), 1,
+  'REQ-099.7 cancelar una cita avisa');
+delete from realtime.messages_local;
+update appointments set barber_id = (select juan from ctx) where id = pg_temp.id('manana');
+select is((select count(*)::int from realtime.messages_local where payload->>'kind' = 'appointment'), 1,
+  'REQ-099.7 pasar una cita a otro barbero avisa');
+delete from realtime.messages_local;
+update appointments set customer_name = 'Otro nombre' where id = pg_temp.id('dia7');
+update appointments set status = status where id = pg_temp.id('dia7');
+select is((select count(*)::int from realtime.messages_local), 0,
+  'REQ-099.7 un cambio que no se ve en la agenda no avisa');
 
 select * from finish();
 rollback;

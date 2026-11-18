@@ -3500,7 +3500,8 @@ numerar. Máximo ~15 líneas.
 - `revoke all … from public, anon; grant execute … to authenticated`.
 - Hoy reservar y cancelar una cita **no** emiten `queue_changed` (revisado 2026-11-17: ninguna
   función de 0045–0049 llama a `notify_queue_changed`). La migración suma un trigger
-  `after insert or update of status, barber_id, starts_at on appointments` que llama a
+  `after insert` y otro `after update of status, barber_id, starts_at` con `when` (solo si alguna
+  cambió, como `tickets_broadcast` en 0009) que llaman a
   `notify_queue_changed(new.business_id, 'appointment')`. De paso, la agenda del dueño y los huecos
   de citas en la fila pública también se ponen al día solos.
 

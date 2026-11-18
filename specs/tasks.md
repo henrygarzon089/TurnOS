@@ -3145,7 +3145,9 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   (design §31.1), pgTAP
   `0078_barber_agenda.sql`. Revisión con `revisor-sql`.
 - Modelo: Opus 5.5. Complejidad: baja.
-- Hecha 2026-11-17. pgTAP de 14 casos y la suite completa (1721) en verde. Precisión: el
+- Hecha 2026-11-17. pgTAP de 26 casos y la suite completa (1733) en verde. `revisor-sql`: el
+  trigger de update quedó con `when` (solo si cambia estado, barbero u hora) para no repetir avisos
+  en el cierre diario; `search_path = public` sin `pg_temp` es la convención del repo (sin cambio). Precisión: el
   trigger `appointments_notify_queue` usa `notify_queue_changed` de 0009 (no rompe si Realtime
   falla: solo avisa).
 
