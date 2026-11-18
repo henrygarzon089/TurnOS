@@ -55,6 +55,7 @@ test.describe("REQ-100 Importar de Fresha", () => {
       `E2E-${n}-1,${nameA},Corte,Pepe Fresha,${slot.day},${slot.time},30min,Booked`,
       `E2E-${n}-2,${nameB},Corte,Juan,2020-01-01,10:00,30min,Booked`,
       `E2E-${n}-3,${nameB},Corte,Juan,${slot.day},${slot.time},30min,Cancelled`,
+      `E2E-${n}-4,${nameB},Cejas Fresha ${n},Juan,${slot.day},${slot.time},30min,Booked`,
     ].join("\n");
 
     try {
@@ -88,7 +89,10 @@ test.describe("REQ-100 Importar de Fresha", () => {
       const appts = page.getByRole("list", { name: "Citas" });
       await expect(
         appts.getByRole("listitem").filter({ hasText: "de hoy en adelante" }),
-      ).toContainText("1");
+      ).toContainText("2");
+      await expect(
+        appts.getByRole("listitem").filter({ hasText: "Esperan que emparejes" }),
+      ).toContainText("2");
       await expect(appts.getByRole("listitem").filter({ hasText: "días pasados" })).toContainText(
         "1",
       );
@@ -113,6 +117,10 @@ test.describe("REQ-100 Importar de Fresha", () => {
       await expect(page.getByRole("listitem").filter({ hasText: "Citas creadas" })).toContainText(
         "1",
       );
+      // REQ-100.8 la que quedó sin pareja sale en "No se importaron" con su motivo, cliente y barbero
+      const missing = page.getByRole("listitem").filter({ hasText: nameB });
+      await expect(missing).toContainText("Falta emparejar el barbero o el servicio");
+      await expect(missing).toContainText(`Cejas Fresha ${n} con Juan`);
 
       const { data: appt } = await db
         .from("appointments")

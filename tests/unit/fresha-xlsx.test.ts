@@ -72,3 +72,19 @@ describe("REQ-100.1 leer el Excel de Fresha", () => {
     expect(() => readXlsxRows(zip({ "otro.txt": "x" }))).toThrow(XlsxError);
   });
 });
+
+describe("REQ-100.1 archivo subido", () => {
+  it("REQ-100.1 un archivo de más de 2 MB no se lee", async () => {
+    const { fileRows } = await import("@/lib/import/read-file");
+    const big = new File([new Uint8Array(2 * 1024 * 1024 + 1)], "clientes.csv");
+    expect(await fileRows(big)).toBe("TOO_BIG");
+    expect(await fileRows(new File(["Nombre,Celular\nAna,3001112233"], "c.csv"))).toEqual([
+      ["Nombre", "Celular"],
+      ["Ana", "3001112233"],
+    ]);
+    expect(await fileRows(new File([Buffer.from("PK\u0003\u0004roto")], "c.xlsx"))).toBe(
+      "NOT_READABLE",
+    );
+    expect(await fileRows(null)).toBeNull();
+  });
+});

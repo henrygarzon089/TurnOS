@@ -68,7 +68,11 @@ begin
       insert into customers (business_id, phone_e164, name, birthday_month, birthday_day, notes, imported_from)
       values (p_business_id, v_phone, v_name, v_month, v_day, v_note, 'fresha')
       on conflict (business_id, phone_e164) do nothing;
-      v_new := v_new + 1;
+      if found then
+        v_new := v_new + 1;
+      else
+        v_existing := v_existing + 1;
+      end if;
     else
       -- REQ-100.3 no se pisa nada: solo se completa el cumpleaños y se agrega la nota una vez
       update customers

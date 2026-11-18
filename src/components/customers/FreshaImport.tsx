@@ -231,6 +231,17 @@ export function FreshaImport() {
               aria-label="Citas"
             >
               <Row label="Citas de hoy en adelante" value={preview.appointments.importable} />
+              <Row label="Listas para crear" value={preview.appointments.ready} />
+              <Row
+                label="Esperan que emparejes el barbero o el servicio"
+                value={preview.appointments.unmatched}
+                skip
+              />
+              <Row
+                label="Sin celular del cliente (no se importan)"
+                value={preview.appointments.noPhone}
+                skip
+              />
               <Row
                 label="Citas de días pasados (no se importan)"
                 value={preview.appointments.skipped.PAST}
@@ -247,6 +258,11 @@ export function FreshaImport() {
                 skip
               />
             </ul>
+          )}
+          {preview.appointments && (
+            <p className="text-muted text-sm">
+              Si una cita choca con otra o cae en un día cerrado, te avisamos al importar.
+            </p>
           )}
 
           {(preview.unmatchedBarbers.length > 0 || preview.unmatchedServices.length > 0) && (

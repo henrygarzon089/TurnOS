@@ -3628,6 +3628,19 @@ numerar. Máximo ~15 líneas.
   archivos, aplica las parejas escogidas y llama a `import_fresha`.
 - Si el archivo de citas no trae el celular, se busca el cliente por nombre en el archivo de
   clientes (solo si hay uno con ese nombre); si no, la cita sale en "No se importaron".
+- Notas de la construcción (revisión `revisor-spec`, 2026-11-18):
+  - `confirmFreshaImport(formData)`: las parejas viajan dentro del mismo `FormData`
+    (`barberChoice`, `serviceChoice`).
+  - Si el celular de la cita no es colombiano, se trata como si no lo trajera (se busca por nombre).
+  - Cuentan como "reservadas o confirmadas" también los estados nuevo/nueva/pendiente de Fresha y
+    las filas sin estado (Fresha no exporta canceladas sin estado).
+  - El resumen dice cuántas citas quedan listas para crear, cuántas esperan pareja y cuántas no
+    tienen celular; los choques, días cerrados y citas pendientes solo se saben al importar (los
+    revisa la base con el candado puesto) y salen en "No se importaron".
+  - La nota de Fresha se guarda hasta 500 letras; `rows_skipped` cuenta las filas descartadas del
+    archivo de clientes.
+  - El E2E revisa la cita y la ficha en la base; que la cita salga en la agenda y en "Mi agenda" lo
+    cubren las pruebas de 0078 (es una cita normal de `appointments`).
 - Pantalla `/app/clientes/importar` (módulo `customers`; las pantallas del personal viven en `/app`): pasos para exportar desde Fresha,
   dos campos de archivo, resumen con conteos, selectores para los nombres sin pareja, botón
   **Importar** y, al final, "No se importaron" con motivo.

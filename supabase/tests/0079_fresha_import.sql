@@ -1,6 +1,6 @@
 -- T-290 / T-293 · Importar clientes y citas de Fresha (REQ-100, ADR-076, design §32.1)
 begin;
-select plan(40);
+select plan(41);
 
 create temp table ctx as
 select z.id as biz,
@@ -91,6 +91,8 @@ select throws_ok($$ select import_fresha((select biz from ctx), '[]', '[]', 0) $
 select auth.test_logout();
 
 delete from realtime.messages_local;
+create temp table avisos_antes as select count(*)::int as n from ticket_notifications;
+grant select on avisos_antes to public;
 select auth.test_login((select owner_u from ctx));
 insert into r select 'uno', import_fresha((select biz from ctx), c, a, 3) from args where k = 'uno';
 select auth.test_logout();
@@ -146,6 +148,9 @@ select ok((select business_day = (select today from ctx) + 20 from appointments 
 select is((select count(*)::int from realtime.messages_local
            where topic = 'queue:' || (select biz from ctx) and payload->>'kind' = 'appointment'), 2,
   'REQ-100.9 las citas importadas avisan a la agenda como las del dueño');
+
+select is((select count(*)::int from ticket_notifications), (select n from avisos_antes),
+  'REQ-100.9 importar no manda ningún aviso de WhatsApp al cliente');
 
 -- ------------------------------------------------------- otra vez igual ----
 select auth.test_login((select owner_u from ctx));

@@ -3,7 +3,6 @@
 import { getStaffSession } from "@/lib/auth/session";
 import {
   buildImportRows,
-  parseCsv,
   parseFreshaAppointments,
   parseFreshaClients,
   type AppointmentSkipReason,
@@ -11,10 +10,9 @@ import {
   type FreshaAppointment,
   type FreshaClient,
   type NamedOption,
-  MAX_FILE_BYTES,
 } from "@/lib/domain/fresha-import";
 import { businessDayBogota } from "@/lib/domain/time";
-import { readXlsxRows, XlsxError } from "@/lib/import/xlsx";
+import { fileRows } from "@/lib/import/read-file";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 /**
@@ -22,8 +20,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
  * nunca se guardan (REQ-100.11). Solo el dueño.
  */
 
-
-export type ImportFileError = "TOO_BIG" | "NOT_READABLE" | "NO_COLUMNS";
+export type { ImportFileError } from "@/lib/import/read-file";
+import type { ImportFileError } from "@/lib/import/read-file";
 
 export type ImportReason =
   | "PAST"
@@ -42,7 +40,14 @@ export type ImportPreview = {
     existing: number;
     skipped: Record<ClientSkipReason, number>;
   } | null;
-  appointments: { importable: number; skipped: Record<AppointmentSkipReason, number> } | null;
+  appointments: {
+    importable: number;
+    /** Listas para crear con las parejas que ya coinciden (REQ-100.2). */
+    ready: number;
+    noPhone: number;
+    unmatched: number;
+    skipped: Record<AppointmentSkipReason, number>;
+  } | null;
   unmatchedBarbers: string[];
   unmatchedServices: string[];
   barbers: NamedOption[];
@@ -88,22 +93,6 @@ type Read =
       apptSkips: { reason: AppointmentSkipReason }[];
     }
   | { ok: false; error: ImportFileError | "NO_FILES"; file?: "clients" | "appointments" };
-
-async function fileRows(
-  value: FormDataEntryValue | null,
-): Promise<string[][] | ImportFileError | null> {
-  if (!value || typeof value === "string" || value.size === 0) return null;
-  if (value.size > MAX_FILE_BYTES) return "TOO_BIG";
-  const buf = Buffer.from(await value.arrayBuffer());
-  try {
-    // Un .xlsx es un zip: empieza por "PK"
-    if (buf[0] === 0x50 && buf[1] === 0x4b) return readXlsxRows(buf);
-    return parseCsv(buf.toString("utf8"));
-  } catch (e) {
-    if (e instanceof XlsxError) return "NOT_READABLE";
-    throw e;
-  }
-}
 
 async function readFiles(form: FormData, today: string): Promise<Read> {
   const clientRows = await fileRows(form.get("clients"));
@@ -215,6 +204,9 @@ export async function previewFreshaImport(form: FormData): Promise<PreviewResult
       appointments: read.appts
         ? {
             importable: read.appts.length,
+            ready: built.appointments.length,
+            noPhone: built.notImported.filter((x) => x.reason === "NO_PHONE").length,
+            unmatched: built.notImported.filter((x) => x.reason === "UNMAPPED").length,
             skipped: count(["PAST", "NOT_BOOKED", "BAD_DATE"] as const, read.apptSkips),
           }
         : null,
