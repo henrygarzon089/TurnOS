@@ -1,4 +1,4 @@
-# Estado del proyecto — traspaso (2026-11-15)
+# Estado del proyecto — traspaso (2026-11-18)
 
 Este documento resume la conversación en la que se construyó todo hasta aquí, para que cualquier
 persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `specs/`.
@@ -754,7 +754,8 @@ Pendientes (H3): `/admin/caja`,
   portada cuando hay barberos que las reciben.
 - T-211 hecha (2026-11-15): Henry desplegó, activó "Recibir citas", reservó desde el celular una
   cita para el martes 17 a las 9:15 con Stiven y la vio en la agenda. Aprobado (ADR-067).
-- Abierta PA-H19-1: si el barbero ve sus propias citas de los próximos días (hoy no, REQ-054.6).
+- PA-H19-1 (si el barbero ve sus propias citas de los próximos días) quedó respondida con "Mi
+  agenda" en el Hito 25 (REQ-099, ADR-073).
 
 ### Hito 20 — cliente con fotos y paso a paso (aprobado 2026-11-15, REQ-085…090, ADR-063, ADR-068)
 
@@ -775,7 +776,7 @@ Pendientes (H3): `/admin/caja`,
   un solo servicio por turno; sin migraciones. Categorías, descripción y varios servicios quedaron
   fuera (ADR-064).
 - T-228 hecha (2026-11-15): Henry subió fotos, tomó un turno y reservó una cita. Aprobado (ADR-068).
-- En propuesta (sesión aparte): descripción de cada servicio al elegirlo.
+- La descripción de cada servicio al elegirlo se hizo en el Hito 23 (REQ-096).
 - Reporte cerrado (2026-11-15 → 2026-11-17): "cancelo el turno, vuelvo a tomar turno y sigue
   saliendo el cancelado". No se reprodujo ni en desarrollo ni con el build de producción ("Tomar un
   turno nuevo" crea un turno con token nuevo; `join_queue` solo reutiliza turnos activos). Henry
@@ -815,9 +816,9 @@ Pendientes (H3): `/admin/caja`,
   edición y MCP (bloquean o piden confirmación), contexto al iniciar, prettier al editar y puerta
   de calidad al terminar el turno. Subagentes en `.claude/agents/`, comandos `/tarea`,
   `/cerrar-hito` y `/nuevo-req` en `.claude/skills/`, `pnpm next-ids`. Sin migraciones ni cambios
-  a la app. Rama `claude/harness-agentes`.
+  a la app. En `main` desde el PR #193.
 - T-250…T-255 hechas; `pnpm trace --hito=22` sin huecos, 798 pruebas unitarias en verde.
-- Falta (Henry), T-256: abrir una sesión nueva de Claude Code en la rama y probar lo de la guía
+- Falta (Henry), T-256: abrir una sesión nueva de Claude Code en `main` y probar lo de la guía
   (contexto al iniciar, commit sin prefijo bloqueado, `vercel --prod` pidiendo confirmación, la
   puerta frenando un error de tipos); aprobar.
 - Ojo: la puerta corre en cualquier sesión con código sin commit, también si los cambios son de
@@ -858,13 +859,14 @@ Pendientes (H3): `/admin/caja`,
 - Responde PA-H19-1: el barbero ve en **Agenda** (`/app/agenda`, segunda en su barra; "Mi
   estación" pasa a "Más") sus citas pendientes de hoy a +7, por día, solo de lectura, sin celular
   ni enlace. Cambia REQ-054.6 solo para sus propias citas.
-- T-280…T-282 hechas (rama `claude/mi-agenda-barbero`): migración 0078 con `barber_agenda`
+- T-280…T-282 hechas (PR #204, en `main`): migración 0078 con `barber_agenda`
   (`security definer`, RLS de `appointments` sin cambios) y un trigger que avisa `queue_changed`
   al reservar, cancelar o mover una cita (hasta ahora no avisaba); pgTAP 26 casos; unit y E2E.
   La 0077 es del Hito 24 (ya en producción).
 - T-283 (2026-11-18): 0078 en producción, `c8e3f3c` desplegado; Henry probó con
   `docs/guia-prueba-hito-25.md` y aprobó (ADR-075).
-- PR #207 (aparte): textos "Perdió la hora" y "No recibes citas" en "Mi agenda".
+- PR #207 (2026-11-18, en producción): "Perdió la hora" (como en "Mi fila" y la agenda del
+  dueño) y "No recibes citas" en "Mi agenda", a pedido de Henry.
 
 ## Desvíos registrados respecto a la spec (todos explícitos)
 
@@ -919,15 +921,21 @@ Pendientes (H3): `/admin/caja`,
    push a `main` despliegue solo. Mientras tanto: `vercel deploy --prod --scope henry-garzons-projects`.
    Después de cada despliegue a producción: `pnpm check:deploy https://www.gammaclub.co`
    (REQ-078.26); si falla, `vercel --prod --force`.
-4. Correr `pnpm test:e2e` (y `E2E_SCREEN_KEY=<businesses.screen_key>` para la pantalla TV) y
-   Lighthouse (`lighthouserc.json`) → pasar las `[~]` a `[x]` → T-030 demo con Henry → cerrar H1.
-5. CI (`.github/workflows/ci.yml`) nunca ha corrido: validar en el primer push.
+4. **E2E y Lighthouse** — hecho: el CI de cada PR corre las E2E móviles (Pixel 7 e iPhone 13, en
+   4 partes) y Lighthouse móvil; H1 se cerró con el MVP (ADR-017, ADR-020).
+5. **CI** — hecho: `main` protegida exige calidad, E2E y Lighthouse en verde (T-010, 2026-11-14).
+6. **WhatsApp (T-069)** — pendiente (Henry): los pasos de Meta para los avisos reales (ADR-031).
+
+**Pendientes de Henry hoy (2026-11-18):** T-256 (probar el harness), T-069 (Meta), conectar el
+repo en Vercel para el despliegue automático y lo de Supabase del punto 1. Los Hitos 19–21 y
+23–25 están aprobados y en producción; no hay PRs abiertos.
 
 ## Cómo seguir (prompt sugerido para Claude Code)
 
 > Lee `CLAUDE.md`, `specs/` y `docs/estado-del-proyecto.md`. Continúa con Spec-Driven Development:
-> implementa T-033 de `specs/tasks.md` (primero pruebas, luego código), márcala, haz commit
-> `T-033: …` y dime cómo probarla desde el celular. Si la spec está incompleta, detente y propón el
+> corre `pnpm next-ids --fetch`, toma la siguiente tarea abierta de `specs/tasks.md` o, si Henry
+> pide algo nuevo, propón la spec con `/nuevo-req` (primero pruebas, luego código), márcala, haz
+> commit `T-NNN: …` y dile cómo probarla desde el celular. Si la spec está incompleta, detente y propón el
 > cambio antes de seguir. No reabras decisiones de `decisions.md` sin un ADR nuevo.
 
 ## Notas de diseño útiles al implementar H2/H3
