@@ -3149,9 +3149,12 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   trigger `appointments_notify_queue` usa `notify_queue_changed` de 0009 (no rompe si Realtime
   falla: solo avisa).
 
-### [ ] T-281 · Menú y ruta del barbero
+### [x] T-281 · Menú y ruta del barbero
 - REQ: REQ-099.1 · `modules.ts`, `barber-nav.ts` y sus pruebas.
 - Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-17. Precisión: con todos los módulos Limpieza queda quinta y pasa a "Más"; su
+  punto rojo de "falta la apertura" (REQ-078.16) sale entonces en el botón "Más" y junto a
+  Limpieza en la hoja.
 
 ### [ ] T-282 · Pantalla "Mi agenda"
 - REQ: REQ-099.2, REQ-099.4…099.7, REQ-099.9 · `getMyAgenda`, `domain/agenda.ts`,
