@@ -559,3 +559,12 @@
 | REQ-098.4 |  | T-270 (hecha), T-271 (hecha), T-272 (hecha) | product-description.spec.ts, menu-list.test.tsx, 0077_product_description.sql | cubierto |
 | REQ-098.5 |  | T-270 (hecha), T-271 (hecha), T-272 (hecha) | menu-list.test.tsx | cubierto |
 | REQ-098.6 |  | T-270 (hecha), T-271 (hecha), T-272 (hecha) | description-texts.test.ts | cubierto |
+| REQ-099.1 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.spec.ts, barbero-tablero.spec.ts, cleaning-barber.spec.ts, barber-nav.test.tsx, modules.test.ts | cubierto |
+| REQ-099.2 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.spec.ts, barber-agenda.test.tsx, 0078_barber_agenda.sql | cubierto |
+| REQ-099.3 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.spec.ts, barber-agenda.test.tsx, 0078_barber_agenda.sql | cubierto |
+| REQ-099.4 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.spec.ts, barber-agenda.test.tsx | cubierto |
+| REQ-099.5 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.test.tsx, 0078_barber_agenda.sql | cubierto |
+| REQ-099.6 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.test.tsx, 0078_barber_agenda.sql | cubierto |
+| REQ-099.7 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.spec.ts, 0078_barber_agenda.sql | cubierto |
+| REQ-099.8 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | 0078_barber_agenda.sql | cubierto |
+| REQ-099.9 |  | T-280 (hecha), T-281 (hecha), T-282 (hecha) | barber-agenda.test.tsx | cubierto |

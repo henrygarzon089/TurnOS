@@ -79,13 +79,19 @@ describe("REQ-084 Citas encendido en Gamma Club", () => {
     for (const id of OFF) expect(isModuleEnabled(id, ""), id).toBe(false);
   });
 
-  it("REQ-084.3 el dueño ve la agenda de hoy a +7 y el barbero no tiene agenda en su menú", () => {
+  it("REQ-084.3 el dueño ve la agenda de hoy a +7 y el barbero tiene su Agenda (REQ-099.1)", () => {
     const days = groupAgendaByDay([], "2026-11-17").map((g) => g.day);
     expect(days).toHaveLength(8);
     expect(days[0]).toBe("2026-11-17");
     expect(days[7]).toBe("2026-11-24");
     const barber = [...barberTabs(ESSENTIAL), ...barberMore(ESSENTIAL)].map((l) => l.href);
-    expect(barber).toEqual(["/app/fila", "/app/clientes", "/app/mis-numeros", "/app/estacion"]);
+    expect(barber).toEqual([
+      "/app/fila",
+      "/app/agenda",
+      "/app/clientes",
+      "/app/mis-numeros",
+      "/app/estacion",
+    ]);
   });
 
   it("REQ-084.4 con todos los módulos, Citas sigue encendido", () => {
@@ -138,6 +144,7 @@ describe("REQ-079.5 / REQ-079.6 moduleForPath", () => {
     expect(moduleForPath("/app/mis-fotos")).toBe("photos");
     expect(moduleForPath("/app/mis-numeros")).toBe("myNumbers");
     expect(moduleForPath("/app/estacion")).toBe("station");
+    expect(moduleForPath("/app/agenda")).toBe("appointments"); // REQ-099.1
   });
 
   it("REQ-080.1 /crear-negocio pertenece al módulo signup", () => {

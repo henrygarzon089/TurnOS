@@ -43,6 +43,7 @@ const HITOS: Record<string, [number, number][]> = {
   "22": [[92, 95]], // harness de los agentes (ADR-066)
   "23": [[96, 97]], // descripción de los servicios y del negocio (ADR-070)
   "24": [[98, 98]], // descripción de los productos del menú (ADR-072)
+  "25": [[99, 99]], // Mi agenda del barbero (ADR-073)
 };
 
 const req = readFileSync("specs/requirements.md", "utf8");

@@ -30,6 +30,7 @@ export function BarberNav({
   const pathname = usePathname();
   const router = useRouter();
   const [more, setMore] = useState(false);
+  const cleaningInMore = moreLinks.some((l) => l.href === "/app/limpieza");
   const [sale, setSale] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const closeMore = useCallback(() => setMore(false), []);
@@ -67,7 +68,11 @@ export function BarberNav({
               onClick={() => setMore(true)}
               className={`${tabClass(isBarberMoreActive(pathname, tabs))} w-full`}
             >
-              <Icon name="more" className="size-5" />
+              {/* REQ-078.16 con REQ-099.1: si Limpieza quedó en "Más", su punto sale aquí */}
+              <span className="relative">
+                <Icon name="more" className="size-5" />
+                {cleaningInMore && cleaningDot}
+              </span>
               Más
             </button>
           </li>
@@ -82,11 +87,12 @@ export function BarberNav({
                 href={it.href}
                 aria-current={current(it)}
                 onClick={closeMore}
-                className={`border-line flex min-h-14 items-center border-b text-base ${
+                className={`border-line flex min-h-14 items-center gap-2 border-b text-base ${
                   current(it) ? "text-brand font-semibold" : "text-ink"
                 }`}
               >
                 {it.label}
+                {it.href === "/app/limpieza" && <span className="relative">{cleaningDot}</span>}
               </Link>
             </li>
           ))}

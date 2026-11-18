@@ -19,11 +19,19 @@ export const BARBER_TAB_SLOTS = 4;
 /**
  * Todos los destinos del barbero en orden de prioridad (REQ-079.3, design §23.2). Regla: entre los
  * módulos encendidos, en este orden, los primeros `BARBER_TAB_SLOTS` van a la barra y el resto a
- * "Más". Con todo encendido sale lo de siempre (Mi fila, Clientes, Números, Limpieza; Más: Mis
- * fotos, Mi estación). En modo esencial, Limpieza está apagada y "Mi estación" ocupa su lugar.
+ * "Más". Con todo encendido: Mi fila, Agenda, Clientes, Números; Más: Limpieza, Mis fotos, Mi
+ * estación. En modo esencial: Mi fila, Agenda, Clientes, Números; Más: Mi estación (REQ-099.1).
  */
 export const BARBER_LINKS: BarberLink[] = [
   { href: "/app/fila", label: "Mi fila", icon: "list", module: "queue" },
+  // REQ-099.1 (ADR-073): segunda en la barra; con Citas apagado no sale
+  {
+    href: "/app/agenda",
+    label: "Agenda",
+    name: "Mi agenda",
+    icon: "calendar",
+    module: "appointments",
+  },
   { href: "/app/clientes", label: "Clientes", icon: "users", module: "customers" },
   {
     href: "/app/mis-numeros",

@@ -10,6 +10,7 @@ import {
 import { normalizePhoneCO } from "@/lib/domain/phone";
 import { businessDayBogota } from "@/lib/domain/time";
 import { afterQueueChange } from "@/lib/notifications/after-queue-change";
+import type { BarberAgendaItem } from "@/components/staff/BarberAgenda";
 import type { Slot } from "@/lib/queue/appointments";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -262,4 +263,39 @@ export async function cancelAppointment(id: string): Promise<ActionResult> {
 /** REQ-054.2: a otro barbero que reciba citas, haga el servicio y tenga esa hora libre. */
 export async function reassignAppointment(id: string, barberId: string): Promise<ActionResult> {
   return ownerAppointmentRpc("reassign_appointment", { p_id: id, p_barber_id: barberId });
+}
+
+// ------------------------------------------------- Mi agenda del barbero ----
+
+export type MyAgenda = {
+  businessId: string;
+  today: string;
+  acceptsAppointments: boolean;
+  items: BarberAgendaItem[];
+};
+
+/**
+ * REQ-099.2, 099.6, 099.8: las citas pendientes del barbero de hoy a +7 por `barber_agenda`, con
+ * la sesión del barbero (no `service_role`). `null` si no es un barbero.
+ */
+export async function getMyAgenda(): Promise<MyAgenda | null> {
+  const session = await getStaffSession();
+  if (session?.role !== "barber" || !session.barberId) return null;
+  const supabase = await createSupabaseServerClient();
+  const today = businessDayBogota(new Date());
+  const to = new Date(`${today}T00:00:00Z`);
+  to.setUTCDate(to.getUTCDate() + 7);
+  const { data, error } = await supabase.rpc("barber_agenda", {
+    p_business_id: session.business.id,
+    p_from: today,
+    p_to: to.toISOString().slice(0, 10),
+  });
+  if (error) throw new Error(error.message);
+  const r = (data ?? {}) as { acceptsAppointments?: boolean; items?: BarberAgendaItem[] };
+  return {
+    businessId: session.business.id,
+    today,
+    acceptsAppointments: r.acceptsAppointments === true,
+    items: r.items ?? [],
+  };
 }

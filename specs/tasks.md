@@ -35,6 +35,7 @@
 | H18 | Cobro y pantallas sin módulos apagados (ADR-060) | T-200…T-203 | REQ-082, REQ-083 |
 | H19 | Citas en modo esencial (ADR-062) | T-210…T-211 | REQ-084 |
 | H20 | Cliente con fotos y paso a paso (ADR-063, ADR-064) | T-220…T-230 | REQ-085…REQ-090 |
+| H25 | "Mi agenda" del barbero (ADR-073) | T-280…T-283 | REQ-099 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -3166,6 +3167,56 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   la borra; aprobación (ADR nuevo).
 - 2026-11-17: 0077 aplicada en producción y `6c4d4c0` desplegado; guía
   `docs/guia-prueba-hito-24.md`. Henry probó con la guía: "Hito 24 aprobado" (ADR-074).
+
+---
+
+## Hito 25 — "Mi agenda" del barbero (REQ-099, ADR-073)
+
+> Aprobada por Henry el 2026-11-17 ("Aprobada, constrúyela"). Orden: T-280 → T-281 → T-282 → T-283.
+> La migración 0078 la aplica Henry (o la sesión principal si él lo pide) en producción antes del
+> deploy.
+
+### [x] T-280 · Función `barber_agenda`
+- REQ: REQ-099.2, REQ-099.3, REQ-099.7 (trigger), REQ-099.8 · Migración `0078_barber_agenda.sql`
+  (design §31.1), pgTAP
+  `0078_barber_agenda.sql`. Revisión con `revisor-sql`.
+- Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-17. pgTAP de 26 casos y la suite completa (1733) en verde. `revisor-sql`: el
+  trigger de update quedó con `when` (solo si cambia estado, barbero u hora) para no repetir avisos
+  en el cierre diario; `search_path = public` sin `pg_temp` es la convención del repo (sin cambio). Precisión: el
+  trigger `appointments_notify_queue` usa `notify_queue_changed` de 0009 (no rompe si Realtime
+  falla: solo avisa).
+
+### [x] T-281 · Menú y ruta del barbero
+- REQ: REQ-099.1 · `modules.ts`, `barber-nav.ts` y sus pruebas.
+- Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-17. Precisión: con todos los módulos Limpieza queda quinta y pasa a "Más"; su
+  punto rojo de "falta la apertura" (REQ-078.16) sale entonces en el botón "Más" y junto a
+  Limpieza en la hoja.
+
+### [x] T-282 · Pantalla "Mi agenda"
+- REQ: REQ-099.2, REQ-099.4…099.7, REQ-099.9 · `getMyAgenda`, `domain/agenda.ts`,
+  `/app/agenda` con esqueleto y refresco en vivo; unit y E2E `barber-agenda.spec.ts`. Revisión con
+  `revisor-textos`.
+- Modelo: Opus 5.5. Complejidad: media.
+- Hecha 2026-11-17. Precisión: la lógica pura quedó en `domain/appointments.ts` (no en un
+  `agenda.ts` nuevo) junto a `groupAgendaByDay` del dueño; el día largo usa `formatDateLong`
+  ("jueves 19 de noviembre"). Componente `BarberAgenda`, `getMyAgenda`, `/app/agenda` con
+  `LiveRefresh` y esqueleto. Unit `barber-agenda.test.tsx` (9) y E2E `barber-agenda.spec.ts` (2).
+  Desvíos menores del design §31 (revisor-spec): "Atrasada" usa `Tag tone="warn"` (el repo no
+  tiene `Badge` y la marca no va en rojo); la E2E crea y cancela la cita directo en la base
+  (prueba el trigger y el refresco, REQ-099.7; reservar y cancelar ya tienen sus propias E2E);
+  la pgTAP de "otro negocio" usa un id de negocio que no es del barbero (mismo camino:
+  `my_barber_id` da null).
+  Con todos los módulos (CI), Limpieza queda quinta y va a "Más": REQ-062.6 se cumple por "Más"
+  y por "Hacerla" en el aviso de apertura; se ajustaron `barbero-tablero` y `cleaning-barber`.
+  En producción Limpieza está apagada.
+
+### [ ] T-283 · Validación Hito 25
+- Terminado: `pnpm trace --hito=25` sin huecos; `docs/estado-del-proyecto.md` al día; guía
+  `docs/guia-prueba-hito-25.md`; 0078 en producción; Henry reserva una cita para mañana con Pedro
+  o Stiven, el barbero la ve en "Agenda" desde su celular y el otro barbero no; aprobación (ADR
+  nuevo).
 
 ---
 

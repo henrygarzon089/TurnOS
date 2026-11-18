@@ -125,6 +125,7 @@ const ADMIN_ROUTES = new Map<string, ModuleId>([
 
 const APP_ROUTES = new Map<string, ModuleId>([
   ["fila", "queue"],
+  ["agenda", "appointments"], // REQ-099.1
   ["clientes", "customers"],
   ["mis-numeros", "myNumbers"],
   ["estacion", "station"],

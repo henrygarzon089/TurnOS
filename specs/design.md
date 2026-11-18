@@ -3524,3 +3524,55 @@ numerar. Máximo ~15 líneas.
 - E2E móvil: el dueño escribe la descripción de un producto en "Productos", el cliente la ve en
   "Ver menú" de la portada; al borrarla, la fila vuelve a verse como antes.
 - `pnpm lint:texts` y `pnpm lint:design` (REQ-098.6).
+
+## 31. Hito 25 — "Mi agenda" del barbero (REQ-099, ADR-073)
+
+### 31.1 Datos (migración `0078_barber_agenda.sql`)
+- Sin tablas ni columnas nuevas; RLS de `appointments` sin cambios.
+- `barber_agenda(p_business_id uuid, p_from date, p_to date) returns jsonb`, `stable security
+  definer set search_path = public`:
+  - `v_me := my_barber_id(p_business_id)`; si es null (no es barbero de ese negocio, o es el dueño
+    sin ficha de barbero) → `raise 'FORBIDDEN'` (42501).
+  - Recorta el rango: `p_from` no antes de `business_day_bogota(now())` y `p_to - p_from <= 7`;
+    si no, `raise 'INVALID_RANGE'` (22023).
+  - Devuelve `jsonb_agg` de `appointments a` con `a.barber_id = v_me`, `a.status = 'booked'` y
+    `a.business_day between p_from and p_to`, ordenado por `starts_at`: `id`, `day`, `startsAt`,
+    `endsAt`, `customerName`, `serviceName`, `durationMin`, `late` (`appointment_lapsed`). **Sin**
+    `customer_phone_e164`, `public_token`, precio ni `cancel_reason`.
+  - Además `acceptsAppointments` del barbero (para REQ-099.6): la respuesta es
+    `{ acceptsAppointments: bool, items: [...] }`.
+- `revoke all … from public, anon; grant execute … to authenticated`.
+- Hoy reservar y cancelar una cita **no** emiten `queue_changed` (revisado 2026-11-17: ninguna
+  función de 0045–0049 llama a `notify_queue_changed`). La migración suma un trigger
+  `after insert` y otro `after update of status, barber_id, starts_at` con `when` (solo si alguna
+  cambió, como `tickets_broadcast` en 0009) que llaman a
+  `notify_queue_changed(new.business_id, 'appointment')`. De paso, la agenda del dueño y los huecos
+  de citas en la fila pública también se ponen al día solos.
+
+### 31.2 Servidor y pantalla
+- `getMyAgenda()` en `src/lib/actions/appointments.ts`: sesión de barbero (`getStaffSession`),
+  días con `time.ts` (hoy Bogotá → +7), llama a `barber_agenda` con el cliente de la sesión (no
+  `service_role`).
+- Lógica pura en `src/lib/domain/appointments.ts` (junto a la agenda del dueño):
+  `agendaDayTitle(day, today)` → "Hoy", "Mañana" o `formatDateLong` ("jueves 19 de noviembre") y
+  `barberAgendaGroups(items, today)` → días de hoy a +7 con citas, sin los vacíos.
+- `src/app/(staff)/app/agenda/page.tsx` (+ `loading.tsx` con esqueleto, REQ-075): lista por día con
+  filas de 56 px (hora inicio–fin en `tabular-nums`, cliente, servicio · duración), marca
+  "Atrasada" con `Tag tone="warn"`; vacío y aviso de REQ-099.6; nota final de REQ-099.4.
+  Componente cliente pequeño que se suscribe a `queue:<business_id>` y hace `router.refresh()`
+  en `queue_changed` y en `visibilitychange` (como "Mi fila").
+- `modules.ts`: `APP_ROUTES` suma `["agenda", "appointments"]`. `barber-nav.ts`: `BARBER_LINKS`
+  suma `{ href: "/app/agenda", label: "Agenda", name: "Mi agenda", icon: "calendar",
+  module: "appointments" }` en la segunda posición.
+
+### 31.3 Pruebas
+- pgTAP `supabase/tests/0078_barber_agenda.sql`: el barbero ve solo sus `booked` de hoy a +7; no ve
+  las de otro barbero, canceladas ni pasadas; sin `phone`/`token` en el JSON; el dueño sin ficha y
+  un barbero de otro negocio reciben FORBIDDEN; rango de más de 8 días o hacia atrás → error;
+  `anon` no puede ejecutar.
+- Unit: `barber-agenda.test.tsx` (agrupar y títulos de día), `barber-nav` (Agenda segunda, "Mi estación" en
+  "Más" en modo esencial, nada con Citas apagado), `modules` (ruta apagada), página con vacío,
+  aviso de no recibir citas, "Atrasada" y textos (REQ-099.9).
+- E2E `barber-agenda.spec.ts` (móvil): con La 33, reservar una cita para mañana con un barbero,
+  entrar como ese barbero → aparece en "Mañana"; otro barbero no la ve; el dueño la cancela → se va
+  de la agenda sin recargar.

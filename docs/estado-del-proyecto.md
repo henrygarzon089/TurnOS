@@ -853,6 +853,18 @@ Pendientes (H3): `/admin/caja`,
 - T-273 (2026-11-17): Henry probó con `docs/guia-prueba-hito-24.md` y aprobó (ADR-074).
 - Gamma Club: Henry escribe las descripciones de los productos desde el celular.
 
+### Hito 25 — "Mi agenda" del barbero (aprobado como spec 2026-11-17, REQ-099, ADR-073)
+
+- Responde PA-H19-1: el barbero ve en **Agenda** (`/app/agenda`, segunda en su barra; "Mi
+  estación" pasa a "Más") sus citas pendientes de hoy a +7, por día, solo de lectura, sin celular
+  ni enlace. Cambia REQ-054.6 solo para sus propias citas.
+- T-280…T-282 hechas (rama `claude/mi-agenda-barbero`): migración 0078 con `barber_agenda`
+  (`security definer`, RLS de `appointments` sin cambios) y un trigger que avisa `queue_changed`
+  al reservar, cancelar o mover una cita (hasta ahora no avisaba); pgTAP 26 casos; unit y E2E.
+  La 0077 es del Hito 24 (ya en producción).
+- Falta T-283: aplicar 0078 en producción antes del deploy y la prueba de Henry
+  (`docs/guia-prueba-hito-25.md`).
+
 ## Desvíos registrados respecto a la spec (todos explícitos)
 
 - Next.js 16: `middleware.ts` → `src/proxy.ts`; `cacheComponents` desactivado.
