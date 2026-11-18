@@ -3212,11 +3212,13 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   y por "Hacerla" en el aviso de apertura; se ajustaron `barbero-tablero` y `cleaning-barber`.
   En producción Limpieza está apagada.
 
-### [ ] T-283 · Validación Hito 25
+### [x] T-283 · Validación Hito 25
 - Terminado: `pnpm trace --hito=25` sin huecos; `docs/estado-del-proyecto.md` al día; guía
   `docs/guia-prueba-hito-25.md`; 0078 en producción; Henry reserva una cita para mañana con Pedro
   o Stiven, el barbero la ve en "Agenda" desde su celular y el otro barbero no; aprobación (ADR
   nuevo).
+- 2026-11-18: 0078 en producción y `c8e3f3c` desplegado. Henry probó y aprobó ("apruebo Hito
+  25", ADR-075).
 
 ---
 

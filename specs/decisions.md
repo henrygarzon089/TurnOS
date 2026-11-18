@@ -1354,3 +1354,14 @@
 - Consecuencias: el dueño escribe desde "Productos" la descripción que ve el cliente en el menú;
   sin descripción, el menú se ve como antes. La cortesía, la caja y el inventario siguen sin
   descripción (PA-H24-2). ADR-073 lo tiene otra rama sin fusionar.
+
+## ADR-075 · Aprobación del Hito 25 ("Mi agenda" del barbero)
+- Estado: **aceptada** (Henry, 2026-11-18)
+- Contexto: REQ-099 construido (T-280…T-282) y fusionado en `main` con el PR #204 (CI en verde,
+  E2E incluidas). La migración 0078 está en producción (`supabase db push`: "Remote database is
+  up to date") y `c8e3f3c` se desplegó en https://www.gammaclub.co. `pnpm trace --hito=25` sin
+  huecos. Guía: `docs/guia-prueba-hito-25.md`.
+- Decisión: Henry aprueba el Hito 25 ("apruebo Hito 25", 2026-11-18). T-283 cerrada.
+- Consecuencias: el barbero ve en "Agenda" sus citas pendientes de hoy a +7, solo de lectura y sin
+  datos de contacto del cliente; "Mi estación" queda en "Más". Los textos "Perdió la hora" y "No
+  recibes citas" van aparte en el PR #207.

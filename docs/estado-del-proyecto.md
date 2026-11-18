@@ -853,7 +853,7 @@ Pendientes (H3): `/admin/caja`,
 - T-273 (2026-11-17): Henry probó con `docs/guia-prueba-hito-24.md` y aprobó (ADR-074).
 - Gamma Club: Henry escribe las descripciones de los productos desde el celular.
 
-### Hito 25 — "Mi agenda" del barbero (aprobado como spec 2026-11-17, REQ-099, ADR-073)
+### Hito 25 — "Mi agenda" del barbero (aprobado 2026-11-18, REQ-099, ADR-073, ADR-075)
 
 - Responde PA-H19-1: el barbero ve en **Agenda** (`/app/agenda`, segunda en su barra; "Mi
   estación" pasa a "Más") sus citas pendientes de hoy a +7, por día, solo de lectura, sin celular
@@ -862,8 +862,9 @@ Pendientes (H3): `/admin/caja`,
   (`security definer`, RLS de `appointments` sin cambios) y un trigger que avisa `queue_changed`
   al reservar, cancelar o mover una cita (hasta ahora no avisaba); pgTAP 26 casos; unit y E2E.
   La 0077 es del Hito 24 (ya en producción).
-- Falta T-283: aplicar 0078 en producción antes del deploy y la prueba de Henry
-  (`docs/guia-prueba-hito-25.md`).
+- T-283 (2026-11-18): 0078 en producción, `c8e3f3c` desplegado; Henry probó con
+  `docs/guia-prueba-hito-25.md` y aprobó (ADR-075).
+- PR #207 (aparte): textos "Perdió la hora" y "No recibes citas" en "Mi agenda".
 
 ## Desvíos registrados respecto a la spec (todos explícitos)
 
