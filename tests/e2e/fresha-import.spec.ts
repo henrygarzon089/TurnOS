@@ -124,7 +124,7 @@ test.describe("REQ-100 Importar de Fresha", () => {
 
       const { data: appt } = await db
         .from("appointments")
-        .select("barber_id, customer_name, status, barbers:barber_id ( display_name )")
+        .select("barber_id, customer_name, status")
         .eq("business_id", biz!.id)
         .eq("external_ref", `E2E-${n}-1`)
         .single();
