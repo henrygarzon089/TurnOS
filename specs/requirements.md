@@ -1852,7 +1852,7 @@ próximos días, **para** llenar las sillas con citas además de la fila.
 Preguntas del Hito 19 (Henry aprobó la spec el 2026-11-14; esta sigue abierta):
 - **PA-H19-1**: ¿el barbero debe ver **sus propias** citas de los próximos días? Hoy REQ-054.6 se lo
   prohíbe. Propuesta: sí, solo las suyas, en una lista "Mis citas" (sería REQ-084.5 y cambia
-  REQ-054.6).
+  REQ-054.6). → Se responde en REQ-099 (Hito 25, propuesta).
 
 Fuera de alcance del Hito 19: avisos por WhatsApp de las citas (dependen de T-069), cambiar cómo se
 calculan las horas libres.
@@ -2154,6 +2154,46 @@ clásicos y modernos, barba y cejas.").
 Fuera de alcance del Hito 23: categorías de servicios, escoger varios servicios, "Ver más",
 descripción en otros idiomas o con formato (negrita, listas, emojis especiales), descripción de
 productos de la vitrina y descripción del negocio en otras pantallas (pasos, televisor, "Mi turno").
+
+### REQ-099 · Mi agenda del barbero — S
+**Como** barbero, **quiero** ver mis citas de hoy y de los próximos días, **para** saber cuándo
+tengo clientes reservados y organizar mi día sin preguntarle al dueño.
+
+- REQ-099.1 Cuando el módulo Citas esté encendido (REQ-084.1), el menú del barbero DEBE tener
+  **Agenda** (nombre accesible "Mi agenda", ruta `/app/agenda`) en la barra inferior, justo después
+  de "Mi fila"; el destino que quede de quinto pasa a "Más" (REQ-079.3). Con Citas apagado NO DEBE
+  aparecer y la ruta DEBE responder como las demás rutas apagadas.
+- REQ-099.2 "Mi agenda" DEBE listar las citas **pendientes del barbero que entró**, de hoy y de los
+  7 días siguientes, agrupadas por día ("Hoy", "Mañana" y luego "martes 18 de nov."), en orden de
+  hora, cada una con hora de inicio y fin, nombre del cliente, servicio y duración.
+- REQ-099.3 El barbero NO DEBE ver en "Mi agenda" citas de otros barberos, ni el celular del cliente,
+  ni el enlace de "Mi cita", ni citas canceladas, atendidas o de días pasados. Cambia REQ-054.6:
+  el barbero ya puede ver **sus** citas de los próximos días; las de otros barberos siguen ocultas.
+- REQ-099.4 "Mi agenda" DEBE ser solo de lectura: sin botones para cancelar, mover ni avisar. Debajo
+  de la lista DEBE decir "Para cambiar o cancelar una cita, habla con el dueño."
+- REQ-099.5 Cuando una cita de hoy ya pasó la tolerancia (REQ-052, `late`), DEBE verse con la marca
+  "Atrasada"; las de hoy que ya llegaron a la fila no DEBEN aparecer (dejan de estar pendientes).
+- REQ-099.6 Cuando el barbero no tenga citas pendientes en esos 8 días, DEBE ver "No tienes citas
+  reservadas en los próximos días." Si el barbero no recibe citas (REQ-049.2), DEBE ver además "Hoy
+  no recibes citas. El dueño lo activa en Citas."
+- REQ-099.7 La lista DEBE ponerse al día sola cuando se reserve o cancele una cita del barbero
+  (canal `queue:<business_id>`, ADR-008) y al volver a la pestaña.
+- REQ-099.8 La base de datos DEBE entregarle al barbero solo sus citas por una función
+  `security definer` que valide su sesión; un dueño o un barbero de otro negocio NO DEBE poder
+  leer la agenda de otro barbero por ella.
+- REQ-099.9 Todo texto visible en español colombiano (NFR-006).
+
+Preguntas abiertas del Hito 25 (con propuesta; se cierran con la aprobación de Henry):
+- **PA-H25-1**: ¿cuántos días? Propuesta: hoy y 7 más, igual que la agenda del dueño (REQ-054.1).
+- **PA-H25-2**: ¿qué ve de cada cita? Propuesta: hora, nombre, servicio y duración; sin celular
+  (el aviso al cliente lo da el dueño, REQ-054.2/.3).
+- **PA-H25-3**: ¿dónde va en el menú? Propuesta: segundo en la barra ("Mi fila", "Agenda",
+  "Clientes", "Números"); "Mi estación" pasa a "Más".
+- **PA-H25-4**: ¿puede cancelar o mover? Propuesta: no; solo mirar (REQ-099.4).
+
+Fuera de alcance del Hito 25: que el barbero cancele, mueva o confirme citas; avisos al barbero por
+WhatsApp o notificación; bloquear horas propias (vacaciones, almuerzo); ver la agenda de otros
+barberos; exportar al calendario del celular.
 
 ---
 

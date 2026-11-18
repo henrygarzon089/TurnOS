@@ -1301,3 +1301,24 @@
 - Consecuencias: el dueño escribe desde "Servicios" y "Negocio" las descripciones que ve el
   cliente; sin descripción, las pantallas se ven como antes. Las categorías y escoger varios
   servicios siguen fuera (ADR-064, ADR-070).
+
+## ADR-073 · Hito 25: "Mi agenda" del barbero
+- Estado: **propuesta** (2026-11-17), espera la aprobación de Henry.
+- Contexto: desde el Hito 8 el barbero solo ve en su fila las citas de hoy (REQ-054.6), y la RLS de
+  `appointments` se lo limita a ese día. Con Citas encendido en Gamma Club (ADR-062) quedó abierta
+  PA-H19-1: el barbero quiere saber qué tiene reservado mañana y el resto de la semana sin
+  preguntarle al dueño. Henry pidió preparar "Mi agenda" el 2026-11-17.
+- Decisión: (1) Pantalla nueva `/app/agenda`, solo de lectura, bajo el módulo `appointments`;
+  en el menú del barbero va segunda. (2) Datos por una función nueva
+  `barber_agenda(p_business_id, p_from, p_to)` `security definer` que usa `my_barber_id` y devuelve
+  solo las citas `booked` del barbero, sin celular ni token, máximo 8 días (migración 0078; la 0077
+  la tiene reservada el Hito 24). (3) La RLS de `appointments` **no cambia**: el barbero sigue sin
+  leer la tabla fuera de hoy; la función es el único camino. (4) Se refresca con el broadcast
+  `queue_changed` (ADR-008); como hoy reservar y cancelar no lo emiten, la migración suma un
+  trigger en `appointments` que lo emite al crear, cancelar o mover una cita.
+- Alternativas: (a) ampliar la política `appointments_barber_select` a 8 días: expone el celular y
+  el token del cliente al barbero por la tabla. (b) Reusar `appointments_agenda` del dueño con un
+  filtro: mezcla permisos y devuelve datos de contacto. (c) Mostrar las citas de mañana dentro de
+  "Mi fila": esa pantalla es de hoy y ya está llena.
+- Consecuencias: cambia REQ-054.6 (el barbero ve sus citas futuras, no las de otros). "Mi estación"
+  baja a "Más" en modo esencial. Una migración nueva que Henry aplica antes del deploy.

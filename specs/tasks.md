@@ -35,6 +35,7 @@
 | H18 | Cobro y pantallas sin módulos apagados (ADR-060) | T-200…T-203 | REQ-082, REQ-083 |
 | H19 | Citas en modo esencial (ADR-062) | T-210…T-211 | REQ-084 |
 | H20 | Cliente con fotos y paso a paso (ADR-063, ADR-064) | T-220…T-230 | REQ-085…REQ-090 |
+| H25 | "Mi agenda" del barbero (ADR-073) — **propuesta** | T-280…T-283 | REQ-099 |
 
 Cada hito cierra con su tarea de validación (matriz de trazabilidad).
 
@@ -3130,6 +3131,36 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Hecha 2026-11-16: la sesión principal aplicó 0076 con `supabase db push` y desplegó `88e142e`
   porque Henry no podía hacerlo desde el celular (2026-11-15). Henry probó con la guía: "Hito 23
   aprobado" (ADR-071).
+
+---
+
+## Hito 25 — "Mi agenda" del barbero (REQ-099, ADR-073)
+
+> **Propuesta** (2026-11-17), espera la aprobación de Henry. Orden: T-280 → T-281 → T-282 → T-283.
+> La migración 0078 la aplica Henry (o la sesión principal si él lo pide) en producción antes del
+> deploy.
+
+### [ ] T-280 · Función `barber_agenda`
+- REQ: REQ-099.2, REQ-099.3, REQ-099.7 (trigger), REQ-099.8 · Migración `0078_barber_agenda.sql`
+  (design §31.1), pgTAP
+  `0078_barber_agenda.sql`. Revisión con `revisor-sql`.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-281 · Menú y ruta del barbero
+- REQ: REQ-099.1 · `modules.ts`, `barber-nav.ts` y sus pruebas.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-282 · Pantalla "Mi agenda"
+- REQ: REQ-099.2, REQ-099.4…099.7, REQ-099.9 · `getMyAgenda`, `domain/agenda.ts`,
+  `/app/agenda` con esqueleto y refresco en vivo; unit y E2E `barber-agenda.spec.ts`. Revisión con
+  `revisor-textos`.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [ ] T-283 · Validación Hito 25
+- Terminado: `pnpm trace --hito=25` sin huecos; `docs/estado-del-proyecto.md` al día; guía
+  `docs/guia-prueba-hito-25.md`; 0078 en producción; Henry reserva una cita para mañana con Pedro
+  o Stiven, el barbero la ve en "Agenda" desde su celular y el otro barbero no; aprobación (ADR
+  nuevo).
 
 ---
 
