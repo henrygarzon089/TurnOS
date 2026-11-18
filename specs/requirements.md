@@ -1852,7 +1852,7 @@ próximos días, **para** llenar las sillas con citas además de la fila.
 Preguntas del Hito 19 (Henry aprobó la spec el 2026-11-14; esta sigue abierta):
 - **PA-H19-1**: ¿el barbero debe ver **sus propias** citas de los próximos días? Hoy REQ-054.6 se lo
   prohíbe. Propuesta: sí, solo las suyas, en una lista "Mis citas" (sería REQ-084.5 y cambia
-  REQ-054.6). → Se responde en REQ-099 (Hito 25, propuesta).
+  REQ-054.6). → Respondida en REQ-099 (Hito 25, ADR-073).
 
 Fuera de alcance del Hito 19: avisos por WhatsApp de las citas (dependen de T-069), cambiar cómo se
 calculan las horas libres.
@@ -2183,7 +2183,7 @@ tengo clientes reservados y organizar mi día sin preguntarle al dueño.
   leer la agenda de otro barbero por ella.
 - REQ-099.9 Todo texto visible en español colombiano (NFR-006).
 
-Preguntas abiertas del Hito 25 (con propuesta; se cierran con la aprobación de Henry):
+Preguntas del Hito 25 (cerradas: Henry aprobó las propuestas el 2026-11-17, ADR-073):
 - **PA-H25-1**: ¿cuántos días? Propuesta: hoy y 7 más, igual que la agenda del dueño (REQ-054.1).
 - **PA-H25-2**: ¿qué ve de cada cita? Propuesta: hora, nombre, servicio y duración; sin celular
   (el aviso al cliente lo da el dueño, REQ-054.2/.3).

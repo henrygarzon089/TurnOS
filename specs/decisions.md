@@ -1303,7 +1303,8 @@
   servicios siguen fuera (ADR-064, ADR-070).
 
 ## ADR-073 · Hito 25: "Mi agenda" del barbero
-- Estado: **propuesta** (2026-11-17), espera la aprobación de Henry.
+- Estado: **aceptada** (Henry, 2026-11-17: "Aprobada, constrúyela", con PA-H25-1…4 según la
+  propuesta: hoy y 7 días, sin celular, segunda en la barra, solo de lectura).
 - Contexto: desde el Hito 8 el barbero solo ve en su fila las citas de hoy (REQ-054.6), y la RLS de
   `appointments` se lo limita a ese día. Con Citas encendido en Gamma Club (ADR-062) quedó abierta
   PA-H19-1: el barbero quiere saber qué tiene reservado mañana y el resto de la semana sin
