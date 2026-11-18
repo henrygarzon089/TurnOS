@@ -3167,6 +3167,11 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `agenda.ts` nuevo) junto a `groupAgendaByDay` del dueño; el día largo usa `formatDateLong`
   ("jueves 19 de noviembre"). Componente `BarberAgenda`, `getMyAgenda`, `/app/agenda` con
   `LiveRefresh` y esqueleto. Unit `barber-agenda.test.tsx` (9) y E2E `barber-agenda.spec.ts` (2).
+  Desvíos menores del design §31 (revisor-spec): "Atrasada" usa `Tag tone="warn"` (el repo no
+  tiene `Badge` y la marca no va en rojo); la E2E crea y cancela la cita directo en la base
+  (prueba el trigger y el refresco, REQ-099.7; reservar y cancelar ya tienen sus propias E2E);
+  la pgTAP de "otro negocio" usa un id de negocio que no es del barbero (mismo camino:
+  `my_barber_id` da null).
 
 ### [ ] T-283 · Validación Hito 25
 - Terminado: `pnpm trace --hito=25` sin huecos; `docs/estado-del-proyecto.md` al día; guía

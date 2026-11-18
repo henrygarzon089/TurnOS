@@ -3514,7 +3514,7 @@ numerar. Máximo ~15 líneas.
   `barberAgendaGroups(items, today)` → días de hoy a +7 con citas, sin los vacíos.
 - `src/app/(staff)/app/agenda/page.tsx` (+ `loading.tsx` con esqueleto, REQ-075): lista por día con
   filas de 56 px (hora inicio–fin en `tabular-nums`, cliente, servicio · duración), marca
-  "Atrasada" con `Badge` de atención; vacío y aviso de REQ-099.6; nota final de REQ-099.4.
+  "Atrasada" con `Tag tone="warn"`; vacío y aviso de REQ-099.6; nota final de REQ-099.4.
   Componente cliente pequeño que se suscribe a `queue:<business_id>` y hace `router.refresh()`
   en `queue_changed` y en `visibilitychange` (como "Mi fila").
 - `modules.ts`: `APP_ROUTES` suma `["agenda", "appointments"]`. `barber-nav.ts`: `BARBER_LINKS`
@@ -3526,7 +3526,7 @@ numerar. Máximo ~15 líneas.
   las de otro barbero, canceladas ni pasadas; sin `phone`/`token` en el JSON; el dueño sin ficha y
   un barbero de otro negocio reciben FORBIDDEN; rango de más de 8 días o hacia atrás → error;
   `anon` no puede ejecutar.
-- Unit: `agenda.test.ts` (agrupar y títulos de día), `barber-nav` (Agenda segunda, "Mi estación" en
+- Unit: `barber-agenda.test.tsx` (agrupar y títulos de día), `barber-nav` (Agenda segunda, "Mi estación" en
   "Más" en modo esencial, nada con Citas apagado), `modules` (ruta apagada), página con vacío,
   aviso de no recibir citas, "Atrasada" y textos (REQ-099.9).
 - E2E `barber-agenda.spec.ts` (móvil): con La 33, reservar una cita para mañana con un barbero,
