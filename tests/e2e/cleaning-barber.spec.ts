@@ -38,10 +38,17 @@ test.describe("REQ-061 / REQ-062 Limpieza del barbero", () => {
     // REQ-062.1 y REQ-062.2: el aviso está arriba y la fila sigue ahí
     await expect(page.getByRole("status", { name: "Apertura pendiente" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Mi fila" })).toBeVisible();
-    // REQ-062.6 botón Limpieza en el menú de abajo, con punto rojo mientras falta (T-169)
+    // REQ-062.6 Limpieza con punto rojo mientras falta (T-169). Con Agenda en la barra
+    // (REQ-099.1), Limpieza queda en "Más": el punto sale en "Más" y en el enlace de la hoja.
     const menu = page.getByRole("navigation", { name: "Menú del barbero" });
-    await expect(menu.getByRole("link", { name: "Limpieza", exact: true })).toBeVisible();
-    await expect(menu.getByTestId("cleaning-dot")).toBeVisible();
+    await expect(
+      menu.getByRole("button", { name: "Más" }).getByTestId("cleaning-dot"),
+    ).toBeVisible();
+    await menu.getByRole("button", { name: "Más" }).click();
+    const more = page.getByRole("dialog", { name: "Más" });
+    await expect(more.getByRole("link", { name: "Limpieza", exact: true })).toBeVisible();
+    await expect(more.getByTestId("cleaning-dot")).toBeVisible();
+    await page.keyboard.press("Escape");
 
     await page.getByRole("link", { name: "Hacerla" }).click();
     const form = page.getByRole("form", { name: "Apertura" });

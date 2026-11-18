@@ -3206,6 +3206,9 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   (prueba el trigger y el refresco, REQ-099.7; reservar y cancelar ya tienen sus propias E2E);
   la pgTAP de "otro negocio" usa un id de negocio que no es del barbero (mismo camino:
   `my_barber_id` da null).
+  Con todos los módulos (CI), Limpieza queda quinta y va a "Más": REQ-062.6 se cumple por "Más"
+  y por "Hacerla" en el aviso de apertura; se ajustaron `barbero-tablero` y `cleaning-barber`.
+  En producción Limpieza está apagada.
 
 ### [ ] T-283 · Validación Hito 25
 - Terminado: `pnpm trace --hito=25` sin huecos; `docs/estado-del-proyecto.md` al día; guía

@@ -77,11 +77,13 @@ test.describe("T-169 barbero fiel al tablero (ADR-051)", () => {
     await expect(page.getByRole("button", { name: "Salir" })).toHaveCount(0);
 
     const nav = page.getByRole("navigation", { name: "Menú del barbero" });
-    for (const name of ["Mi fila", "Clientes", "Mis números", "Limpieza"]) {
+    // REQ-099.1: Agenda va segunda; con todos los módulos, Limpieza pasa a "Más"
+    for (const name of ["Mi fila", "Mi agenda", "Clientes", "Mis números"]) {
       await expect(nav.getByRole("link", { name }).locator("svg")).toHaveCount(1);
     }
     await nav.getByRole("button", { name: "Más" }).click();
     const more = page.getByRole("dialog", { name: "Más" });
+    await expect(more.getByRole("link", { name: "Limpieza" })).toBeVisible();
     await expect(more.getByRole("link", { name: "Mis fotos" })).toBeVisible();
     await expect(more.getByRole("link", { name: "Mi estación" })).toBeVisible();
     await expect(more.getByRole("button", { name: "+ Nueva venta" })).toBeVisible();
