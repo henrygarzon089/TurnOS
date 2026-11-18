@@ -150,6 +150,8 @@ describe("web del negocio (REQ-101)", () => {
     expect(out).toContain("https://www.google.com/maps/search/?api=1&amp;query=Mall%20San%20Remo");
     expect(out).toContain("instagram.com");
     expect(out).toContain("Déjanos tu reseña");
+    expect(out).toContain("https://wa.me/573116959879?text=");
+    expect(out).toContain("Escríbenos por WhatsApp");
   });
 
   it("REQ-101.3 sin fidelidad ni menú esas secciones no salen", () => {
@@ -174,7 +176,9 @@ describe("web del negocio (REQ-101)", () => {
   it("REQ-101.6 sin nombres de la fila ni celulares; solo cuántos esperan", () => {
     const out = html();
     expect(out).not.toContain("Carlos");
-    expect(out).not.toMatch(/\+57|300 ?\d{3}/);
+    // El WhatsApp del local sí se publica; ningún otro celular (clientes ni barberos)
+    const others = out.replace(/\+?573116959879/g, "");
+    expect(others).not.toMatch(/\+57|3\d{2} ?\d{3} ?\d{4}/);
     expect(out).toContain("1 en la fila");
   });
 

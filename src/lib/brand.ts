@@ -20,5 +20,5 @@ export function publicTitle(businessName: string, screen: string): string {
 export const SITE_URL = "https://www.gammaclub.co";
 export const SITE_TAGLINE = "Cuidado personal premium en San Remo, Sabaneta";
 export const INSTAGRAM_URL = "https://www.instagram.com/urusbarbershop.col/";
-/** WhatsApp del local en E.164 (`+573…`). null: la web no muestra el botón de WhatsApp. */
-export const SHOP_WHATSAPP_E164: string | null = null;
+/** WhatsApp del local en E.164 (Henry, 2026-11-18). null: la web no muestra el botón de WhatsApp. */
+export const SHOP_WHATSAPP_E164: string | null = "+573116959879";

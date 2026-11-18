@@ -11,8 +11,8 @@ Marca cada casilla. Si algo falla, anota la pantalla, qué tocaste y qué pasó,
 
 ## 0. Antes de publicar: datos que me faltan
 
-- [ ] **WhatsApp del local**: pásame el número (ej. `300 123 4567`). Mientras tanto la web no
-      muestra el botón "Escríbenos por WhatsApp"; lo demás funciona igual.
+- [x] **WhatsApp del local**: `311 695 9879` (2026-11-18). Sale en "Escríbenos por WhatsApp" y
+      como teléfono en la ficha de Google.
 - [ ] **Instagram**: la web enlaza a `@urusbarbershop.col`. Si Gamma Club tiene su propia cuenta,
       dime cuál.
 - [ ] **Dirección**: sale de **Negocio** en la app. Revisa que diga el local y "Mall San Remo,
