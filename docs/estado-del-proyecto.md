@@ -776,11 +776,11 @@ Pendientes (H3): `/admin/caja`,
   fuera (ADR-064).
 - T-228 hecha (2026-11-15): Henry subió fotos, tomó un turno y reservó una cita. Aprobado (ADR-068).
 - En propuesta (sesión aparte): descripción de cada servicio al elegirlo.
-- Reporte abierto (2026-11-15): "cancelo el turno, vuelvo a tomar turno y sigue saliendo el
-  cancelado". No se reprodujo ni en desarrollo ni con el build de producción ("Tomar un turno
-  nuevo" crea un turno con token nuevo; `join_queue` solo reutiliza turnos activos). Se espera la
-  captura de Henry.
-- Idea sin spec: "Mi agenda" del barbero con sus citas de los próximos días (ver PA-H19-1).
+- Reporte cerrado (2026-11-15 → 2026-11-17): "cancelo el turno, vuelvo a tomar turno y sigue
+  saliendo el cancelado". No se reprodujo ni en desarrollo ni con el build de producción ("Tomar un
+  turno nuevo" crea un turno con token nuevo; `join_queue` solo reutiliza turnos activos). Henry
+  confirmó el 2026-11-17 que ya no pasa; sin cambios de código.
+- "Mi agenda" del barbero (PA-H19-1) se construyó en el Hito 25 (REQ-099, ADR-073, PR #204).
 
 ### Hito 21 — marca Gamma Club en la app (aprobado 2026-11-15, REQ-091, ADR-065, ADR-069)
 
