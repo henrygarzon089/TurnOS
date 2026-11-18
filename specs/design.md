@@ -3623,12 +3623,12 @@ numerar. Máximo ~15 líneas.
   compara sin mayúsculas ni tildes.
 - Lectura: CSV con un lector pequeño propio (comillas y `;` o `,`) y `.xlsx` con una librería que
   corre en el servidor (se escoge en T-291; sin librerías en el cliente).
-- `src/lib/actions/customer-import.ts`: `previewFreshaImport(formData)` (solo dueño, ≤ 4 MB, no
+- `src/lib/actions/customer-import.ts`: `previewFreshaImport(formData)` (solo dueño, ≤ 2 MB por archivo, no
   guarda) → resumen + nombres sin pareja; `confirmFreshaImport(formData, mapping)` vuelve a leer los
   archivos, aplica las parejas escogidas y llama a `import_fresha`.
 - Si el archivo de citas no trae el celular, se busca el cliente por nombre en el archivo de
   clientes (solo si hay uno con ese nombre); si no, la cita sale en "No se importaron".
-- Pantalla `/admin/clientes/importar` (módulo `customers`): pasos para exportar desde Fresha,
+- Pantalla `/app/clientes/importar` (módulo `customers`; las pantallas del personal viven en `/app`): pasos para exportar desde Fresha,
   dos campos de archivo, resumen con conteos, selectores para los nombres sin pareja, botón
   **Importar** y, al final, "No se importaron" con motivo.
 

@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   cacheComponents: false,
   // Desarrollo desde el celular por la IP de la red local (http://<IP-de-la-Mac>:3000)
   allowedDevOrigins: ["192.168.*.*", "10.*.*.*", "*.local"],
+  // REQ-100.1 importar de Fresha: dos archivos de hasta 2 MB (el límite por defecto es 1 MB)
+  experimental: { serverActions: { bodySizeLimit: "5mb" } },
   turbopack: {
     rules: {
       "*.css": {

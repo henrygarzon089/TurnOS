@@ -3249,11 +3249,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   (unzipper, rimraf 2, glob 7). Revisión de `revisor-sql` aplicada a 0079 (candado por negocio,
   valores mal formados = `INVALID`, hora con zona, nombre de la ficha) con 8 pruebas más.
 
-### [ ] T-292 · Pantalla "Importar de Fresha"
+### [x] T-292 · Pantalla "Importar de Fresha"
 - REQ: REQ-100.1, REQ-100.2, REQ-100.7, REQ-100.12 · acciones `previewFreshaImport` y
   `confirmFreshaImport`, `/admin/clientes/importar`, E2E `fresha-import.spec.ts`. Revisión con
   `revisor-textos`.
 - Modelo: Opus 5.5. Complejidad: media.
+- Hecho (2026-11-18): ruta `/app/clientes/importar` (las pantallas del personal viven en `/app`) con
+  enlace en Clientes del dueño; archivos de hasta 2 MB cada uno (`bodySizeLimit` 5 MB, por el límite
+  de 4,5 MB de Vercel) en vez de 4 MB; pasos de exportar escritos en general porque no se
+  verificaron los menús de Fresha (`revisor-textos`). E2E `fresha-import.spec.ts`.
 
 ### [x] T-293 · Sin avisos a los importados hasta aceptar el aviso
 - REQ: REQ-100.5, REQ-100.9 · filtros de "Clientes para recordar" y "Cumplen esta semana"; pruebas.

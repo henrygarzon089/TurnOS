@@ -259,3 +259,20 @@ describe("REQ-100 lector de los archivos de Fresha", () => {
     expect(out.unmatchedServices).toEqual(["Cejas"]);
   });
 });
+
+describe("REQ-100.12 textos de Importar de Fresha", () => {
+  it("REQ-100.12 los motivos y la pantalla están en español", async () => {
+    const { readFileSync } = await import("node:fs");
+    const ui = readFileSync("src/components/customers/FreshaImport.tsx", "utf8");
+    for (const t of [
+      "Cómo sacar los archivos de Fresha",
+      "Resumen antes de importar",
+      "Todavía no se ha guardado nada.",
+      "No se importaron",
+      "El barbero ya tiene otra cita a esa hora",
+      "El cliente ya tiene una cita pendiente",
+    ])
+      expect(ui).toContain(t);
+    expect(ui).not.toMatch(/(?<!\p{L})(Import|Upload|Review|Booked|Skipped|Error)(?!\p{L})/u);
+  });
+});

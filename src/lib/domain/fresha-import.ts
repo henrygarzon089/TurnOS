@@ -32,6 +32,9 @@ export type FreshaAppointment = {
 
 const NAME_MAX = 60;
 
+/** Por archivo (REQ-100.1). Los dos juntos caben en el límite de 4,5 MB de una petición en Vercel. */
+export const MAX_FILE_BYTES = 2 * 1024 * 1024;
+
 /** Minúsculas, sin tildes y solo letras y números: "Número de móvil" → "numerodemovil". */
 export function normalizeKey(s: string): string {
   return s

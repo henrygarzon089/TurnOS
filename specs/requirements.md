@@ -2247,7 +2247,7 @@ dejar de usar dos sistemas sin perder a nadie ni dejar una silla reservada dos v
 
 - REQ-100.1 En "Clientes", el dueño DEBE tener **Importar de Fresha**, con los pasos para exportar
   desde Fresha y dos archivos para subir: **clientes** y **citas**, en CSV o Excel (`.xlsx`) de
-  hasta 4 MB cada uno. Puede subir solo uno de los dos. El barbero NO DEBE ver esta opción.
+  hasta 2 MB cada uno (los dos juntos caben en una petición). Puede subir solo uno de los dos. El barbero NO DEBE ver esta opción.
 - REQ-100.2 Antes de guardar nada, el sistema DEBE mostrar un **resumen**: cuántos clientes son
   nuevos, cuántos ya existían (mismo celular), cuántas filas se descartan y por qué (sin celular,
   celular que no es colombiano, nombre vacío), y cuántas citas se crean y cuántas no. Nada se guarda
