@@ -2241,6 +2241,64 @@ Fuera de alcance del Hito 25: que el barbero cancele, mueva o confirme citas; av
 WhatsApp o notificación; bloquear horas propias (vacaciones, almuerzo); ver la agenda de otros
 barberos; exportar al calendario del celular.
 
+### REQ-100 · Importar clientes y citas de Fresha — S
+**Como** dueño, **quiero** traer a la app los clientes y las citas que tenía en Fresha, **para**
+dejar de usar dos sistemas sin perder a nadie ni dejar una silla reservada dos veces.
+
+- REQ-100.1 En "Clientes", el dueño DEBE tener **Importar de Fresha**, con los pasos para exportar
+  desde Fresha y dos archivos para subir: **clientes** y **citas**, en CSV o Excel (`.xlsx`) de
+  hasta 4 MB cada uno. Puede subir solo uno de los dos. El barbero NO DEBE ver esta opción.
+- REQ-100.2 Antes de guardar nada, el sistema DEBE mostrar un **resumen**: cuántos clientes son
+  nuevos, cuántos ya existían (mismo celular), cuántas filas se descartan y por qué (sin celular,
+  celular que no es colombiano, nombre vacío), y cuántas citas se crean y cuántas no. Nada se guarda
+  hasta que el dueño toque **Importar**.
+- REQ-100.3 Cada cliente DEBE quedar identificado por su celular colombiano normalizado
+  (`normalizePhoneCO`, REQ-003.2). SI el celular ya existe en el negocio, el sistema NO DEBE cambiar
+  su nombre, notas ni cumpleaños: solo completa el cumpleaños si estaba vacío. SI el mismo celular
+  sale varias veces en el archivo, DEBE quedar una sola ficha.
+- REQ-100.4 Del cliente se importan nombre (nombre y apellido, máximo 60 letras), celular,
+  cumpleaños (día y mes, REQ-037.3) y notas de Fresha (al final de las notas del negocio, con
+  "Fresha:" al inicio). El correo y los demás campos NO DEBEN guardarse.
+- REQ-100.5 Los clientes importados NO DEBEN quedar con el aviso de privacidad aceptado: lo aceptan
+  la próxima vez que tomen turno o reserven (REQ-002). Mientras no lo acepten, NO DEBEN salir en
+  "Clientes para recordar" ni en "Cumplen esta semana" (avisos por WhatsApp, REQ-020, REQ-037).
+- REQ-100.6 De las citas solo se importan las **futuras** (desde hoy en adelante, día de Bogotá) que
+  estén reservadas o confirmadas en Fresha. Cada una DEBE quedar con el cliente (creado si no
+  existía), el barbero y el servicio de la app que tengan el mismo nombre, sin importar mayúsculas
+  ni tildes, y con la hora de inicio y la duración del archivo.
+- REQ-100.7 SI el nombre del barbero o del servicio no coincide con ninguno de la app, el resumen
+  DEBE pedirle al dueño que escoja el equivalente en una lista (una sola vez por nombre); SI no lo
+  escoge, esas citas NO DEBEN importarse y quedan en la lista de "No se importaron".
+- REQ-100.8 Una cita importada NO DEBE crearse SI choca con otra cita o bloqueo del mismo barbero,
+  SI el cliente ya tiene una cita pendiente (REQ-050.5) o SI cae en un día cerrado; DEBE salir en
+  "No se importaron" con su motivo, hora, cliente y barbero, para que el dueño la arregle a mano.
+- REQ-100.9 Las citas importadas DEBEN comportarse como las que crea el dueño (REQ-050.6): salen en
+  la agenda, en "Mi agenda" del barbero (REQ-099) y en la fila cuando llegan. NO DEBEN mandar ningún
+  aviso al cliente al importarse.
+- REQ-100.10 Importar el mismo archivo dos veces NO DEBE duplicar clientes ni citas.
+- REQ-100.11 El sistema NO DEBE guardar los archivos subidos ni sus filas descartadas: solo las
+  fichas y citas importadas, y un registro de la importación (fecha, quién, cuántos clientes y
+  citas). El archivo se lee en el servidor y se descarta al terminar.
+- REQ-100.12 Todo texto visible en español colombiano (NFR-006).
+
+Preguntas abiertas del Hito 26 (con propuesta; se cierran con la aprobación de Henry):
+- **PA-H26-1**: ¿qué columnas trae el archivo de Fresha de Gamma Club? Propuesta: Henry pasa **solo
+  la primera fila** (los títulos) de cada archivo, sin datos de clientes; el lector reconoce los
+  títulos en español y en inglés y la tarea T-291 se ajusta a esos títulos antes de construir.
+- **PA-H26-2**: ¿se importa el historial (citas pasadas, visitas) para la fidelidad? Propuesta: no;
+  solo clientes y citas futuras. La tarjeta de fidelidad empieza en cero en la app (no hay manera
+  de saber qué premios ya se dieron en Fresha).
+- **PA-H26-3**: ¿qué pasa con Fresha después? Propuesta: Henry desactiva las reservas en línea de
+  Fresha el día que importa las citas, cambia el enlace de "Reservar" en Google, Instagram y
+  WhatsApp a gammaclub.co y cancela Fresha cuando no queden citas allá. Es operación, no código.
+- **PA-H26-4**: ¿se mantiene la vitrina de Fresha para clientes nuevos? Propuesta: no, porque
+  desactivar las reservas apaga también la vitrina; si Henry ve que llegan muchos clientes por ahí,
+  lo decide antes de desactivar.
+
+Fuera de alcance del Hito 26: conexión automática con Fresha (no tiene API pública), sincronizar en
+los dos sentidos, importar ventas, pagos, tarjetas de regalo, productos o el historial de visitas,
+importar desde otras apps distintas de Fresha.
+
 ---
 
 ## 6. Requisitos no funcionales

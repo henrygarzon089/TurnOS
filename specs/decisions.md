@@ -1365,3 +1365,26 @@
 - Consecuencias: el barbero ve en "Agenda" sus citas pendientes de hoy a +7, solo de lectura y sin
   datos de contacto del cliente; "Mi estación" queda en "Más". Los textos "Perdió la hora" y "No
   recibes citas" van aparte en el PR #207.
+
+## ADR-076 · Hito 26: importar clientes y citas de Fresha
+- Estado: **propuesta** (2026-11-18), espera la aprobación de Henry.
+- Contexto: Gamma Club venía con Fresha para las citas. Henry pregunta cómo juntarlo con la app.
+  Fresha no tiene una API pública: solo exporta clientes, citas y servicios en CSV o Excel; la API
+  es para socios aprobados y las herramientas no oficiales entran con la sesión del dueño (frágiles
+  y contra el uso normal del servicio). Tener los dos sistemas a la vez reparte los clientes y
+  puede reservar la misma silla dos veces.
+- Decisión: (1) Migración de una sola vez, no sincronización: el dueño exporta de Fresha y sube los
+  archivos en "Clientes" → "Importar de Fresha". (2) El archivo se lee en el servidor en una acción
+  del dueño (lógica pura en `src/lib/domain/fresha-import.ts`), se muestra un resumen y solo al
+  confirmar se guarda por funciones SQL `security definer` del dueño. (3) Identidad por celular
+  colombiano: no se pisan datos de fichas que ya existen. (4) Los importados no tienen el aviso de
+  privacidad aceptado y no reciben avisos de WhatsApp hasta aceptarlo (Ley 1581). (5) Solo citas
+  futuras; las que chocan se listan para arreglarlas a mano. (6) No se guardan los archivos; queda
+  un registro `customer_imports` con conteos (migración 0079).
+- Alternativas: (a) sincronizar con la API de socios de Fresha: hay que ser socio aprobado y es otra
+  dependencia para un negocio de 5 sillas. (b) Herramientas no oficiales con la sesión del dueño:
+  se rompen sin aviso y exponen la cuenta. (c) Que Henry cargue los clientes a mano: cientos de
+  fichas con errores de digitación. (d) Seguir con los dos sistemas: dobles reservas.
+- Consecuencias: Fresha se puede apagar sin perder clientes ni citas. El historial de visitas y la
+  fidelidad de Fresha no pasan (PA-H26-2). Desactivar Fresha también apaga su vitrina de clientes
+  nuevos (PA-H26-4).
