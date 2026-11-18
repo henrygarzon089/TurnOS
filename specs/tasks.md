@@ -3164,6 +3164,8 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `docs/guia-prueba-hito-24.md`; Henry aplica 0077 en producción, escribe desde el celular la
   descripción de un producto de Gamma Club, la ve en "Ver menú" de la portada y en "Mi turno", y
   la borra; aprobación (ADR nuevo).
+- 2026-11-17: 0077 aplicada en producción y `6c4d4c0` desplegado; guía
+  `docs/guia-prueba-hito-24.md`. Falta la prueba y la aprobación de Henry.
 
 ---
 

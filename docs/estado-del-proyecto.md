@@ -839,6 +839,20 @@ Pendientes (H3): `/admin/caja`,
 - T-264 (2026-11-16): Henry probó con `docs/guia-prueba-hito-23.md` y aprobó (ADR-071).
 - Gamma Club: Henry escribe las descripciones definitivas desde el celular.
 
+### Hito 24 — descripción de los productos del menú (en producción 2026-11-17, REQ-098, ADR-072)
+
+- Pedido de Henry: subir a la web la descripción de cada producto; el Hito 23 la había dejado
+  fuera. Spec aprobada el 2026-11-17 ("Sí, constrúyelo", PA-H24-1…3 con la propuesta).
+- Migración `0077_product_description.sql`: `products.description` (1–140, sin vacías ni solo
+  espacios); `get_public_business` la devuelve en `products[]`, no en las cortesías.
+- T-270…T-272 (PR #202, `6c4d4c0`): campo "Descripción" con contador en "Productos"
+  (`parseProductForm` con `normalizeDescription`) y `MenuList` con la descripción debajo del
+  nombre ("Ver menú" de la portada y "Ver menú del local" de "Mi turno").
+- 2026-11-17: la sesión aplicó 0077 en producción (`supabase db push`, con confirmación de Henry
+  por el harness) y desplegó `main` (`vercel deploy --prod`); `check:deploy` ✓.
+- Falta T-273 (Henry): `docs/guia-prueba-hito-24.md` y aprobar. Gamma Club: Henry escribe las
+  descripciones de los productos.
+
 ## Desvíos registrados respecto a la spec (todos explícitos)
 
 - Next.js 16: `middleware.ts` → `src/proxy.ts`; `cacheComponents` desactivado.
