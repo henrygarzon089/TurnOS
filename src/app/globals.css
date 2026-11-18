@@ -56,6 +56,8 @@
   --animate-dialog-in: dialog-in 200ms var(--ease-out);
   --animate-fade-in: fade-in 150ms ease-out;
   --animate-flash: flash-fade 1200ms ease-out;
+  /* Web de la portada (REQ-101.12, ADR-078): la franja de servicios que corre sola */
+  --animate-marquee: marquee 40s linear infinite;
 
   @keyframes enter {
     from {
@@ -77,6 +79,17 @@
   @keyframes fade-in {
     from {
       opacity: 0;
+    }
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      transform: translateY(32px);
     }
   }
   @keyframes flash-fade {
@@ -126,8 +139,24 @@ input[type="radio"] {
   accent-color: var(--color-brand);
 }
 
+/*
+  Web de la portada (REQ-101.12, ADR-078): los bloques aparecen al bajar, atados al scroll y sin
+  JavaScript. Donde el navegador no lo soporta, se ven quietos desde el principio.
+*/
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 55%;
+  }
+}
+
 /* Movimiento reducido (REQ-078.13): las entradas dejan de desplazarse y solo aparecen. */
 @media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .animate-marquee {
+    animation: none;
+  }
   .animate-enter,
   .animate-sheet-in,
   .animate-dialog-in {

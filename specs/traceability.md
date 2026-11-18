@@ -580,14 +580,15 @@
 | REQ-100.10 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | fresha-import.spec.ts, 0079_fresha_import.sql | cubierto |
 | REQ-100.11 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | 0079_fresha_import.sql | cubierto |
 | REQ-100.12 |  | T-290 (hecha), T-291 (hecha), T-292 (hecha), T-293 (hecha) | fresha-import.test.ts | cubierto |
-| REQ-101.1 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | site-home.spec.ts, single-business.test.tsx, site.test.ts, 0080_public_site.sql | cubierto |
-| REQ-101.2 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | site-home.spec.ts, site-home.test.tsx, site.test.ts | cubierto |
-| REQ-101.3 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | site-home.spec.ts, site-home.test.tsx, site.test.ts, 0080_public_site.sql | cubierto |
-| REQ-101.4 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | site-home.spec.ts | cubierto |
-| REQ-101.5 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | site-home.spec.ts, site-home.test.tsx | cubierto |
-| REQ-101.6 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | site-home.test.tsx, 0080_public_site.sql | cubierto |
-| REQ-101.7 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | site-home.spec.ts, site-home.test.tsx, site-seo.test.ts, site.test.ts | cubierto |
-| REQ-101.8 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | site-seo.test.ts, site.test.ts | cubierto |
-| REQ-101.9 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | site-home.spec.ts | cubierto |
-| REQ-101.10 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | brand-lighthouse.test.ts | cubierto |
-| REQ-101.11 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha) | site-home.test.tsx | cubierto |
+| REQ-101.1 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | site-home.spec.ts, single-business.test.tsx, site.test.ts, 0080_public_site.sql | cubierto |
+| REQ-101.2 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | site-home.spec.ts, site-home.test.tsx, site.test.ts | cubierto |
+| REQ-101.3 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | site-home.spec.ts, site-home.test.tsx, site.test.ts, 0080_public_site.sql | cubierto |
+| REQ-101.4 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | site-home.spec.ts | cubierto |
+| REQ-101.5 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | site-home.spec.ts, site-home.test.tsx | cubierto |
+| REQ-101.6 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | site-home.test.tsx, 0080_public_site.sql | cubierto |
+| REQ-101.7 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | site-home.spec.ts, site-home.test.tsx, site-seo.test.ts, site.test.ts | cubierto |
+| REQ-101.8 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | site-seo.test.ts, site.test.ts | cubierto |
+| REQ-101.9 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | site-home.spec.ts | cubierto |
+| REQ-101.10 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | brand-lighthouse.test.ts | cubierto |
+| REQ-101.11 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | site-home.test.tsx | cubierto |
+| REQ-101.12 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | site-home.test.tsx | cubierto |

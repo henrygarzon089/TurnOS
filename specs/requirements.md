@@ -2350,6 +2350,12 @@ cita o tome turno sin preguntar por WhatsApp.
 - REQ-101.10 Rendimiento: Lighthouse móvil de `/` ≥ 80 en rendimiento y ≥ 90 en SEO y accesibilidad
   (NFR-001); imágenes con tamaño y carga diferida bajo la primera pantalla.
 - REQ-101.11 Todo texto visible en español colombiano (NFR-006), con tuteo.
+- REQ-101.12 (ADR-078) La web DEBE verse como una marca premium: héroe navy a pantalla
+  completa con la foto del local, menú flotante redondeado, títulos grandes, una franja con los
+  servicios que corre de forma continua y bloques que aparecen al bajar. Excepción solo para la web
+  a REQ-078.13: la franja dura 40 s en bucle y la aparición va atada al desplazamiento (solo
+  `transform` y `opacity`); con movimiento reducido no hay franja ni aparición. Sigue sin
+  degradados, desenfoque ni fuentes descargadas (REQ-078.14).
 
 Preguntas del Hito 27 (cerradas: Henry aprobó las propuestas el 2026-11-18, ADR-077):
 - **PA-H27-1**: ¿dónde viven el WhatsApp del local, el Instagram y el enlace de Google Maps? Propuesta:

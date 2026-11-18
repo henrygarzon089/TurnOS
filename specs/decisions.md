@@ -1390,6 +1390,23 @@
   fidelidad de Fresha no pasan (PA-H26-2). Desactivar Fresha también apaga su vitrina de clientes
   nuevos (PA-H26-4).
 
+## ADR-078 · Rediseño de la web de Gamma Club
+
+- Estado: **aprobada** por Henry el 2026-11-18 ("Approved, merge it") tras ver la vista previa.
+- Contexto: Henry vio la web del Hito 27 en producción y la encontró "muy simple"; pidió algo más
+  parecido a boss.technology (héroe grande, títulos enormes, bloques con fotos, movimiento al bajar).
+- Decisión: REQ-101.12. Misma estructura, datos y pruebas de REQ-101; cambia solo la presentación
+  en `SiteHome.tsx`. Excepciones acotadas a la web pública (no a la app interna): (1) a REQ-078.13,
+  una franja de servicios en bucle de 40 s y una aparición atada al desplazamiento con
+  `animation-timeline: view()` (sin JavaScript; los navegadores que no la soportan muestran todo
+  quieto); ambas solo con `transform`/`opacity` y apagadas con movimiento reducido; (2) botones y
+  tarjetas redondeados (`rounded-full`, `rounded-[2rem]`) en vez del radio de la app. Sin
+  degradados, desenfoque ni fuentes nuevas; sin dependencias nuevas.
+- Alternativas: (a) una librería de animación (Framer Motion, GSAP): más peso en el celular y JS
+  para algo que CSS ya hace. (b) Copiar boss.technology tal cual: no es la marca de Gamma Club.
+- Consecuencias: la web y la app se ven distintas a propósito (la web vende, la app trabaja).
+  T-305.
+
 ## ADR-077 · Hito 27: web de Gamma Club en la raíz de gammaclub.co
 - Estado: **aceptada** (Henry, 2026-11-18: "Aprobada, constrúyela", con PA-H27-1…5 según la
   propuesta)
