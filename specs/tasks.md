@@ -3239,10 +3239,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   importadas no siguen la grilla de 15 minutos ni el límite de 7 días; `delete_business.sql` llena
   `customer_imports`. 32 pruebas pgTAP.
 
-### [ ] T-291 · Leer los archivos de Fresha
+### [x] T-291 · Leer los archivos de Fresha
 - REQ: REQ-100.3, REQ-100.4, REQ-100.6 · `domain/fresha-import.ts`, lector de CSV y de `.xlsx`,
   pruebas unitarias con archivos inventados con los títulos de Gamma Club.
 - Modelo: Opus 5.5. Complejidad: media.
+- Hecho (2026-11-18): títulos de Fresha en español e inglés (los de Gamma Club se confirman en
+  T-294, PA-H26-1); fechas día/mes/año. Desvío: el `.xlsx` se lee con un lector propio
+  (`src/lib/import/xlsx.ts`, `node:zlib`) porque `read-excel-file` traía ~30 dependencias viejas
+  (unzipper, rimraf 2, glob 7). Revisión de `revisor-sql` aplicada a 0079 (candado por negocio,
+  valores mal formados = `INVALID`, hora con zona, nombre de la ficha) con 8 pruebas más.
 
 ### [ ] T-292 · Pantalla "Importar de Fresha"
 - REQ: REQ-100.1, REQ-100.2, REQ-100.7, REQ-100.12 · acciones `previewFreshaImport` y

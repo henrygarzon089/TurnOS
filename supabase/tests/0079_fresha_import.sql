@@ -1,6 +1,6 @@
 -- T-290 / T-293 · Importar clientes y citas de Fresha (REQ-100, ADR-076, design §32.1)
 begin;
-select plan(32);
+select plan(40);
 
 create temp table ctx as
 select z.id as biz,
@@ -181,6 +181,84 @@ select throws_ok($$ select import_fresha((select biz from ctx), '[]', (select a 
 select lives_ok($$ select import_fresha((select biz from ctx), (select c from args where k = 'uno'), '[]', 0) $$,
   'REQ-100.1 los clientes sí se pueden importar solos');
 select auth.test_logout();
+
+
+-- ------------------------------------------ más casos (revisor-sql) ----
+insert into auth.users (id, email) values ('0000000f-0000-0000-0000-00000000f079', 'otro-dueno@t290.test');
+insert into businesses (name, slug) values ('Otra T290', 'otra-t290');
+insert into memberships (user_id, business_id, role)
+select '0000000f-0000-0000-0000-00000000f079', id, 'owner' from businesses where slug = 'otra-t290';
+insert into services (business_id, name, duration_min, price)
+select id, 'Corte ajeno', 30, 10000 from businesses where slug = 'otra-t290';
+insert into barbers (business_id, display_name, commission_pct)
+select id, 'Barbero ajeno', 50 from businesses where slug = 'otra-t290';
+
+select auth.test_login('0000000f-0000-0000-0000-00000000f079');
+select throws_ok($$ select import_fresha((select biz from ctx), '[]', '[]', 0) $$,
+  '42501', 'FORBIDDEN', 'REQ-100.1 el dueño de otro negocio no puede importar en este');
+select is((select count(*)::int from customer_imports where business_id = (select biz from ctx)), 0,
+  'REQ-100.1 el dueño de otro negocio no ve las importaciones de este');
+select auth.test_logout();
+
+update businesses set appointments_enabled = true where id = (select biz from ctx);
+-- Una cita que ya estaba (Juan, en 4 días a las 9:00) y una vencida del mismo celular que se importa
+insert into appointments (business_id, customer_name, customer_phone_e164, service_id, service_name,
+                          service_duration_min, service_price, barber_id, starts_at, ends_at, business_day, source)
+select biz, 'Ya estaba', '+573207770001', corte, 'Corte', 30, 25000, juan,
+       (today + 4 + time '09:00') at time zone 'America/Bogota', (today + 4 + time '09:30') at time zone 'America/Bogota',
+       today + 4, 'owner' from ctx;
+insert into appointments (business_id, customer_name, customer_phone_e164, service_id, service_name,
+                          service_duration_min, service_price, barber_id, starts_at, ends_at, business_day, source)
+select biz, 'Vencida', '+573207770002', corte, 'Corte', 30, 25000, juan,
+       now() - interval '1 hour', now() - interval '30 minutes', today, 'owner' from ctx;
+-- Cerrado a mano en 5 días
+update businesses set queue_override = 'closed', queue_override_day = (select today from ctx) + 5
+ where id = (select biz from ctx);
+
+insert into args select 'tres', '[]'::jsonb, jsonb_build_array(
+    jsonb_build_object('phone', '+573207770003', 'name', 'Choca', 'barberId', juan, 'serviceId', corte,
+                       'startsAt', pg_temp.at(4, 9, 15)),
+    jsonb_build_object('phone', '+573207770002', 'name', 'Vuelve', 'barberId', juan, 'serviceId', corte,
+                       'startsAt', pg_temp.at(4, 11)),
+    jsonb_build_object('phone', '+573207770004', 'name', 'Cerrado a mano', 'barberId', juan, 'serviceId', corte,
+                       'startsAt', pg_temp.at(5, 11)),
+    jsonb_build_object('phone', '+573207770005', 'name', 'Ajeno', 'serviceId', corte,
+                       'barberId', (select id from barbers where display_name = 'Barbero ajeno'), 'startsAt', pg_temp.at(4, 12)),
+    jsonb_build_object('phone', '+573207770006', 'name', 'Ajeno', 'barberId', juan,
+                       'serviceId', (select id from services where name = 'Corte ajeno'), 'startsAt', pg_temp.at(4, 12)),
+    jsonb_build_object('phone', '+573207770007', 'name', 'Roto', 'barberId', 'no-es-uuid', 'serviceId', corte,
+                       'startsAt', pg_temp.at(4, 13), 'durationMin', '45.5'),
+    jsonb_build_object('phone', '+573207770008', 'name', 'Sin zona', 'barberId', juan, 'serviceId', corte,
+                       'startsAt', to_char((select today from ctx) + 4, 'YYYY-MM-DD') || 'T14:00:00'),
+    jsonb_build_object('phone', '+573208880001', 'name', 'Carlos de Fresha', 'barberId', juan, 'serviceId', corte,
+                       'startsAt', pg_temp.at(4, 15), 'durationMin', '45.5')
+  )
+from ctx;
+select auth.test_login((select owner_u from ctx));
+insert into r select 'tres', import_fresha((select biz from ctx), c, a, 0) from args where k = 'tres';
+select auth.test_logout();
+select is((select jsonb_agg(e order by (e->>'index')::int) from r, jsonb_array_elements(j->'rejected') e where k = 'tres'),
+  '[{"index": 0, "reason": "SLOT_TAKEN"}, {"index": 2, "reason": "DAY_CLOSED"}, {"index": 3, "reason": "INVALID"},
+    {"index": 4, "reason": "INVALID"}, {"index": 5, "reason": "INVALID"}, {"index": 6, "reason": "INVALID"}]'::jsonb,
+  'REQ-100.8 choque con una cita que ya estaba, día cerrado a mano, barbero o servicio de otro negocio, datos rotos y hora sin zona');
+select ok((select status = 'booked' from appointments where customer_phone_e164 = '+573207770002' and customer_name = 'Vuelve')
+          and (select status = 'no_show' from appointments where customer_phone_e164 = '+573207770002' and customer_name = 'Vencida'),
+  'REQ-100.8 una cita vencida del mismo celular no bloquea la nueva');
+select is((select array[customer_name, service_duration_min::text] from appointments where customer_phone_e164 = '+573208880001'),
+  array['Carlos Viejo', '20'],
+  'REQ-100.3 la cita lleva el nombre de la ficha que ya estaba; una duración mal escrita usa la del servicio');
+select ok((select length(name) = 60 from customers where business_id = (select biz from ctx) and phone_e164 = '+573207770009')
+          is null, 'REQ-100.4 (control) el celular de prueba de nombre largo aún no existe');
+select auth.test_login((select owner_u from ctx));
+select import_fresha((select biz from ctx),
+  jsonb_build_array(jsonb_build_object('name', repeat('N', 70), 'phone', '+573207770009'),
+                    jsonb_build_object('name', '   ', 'phone', '+573207770010')), '[]', 0);
+select auth.test_logout();
+select is((select length(name) from customers where business_id = (select biz from ctx) and phone_e164 = '+573207770009'), 60,
+  'REQ-100.4 un nombre de más de 60 letras se recorta');
+select is((select count(*)::int from customers where phone_e164 = '+573207770010'), 0,
+  'REQ-100.4 un nombre vacío no se importa');
+update businesses set queue_override = 'auto', queue_override_day = null where id = (select biz from ctx);
 
 -- ------------------------------------------- T-293 sin avisos a importados ----
 update customers set birthday_month = extract(month from (select today from ctx))::int,

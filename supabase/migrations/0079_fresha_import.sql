@@ -49,8 +49,9 @@ begin
     if v_phone is null or v_phone !~ '^\+573[0-9]{9}$' or v_name = '' then
       continue;
     end if;
-    v_month := nullif(r->>'birthdayMonth', '')::smallint;
-    v_day := nullif(r->>'birthdayDay', '')::smallint;
+    -- Un valor mal formado no tumba la importación: se ignora (revisor-sql)
+    v_month := case when r->>'birthdayMonth' ~ '^[0-9]{1,2}$' then (r->>'birthdayMonth')::smallint end;
+    v_day := case when r->>'birthdayDay' ~ '^[0-9]{1,2}$' then (r->>'birthdayDay')::smallint end;
     if v_month is null or v_day is null or v_month not between 1 and 12
        or v_day < 1 or v_day > extract(day from make_date(2000, v_month, 1) + interval '1 month - 1 day') then
       v_month := null;
@@ -63,8 +64,10 @@ begin
 
     select * into c from customers where business_id = p_business_id and phone_e164 = v_phone for update;
     if not found then
+      -- on conflict: un cliente pudo tomar turno con ese celular mientras se importaba
       insert into customers (business_id, phone_e164, name, birthday_month, birthday_day, notes, imported_from)
-      values (p_business_id, v_phone, v_name, v_month, v_day, v_note, 'fresha');
+      values (p_business_id, v_phone, v_name, v_month, v_day, v_note, 'fresha')
+      on conflict (business_id, phone_e164) do nothing;
       v_new := v_new + 1;
     else
       -- REQ-100.3 no se pisa nada: solo se completa el cumpleaños y se agrega la nota una vez
@@ -114,8 +117,17 @@ begin
     v_reason := null;
     v_phone := r->>'phone';
     v_name := left(trim(coalesce(r->>'name', '')), 60);
-    v_barber := nullif(r->>'barberId', '')::uuid;
-    v_start := nullif(r->>'startsAt', '')::timestamptz;
+    v_barber := case when r->>'barberId' ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+                     then (r->>'barberId')::uuid end;
+    -- La hora debe traer la zona (Z o ±HH:MM); sin zona Postgres usaría la de la sesión (UTC)
+    v_start := null;
+    if r->>'startsAt' ~ '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:\d{2})$' then
+      begin
+        v_start := (r->>'startsAt')::timestamptz;
+      exception when others then
+        v_start := null;
+      end;
+    end if;
     v_ref := coalesce(nullif(trim(r->>'ref'), ''), v_phone || '|' || (r->>'startsAt'));
 
     if v_ref is not null and exists (select 1 from appointments
@@ -124,8 +136,10 @@ begin
       continue;
     end if;
 
-    select * into s from services where id = nullif(r->>'serviceId', '')::uuid
-                                    and business_id = p_business_id and is_active;
+    select * into s from services
+     where id = case when r->>'serviceId' ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+                     then (r->>'serviceId')::uuid end
+       and business_id = p_business_id and is_active;
     if not found or v_start is null or v_name = ''
        or v_phone is null or v_phone !~ '^\+573[0-9]{9}$'
        or not exists (select 1 from barbers b where b.id = v_barber and b.business_id = p_business_id and b.is_active) then
@@ -133,7 +147,7 @@ begin
     end if;
 
     if v_reason is null then
-      v_dur := coalesce(nullif(r->>'durationMin', '')::int, s.duration_min);
+      v_dur := case when r->>'durationMin' ~ '^[0-9]{1,3}$' then (r->>'durationMin')::int end;
       if v_dur is null or v_dur <= 0 or v_dur > 600 then
         v_dur := s.duration_min;
       end if;
@@ -173,19 +187,24 @@ begin
       continue;
     end if;
 
-    -- REQ-100.6 el cliente se crea si no existía (sin cambiar una ficha que ya está)
-    select id into v_customer from customers where business_id = p_business_id and phone_e164 = v_phone;
-    if v_customer is null then
-      insert into customers (business_id, phone_e164, name, imported_from)
-      values (p_business_id, v_phone, v_name, 'fresha') returning id into v_customer;
-    end if;
+    -- REQ-100.6 el cliente se crea si no existía (sin cambiar una ficha que ya está); la cita lleva
+    -- el nombre de la ficha, para que la agenda y Clientes digan lo mismo
+    insert into customers (business_id, phone_e164, name, imported_from)
+    values (p_business_id, v_phone, v_name, 'fresha')
+    on conflict (business_id, phone_e164) do nothing;
+    select id, name into v_customer, v_name from customers where business_id = p_business_id and phone_e164 = v_phone;
 
-    insert into appointments (business_id, customer_id, customer_name, customer_phone_e164, service_id, service_name,
-                              service_duration_min, service_price, barber_id, any_barber, starts_at, ends_at,
-                              business_day, source, created_by, external_ref)
-    values (p_business_id, v_customer, v_name, v_phone, s.id, s.name, v_dur, s.price, v_barber, false,
-            v_start, v_end, v_day, 'owner', auth.uid(), v_ref);
-    v_created := v_created + 1;
+    begin
+      insert into appointments (business_id, customer_id, customer_name, customer_phone_e164, service_id, service_name,
+                                service_duration_min, service_price, barber_id, any_barber, starts_at, ends_at,
+                                business_day, source, created_by, external_ref)
+      values (p_business_id, v_customer, v_name, v_phone, s.id, s.name, v_dur, s.price, v_barber, false,
+              v_start, v_end, v_day, 'owner', auth.uid(), v_ref);
+      v_created := v_created + 1;
+    exception when unique_violation then
+      -- Un cliente reservó con ese celular mientras se importaba
+      v_rejected := v_rejected || jsonb_build_object('index', i, 'reason', 'HAS_BOOKING');
+    end;
   end loop;
   return jsonb_build_object('created', v_created, 'already', v_already, 'rejected', v_rejected);
 end $$;
@@ -202,6 +221,8 @@ begin
   if auth.uid() is null or not is_owner_of(p_business_id) then
     raise exception 'FORBIDDEN' using errcode = '42501';
   end if;
+  -- Dos importaciones del mismo negocio van una detrás de otra (sin choques ni candados cruzados)
+  perform pg_advisory_xact_lock(hashtext('import:' || p_business_id::text));
   if jsonb_array_length(coalesce(p_appointments, '[]'::jsonb)) > 0
      and not (select appointments_enabled from businesses where id = p_business_id) then
     raise exception 'APPOINTMENTS_DISABLED' using errcode = 'P0004';

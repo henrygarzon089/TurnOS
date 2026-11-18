@@ -3582,7 +3582,7 @@ numerar. Máximo ~15 líneas.
 ### 32.1 Datos (migración `0079_fresha_import.sql`)
 - Tabla `customer_imports`: `id`, `business_id`, `created_by` (usuario), `created_at`, `source`
   (`'fresha'`), `customers_new`, `customers_existing`, `appointments_created`,
-  `rows_skipped` (todos `int`). Sin datos personales. RLS forzada: solo el dueño lee; nadie escribe
+  `appointments_rejected`, `rows_skipped` (todos `int`). Sin datos personales. RLS forzada: solo el dueño lee; nadie escribe
   directo (`revoke`), solo las funciones.
 - `customers.imported_from text null check (imported_from in ('fresha'))` para saber de dónde vino
   la ficha (REQ-100.5).
@@ -3606,6 +3606,11 @@ numerar. Máximo ~15 líneas.
   - Devuelve `{customersNew, customersExisting, appointmentsCreated, appointmentsAlready,
     rejected: [{index, reason}]}`: solo posiciones y motivos, sin datos del cliente; el servidor
     ya tiene las filas para mostrarlas. Registra la fila de `customer_imports`.
+  - Robustez (revisión `revisor-sql`): un candado por negocio pone en fila dos importaciones a la
+    vez; clientes con `on conflict do nothing` y la cita dentro de un bloque que convierte un
+    `unique_violation` en `HAS_BOOKING`; cada valor se valida antes de convertirlo (un dato roto es
+    `INVALID`, no tumba la importación) y `startsAt` debe traer la zona horaria. La cita lleva el
+    nombre de la ficha cuando ya existe.
 - `appointments.external_ref text null` con índice único `(business_id, external_ref)`.
 - Las listas de "Clientes para recordar" y "Cumplen esta semana" filtran
   `privacy_accepted_at is not null or imported_from is null` (REQ-100.5).

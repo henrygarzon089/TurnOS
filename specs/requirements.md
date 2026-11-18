@@ -2254,7 +2254,8 @@ dejar de usar dos sistemas sin perder a nadie ni dejar una silla reservada dos v
   hasta que el dueño toque **Importar**.
 - REQ-100.3 Cada cliente DEBE quedar identificado por su celular colombiano normalizado
   (`normalizePhoneCO`, REQ-003.2). SI el celular ya existe en el negocio, el sistema NO DEBE cambiar
-  su nombre, notas ni cumpleaños: solo completa el cumpleaños si estaba vacío. SI el mismo celular
+  su nombre ni su cumpleaños ni reemplazar sus notas: solo completa el cumpleaños si estaba vacío y
+  agrega la nota de Fresha (REQ-100.4). SI el mismo celular
   sale varias veces en el archivo, DEBE quedar una sola ficha.
 - REQ-100.4 Del cliente se importan nombre (nombre y apellido, máximo 60 letras), celular,
   cumpleaños (día y mes, REQ-037.3) y notas de Fresha (al final de las notas del negocio, con
