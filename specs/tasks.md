@@ -3214,11 +3214,13 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   2026-11-18 (Henry): "Perdió la hora" en vez de "Atrasada" (igual que "Mi fila" y la agenda
   del dueño) y "No recibes citas" en vez de "Hoy no recibes citas" (REQ-099.5, REQ-099.6).
 
-### [ ] T-283 · Validación Hito 25
+### [x] T-283 · Validación Hito 25
 - Terminado: `pnpm trace --hito=25` sin huecos; `docs/estado-del-proyecto.md` al día; guía
   `docs/guia-prueba-hito-25.md`; 0078 en producción; Henry reserva una cita para mañana con Pedro
   o Stiven, el barbero la ve en "Agenda" desde su celular y el otro barbero no; aprobación (ADR
   nuevo).
+- 2026-11-18: 0078 en producción y `c8e3f3c` desplegado. Henry probó y aprobó ("apruebo Hito
+  25", ADR-075).
 
 ---
 

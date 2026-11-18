@@ -38,8 +38,8 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 - **Hito 24 (descripción de los productos del menú, REQ-098, ADR-072)** aprobado (ADR-074,
   2026-11-17): descripción opcional por producto (máx. 140) en "Ver menú" y "Mi turno"; migración
   0077 en producción.
-- **Hito 25 ("Mi agenda" del barbero, REQ-099, ADR-073)**: T-280…T-282 hechas (2026-11-17),
-  migración 0078; falta T-283 (0078 en producción, deploy y prueba de Henry).
+- **Hito 25 ("Mi agenda" del barbero, REQ-099, ADR-073)** aprobado (ADR-075, 2026-11-18): el
+  barbero ve en "Agenda" sus citas de hoy a +7, solo de lectura; migración 0078 en producción.
 - **Hito 22 (harness de los agentes, REQ-092…095, ADR-066)**: T-250…T-255 hechas (2026-11-15),
   sin migraciones ni cambios a la app; falta T-256 (Henry prueba el harness y aprueba). Ver
   "Harness de los agentes" abajo.

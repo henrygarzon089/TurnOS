@@ -2227,6 +2227,8 @@ tengo clientes reservados y organizar mi día sin preguntarle al dueño.
   leer la agenda de otro barbero por ella.
 - REQ-099.9 Todo texto visible en español colombiano (NFR-006).
 
+Hito 25 aprobado por Henry el 2026-11-18 (ADR-075).
+
 Preguntas del Hito 25 (cerradas: Henry aprobó las propuestas el 2026-11-17, ADR-073):
 - **PA-H25-1**: ¿cuántos días? Propuesta: hoy y 7 más, igual que la agenda del dueño (REQ-054.1).
 - **PA-H25-2**: ¿qué ve de cada cita? Propuesta: hora, nombre, servicio y duración; sin celular

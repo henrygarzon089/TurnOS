@@ -40,3 +40,4 @@ Marca cada casilla. Si algo falla, anota la pantalla, qué tocaste y qué pasó,
 ## 6. Aprobar
 
 Si todo salió bien, escríbeme **"Aprobado Hito 25"** y lo dejo en un ADR nuevo.
+Aprobado por Henry el 2026-11-18 (ADR-075).
