@@ -3136,10 +3136,12 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 > Aprobada por Henry el 2026-11-17 ("Sí, constrúyelo"). Orden: T-270 → T-271 y T-272
 > (independientes) → T-273. La migración 0077 la aplica Henry en producción antes del deploy.
 
-### [ ] T-270 · Columna `products.description` y función pública
+### [x] T-270 · Columna `products.description` y función pública
 - REQ: REQ-098.2 (base de datos), REQ-098.3 (datos) · Migración `0077_product_description.sql`
   (design §30.1), pgTAP `0077_product_description.sql`. Revisión con `revisor-sql`.
 - Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-17. `revisor-sql` sin bloqueos; se sumó la prueba de que `get_public_business`
+  no trae productos de otro negocio.
 
 ### [ ] T-271 · El dueño escribe la descripción del producto
 - REQ: REQ-098.1, REQ-098.2, REQ-098.6 · `PRODUCT_DESCRIPTION_MAX`, `parseProductForm`,
