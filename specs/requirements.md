@@ -2157,7 +2157,8 @@ productos de la vitrina y descripción del negocio en otras pantallas (pasos, te
 
 ## Hito 24 — Descripción de los productos del menú (ADR-072)
 
-> Estado: **APROBADA** (Henry, 2026-11-17: "Sí, constrúyelo"; PA-H24-1…3 con la propuesta). Henry pidió subir a la web la
+> Estado: **APROBADA** (Henry, 2026-11-17: "Sí, constrúyelo"; PA-H24-1…3 con la propuesta). Hito
+> aprobado por Henry el 2026-11-17 (ADR-074). Henry pidió subir a la web la
 > descripción de la barbería y de cada producto; el Hito 23 dejó fuera, a propósito, la descripción
 > de los productos de la vitrina. Este hito la agrega con la misma forma que REQ-096.
 
