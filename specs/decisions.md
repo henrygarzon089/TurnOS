@@ -1365,3 +1365,30 @@
 - Consecuencias: el barbero ve en "Agenda" sus citas pendientes de hoy a +7, solo de lectura y sin
   datos de contacto del cliente; "Mi estación" queda en "Más". Los textos "Perdió la hora" y "No
   recibes citas" van aparte en el PR #207.
+
+## ADR-077 · Hito 27: web de Gamma Club en la raíz de gammaclub.co
+- Estado: **propuesta**
+- Contexto: hoy `/` lleva directo a `/gamma-club` (REQ-080.2), que es la pantalla de tomar turno:
+  sirve en el local con el QR, pero quien llega de Google o de Instagram no ve qué es el club, qué
+  servicios hay, quiénes cortan ni dónde queda. Henry pidió (2026-11-18) una web de la barbería en
+  gammaclub.co, no una página para vender TurnOS ("TurnOS es la app interna de la barbería"), con
+  botones para reservar cita, tomar turno y entrar, y medición de visitas con Vercel Analytics.
+- Decisión: (1) `/` deja de redirigir y muestra la web del negocio de `HOME_SLUG`, en el mismo
+  proyecto de Next.js y el mismo dominio; `/gamma-club` no cambia. (2) Todo el contenido variable
+  (servicios, precios, barberos, horario, fidelidad, menú, fotos, descripción, dirección) sale de la
+  base con las funciones públicas que ya existen (`getPublicBusiness`, `getAppointmentInfo`) vía
+  `service_role` (ADR-009); se regenera cada 5 minutos (ISR, `revalidate = 300`) en vez de en cada
+  visita, y el abierto/cerrado se recalcula en el navegador. (3) Lo que no está en la base
+  (WhatsApp del local, Instagram, Maps) va como constantes en `brand.ts`; sin migraciones. (4) SEO
+  local con `metadata`, JSON-LD `BarberShop`, `sitemap.ts` y `robots.ts` de Next. (5)
+  `@vercel/analytics` solo en `/` y en las páginas públicas, con `beforeSend` que limpia tokens, y
+  `TURNOS_WEB_ANALYTICS=off` para apagarla. (6) `HOME_SLUG` se puede cambiar con `TURNOS_HOME_SLUG`
+  para que el CI pruebe la web con La 33.
+- Alternativas: (a) una web aparte (Wix, Framer, otro proyecto): dos sitios que mantener y precios
+  que se desactualizan respecto a la app. (b) Agregar las secciones a `/gamma-club`: carga más la
+  pantalla que se usa en el local para tomar turno rápido. (c) Página estática con todo escrito en el
+  código: cada cambio de precio pide un deploy. (d) Google Analytics: pone cookies y un tracker de
+  terceros (NFR-005).
+- Consecuencias: cambia REQ-080.2. La raíz de gammaclub.co pasa a ser la puerta de Google e
+  Instagram; el QR del local sigue llevando a `/gamma-club`. Una dependencia nueva
+  (`@vercel/analytics`) y, según el plan de Vercel, un posible costo que se vigila (PA-H27-3).

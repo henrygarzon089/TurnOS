@@ -1737,7 +1737,7 @@ otro negocio y los clientes lleguen directo a la barbería.
 - REQ-080.1 En modo esencial, "Crear negocio" NO DEBE estar disponible: `/crear-negocio` DEBE llevar
   a `/entrar` y `/entrar` NO DEBE mostrar el enlace para crear un negocio. Cambia REQ-030.1.
 - REQ-080.2 En modo esencial, la portada `/` DEBE llevar a la página pública de Gamma Club
-  (`/gamma-club`).
+  (`/gamma-club`). Cambia con REQ-101.1 (propuesta): la portada pasa a ser la web del negocio.
 - REQ-080.3 El operador DEBE tener un procedimiento escrito y probado para borrar un negocio
   completo por su enlace (`slug`): sus datos, sus cuentas de personal y sus archivos, sin tocar otros
   negocios. Se usa una vez para borrar **Filo**.
@@ -2240,6 +2240,76 @@ Preguntas del Hito 25 (cerradas: Henry aprobó las propuestas el 2026-11-17, ADR
 Fuera de alcance del Hito 25: que el barbero cancele, mueva o confirme citas; avisos al barbero por
 WhatsApp o notificación; bloquear horas propias (vacaciones, almuerzo); ver la agenda de otros
 barberos; exportar al calendario del celular.
+
+### REQ-101 · Web de Gamma Club en gammaclub.co — S
+**Como** dueño de Gamma Club, **quiero** que https://www.gammaclub.co muestre una web de la
+barbería con todo lo que ofrecemos, **para** que quien nos busque en Google o abra el enlace de
+Instagram entienda qué es el club, vea servicios, precios, barberos y ubicación, y reserve una
+cita o tome turno sin preguntar por WhatsApp.
+
+- REQ-101.1 La portada `/` DEBE mostrar la web del negocio de `HOME_SLUG` (Gamma Club) en lugar de
+  llevar directo a `/gamma-club`. Cambia REQ-080.2. `/gamma-club` sigue siendo la página de la fila
+  y de tomar turno, sin cambios. SI el negocio de `HOME_SLUG` no existe, ENTONCES `/` DEBE mostrar la
+  portada genérica de hoy (nombre de la app y "Entrar").
+- REQ-101.2 Arriba (sin bajar en un celular de 360 × 640) DEBE verse: el logo y el nombre del
+  negocio, una frase de qué es ("Cuidado personal premium en San Remo, Sabaneta" o la descripción
+  del negocio, REQ-097), la foto de portada (REQ-087), si está **abierto o cerrado** ahora con la hora
+  de cierre o de la próxima apertura, y dos botones: **"Reservar una cita"** (a `/<slug>/cita`, solo
+  si se pueden reservar citas, REQ-050.1) y **"Tomar turno"** (a `/<slug>`). Si no se pueden reservar
+  citas, "Tomar turno" queda como único botón principal.
+- REQ-101.3 La web DEBE tener, en este orden, las secciones: **Servicios** (los activos, con foto,
+  descripción, duración y precio en COP, REQ-086/REQ-096), **Cómo funciona** (turno con el QR o el
+  enlace, cita a hora fija, te avisamos cuando te toca), **Nuestro equipo** (barberos activos con su
+  foto o iniciales), **Fidelidad** (la regla del negocio, ej. "Cada 10 cortes, uno gratis", REQ-019;
+  oculta si la fidelidad está apagada), **Menú** (productos a la venta con foto y precio, REQ-038;
+  oculta si no hay), **Horario y ubicación** (horario de la semana, dirección y botón "Cómo llegar"
+  a Google Maps) y **Contacto** (WhatsApp del local, Instagram y "Déjanos tu reseña", REQ-036, este
+  último solo si hay enlace).
+- REQ-101.4 Los datos de servicios, precios, barberos, horario, fidelidad, menú, fotos y
+  descripción DEBEN salir de la base (lo que el dueño ya edita en la app), no estar escritos en el
+  código: si el dueño cambia un precio, la web lo muestra en máximo 5 minutos sin desplegar.
+- REQ-101.5 El encabezado DEBE tener un enlace discreto **"Entrar"** a `/entrar` para el dueño y los
+  barberos; en el celular, el encabezado DEBE dejar siempre a mano "Reservar" o "Tomar turno"
+  (barra fija abajo al bajar de la primera pantalla).
+- REQ-101.6 La web NO DEBE mostrar celulares de clientes ni de barberos, la fila con nombres ni
+  datos de la caja. Puede mostrar cuántas personas esperan ahora ("3 en la fila"), como la portada
+  de hoy.
+- REQ-101.7 SEO local: la página DEBE tener título y descripción propios ("Gamma Club · Barbería en
+  Sabaneta"), imagen para compartir (Open Graph) con la portada, `lang="es-CO"`, dirección canónica
+  `https://www.gammaclub.co/`, datos estructurados `BarberShop` (nombre, dirección, horario,
+  teléfono, rango de precios, imagen) y `sitemap.xml` y `robots.txt` que dejan indexar `/` y la
+  página pública del negocio y NO DEBEN dejar indexar `/admin`, `/app`, `/entrar`, `/t/`, `/c/` ni
+  `/regalo/`.
+- REQ-101.8 Analítica: la web DEBE contar visitas con Vercel Web Analytics, solo en `/` y en las
+  páginas públicas del negocio, sin cookies ni identificadores, y con la dirección limpia de tokens
+  (como `redactVitalsUrl`, ADR-043). Las pantallas del personal (`/admin`, `/app`) NO DEBEN medirse.
+  Cuenta como medición anónima de NFR-005. Se apaga con una variable de entorno.
+- REQ-101.9 La web DEBE seguir el manual de marca (REQ-091, `docs/marca/`) y los tokens del sistema
+  visual (REQ-078): navy como color principal, rojo solo de acento, Montserrat, botones ≥ 48 px,
+  contraste ≥ 4.5:1, y verse bien desde 360 px hasta escritorio (desde 1024 px en dos columnas donde
+  aplique).
+- REQ-101.10 Rendimiento: Lighthouse móvil de `/` ≥ 80 en rendimiento y ≥ 90 en SEO y accesibilidad
+  (NFR-001); imágenes con tamaño y carga diferida bajo la primera pantalla.
+- REQ-101.11 Todo texto visible en español colombiano (NFR-006), con tuteo.
+
+Preguntas del Hito 27 (propuestas para que Henry apruebe o cambie):
+- **PA-H27-1**: ¿dónde viven el WhatsApp del local, el Instagram y el enlace de Google Maps? Propuesta:
+  **constantes en `src/lib/brand.ts`** (Henry me pasa el número de WhatsApp del local y el enlace de
+  Maps); la dirección sale de la base. Sin migración. Pasarlos a "Negocio" queda para después.
+- **PA-H27-2**: ¿qué fotos? Propuesta: las que ya están en la app (portada, fotos de servicios y de
+  barberos). Si Henry quiere una galería de cortes de @urusbarbershop.col, me manda hasta 6 fotos y
+  van en `public/web/` como WebP; sin ellas, no hay galería.
+- **PA-H27-3**: analítica. Vercel Web Analytics viene con un cupo de eventos según el plan; en ADR-054
+  se apagó Speed Insights por costo. Propuesta: encenderla y revisar el uso al mes; si cobra, se
+  apaga con la variable (REQ-101.8).
+- **PA-H27-4**: ¿se muestra la membresía o las tarjetas de regalo? Propuesta: **no**, están apagadas
+  (REQ-079); la sección sale sola el día que se enciendan, en otro hito.
+- **PA-H27-5**: el pie "Fila con TurnOS" (PA-H21-3): propuesta, se queda pequeño en el pie de la web.
+
+Fuera de alcance del Hito 27: vender TurnOS a otros negocios; formulario de contacto o datos
+guardados; blog; varios idiomas; pagos en línea; editar los textos de la web desde la app (salvo lo
+que ya se edita: servicios, descripción, fotos, horario); dominio nuevo (es la raíz de
+gammaclub.co, que ya existe).
 
 ---
 

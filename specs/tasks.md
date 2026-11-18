@@ -3222,6 +3222,37 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - 2026-11-18: 0078 en producción y `c8e3f3c` desplegado. Henry probó y aprobó ("apruebo Hito
   25", ADR-075).
 
+## Hito 27 — Web de Gamma Club en gammaclub.co (REQ-101, ADR-077)
+
+> Propuesta (2026-11-18), espera la aprobación de Henry. Orden: T-300 → T-301 → T-302 → T-303 →
+> T-304. Sin migraciones.
+
+### [ ] T-300 · Datos y lógica de la web
+- REQ: REQ-101.1, REQ-101.4, REQ-101.6, REQ-101.7 · `homeSlug()`, lecturas públicas de horario y
+  fidelidad, `domain/site.ts` con sus pruebas (design §33.1–33.2).
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-301 · Portada con las secciones
+- REQ: REQ-101.1…101.6, REQ-101.9, REQ-101.11 · `page.tsx` con ISR, `components/site/*`, barra fija,
+  abierto/cerrado en el navegador; unit y E2E `site-home.spec.ts`. Revisión con `revisor-textos`.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [ ] T-302 · SEO local
+- REQ: REQ-101.7 · `generateMetadata`, JSON-LD, `sitemap.ts`, `robots.ts`, imagen Open Graph.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-303 · Analítica y rendimiento
+- REQ: REQ-101.8, REQ-101.10 · `@vercel/analytics` con `beforeSend`, variable para apagarla,
+  `/` en Lighthouse CI.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-304 · Validación Hito 27
+- Terminado: `pnpm trace --hito=27` sin huecos; guía `docs/guia-prueba-hito-27.md` con los pasos
+  para publicar (fusionar, desplegar, activar Web Analytics en Vercel, enviar el sitemap a Google
+  Search Console y actualizar el perfil de Google y el enlace de Instagram); Henry abre
+  https://www.gammaclub.co desde el celular, reserva desde la web y aprueba (ADR nuevo).
+
+
 ---
 
 ## Dependencias principales

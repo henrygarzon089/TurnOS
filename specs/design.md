@@ -3576,3 +3576,60 @@ numerar. Máximo ~15 líneas.
 - E2E `barber-agenda.spec.ts` (móvil): con La 33, reservar una cita para mañana con un barbero,
   entrar como ese barbero → aparece en "Mañana"; otro barbero no la ve; el dueño la cancela → se va
   de la agenda sin recargar.
+
+## 33. Hito 27 — Web de Gamma Club (REQ-101, ADR-077)
+
+### 33.1 Datos
+- Sin migraciones ni tablas nuevas. Fuentes: `getPublicBusiness(homeSlug())` (nombre, dirección,
+  descripción, logo, portada, servicios con foto/descripción, productos, barberos con foto, abierto,
+  `closesAt`, `nextOpening`, `waitingCount`), `getAppointmentInfo` (¿se puede reservar?), el horario
+  de la semana (`business_hours`, lectura nueva en el gateway público si `getPublicBusiness` no lo
+  trae) y la regla de fidelidad del negocio (umbral de visitas; lectura pública nueva sin datos de
+  clientes). Las dos lecturas nuevas van por `service_role` (ADR-009) y no exponen celulares.
+- `homeSlug()` en `modules.ts`: `process.env.TURNOS_HOME_SLUG?.trim() || "gamma-club"`; `HOME_SLUG`
+  queda como valor por defecto.
+- Constantes en `src/lib/brand.ts` (PA-H27-1): `SITE_URL = "https://www.gammaclub.co"`,
+  `WHATSAPP_E164`, `INSTAGRAM_URL`, `MAPS_URL`, `TAGLINE`.
+
+### 33.2 Lógica pura (`src/lib/domain/site.ts`)
+- `weekHoursLines(hours)` → 7 líneas "Lunes · 9:00 a. m. – 8:00 p. m." / "Domingo · Cerrado", lunes
+  primero, con `hhmmTo12h`.
+- `heroCtas({ canBook, slug })` → botones en orden (REQ-101.2).
+- `loyaltyLine(threshold)` → "Cada 10 cortes, uno gratis" o null.
+- `barberShopJsonLd(business, hours, brand)` → objeto schema.org `BarberShop` (REQ-101.7):
+  `openingHoursSpecification`, `priceRange` desde el servicio más barato y el más caro,
+  `address` con `addressLocality: "Sabaneta"`, `addressRegion: "Antioquia"`, `addressCountry: "CO"`.
+- `whatsappLink(e164, text)` → `https://wa.me/<num>?text=…` (sin datos del visitante).
+- `redactAnalyticsUrl(url)`: reutiliza `redactVitalsUrl` (tokens de `/t/`, `/c/`, `/regalo/`).
+
+### 33.3 Rutas y componentes
+- `src/app/page.tsx`: `export const revalidate = 300`; si no hay negocio → portada genérica de hoy
+  (REQ-101.1). Si hay → `<SiteHome>` server component con secciones en
+  `src/components/site/` (`SiteHeader`, `Hero`, `Services`, `HowItWorks`, `Team`, `Loyalty`,
+  `Menu`, `HoursLocation`, `Contact`, `SiteFooter`, `StickyCta`). `OpenNow` es componente cliente
+  que calcula abierto/cerrado con el horario y `time.ts` (Bogotá), para que la caché de 5 minutos
+  no mienta. `StickyCta` aparece con `IntersectionObserver` cuando el héroe sale de la vista.
+- Imágenes con `next/image` desde el bucket `media` (mismo `remotePatterns` que hoy), `priority`
+  solo en la portada, `sizes` por ancho.
+- Marca: tokens de `globals.css` (`bg-brand`, `text-accent`, `.btn-primary`), Montserrat de
+  `fonts.ts`, logo del negocio; héroe navy con foto, resto crema/blanco (60/30/10 del manual).
+- `src/app/sitemap.ts` (`/` y `/<slug>`), `src/app/robots.ts` (disallow `/admin`, `/app`,
+  `/entrar`, `/t/`, `/c/`, `/regalo/`), `generateMetadata` en `page.tsx` con `alternates.canonical`,
+  `openGraph.images` = portada; JSON-LD en `<script type="application/ld+json">`.
+- Analítica: `<SiteAnalytics>` (cliente) con `@vercel/analytics/next` y `beforeSend` →
+  `redactAnalyticsUrl`; se monta en `page.tsx` y en el `layout.tsx` de `(public)/[slug]`, nunca en
+  `(staff)`; no se monta si `TURNOS_WEB_ANALYTICS=off`.
+- `modules.ts`: `/` sigue en `UNGATED_PATHS`; se borra la redirección de REQ-080.2 y su prueba
+  cambia a REQ-101.1.
+
+### 33.4 Pruebas
+- Unit `site.test.ts`: horario de la semana, botones con y sin citas, fidelidad apagada, JSON-LD
+  (dirección, horario, rango de precios), `whatsappLink`, `redactAnalyticsUrl`.
+- Unit `site-home.test.tsx`: orden de secciones, secciones ocultas sin datos (menú, fidelidad,
+  reseña), sin celulares ni nombres de la fila (REQ-101.6), "Entrar" en el encabezado, textos en
+  español (REQ-101.11); `robots`/`sitemap`.
+- Unit `modules.test.ts`: `homeSlug()` con y sin variable; `/` ya no redirige.
+- E2E `site-home.spec.ts` (móvil, `TURNOS_HOME_SLUG=la-33`): se ven el héroe y los dos botones sin
+  bajar; "Reservar una cita" lleva a la cita y "Tomar turno" a la fila; un precio cambiado por el
+  dueño aparece al revalidar; la barra fija sale al bajar; sin desborde horizontal a 360 px.
+- Lighthouse CI: suma `/` a las URLs medidas (REQ-101.10).
