@@ -1737,7 +1737,7 @@ otro negocio y los clientes lleguen directo a la barbería.
 - REQ-080.1 En modo esencial, "Crear negocio" NO DEBE estar disponible: `/crear-negocio` DEBE llevar
   a `/entrar` y `/entrar` NO DEBE mostrar el enlace para crear un negocio. Cambia REQ-030.1.
 - REQ-080.2 En modo esencial, la portada `/` DEBE llevar a la página pública de Gamma Club
-  (`/gamma-club`). Cambia con REQ-101.1 (propuesta): la portada pasa a ser la web del negocio.
+  (`/gamma-club`). Cambia con REQ-101.1 (Hito 27): la portada pasa a ser la web del negocio.
 - REQ-080.3 El operador DEBE tener un procedimiento escrito y probado para borrar un negocio
   completo por su enlace (`slug`): sus datos, sus cuentas de personal y sus archivos, sin tocar otros
   negocios. Se usa una vez para borrar **Filo**.
@@ -2292,7 +2292,7 @@ cita o tome turno sin preguntar por WhatsApp.
   (NFR-001); imágenes con tamaño y carga diferida bajo la primera pantalla.
 - REQ-101.11 Todo texto visible en español colombiano (NFR-006), con tuteo.
 
-Preguntas del Hito 27 (propuestas para que Henry apruebe o cambie):
+Preguntas del Hito 27 (cerradas: Henry aprobó las propuestas el 2026-11-18, ADR-077):
 - **PA-H27-1**: ¿dónde viven el WhatsApp del local, el Instagram y el enlace de Google Maps? Propuesta:
   **constantes en `src/lib/brand.ts`** (Henry me pasa el número de WhatsApp del local y el enlace de
   Maps); la dirección sale de la base. Sin migración. Pasarlos a "Negocio" queda para después.

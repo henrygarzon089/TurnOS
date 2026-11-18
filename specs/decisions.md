@@ -1367,7 +1367,8 @@
   recibes citas" van aparte en el PR #207.
 
 ## ADR-077 · Hito 27: web de Gamma Club en la raíz de gammaclub.co
-- Estado: **propuesta**
+- Estado: **aceptada** (Henry, 2026-11-18: "Aprobada, constrúyela", con PA-H27-1…5 según la
+  propuesta)
 - Contexto: hoy `/` lleva directo a `/gamma-club` (REQ-080.2), que es la pantalla de tomar turno:
   sirve en el local con el QR, pero quien llega de Google o de Instagram no ve qué es el club, qué
   servicios hay, quiénes cortan ni dónde queda. Henry pidió (2026-11-18) una web de la barbería en

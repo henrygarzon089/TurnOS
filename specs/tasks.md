@@ -3224,7 +3224,7 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 
 ## Hito 27 — Web de Gamma Club en gammaclub.co (REQ-101, ADR-077)
 
-> Propuesta (2026-11-18), espera la aprobación de Henry. Orden: T-300 → T-301 → T-302 → T-303 →
+> Aprobada por Henry el 2026-11-18 ("Aprobada, constrúyela"). Orden: T-300 → T-301 → T-302 → T-303 →
 > T-304. Sin migraciones.
 
 ### [ ] T-300 · Datos y lógica de la web
