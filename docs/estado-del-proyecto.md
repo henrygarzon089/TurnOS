@@ -1,4 +1,4 @@
-# Estado del proyecto — traspaso (2026-11-18)
+# Estado del proyecto — traspaso (2026-11-21)
 
 Este documento resume la conversación en la que se construyó todo hasta aquí, para que cualquier
 persona o agente retome sin perder contexto. La fuente de verdad sigue siendo `specs/`.
@@ -868,6 +868,21 @@ Pendientes (H3): `/admin/caja`,
 - PR #207 (2026-11-18, en producción): "Perdió la hora" (como en "Mi fila" y la agenda del
   dueño) y "No recibes citas" en "Mi agenda", a pedido de Henry.
 
+### Hito 28 — "Trabaja con nosotros" (aprobado 2026-11-21, REQ-102, ADR-079, ADR-080)
+
+- Página `/trabaja-con-nosotros` (enlazada desde la portada y en el sitemap) con lo del volante:
+  barberos y estilistas, horario flexible, "% negociable", San Remo (Sabaneta), WhatsApp y llamada
+  al 320 714 5752, formulario con autorización de datos y JSON-LD `JobPosting` sin salario.
+- Dueño: "Postulaciones" en Configuración (insignia con las nuevas), pestañas Nuevas, Contactadas
+  y Descartadas, botón de WhatsApp y "Borrar datos". Módulo `jobs` encendido en modo esencial.
+- T-310…T-313 hechas (PR #213, `ae5401c`): migración 0081 (`job_applications`, RLS forzada, envío
+  solo por `service_role`, límite de 3 por celular al día y 10 por IP por hora, borrado a los 12
+  meses con pg_cron) y arreglo de `check_rate_limit` (la limpieza por hora borraba los conteos
+  diarios). **0081 en producción** desde el 2026-11-21.
+- T-314 (2026-11-21): desplegado, `pnpm check:deploy` ✓; Henry aprobó (ADR-080).
+- Pendiente (Henry): publicar en "Privacidad" el párrafo de postulantes de
+  `docs/guia-prueba-hito-28.md`.
+
 ## Desvíos registrados respecto a la spec (todos explícitos)
 
 - Next.js 16: `middleware.ts` → `src/proxy.ts`; `cacheComponents` desactivado.
@@ -927,8 +942,9 @@ Pendientes (H3): `/admin/caja`,
 6. **WhatsApp (T-069)** — pendiente (Henry): los pasos de Meta para los avisos reales (ADR-031).
 
 **Pendientes de Henry hoy (2026-11-18):** T-256 (probar el harness), T-069 (Meta), conectar el
-repo en Vercel para el despliegue automático y lo de Supabase del punto 1. Los Hitos 19–21 y
-23–25 están aprobados y en producción; no hay PRs abiertos.
+repo en Vercel para el despliegue automático y lo de Supabase del punto 1. Los Hitos 19–21,
+23–25 y 28 están aprobados y en producción; falta publicar el párrafo de postulantes en
+"Privacidad" (Hito 28).
 
 ## Cómo seguir (prompt sugerido para Claude Code)
 

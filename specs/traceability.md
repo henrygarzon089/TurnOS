@@ -597,7 +597,7 @@
 | REQ-102.3 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | barber-foreign-phone.test.tsx, jobs-page.test.tsx, jobs.test.ts, 0081_job_applications.sql | cubierto |
 | REQ-102.4 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs.spec.ts, jobs.test.ts, jobs.test.ts, 0081_job_applications.sql | cubierto |
 | REQ-102.5 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs.test.ts, jobs.test.ts, 0081_job_applications.sql | cubierto |
-| REQ-102.6 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs.spec.ts, admin-nav.test.tsx, jobs-admin.test.tsx, jobs.test.ts, modules.test.ts, 0081_job_applications.sql | cubierto |
+| REQ-102.6 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | admin-nav.spec.ts, jobs.spec.ts, visual-dueno-ancho.spec.ts, admin-nav.test.tsx, jobs-admin.test.tsx, jobs.test.ts, modules.test.ts, 0081_job_applications.sql | cubierto |
 | REQ-102.7 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs-admin.test.tsx, 0081_job_applications.sql | cubierto |
 | REQ-102.8 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs.spec.ts, jobs-page.test.tsx, jobs.test.ts, site-home.test.tsx, site-seo.test.ts | cubierto |
 | REQ-102.9 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs.spec.ts, jobs-page.test.tsx | cubierto |

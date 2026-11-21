@@ -41,6 +41,9 @@ Las pruebas llevan el CA en el nombre: `it('REQ-003.5 …')`, pgTAP `'REQ-003.5 
 - **Hito 25 ("Mi agenda" del barbero, REQ-099, ADR-073)** aprobado (ADR-075, 2026-11-18): el
   barbero ve en "Agenda" sus citas de hoy a +7, solo de lectura; migración 0078 en producción.
   Textos "Perdió la hora" y "No recibes citas" (PR #207, en producción).
+- **Hito 28 ("Trabaja con nosotros", REQ-102, ADR-079)** aprobado (ADR-080, 2026-11-21):
+  página `/trabaja-con-nosotros` con formulario y "Postulaciones" del dueño; migración 0081 en
+  producción. Falta que Henry publique el párrafo de postulantes en "Privacidad".
 - **Hito 22 (harness de los agentes, REQ-092…095, ADR-066)**: T-250…T-255 hechas (2026-11-15),
   sin migraciones ni cambios a la app; falta T-256 (Henry prueba el harness y aprueba). Ver
   "Harness de los agentes" abajo.
