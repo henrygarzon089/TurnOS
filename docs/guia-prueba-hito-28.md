@@ -6,9 +6,14 @@
 2. Aplicar la migración `0081_job_applications.sql` en producción **antes** del deploy
    (crea la tabla de postulaciones y el borrado automático a los 12 meses).
 3. Desplegar `main` a producción.
-4. En **Privacidad** del menú del dueño, publicar una versión del aviso que diga que también
-   tratamos los datos de quienes se postulan para trabajar (nombre, celular, experiencia,
-   Instagram) solo para el proceso de selección, y que se borran a los 12 meses.
+4. En **Privacidad** del menú del dueño, agrega este párrafo al aviso y publica la versión nueva
+   (revísalo con tu abogado si quieres):
+
+   > **Postulaciones de trabajo.** Si te postulas en "Trabaja con nosotros", tratamos tu nombre,
+   > celular, rol, años de experiencia, disponibilidad, enlace a tu trabajo y el mensaje que nos
+   > dejes, solo para el proceso de selección y para contactarte por WhatsApp o llamada. No los
+   > compartimos con terceros. Se borran automáticamente a los 12 meses, o antes si nos lo pides
+   > al 320 714 5752.
 
 ## Probar desde el celular
 
