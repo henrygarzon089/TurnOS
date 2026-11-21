@@ -2409,8 +2409,10 @@ Barberos & Estilistas" y que quien quiera trabajar en Gamma Club pueda postulars
 - REQ-102.7 Las postulaciones NO DEBEN verse fuera del dueño de su negocio (RLS forzada; `anon`
   sin acceso; barberos sin acceso) y DEBEN borrarse solas a los 12 meses.
 - REQ-102.8 La portada DEBE enlazar a la página desde el menú, el pie y una franja "¿Eres barbero o
-  estilista? Trabaja con nosotros"; la página DEBE estar en el `sitemap`, con título, descripción
-  y datos estructurados `JobPosting` (sin salario).
+  estilista? Trabaja con nosotros", y en el celular (donde el menú de secciones no se ve) también
+  desde el héroe, visible sin bajar; la página DEBE estar en el `sitemap`, con título,
+  descripción y datos estructurados `JobPosting` (sin salario). (Lo del héroe: pedido de Henry,
+  2026-11-21, T-315.)
 - REQ-102.9 La página DEBE verse bien desde 360 px sin desborde, con botones ≥ 48 px y contraste
   ≥ 4.5:1, y todo texto en español colombiano con tuteo.
 

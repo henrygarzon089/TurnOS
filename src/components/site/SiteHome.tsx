@@ -127,6 +127,16 @@ export function SiteHome({ data }: { data: SiteHomeData }) {
                     }`}
               </p>
             )}
+            {/* REQ-102.8: en el celular el menú de secciones no se ve; el enlace va aquí */}
+            {jobsEnabled && (
+              <Link
+                href="/trabaja-con-nosotros"
+                data-testid="hero-jobs"
+                className="text-brand-ink flex min-h-12 items-center self-start text-sm font-semibold underline underline-offset-4 lg:hidden"
+              >
+                ¿Eres barbero o estilista? Trabaja con nosotros →
+              </Link>
+            )}
           </div>
         </section>
 

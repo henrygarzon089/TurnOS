@@ -214,9 +214,18 @@ describe("web del negocio (REQ-101)", () => {
   });
   it("REQ-102.8 la portada enlaza a Trabaja con nosotros en el menú, la franja y el pie", () => {
     const out = html();
-    expect(out.match(/href="\/trabaja-con-nosotros"/g)?.length).toBe(3);
+    expect(out.match(/href="\/trabaja-con-nosotros"/g)?.length).toBe(4);
     expect(out).toContain("¿Eres barbero o estilista?");
     const off = renderToStaticMarkup(<SiteHome data={data({ jobsEnabled: false })} />);
     expect(off).not.toContain("/trabaja-con-nosotros");
+  });
+
+  it("REQ-102.8 en el celular el enlace se ve en el héroe, sin bajar (el menú solo sale en computador)", () => {
+    const out = html();
+    const hero = out.slice(out.indexOf('data-testid="site-hero"'), out.indexOf("</section>"));
+    expect(hero).toMatch(/<a[^>]*data-testid="hero-jobs"[^>]*href="\/trabaja-con-nosotros"|<a[^>]*href="\/trabaja-con-nosotros"[^>]*data-testid="hero-jobs"/);
+    expect(hero).toMatch(/data-testid="hero-jobs"[^>]*class="[^"]*lg:hidden|class="[^"]*lg:hidden[^"]*"[^>]*data-testid="hero-jobs"/);
+    const off = renderToStaticMarkup(<SiteHome data={data({ jobsEnabled: false })} />);
+    expect(off).not.toContain("hero-jobs");
   });
 });

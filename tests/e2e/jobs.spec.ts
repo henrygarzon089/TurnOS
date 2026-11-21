@@ -17,6 +17,8 @@ test.describe("REQ-102 Trabaja con nosotros", () => {
     const db = adminDb();
     try {
       await page.goto("/");
+      // REQ-102.8: en el celular se ve sin bajar, en el héroe
+      await expect(page.getByTestId("hero-jobs")).toBeInViewport();
       await page.getByRole("link", { name: "Conoce la oportunidad" }).click();
       await expect(page).toHaveURL(/\/trabaja-con-nosotros$/);
       const hero = page.getByTestId("jobs-hero");
