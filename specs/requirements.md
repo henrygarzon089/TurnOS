@@ -2376,6 +2376,58 @@ guardados; blog; varios idiomas; pagos en línea; editar los textos de la web de
 que ya se edita: servicios, descripción, fotos, horario); dominio nuevo (es la raíz de
 gammaclub.co, que ya existe).
 
+### REQ-102 · "Trabaja con nosotros": atraer y recibir postulaciones de barberos y estilistas — S
+
+Propuesta (Hito 28, ADR-079). Henry quiere llevar a la web el aviso "Oportunidad laboral · Buscamos
+Barberos & Estilistas" y que quien quiera trabajar en Gamma Club pueda postularse desde el celular.
+
+- REQ-102.1 La web DEBE tener la página pública `/trabaja-con-nosotros`, con el estilo de la
+  portada (REQ-101.12): héroe "Oportunidad laboral · Buscamos Barberos & Estilistas", "Barbería
+  premium para él · Blower, corte y estilo para ella", "Espacio de cuidado personal en San Remo,
+  Sabaneta", fotos del local, y los beneficios "Horario flexible", "% negociable" y "Únete al
+  club" con su frase. Sobre el pago NO DEBE mostrar cifras: solo "% negociable".
+- REQ-102.2 La página DEBE explicar qué buscamos, cómo es el proceso (paso a paso, con el tiempo de
+  respuesta) y responder preguntas frecuentes (PA-H28-1, PA-H28-2), y DEBE tener en el héroe y al
+  final los botones "Postularme" (lleva al formulario) y "Escribir por WhatsApp" (abre WhatsApp al
+  +57 320 714 5752 con un mensaje listo).
+- REQ-102.3 El formulario DEBE pedir: nombre, celular (Colombia por defecto; otro país permitido,
+  como REQ-081), "Soy barbero / estilista / las dos", años de experiencia, Instagram o enlace con
+  su trabajo (opcional), disponibilidad ("Tiempo completo", "Medio tiempo", "Fines de semana") y
+  un mensaje opcional (máx. 500), más la autorización de datos (Ley 1581) con enlace a la política.
+  Sin la autorización NO DEBE enviarse.
+- REQ-102.4 Cuando la persona envía datos válidos, el sistema DEBE guardar la postulación en el
+  negocio y mostrar "¡Listo! Recibimos tu postulación. Te escribimos por WhatsApp en los próximos
+  días."; con un dato inválido DEBE marcar el campo con un mensaje claro y no perder lo escrito.
+- REQ-102.5 Si el mismo celular se postula otra vez en 30 días, el sistema DEBE actualizar la
+  postulación existente (no duplicarla) y mostrar el mismo "¡Listo!". DEBE limitar los envíos (3
+  por celular al día, 10 por IP por hora) y descartar en silencio los envíos de robots (campo
+  trampa oculto).
+- REQ-102.6 El dueño DEBE ver en el menú "Postulaciones" (con el número de nuevas) la lista de
+  postulaciones, de la más nueva a la más vieja, con nombre, rol, experiencia, disponibilidad,
+  Instagram, mensaje y fecha; y por cada una "Escribir por WhatsApp" (con un saludo listo),
+  "Marcar contactada", "Descartar" y "Borrar" (supresión, con confirmación).
+- REQ-102.7 Las postulaciones NO DEBEN verse fuera del dueño de su negocio (RLS forzada; `anon`
+  sin acceso; barberos sin acceso) y DEBEN borrarse solas a los 12 meses.
+- REQ-102.8 La portada DEBE enlazar a la página desde el menú, el pie y una franja "¿Eres barbero o
+  estilista? Trabaja con nosotros"; la página DEBE estar en el `sitemap`, con título, descripción
+  y datos estructurados `JobPosting` (sin salario).
+- REQ-102.9 La página DEBE verse bien desde 360 px sin desborde, con botones ≥ 48 px y contraste
+  ≥ 4.5:1, y todo texto en español colombiano con tuteo.
+
+Preguntas del Hito 28 (cerradas: Henry aprobó las propuestas el 2026-11-20, ADR-079):
+- **PA-H28-1** ¿Qué buscamos? Propuesta: "Mínimo 1 año de experiencia (o portafolio que lo
+  muestre)", "Buena actitud y puntualidad", "Ganas de crecer con el club"; y para estilistas,
+  "Blower, corte y peinado". ¿Herramientas propias?
+- **PA-H28-2** Proceso. Propuesta: (1) Te postulas aquí; (2) Te escribimos por WhatsApp en máx.
+  3 días hábiles; (3) Vienes al local a conocernos y haces una prueba de corte; (4) Acordamos
+  horario y porcentaje.
+- **PA-H28-3** ¿El WhatsApp del aviso (320 714 5752) es el mismo para todas las postulaciones? Se
+  guarda como `HIRING_WHATSAPP_E164` en `brand.ts`, aparte del WhatsApp del local.
+
+Fuera de alcance del Hito 28: subir fotos o CV; aviso automático por WhatsApp al dueño (hasta que
+Meta apruebe, ADR-031); varias vacantes con fechas; publicar en portales de empleo.
+
+
 ---
 
 ## 6. Requisitos no funcionales

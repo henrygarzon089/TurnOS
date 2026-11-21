@@ -29,6 +29,8 @@ export async function getSiteHome(slug: string) {
     reviewUrl: site?.reviewUrl ?? null,
     products: isModuleEnabled("products") ? business.products : [],
     canBook,
+    // REQ-102.8: la portada enlaza a "Trabaja con nosotros" solo con el módulo encendido
+    jobsEnabled: isModuleEnabled("jobs"),
   };
 }
 

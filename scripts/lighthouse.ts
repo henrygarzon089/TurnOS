@@ -110,6 +110,7 @@ const barber = await staffCookie("barber");
 const owner = await staffCookie("owner");
 const results = [
   run(`${BASE}/`, "web", undefined, true), // REQ-101.10
+  run(`${BASE}/trabaja-con-nosotros`, "trabaja", undefined, true), // REQ-102.8
   run(`${BASE}/${SLUG}`, "portada"),
   run(`${BASE}/t/${token}`, "mi-turno"),
   run(`${BASE}/app/fila`, "mi-fila", { Cookie: barber }),

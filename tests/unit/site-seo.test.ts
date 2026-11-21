@@ -16,13 +16,14 @@ describe("SEO y analítica de la web (REQ-101.7, REQ-101.8)", () => {
     expect(r.sitemap).toBe("https://www.gammaclub.co/sitemap.xml");
   });
 
-  it("REQ-101.7 el sitemap lleva la web y la página pública del negocio", () => {
+  it("REQ-101.7 / REQ-102.8 el sitemap lleva la web, la página pública del negocio y Trabaja con nosotros", () => {
     vi.stubEnv("TURNOS_HOME_SLUG", "");
     const urls = sitemap().map((u) => u.url);
     expect(urls).toEqual([
       "https://www.gammaclub.co/",
       "https://www.gammaclub.co/gamma-club",
       "https://www.gammaclub.co/gamma-club/cita",
+      "https://www.gammaclub.co/trabaja-con-nosotros",
     ]);
     vi.unstubAllEnvs();
   });

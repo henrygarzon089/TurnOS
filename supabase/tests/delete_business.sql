@@ -33,6 +33,8 @@ begin
   insert into commission_changes (business_id, barber_id, new_pct) values (p_biz, v_barber, 55);
   insert into invitations (business_id, barber_id) values (p_biz, v_barber);
   insert into privacy_policy_versions (business_id, version, body) values (p_biz, 1, 'Política');
+  insert into job_applications (business_id, full_name, phone_e164, role, years_experience, availability, privacy_version)
+    values (p_biz, 'Postulante', '+573009990001', 'barbero', 2, 'tiempo_completo', '1'); -- REQ-102
   insert into loyalty_programs (business_id) values (p_biz) on conflict do nothing;
   insert into membership_plans (business_id) values (p_biz) on conflict do nothing;
   insert into barber_photos (business_id, barber_id, path)

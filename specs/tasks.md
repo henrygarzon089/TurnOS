@@ -3328,6 +3328,40 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   https://www.gammaclub.co desde el celular, reserva desde la web y aprueba (ADR nuevo).
 
 
+## Hito 28 — Trabaja con nosotros (REQ-102, ADR-079)
+
+> Aprobada por Henry el 2026-11-20 (ADR-079). Orden: T-310 → T-311 → T-312 → T-313 →
+> T-314.
+
+### [x] T-310 · Datos de las postulaciones
+- REQ: REQ-102.4, REQ-102.5, REQ-102.7 · migración `0081`, `submit_job_application`, purga, pgTAP.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [x] T-311 · Página "Trabaja con nosotros" y formulario
+- REQ: REQ-102.1…102.5, REQ-102.9 · `jobs.ts`, acción pública, página y formulario.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [x] T-312 · "Postulaciones" del dueño
+- REQ: REQ-102.6, REQ-102.7 · pantalla, acciones, contador en el menú, módulo `jobs`.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [x] T-313 · Enlaces desde la portada y SEO
+- REQ: REQ-102.8 · menú, pie, franja, `sitemap`, metadata, `JobPosting`, Lighthouse.
+- Modelo: Opus 5.5. Complejidad: baja.
+- Hechas T-310…T-313 el 2026-11-20. Desvíos: el estado y el borrado del dueño van por
+  `set_job_application_status` y `delete_job_application` (`security definer`, revisan
+  `is_owner_of`) en vez de políticas de `update`/`delete`, para borrar también la llave del límite.
+  El envío vive en `src/lib/jobs/submit.ts` (probado contra Postgres local) y la acción en
+  `src/lib/actions/jobs.ts`. Pruebas: pgTAP `0081`, `jobs.test.ts`, `jobs-page.test.tsx`,
+  `jobs-admin.test.tsx`, integración `jobs.test.ts`, E2E `jobs.spec.ts`; menú con 15 destinos en
+  modo esencial y 20 con todo.
+
+### [ ] T-314 · Validación Hito 28
+- Terminado: `pnpm trace --hito=28` sin huecos; guía `docs/guia-prueba-hito-28.md` (aplicar la
+  migración 0081, desplegar, postularse desde el celular y verla en "Postulaciones"); Henry aprueba
+  (ADR nuevo).
+
+
 ---
 
 ---

@@ -1390,6 +1390,24 @@
   fidelidad de Fresha no pasan (PA-H26-2). Desactivar Fresha también apaga su vitrina de clientes
   nuevos (PA-H26-4).
 
+## ADR-079 · Hito 28: "Trabaja con nosotros" con formulario y postulaciones
+
+- Estado: **aprobada** por Henry el 2026-11-20 ("Approved, build it"), con las propuestas de
+  PA-H28-1 (sin exigir herramientas propias: no lo dijo), PA-H28-2 y PA-H28-3 (320 714 5752).
+- Contexto: Gamma Club busca barberos y estilistas (aviso "Oportunidad laboral"). Henry eligió
+  formulario guardado en TurnOS + WhatsApp, sin fotos, y pago solo "% negociable".
+- Decisión: REQ-102. (1) Página pública `/trabaja-con-nosotros` con el estilo de ADR-078.
+  (2) Tabla `job_applications` (migración 0081) con RLS forzada; solo el dueño lee y cambia; se
+  escribe por `submit_job_application` (`security definer`, solo `service_role`, con
+  `check_rate_limit`), igual que las demás acciones públicas (ADR-009). (3) Pantalla del dueño
+  `/admin/postulaciones`, módulo `jobs` encendido en el modo esencial. (4) Borrado automático a
+  los 12 meses con `pg_cron`. (5) WhatsApp de contratación como constante en `brand.ts`.
+- Alternativas: (a) solo WhatsApp: sin migración, pero sin registro de quién se postuló. (b)
+  Google Forms: datos fuera de TurnOS y otra marca. (c) Fotos de cortes: mejor para escoger, pero
+  bucket privado y borrado; se deja para después.
+- Consecuencias: datos personales nuevos (aviso de privacidad y supresión cubren "postulantes"); un
+  destino más en el menú del dueño (15); una migración que Henry aplica antes del deploy.
+
 ## ADR-078 · Rediseño de la web de Gamma Club
 
 - Estado: **aprobada** por Henry el 2026-11-18 ("Approved, merge it") tras ver la vista previa.

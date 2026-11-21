@@ -55,6 +55,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "Configuración",
     items: [
       { href: "/admin/barberos", label: "Barberos", module: "barbers" },
+      // REQ-102.6: quienes quieren trabajar en el negocio
+      { href: "/admin/postulaciones", label: "Postulaciones", module: "jobs" },
       { href: "/admin/servicios", label: "Servicios", module: "services" },
       // REQ-079.9: Horario y QR son la misma pantalla (design §22.8), un solo destino.
       { href: "/admin/horario", label: "Horario y QR", module: "hours", also: ["/admin/qr"] },

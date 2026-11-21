@@ -57,7 +57,7 @@ describe("ADMIN_GROUPS", () => {
       ["Local", ["Limpieza", "Productos", "Inventario"]],
       [
         "Configuración",
-        ["Barberos", "Servicios", "Horario y QR", "Mensajes", "Negocio", "Privacidad"],
+        ["Barberos", "Postulaciones", "Servicios", "Horario y QR", "Mensajes", "Negocio", "Privacidad"],
       ],
     ]);
   });
@@ -71,7 +71,7 @@ describe("ADMIN_GROUPS", () => {
     for (const href of MODULES_BEFORE) expect(reachable).toContain(href);
     expect(hrefs).toContain("/admin");
     expect(new Set(hrefs).size).toBe(hrefs.length);
-    expect(hrefs).toHaveLength(19);
+    expect(hrefs).toHaveLength(20); // REQ-102.6 suma Postulaciones
   });
 
   it("REQ-077.1 la barra inferior lleva Hoy, Fila, Caja y Clientes (más el botón Más)", () => {
@@ -109,7 +109,7 @@ describe("AdminNav", () => {
     expect(h.match(/aria-current="page"/g)).toHaveLength(2);
     expect(h).toMatch(/<a[^>]*aria-current="page"[^>]*>(<[^>]+>)*Caja/);
     const links = h.match(/<a [^>]*>/g)!;
-    expect(links.length).toBeGreaterThanOrEqual(23); // 4 de la barra + 19 del lateral (REQ-079.9)
+    expect(links.length).toBeGreaterThanOrEqual(24); // 4 de la barra + 20 del lateral (REQ-079.9, REQ-102.6)
     for (const a of links) expect(a).toMatch(/min-h-12|h-14/);
     expect(h).toMatch(/<button[^>]*min-h-12[^>]*>[\s\S]*?Más/);
   });
@@ -239,14 +239,14 @@ const hrefsOf = (groups: AdminGroup[]) => groups.flatMap((g) => g.items.map((i) 
 const ONLY_CASH = new Set<ModuleId>(["cash"]);
 
 describe("REQ-079.2 menú del dueño con los módulos encendidos", () => {
-  it("REQ-084.1 en modo esencial quedan 14 destinos (con Citas) en sus grupos y en orden", () => {
+  it("REQ-084.1 en modo esencial quedan 15 destinos (con Citas y Postulaciones, REQ-102.6) en sus grupos y en orden", () => {
     expect(labelsOf(adminGroups(ESSENTIAL))).toEqual([
       ["Operación", ["Hoy", "Fila", "Citas", "Caja", "Semana"]],
       ["Clientes", ["Clientes", "Fidelidad"]],
       ["Local", ["Productos", "Inventario"]],
-      ["Configuración", ["Barberos", "Servicios", "Horario y QR", "Negocio", "Privacidad"]],
+      ["Configuración", ["Barberos", "Postulaciones", "Servicios", "Horario y QR", "Negocio", "Privacidad"]],
     ]);
-    expect(hrefsOf(adminGroups(ESSENTIAL))).toHaveLength(14);
+    expect(hrefsOf(adminGroups(ESSENTIAL))).toHaveLength(15);
   });
 
   it("REQ-079.2 en modo esencial no sale ningún módulo apagado", () => {
@@ -263,9 +263,9 @@ describe("REQ-079.2 menú del dueño con los módulos encendidos", () => {
     }
   });
 
-  it("REQ-079.2 con todos los módulos el menú es el de siempre (19 destinos)", () => {
+  it("REQ-079.2 con todos los módulos el menú es el de siempre (20 destinos)", () => {
     expect(adminGroups(ALL)).toEqual(ADMIN_GROUPS);
-    expect(hrefsOf(adminGroups(ALL))).toHaveLength(19);
+    expect(hrefsOf(adminGroups(ALL))).toHaveLength(20);
     expect(adminTabs(ALL)).toEqual(ADMIN_TABS);
   });
 
@@ -287,8 +287,8 @@ describe("REQ-079.2 menú del dueño con los módulos encendidos", () => {
     );
     expect(h).toContain('href="/admin/citas"'); // REQ-084.1
     expect(h).not.toContain('href="/admin/limpieza"');
-    // 14 del lateral + 4 de la barra
-    expect(h.match(/<a [^>]*>/g)).toHaveLength(18);
+    // 15 del lateral (REQ-102.6) + 4 de la barra
+    expect(h.match(/<a [^>]*>/g)).toHaveLength(19);
   });
 });
 

@@ -26,6 +26,7 @@ const OFF: ModuleId[] = [
 ];
 
 const ON: ModuleId[] = [
+  "jobs", // REQ-102.6
   "today",
   "queue",
   "cash",
