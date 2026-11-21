@@ -3368,6 +3368,12 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   https://www.gammaclub.co (`pnpm check:deploy` ✓); Henry aprobó (ADR-080).
 
 
+
+### [x] T-315 · Enlace de "Trabaja con nosotros" visible en el celular (REQ-102.8)
+- Henry no encontró el enlace en el celular (2026-11-21): el menú de secciones solo sale en
+  computador y la franja y el pie quedan abajo. Se agrega un enlace en el héroe, solo en el
+  celular (`lg:hidden`), y se ajusta REQ-102.8. Pruebas: `site-home.test.tsx` y `jobs.spec.ts`.
+
 ---
 
 ---
