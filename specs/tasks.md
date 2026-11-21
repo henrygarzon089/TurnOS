@@ -3356,10 +3356,12 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   `jobs-admin.test.tsx`, integración `jobs.test.ts`, E2E `jobs.spec.ts`; menú con 15 destinos en
   modo esencial y 20 con todo.
 
-### [ ] T-314 · Validación Hito 28
+### [x] T-314 · Validación Hito 28
 - Terminado: `pnpm trace --hito=28` sin huecos; guía `docs/guia-prueba-hito-28.md` (aplicar la
   migración 0081, desplegar, postularse desde el celular y verla en "Postulaciones"); Henry aprueba
   (ADR nuevo).
+- Hecho (2026-11-21): PR #213 en `main` (`ae5401c`), 0081 en producción, desplegado en
+  https://www.gammaclub.co (`pnpm check:deploy` ✓); Henry aprobó (ADR-080).
 
 
 ---

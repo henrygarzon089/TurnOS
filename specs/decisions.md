@@ -1408,6 +1408,21 @@
 - Consecuencias: datos personales nuevos (aviso de privacidad y supresión cubren "postulantes"); un
   destino más en el menú del dueño (15); una migración que Henry aplica antes del deploy.
 
+## ADR-080 · Aprobación del Hito 28 ("Trabaja con nosotros")
+- Estado: **aceptada** (Henry, 2026-11-21)
+- Contexto: REQ-102 construido (T-310…T-313) y fusionado en `main` con el PR #213 (`ae5401c`, CI en
+  verde, E2E incluidas). La migración 0081 está en producción (`supabase db push`, antes en seco:
+  solo 0081) y `main` se desplegó en https://www.gammaclub.co; `/trabaja-con-nosotros` responde
+  200, la portada la enlaza y el sitemap la lista. `pnpm trace --hito=28` sin huecos. Guía:
+  `docs/guia-prueba-hito-28.md`.
+- Decisión: Henry aprueba el Hito 28 ("apruebo Hito 28", 2026-11-21). T-314 cerrada.
+- Consecuencias: barberos y estilistas se postulan desde la web (formulario o WhatsApp al
+  320 714 5752) y el dueño las ve en "Postulaciones" (Nuevas, Contactadas, Descartadas), con
+  WhatsApp y "Borrar datos"; se borran solas a los 12 meses. Al construir se corrigió
+  `check_rate_limit` para que la limpieza por hora no borre los conteos diarios por celular. El
+  párrafo del aviso de privacidad para postulantes lo publica Henry en "Privacidad" (texto en la
+  guía).
+
 ## ADR-078 · Rediseño de la web de Gamma Club
 
 - Estado: **aprobada** por Henry el 2026-11-18 ("Approved, merge it") tras ver la vista previa.
