@@ -26,7 +26,7 @@ import { StickyCta } from "./StickyCta";
  * bloques que aparecen al bajar (`.reveal`, solo CSS). Sin degradados ni desenfoque (REQ-078.14).
  */
 export function SiteHome({ data }: { data: SiteHomeData }) {
-  const { business: b, hours, loyalty, team, products, canBook, reviewUrl } = data;
+  const { business: b, hours, loyalty, team, products, courtesies, canBook, reviewUrl } = data;
   const menuGroups = groupProductsByCategory(products);
   const jobsEnabled = data.jobsEnabled;
   const ctas = heroCtas({ canBook, slug: b.slug });
@@ -330,12 +330,49 @@ export function SiteHome({ data }: { data: SiteHomeData }) {
           </section>
         )}
 
+        {/* REQ-103.7: lo de cortesía, aparte y sin precio */}
+        {courtesies.length > 0 && (
+          <Section
+            id="cortesia"
+            eyebrow="Cortesía"
+            title="Mientras esperas,"
+            muted="te invitamos."
+            intro="Escoge uno al tomar tu turno."
+          >
+            <ul className="-mx-5 flex snap-x gap-4 overflow-x-auto px-5 pb-2 lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0">
+              {courtesies.map((c) => (
+                <li
+                  key={c.id}
+                  className="bg-card border-line flex w-48 shrink-0 snap-start flex-col overflow-hidden rounded-[2rem] border lg:w-auto"
+                >
+                  <div className="bg-brand-soft relative flex aspect-square items-center justify-center">
+                    {c.photoPath ? (
+                      <Image
+                        src={mediaUrl(c.photoPath)}
+                        alt={c.name}
+                        fill
+                        unoptimized
+                        loading="lazy"
+                        sizes="192px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <Icon name="cup" className="text-ink size-12" />
+                    )}
+                  </div>
+                  <p className="p-4 font-semibold">{c.name}</p>
+                </li>
+              ))}
+            </ul>
+          </Section>
+        )}
+
         {products.length > 0 && (
           <Section
-            id="menu"
-            eyebrow="Menú"
-            title="Algo rico"
-            muted="mientras esperas."
+            id="productos"
+            eyebrow="Productos"
+            title="Para tu barba"
+            muted="y tu cabello."
             intro="Lo que tenemos a la venta. Se paga en caja."
           >
             {/* REQ-103.5: un bloque por categoría de la vitrina; subtítulo solo si hay más de una */}
