@@ -44,6 +44,7 @@ function data(over: Partial<Data> = {}): Data {
       { id: "p3", name: "Paleta", price: 4000, photoPath: null, description: null, category: "Helados" },
       { id: "p4", name: "Llavero", price: 8000, photoPath: null, description: null, category: null },
     ],
+    courtesies: [],
     reviewUrl: null,
     canBook: true,
     jobsEnabled: false,
@@ -101,7 +102,7 @@ describe("REQ-103.5 menú por categoría", () => {
   });
 
   it("REQ-103.5 la web muestra un subtítulo por categoría, con precio", () => {
-    const s = section(html(), "menu");
+    const s = section(html(), "productos");
     const heads = [...s.matchAll(/<h3[^>]*>([^<]+)<\/h3>/g)].map((m) => m[1]);
     expect(heads).toEqual(["Helados", "Cuidado del cabello", "Otros"]);
     expect(s).toContain("$ 25.000");
@@ -112,7 +113,7 @@ describe("REQ-103.5 menú por categoría", () => {
     const one = data({
       products: [{ id: "p1", name: "Helado", price: 5000, photoPath: null, description: null, category: "Helados" }],
     });
-    expect(section(html(one), "menu")).not.toMatch(/<h3[^>]*>Helados<\/h3>/);
+    expect(section(html(one), "productos")).not.toMatch(/<h3[^>]*>Helados<\/h3>/);
   });
 });
 
@@ -125,5 +126,36 @@ describe("REQ-103.3 descripción del barbero", () => {
     });
     expect(normalizeDescription("   ", BARBER_DESCRIPTION_MAX)).toEqual({ ok: true, value: null });
     expect(normalizeDescription("a".repeat(201), BARBER_DESCRIPTION_MAX).ok).toBe(false);
+  });
+});
+
+describe("REQ-103.7 Productos y cortesía aparte", () => {
+  const withCourtesy = () =>
+    data({
+      courtesies: [
+        { id: "c1", name: "Tinto", photoPath: "b1/products/tinto.webp" },
+        { id: "c2", name: "Agua", photoPath: null },
+      ],
+    });
+
+  it("REQ-103.7 lo que se vende se llama Productos y ya no Algo rico", () => {
+    const s = section(html(withCourtesy()), "productos");
+    expect(s).toContain("Productos");
+    expect(s).toContain("$ 25.000");
+    expect(html()).not.toContain("Algo rico");
+  });
+
+  it("REQ-103.7 la cortesía sale aparte, sin precio y con foto", () => {
+    const s = section(html(withCourtesy()), "cortesia");
+    expect(s).toContain("Mientras esperas,");
+    expect(s).toContain("te invitamos.");
+    expect(s).toContain("Tinto");
+    expect(s).toContain("Agua");
+    expect(s).not.toMatch(/\$\s?\d/);
+    expect(s).toMatch(/<img[^>]*alt="Tinto"/);
+  });
+
+  it("REQ-103.7 sin cortesías no sale el bloque", () => {
+    expect(html()).not.toContain('id="cortesia"');
   });
 });

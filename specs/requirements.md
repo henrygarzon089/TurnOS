@@ -2457,6 +2457,11 @@ barberos.
 - REQ-103.6 La portada DEBE seguir viéndose bien desde 360 px sin desborde y con los acordeones
   usables con teclado y lector de pantalla.
 
+- REQ-103.7 La sección de lo que se vende DEBE llamarse "Productos" (no "Algo rico") y, CUANDO hay
+  productos activos de cortesía (REQ-038.3), la portada DEBE mostrarlos aparte en "Cortesía ·
+  Mientras esperas, te invitamos", sin precio y con su foto; sin cortesías no sale ese bloque.
+  (Henry, 2026-11-21, al ver que el menú mostraba productos de barba bajo "Algo rico"; T-324.)
+
 PA-H29-1 Texto del Menú: se deja "Algo rico mientras esperas" como título y la intro cambia a
 "Lo que tenemos a la venta. Se paga en caja." (Propuesta.)
 PA-H29-2 El horario de lunes a sábado desde las 10:00 a. m. no es código: Henry lo cambia en

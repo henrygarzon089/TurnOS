@@ -3399,6 +3399,12 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Modelo: Opus 5.5. Complejidad: baja.
 - Hecha 2026-11-21. Sin la 0082 la web usa el menú de siempre, sin subtítulos.
 
+### [x] T-324 · "Productos" y cortesía aparte en la web
+- REQ: REQ-103.7 · `SiteHome.tsx`, `site.ts`, unit y E2E. Sin migración.
+- Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-21. Henry la pidió al ver en producción el menú con productos de barba bajo
+  "Algo rico mientras esperas".
+
 ### [ ] T-323 · Validación Hito 29
 - Terminado: `pnpm trace --hito=29` sin huecos; 0082 en producción; desplegado; Henry cambia el
   horario a las 10 en "Horario y QR", llena las descripciones y aprueba (ADR nuevo).
