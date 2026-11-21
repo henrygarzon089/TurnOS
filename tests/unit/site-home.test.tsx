@@ -82,6 +82,7 @@ function data(over: Partial<SiteHomeData> = {}): SiteHomeData {
       { id: "x2", name: "Stiven Ríos", photoPath: null, bio: null },
     ],
     products: business.products,
+    courtesies: [],
     reviewUrl: "https://g.page/r/abc/review",
     canBook: true,
     jobsEnabled: true,
@@ -125,7 +126,7 @@ describe("web del negocio (REQ-101)", () => {
       "como-funciona",
       "equipo",
       "fidelidad",
-      "menu",
+      "productos", // REQ-103.7: antes "menu"
       "horario",
       "contacto",
     ];
@@ -160,7 +161,7 @@ describe("web del negocio (REQ-101)", () => {
   it("REQ-101.3 sin fidelidad ni menú esas secciones no salen", () => {
     const out = html(data({ loyalty: null, products: [] }));
     expect(out).not.toContain('id="fidelidad"');
-    expect(out).not.toContain('id="menu"');
+    expect(out).not.toContain('id="productos"');
   });
 
   it("REQ-101.3 sin horario en la base no se inventa uno cerrado", () => {

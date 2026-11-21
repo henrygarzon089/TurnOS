@@ -33,6 +33,8 @@ export async function getSiteHome(slug: string) {
     reviewUrl: site?.reviewUrl ?? null,
     // REQ-103.5: con la 0082 el menú trae la categoría; sin ella, el de siempre
     products,
+    // REQ-103.7: lo de cortesía va aparte, sin precio
+    courtesies: isModuleEnabled("products") ? business.courtesies : [],
     canBook,
     // REQ-102.8: la portada enlaza a "Trabaja con nosotros" solo con el módulo encendido
     jobsEnabled: isModuleEnabled("jobs"),
