@@ -3374,6 +3374,28 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   computador y la franja y el pie quedan abajo. Se agrega un enlace en el héroe, solo en el
   celular (`lg:hidden`), y se ajusta REQ-102.8. Pruebas: `site-home.test.tsx` y `jobs.spec.ts`.
 
+
+## Hito 29 — Fotos protagonistas, acordeones y menú por categoría (REQ-103, ADR-082)
+
+> Propuesta (2026-11-21). Orden: T-320 → T-321 → T-322 → T-323.
+
+### [ ] T-320 · Descripción del barbero y datos de la web
+- REQ: REQ-103.3, REQ-103.4, REQ-103.5 · migración `0082`, `set_barber_bio`, `get_public_site`,
+  campo en Barberos, pgTAP.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-321 · Servicios y equipo con foto protagonista y "Ver más"
+- REQ: REQ-103.1, REQ-103.2, REQ-103.4, REQ-103.6 · `SiteHome.tsx`, unit y E2E.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-322 · Menú por categoría
+- REQ: REQ-103.5 · `groupProductsByCategory`, `SiteHome.tsx`, unit.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-323 · Validación Hito 29
+- Terminado: `pnpm trace --hito=29` sin huecos; 0082 en producción; desplegado; Henry cambia el
+  horario a las 10 en "Horario y QR", llena las descripciones y aprueba (ADR nuevo).
+
 ---
 
 ---

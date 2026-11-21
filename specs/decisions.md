@@ -1482,3 +1482,21 @@
   (`@vercel/analytics`) y, según el plan de Vercel, un posible costo que se vigila (PA-H27-3).
   Al construir (T-300) hizo falta la migración de solo lectura `0080_public_site.sql`, que Henry
   aplica antes del deploy, y la portada quedó `force-dynamic` en vez de ISR (T-301).
+
+## ADR-082 · Hito 29: fotos protagonistas, acordeones y menú por categoría en la web
+- Estado: **propuesta** (2026-11-21)
+- Contexto: Henry revisó la web (Hito 27) en el celular y pidió que en Servicios y Nuestro equipo
+  la foto mande y la descripción se abra con "Ver más", y que el Menú separe lo que se vende por
+  categoría. Los barberos no tienen descripción guardada; las categorías ya existen como texto
+  libre en `products.category` (0060).
+- Decisión: (1) Migración 0082: `barbers.bio text` (≤ 200, `null` si vacía) y
+  `set_barber_bio` para el dueño (`security definer`, `is_owner_of`); `get_public_site` suma
+  `bio` al equipo y la categoría a los productos a la venta. (2) Acordeón con `<details>` y
+  `<summary>` nativos: funciona sin JavaScript y con teclado. (3) El menú se agrupa en el
+  navegador del servidor (`groupProductsByCategory`, lógica pura en `src/lib/domain/site.ts`).
+  (4) El horario de las 10 es dato, no código.
+- Alternativas: (a) acordeón con estado de React: más código y no sirve sin JS. (b) Mostrar los
+  servicios del barbero en vez de descripción: Henry escogió la descripción. (c) Separar el menú
+  por cortesía / a la venta: Henry escogió por categoría.
+- Consecuencias: una migración pequeña que Henry aplica antes del deploy; un campo más en
+  Barberos que Henry llena; la web no cambia de ruta ni de datos sensibles.

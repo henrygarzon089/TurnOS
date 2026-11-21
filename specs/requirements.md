@@ -2432,6 +2432,41 @@ Meta apruebe, ADR-031); varias vacantes con fechas; publicar en portales de empl
 
 ---
 
+### REQ-103 · Web de Gamma Club: fotos protagonistas, acordeones y menú por categoría — S
+
+Henry (2026-11-21), al revisar la web en el celular: en Servicios y en Nuestro equipo la foto debe
+ser lo principal y la descripción debe abrirse con "Ver más" (acordeón); el Menú mezcla lo que se
+vende, y debe separarse por categoría. Escogió "Por categoría" y "Descripción nueva" para los
+barberos.
+
+- REQ-103.1 Cuando un servicio tiene foto, la portada DEBE mostrarla como lo principal de la
+  tarjeta (al menos el 60 % de su alto, sin texto encima salvo nombre y precio), y el nombre, el
+  precio y la duración DEBEN verse sin abrir nada.
+- REQ-103.2 Cuando un servicio tiene descripción, su tarjeta DEBE tener un botón "Ver más" (≥ 48 px)
+  que abre y cierra la descripción en acordeón, sin JavaScript (`<details>`/`<summary>`), y dice
+  "Ver menos" abierto; sin descripción, no hay botón.
+- REQ-103.3 El dueño DEBE poder escribir en Barberos una descripción opcional por barbero (máx.
+  200 caracteres, se guarda sin espacios sobrantes; vacía = sin descripción).
+- REQ-103.4 En "Nuestro equipo" la foto del barbero DEBE ser lo principal de la tarjeta y, si tiene
+  descripción, un "Ver más" (≥ 48 px) DEBE abrirla en acordeón como en REQ-103.2. La descripción
+  DEBE salir de `get_public_site` solo para barberos activos; nunca su celular ni su PIN.
+- REQ-103.5 El Menú DEBE agrupar los productos a la venta por su categoría de la vitrina (REQ-065),
+  un subtítulo por categoría en el orden del menú del dueño (el primer producto de cada una),
+  con precio; los que no tienen categoría van al final en "Otros". Si solo hay una categoría, no se
+  muestra subtítulo.
+- REQ-103.6 La portada DEBE seguir viéndose bien desde 360 px sin desborde y con los acordeones
+  usables con teclado y lector de pantalla.
+
+PA-H29-1 Texto del Menú: se deja "Algo rico mientras esperas" como título y la intro cambia a
+"Lo que tenemos a la venta. Se paga en caja." (Propuesta.)
+PA-H29-2 El horario de lunes a sábado desde las 10:00 a. m. no es código: Henry lo cambia en
+"Horario y QR" y la web, la fila y las citas lo toman de ahí. (Propuesta.)
+
+Fuera de alcance del Hito 29: fotos nuevas (se usan las que ya están), descripción del barbero en
+otras pantallas (portada `/gamma-club`, reservar), categorías nuevas en la vitrina.
+
+---
+
 ## 6. Requisitos no funcionales
 
 | ID | Requisito | Criterio verificable |
