@@ -3328,6 +3328,33 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   https://www.gammaclub.co desde el celular, reserva desde la web y aprueba (ADR nuevo).
 
 
+## Hito 28 — Trabaja con nosotros (REQ-102, ADR-079)
+
+> Propuesta (2026-11-20), espera la aprobación de Henry. Orden: T-310 → T-311 → T-312 → T-313 →
+> T-314.
+
+### [ ] T-310 · Datos de las postulaciones
+- REQ: REQ-102.4, REQ-102.5, REQ-102.7 · migración `0081`, `submit_job_application`, purga, pgTAP.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [ ] T-311 · Página "Trabaja con nosotros" y formulario
+- REQ: REQ-102.1…102.5, REQ-102.9 · `jobs.ts`, acción pública, página y formulario.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [ ] T-312 · "Postulaciones" del dueño
+- REQ: REQ-102.6, REQ-102.7 · pantalla, acciones, contador en el menú, módulo `jobs`.
+- Modelo: Opus 5.5. Complejidad: media.
+
+### [ ] T-313 · Enlaces desde la portada y SEO
+- REQ: REQ-102.8 · menú, pie, franja, `sitemap`, metadata, `JobPosting`, Lighthouse.
+- Modelo: Opus 5.5. Complejidad: baja.
+
+### [ ] T-314 · Validación Hito 28
+- Terminado: `pnpm trace --hito=28` sin huecos; guía `docs/guia-prueba-hito-28.md` (aplicar la
+  migración 0081, desplegar, postularse desde el celular y verla en "Postulaciones"); Henry aprueba
+  (ADR nuevo).
+
+
 ---
 
 ---

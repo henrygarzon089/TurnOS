@@ -3728,3 +3728,49 @@ numerar. Máximo ~15 líneas.
   bajar; "Reservar una cita" lleva a la cita y "Tomar turno" a la fila; un precio cambiado por el
   dueño aparece al revalidar; la barra fija sale al bajar; sin desborde horizontal a 360 px.
 - Lighthouse CI: suma `/` a las URLs medidas (REQ-101.10).
+
+## 34. Hito 28 — Trabaja con nosotros (REQ-102, ADR-079)
+
+### 34.1 Datos (migración `0081_job_applications.sql`)
+- `job_role` enum (`barbero`, `estilista`, `ambos`); `job_availability` enum (`tiempo_completo`,
+  `medio_tiempo`, `fines_de_semana`); `job_application_status` enum (`nueva`, `contactada`,
+  `descartada`).
+- `job_applications(id uuid pk, business_id fk, full_name text 2..80, phone_e164 text, role,
+  years_experience smallint 0..60, portfolio_url text null ≤ 200, availability, message text null
+  ≤ 500, status default 'nueva', privacy_version text, created_at, updated_at)`; índice único
+  parcial no aplica (se busca el de los últimos 30 días por `business_id, phone_e164`).
+- RLS forzada: `select`/`update`/`delete` solo `is_owner(business_id)`; sin `insert` para
+  `authenticated`; `anon` sin acceso.
+- `submit_job_application(p_slug, p_name, p_phone, p_role, p_years, p_portfolio, p_availability,
+  p_message, p_privacy_version, p_ip)`: `security definer`, solo `service_role`; valida largos y
+  enums; `check_rate_limit('job:phone:'||phone, 3, '1 day')` y `('job:ip:'||ip, 10, '1 hour')`;
+  si hay una del mismo celular en 30 días la actualiza (vuelve a `nueva`), si no inserta.
+- `pg_cron` diario: borra las de más de 12 meses (`purge_job_applications()`).
+- `anonymize`/supresión: "Borrar" del dueño es `delete` directo (RLS) y borra la llave del rate
+  limit.
+
+### 34.2 Lógica pura (`src/lib/domain/jobs.ts`)
+- `parseJobApplication(form)` → datos o errores por campo (nombre, celular con
+  `normalizeBarberPhone`, rol, años, enlace `https://` o `@usuario` → URL de Instagram,
+  disponibilidad, mensaje, autorización).
+- `jobWhatsappLink(e164, name)` para el dueño y `hiringWhatsappLink()` para la página;
+  `jobPostingJsonLd(business)`.
+
+### 34.3 Rutas y componentes
+- `src/app/trabaja-con-nosotros/page.tsx` (`force-dynamic`, negocio de `homeSlug()`):
+  `JobsPage` con héroe navy de foto, beneficios, "Qué buscamos", "Cómo es el proceso" (01–04),
+  "Preguntas frecuentes" (`<details>`), formulario `JobApplicationForm` (cliente, `useActionState`
+  → `submitJobApplication` en `src/lib/actions/jobs.ts` vía gateway) y panel final con WhatsApp.
+- Portada: enlace en el menú y el pie de `SiteHome` y franja antes de "Contacto".
+- `/admin/postulaciones`: lista con filtro por estado, tarjeta por postulación, acciones con
+  server actions del dueño; contador de nuevas en el menú (`modules.ts`, destino `jobs`).
+- `sitemap.ts` suma la página; `robots` no cambia (`/admin` ya está bloqueado).
+
+### 34.4 Pruebas
+- pgTAP `0081_job_applications.sql`: RLS (dueño de otro negocio, barbero y `anon` no ven), envío
+  válido, duplicado en 30 días actualiza, límites, enums y largos, purga a los 12 meses.
+- Unit `jobs.test.ts` (validación, enlaces, JSON-LD), `jobs-page.test.tsx` (textos del aviso,
+  sin cifras de pago, botones, sin inglés), `jobs-admin.test.tsx`.
+- Integración del gateway: `submitJobApplication` contra Postgres local.
+- E2E móvil `jobs.spec.ts`: desde la portada → página → postular → "¡Listo!" → el dueño la ve y la
+  marca contactada; sin desborde a 360 px. Lighthouse suma la página.
