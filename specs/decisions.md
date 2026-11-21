@@ -1390,9 +1390,10 @@
   fidelidad de Fresha no pasan (PA-H26-2). Desactivar Fresha también apaga su vitrina de clientes
   nuevos (PA-H26-4).
 
-## ADR-079 · Hito 28: "Trabaja con nosotros" con formulario y postulaciones (propuesta)
+## ADR-079 · Hito 28: "Trabaja con nosotros" con formulario y postulaciones
 
-- Estado: **propuesta** (2026-11-20), espera la aprobación de Henry.
+- Estado: **aprobada** por Henry el 2026-11-20 ("Approved, build it"), con las propuestas de
+  PA-H28-1 (sin exigir herramientas propias: no lo dijo), PA-H28-2 y PA-H28-3 (320 714 5752).
 - Contexto: Gamma Club busca barberos y estilistas (aviso "Oportunidad laboral"). Henry eligió
   formulario guardado en TurnOS + WhatsApp, sin fotos, y pago solo "% negociable".
 - Decisión: REQ-102. (1) Página pública `/trabaja-con-nosotros` con el estilo de ADR-078.

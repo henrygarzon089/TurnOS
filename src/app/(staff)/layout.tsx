@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { NavAlertBadge } from "@/components/admin/today/NavAlertBadge";
 import { NavCount } from "@/components/admin/today/NavCount";
+import { NavJobsCount } from "@/components/admin/NavJobsCount";
 import { TodayBadge } from "@/components/admin/today/TodayBadge";
 import { CleaningDot } from "@/components/cleaning/CleaningDot";
 import { BarberNav } from "@/components/staff/BarberNav";
@@ -94,6 +95,16 @@ async function StaffGate({ children }: { children: React.ReactNode }) {
                 </Suspense>,
               ]),
             ),
+            // REQ-102.6 postulaciones nuevas
+            ...(modules.has("jobs")
+              ? {
+                  "/admin/postulaciones": (
+                    <Suspense key="jobs" fallback={null}>
+                      <NavJobsCount />
+                    </Suspense>
+                  ),
+                }
+              : {}),
             ...Object.fromEntries(
               ["/admin/limpieza", "/admin/inventario"].filter(badgeOn).map((href) => [
                 href,

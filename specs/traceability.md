@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-> Generada por `scripts/traceability.ts` el 2026-11-18.
+> Generada por `scripts/traceability.ts` el 2026-11-21.
 > Estado: **cubierto** = tareas hechas y prueba existente · **prueba escrita** = prueba existe, tarea sin cerrar · **sin prueba** = falta.
 
 | CA | Requisito | Tareas | Pruebas | Estado |
@@ -592,3 +592,12 @@
 | REQ-101.10 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | brand-lighthouse.test.ts | cubierto |
 | REQ-101.11 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | site-home.test.tsx | cubierto |
 | REQ-101.12 |  | T-300 (hecha), T-301 (hecha), T-302 (hecha), T-303 (hecha), T-305 (hecha) | site-home.test.tsx | cubierto |
+| REQ-102.1 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs-page.test.tsx | cubierto |
+| REQ-102.2 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs-page.test.tsx, jobs.test.ts | cubierto |
+| REQ-102.3 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | barber-foreign-phone.test.tsx, jobs-page.test.tsx, jobs.test.ts, 0081_job_applications.sql | cubierto |
+| REQ-102.4 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs.spec.ts, jobs.test.ts, jobs.test.ts, 0081_job_applications.sql | cubierto |
+| REQ-102.5 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs.test.ts, jobs.test.ts, 0081_job_applications.sql | cubierto |
+| REQ-102.6 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs.spec.ts, admin-nav.test.tsx, jobs-admin.test.tsx, jobs.test.ts, modules.test.ts, 0081_job_applications.sql | cubierto |
+| REQ-102.7 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs-admin.test.tsx, 0081_job_applications.sql | cubierto |
+| REQ-102.8 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs.spec.ts, jobs-page.test.tsx, jobs.test.ts, site-home.test.tsx, site-seo.test.ts | cubierto |
+| REQ-102.9 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs.spec.ts, jobs-page.test.tsx | cubierto |

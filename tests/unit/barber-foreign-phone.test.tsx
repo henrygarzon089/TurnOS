@@ -133,6 +133,7 @@ describe("REQ-081 barbero con celular de otro país", () => {
     expect(users).toEqual([
       "src/lib/actions/admin.ts",
       "src/lib/actions/auth.ts",
+      "src/lib/domain/jobs.ts", // REQ-102.3: quien se postula puede tener celular de otro país
       "src/lib/domain/phone.ts",
     ]);
     // En admin.ts, solo crear y editar barbero lo usan (el contacto del negocio sigue colombiano)

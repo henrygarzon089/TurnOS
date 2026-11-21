@@ -2414,7 +2414,7 @@ Barberos & Estilistas" y que quien quiera trabajar en Gamma Club pueda postulars
 - REQ-102.9 La página DEBE verse bien desde 360 px sin desborde, con botones ≥ 48 px y contraste
   ≥ 4.5:1, y todo texto en español colombiano con tuteo.
 
-Preguntas del Hito 28 (abiertas, con propuesta):
+Preguntas del Hito 28 (cerradas: Henry aprobó las propuestas el 2026-11-20, ADR-079):
 - **PA-H28-1** ¿Qué buscamos? Propuesta: "Mínimo 1 año de experiencia (o portafolio que lo
   muestre)", "Buena actitud y puntualidad", "Ganas de crecer con el club"; y para estilistas,
   "Blower, corte y peinado". ¿Herramientas propias?

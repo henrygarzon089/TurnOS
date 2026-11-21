@@ -22,3 +22,5 @@ export const SITE_TAGLINE = "Cuidado personal premium en San Remo, Sabaneta";
 export const INSTAGRAM_URL = "https://www.instagram.com/urusbarbershop.col/";
 /** WhatsApp del local en E.164 (Henry, 2026-11-18). null: la web no muestra el botón de WhatsApp. */
 export const SHOP_WHATSAPP_E164: string | null = "+573116959879";
+/** WhatsApp de contratación del aviso "Trabaja con nosotros" (REQ-102.2, PA-H28-3, Henry 2026-11-20). */
+export const HIRING_WHATSAPP_E164 = "+573207145752";

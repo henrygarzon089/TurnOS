@@ -26,6 +26,7 @@ import { StickyCta } from "./StickyCta";
  */
 export function SiteHome({ data }: { data: SiteHomeData }) {
   const { business: b, hours, loyalty, team, products, canBook, reviewUrl } = data;
+  const jobsEnabled = data.jobsEnabled;
   const ctas = heroCtas({ canBook, slug: b.slug });
   const reward = loyaltyLine(loyalty);
   const maps = mapsUrl(b.address);
@@ -56,7 +57,7 @@ export function SiteHome({ data }: { data: SiteHomeData }) {
         // JSON-LD de schema.org (REQ-101.7); `<` escapado para no cerrar la etiqueta
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      <SiteHeader name={b.name} logoPath={b.logoPath} cta={ctas[0]} />
+      <SiteHeader name={b.name} logoPath={b.logoPath} cta={ctas[0]} jobsEnabled={jobsEnabled} />
 
       <main className="flex flex-1 flex-col">
         {/* REQ-101.2: lo primero que se ve en el celular */}
@@ -396,6 +397,24 @@ export function SiteHome({ data }: { data: SiteHomeData }) {
           </div>
         </Section>
 
+        {/* REQ-102.8: franja hacia "Trabaja con nosotros" */}
+        {jobsEnabled && (
+          <section aria-label="Trabaja con nosotros" className="bg-card border-line border-y">
+            <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-5 py-10 sm:flex-row sm:items-center sm:justify-between lg:px-16">
+              <p className="text-2xl leading-tight font-bold lg:text-3xl">
+                ¿Eres barbero o estilista?{" "}
+                <span className="text-muted">Trabaja con nosotros.</span>
+              </p>
+              <Link
+                href="/trabaja-con-nosotros"
+                className="bg-brand text-brand-ink flex min-h-12 shrink-0 items-center justify-center rounded-full px-6 font-semibold"
+              >
+                Conoce la oportunidad
+              </Link>
+            </div>
+          </section>
+        )}
+
         <section id="contacto" aria-labelledby="contacto-titulo" className="scroll-mt-24">
           <div className="mx-auto w-full max-w-6xl px-5 py-20 lg:px-16 lg:py-28">
             <div className="reveal bg-brand text-brand-ink flex flex-col gap-8 rounded-[2rem] px-6 py-12 lg:px-16 lg:py-20">
@@ -451,6 +470,11 @@ export function SiteHome({ data }: { data: SiteHomeData }) {
           <Link href={`/${b.slug}/privacidad`} className="text-link min-h-12 content-center">
             Política de privacidad
           </Link>
+          {jobsEnabled && (
+            <Link href="/trabaja-con-nosotros" className="text-link min-h-12 content-center">
+              Trabaja con nosotros
+            </Link>
+          )}
           <Link href="/entrar" className="text-link min-h-12 content-center">
             Entrar (dueño y barberos)
           </Link>
@@ -468,10 +492,12 @@ function SiteHeader({
   name,
   logoPath,
   cta,
+  jobsEnabled,
 }: {
   name: string;
   logoPath: string | null;
   cta: SiteCta;
+  jobsEnabled: boolean;
 }) {
   return (
     <header className="fixed inset-x-0 top-3 z-30 px-3">
@@ -498,6 +524,7 @@ function SiteHeader({
           <a href="#equipo">Equipo</a>
           <a href="#horario">Horario</a>
           <a href="#contacto">Contacto</a>
+          {jobsEnabled && <Link href="/trabaja-con-nosotros">Trabaja con nosotros</Link>}
         </nav>
         <Link
           href="/entrar"

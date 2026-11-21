@@ -32,6 +32,7 @@ export const ALL_MODULES = [
   "station",
   "photos",
   "signup",
+  "jobs",
 ] as const;
 
 export type ModuleId = (typeof ALL_MODULES)[number];
@@ -55,6 +56,7 @@ export const ESSENTIAL: ReadonlySet<ModuleId> = new Set<ModuleId>([
   "appointments", // REQ-084.1 (ADR-062): Citas encendido en Gamma Club
   "myNumbers",
   "station",
+  "jobs", // REQ-102.6 (ADR-079): "Trabaja con nosotros" y Postulaciones
 ]);
 
 const EVERYTHING: ReadonlySet<ModuleId> = new Set<ModuleId>(ALL_MODULES);
@@ -129,6 +131,7 @@ const ADMIN_ROUTES = new Map<string, ModuleId>([
   ["recordar", "remind"],
   ["limpieza", "cleaning"],
   ["mensajes", "messages"],
+  ["postulaciones", "jobs"],
 ]);
 
 const APP_ROUTES = new Map<string, ModuleId>([
@@ -185,6 +188,8 @@ export function moduleForPath(pathname: string): ModuleId | null {
       return "barbers";
     case "regalo":
       return "giftCards";
+    case "trabaja-con-nosotros":
+      return "jobs"; // REQ-102.1
     case "c":
       return "appointments";
     case "t":

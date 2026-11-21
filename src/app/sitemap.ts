@@ -9,5 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/`, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/${slug}`, changeFrequency: "daily", priority: 0.8 },
     { url: `${SITE_URL}/${slug}/cita`, changeFrequency: "daily", priority: 0.7 },
+    // REQ-102.8
+    { url: `${SITE_URL}/trabaja-con-nosotros`, changeFrequency: "monthly", priority: 0.5 },
   ];
 }

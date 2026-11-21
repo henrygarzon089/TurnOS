@@ -84,6 +84,7 @@ function data(over: Partial<SiteHomeData> = {}): SiteHomeData {
     products: business.products,
     reviewUrl: "https://g.page/r/abc/review",
     canBook: true,
+    jobsEnabled: true,
     ...over,
   };
 }
@@ -210,5 +211,12 @@ describe("web del negocio (REQ-101)", () => {
     const reduced = css.slice(css.indexOf("prefers-reduced-motion"));
     expect(reduced).toMatch(/\.reveal,\s*\.animate-marquee\s*\{\s*animation:\s*none/);
     expect(css).not.toMatch(/gradient|backdrop-filter|blur\(/);
+  });
+  it("REQ-102.8 la portada enlaza a Trabaja con nosotros en el menú, la franja y el pie", () => {
+    const out = html();
+    expect(out.match(/href="\/trabaja-con-nosotros"/g)?.length).toBe(3);
+    expect(out).toContain("¿Eres barbero o estilista?");
+    const off = renderToStaticMarkup(<SiteHome data={data({ jobsEnabled: false })} />);
+    expect(off).not.toContain("/trabaja-con-nosotros");
   });
 });
