@@ -34,8 +34,22 @@ test.describe("REQ-103 fotos protagonistas y Ver más en la web", () => {
       await page.getByLabel("Descripción (opcional)").fill(bio);
       await page.getByRole("button", { name: "Guardar" }).click();
       await expect(page.getByLabel("Descripción (opcional)")).toBeHidden();
-
-      await page.goto("/");
+      // Guardar refresca Barberos; se espera a que quede en la base y a que termine esa recarga
+      await expect
+        .poll(async () => {
+          const { data } = await db
+            .from("barbers")
+            .select("bio")
+            .eq("business_id", biz!.id)
+            .eq("display_name", barber)
+            .single();
+          return data?.bio;
+        })
+        .toBe(bio);
+      await page.waitForLoadState("networkidle");
+      await expect(async () => {
+        await page.goto("/");
+      }).toPass({ timeout: 15_000 });
       const team = page.locator("#equipo").getByTestId("team-card").filter({ hasText: barber });
       await expect(team.getByText(bio)).toBeHidden();
       await team.getByText("Ver más").click();
