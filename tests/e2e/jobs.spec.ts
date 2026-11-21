@@ -55,7 +55,8 @@ test.describe("REQ-102 Trabaja con nosotros", () => {
       const card = page.getByTestId("job-application").filter({ hasText: name });
       await expect(card).toContainText("Estilista · 4 años · Medio tiempo");
       await card.getByRole("button", { name: "Marcar contactada" }).click();
-      await expect(page.getByTestId("job-application").filter({ hasText: name })).toHaveCount(0);
+      // Pasa a la pestaña "Contactadas" (panel oculto)
+      await expect(page.getByTestId("job-application").filter({ hasText: name })).toBeHidden();
     } finally {
       await db.from("job_applications").delete().like("full_name", `Postulante ${info.project.name}%`);
     }

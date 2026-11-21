@@ -23,8 +23,8 @@ test.describe("T-177 marco del dueño en escritorio", () => {
   test("REQ-078.27 todas las pantallas del dueño usan el mismo ancho y ninguna tabla se corta", async ({
     page,
   }) => {
-    test.setTimeout(180_000); // 20 rutas, la primera compilación de cada una en dev
-    expect(ROUTES).toHaveLength(20);
+    test.setTimeout(180_000); // 21 rutas, la primera compilación de cada una en dev
+    expect(ROUTES).toHaveLength(21); // REQ-102.6: + Postulaciones
     const widths: Record<string, number> = {};
     for (const path of ROUTES) {
       await page.goto(path);

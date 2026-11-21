@@ -111,7 +111,7 @@ test.describe("menú del dueño en escritorio", () => {
       .getByRole("navigation", { name: "Menú del dueño" })
       .getByRole("link")
       .evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
-    expect(heights).toHaveLength(19);
+    expect(heights).toHaveLength(20); // REQ-102.6: + Postulaciones
     for (const h of heights) expect(h).toBeGreaterThanOrEqual(48);
   });
 });
