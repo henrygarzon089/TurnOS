@@ -2,6 +2,7 @@
 
 import { createAdminGateway } from "@/lib/db/supabase-gateway";
 import { isModuleEnabled } from "@/lib/domain/modules";
+import type { SiteMenuItem } from "@/lib/domain/site";
 import { getPublicSite } from "@/lib/queue/public-site";
 import { getAppointmentInfo } from "./public-appointments";
 import { getPublicBusiness } from "./public";
@@ -20,6 +21,9 @@ export async function getSiteHome(slug: string) {
   ]);
   // REQ-050.1: "Reservar una cita" solo con citas encendidas y alguien que las reciba
   const canBook = Boolean(appts?.enabled && appts.barbers.length > 0 && appts.openDays.length > 0);
+  const products: SiteMenuItem[] = isModuleEnabled("products")
+    ? (site?.menu ?? business.products)
+    : [];
   return {
     business,
     hours: site?.hours ?? [],
@@ -27,7 +31,8 @@ export async function getSiteHome(slug: string) {
     loyalty: isModuleEnabled("loyalty") ? (site?.loyalty ?? null) : null,
     team: site?.team ?? [],
     reviewUrl: site?.reviewUrl ?? null,
-    products: isModuleEnabled("products") ? business.products : [],
+    // REQ-103.5: con la 0082 el menú trae la categoría; sin ella, el de siempre
+    products,
     canBook,
     // REQ-102.8: la portada enlaza a "Trabaja con nosotros" solo con el módulo encendido
     jobsEnabled: isModuleEnabled("jobs"),

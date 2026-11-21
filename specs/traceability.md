@@ -601,3 +601,9 @@
 | REQ-102.7 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs-admin.test.tsx, 0081_job_applications.sql | cubierto |
 | REQ-102.8 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs.spec.ts, jobs-page.test.tsx, jobs.test.ts, site-home.test.tsx, site-seo.test.ts | cubierto |
 | REQ-102.9 |  | T-310 (hecha), T-311 (hecha), T-312 (hecha), T-313 (hecha) | jobs.spec.ts, jobs-page.test.tsx | cubierto |
+| REQ-103.1 |  | T-320 (hecha), T-321 (hecha), T-322 (hecha) | site-accordion.test.tsx | cubierto |
+| REQ-103.2 |  | T-320 (hecha), T-321 (hecha), T-322 (hecha) | site-accordion.spec.ts, site-accordion.test.tsx | cubierto |
+| REQ-103.3 |  | T-320 (hecha), T-321 (hecha), T-322 (hecha) | site-accordion.spec.ts, site-accordion.test.tsx, 0082_site_bio_menu.sql | cubierto |
+| REQ-103.4 |  | T-320 (hecha), T-321 (hecha), T-322 (hecha) | site-accordion.spec.ts, site-accordion.test.tsx, 0082_site_bio_menu.sql | cubierto |
+| REQ-103.5 |  | T-320 (hecha), T-321 (hecha), T-322 (hecha) | site-accordion.test.tsx, 0082_site_bio_menu.sql | cubierto |
+| REQ-103.6 |  | T-320 (hecha), T-321 (hecha), T-322 (hecha) | site-accordion.spec.ts, site-accordion.test.tsx | cubierto |

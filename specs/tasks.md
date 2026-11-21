@@ -3374,6 +3374,35 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
   computador y la franja y el pie quedan abajo. Se agrega un enlace en el héroe, solo en el
   celular (`lg:hidden`), y se ajusta REQ-102.8. Pruebas: `site-home.test.tsx` y `jobs.spec.ts`.
 
+
+## Hito 29 — Fotos protagonistas, acordeones y menú por categoría (REQ-103, ADR-082)
+
+> Aprobada por Henry el 2026-11-21 (ADR-082). Orden: T-320 → T-321 → T-322 → T-323.
+
+### [x] T-320 · Descripción del barbero y datos de la web
+- REQ: REQ-103.3, REQ-103.4, REQ-103.5 · migración `0082`, `set_barber_bio`, `get_public_site`,
+  campo en Barberos, pgTAP.
+- Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-21. Desvío: sin `set_barber_bio`; la descripción se guarda con `updateBarber` en
+  la misma actualización del barbero (RLS de `barbers` sin cambios), como la de los servicios
+  (REQ-096). `get_public_site` trae `bio` en el equipo y un `menu` nuevo (a la venta, con
+  categoría). Pruebas: pgTAP `0082_site_bio_menu.sql`, `site-accordion.test.tsx`, E2E
+  `site-accordion.spec.ts`.
+
+### [x] T-321 · Servicios y equipo con foto protagonista y "Ver más"
+- REQ: REQ-103.1, REQ-103.2, REQ-103.4, REQ-103.6 · `SiteHome.tsx`, unit y E2E.
+- Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-21. Un servicio sin foto muestra el sello de la marca en el mismo espacio.
+
+### [x] T-322 · Menú por categoría
+- REQ: REQ-103.5 · `groupProductsByCategory`, `SiteHome.tsx`, unit.
+- Modelo: Opus 5.5. Complejidad: baja.
+- Hecha 2026-11-21. Sin la 0082 la web usa el menú de siempre, sin subtítulos.
+
+### [ ] T-323 · Validación Hito 29
+- Terminado: `pnpm trace --hito=29` sin huecos; 0082 en producción; desplegado; Henry cambia el
+  horario a las 10 en "Horario y QR", llena las descripciones y aprueba (ADR nuevo).
+
 ---
 
 ---

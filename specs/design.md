@@ -3774,3 +3774,24 @@ numerar. Máximo ~15 líneas.
 - Integración del gateway: `submitJobApplication` contra Postgres local.
 - E2E móvil `jobs.spec.ts`: desde la portada → página → postular → "¡Listo!" → el dueño la ve y la
   marca contactada; sin desborde a 360 px. Lighthouse suma la página.
+
+## 35. Hito 29 — Fotos protagonistas, acordeones y menú por categoría (REQ-103, ADR-082)
+
+- **Datos (0082):** `alter table barbers add column bio text check (bio is null or length(bio)
+  between 1 and 200)`. `set_barber_bio(p_barber_id, p_bio)`: `security definer`, exige
+  `is_owner_of(business_id)` (si no, `FORBIDDEN` 42501), guarda `nullif(trim(p_bio), '')`.
+  `get_public_site` agrega `'bio', b.bio` en `team` y `'category', p.category` en `products`
+  (el dato que ya sale por `getPublicBusiness` se reemplaza por el de `get_public_site` en la web).
+  RLS de `barbers` sin cambios. **Al construir (T-320):** sin `set_barber_bio`; el dueño guarda
+  la descripción con `updateBarber` (la misma actualización del barbero), como la de los
+  servicios; el menú sale en una clave nueva `menu`.
+- **Dominio:** `groupProductsByCategory(products)` → `[{ category: string | null, items }]` en el
+  orden del primer producto de cada categoría; `null` (sin categoría) al final como "Otros".
+- **UI:** `SiteHome` — Servicios: tarjeta con foto `aspect-[4/5]` arriba, nombre/precio/duración
+  debajo y `<details>` con `<summary>` "Ver más"/"Ver menos" (`group-open:`). Equipo: igual con
+  foto `aspect-[3/4]`, nombre y acordeón. Menú: un `<h3>` por categoría si hay más de una.
+  Barberos (dueño): campo "Descripción (opcional)" con contador 0/200.
+- **Pruebas:** pgTAP `0082` (bio válida, larga, vacía → null, solo el dueño, sale en
+  `get_public_site` sin celular); unit `site.test.ts` (agrupación), `site-home.test.tsx`
+  (REQ-103.1…103.5), barberos admin; E2E móvil: abrir "Ver más" de un servicio y de un barbero sin
+  desborde a 360 px.

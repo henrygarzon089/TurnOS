@@ -47,6 +47,7 @@ const HITOS: Record<string, [number, number][]> = {
   "26": [[100, 100]], // Importar de Fresha (ADR-076)
   "27": [[101, 101]], // web de Gamma Club en gammaclub.co (ADR-077); el 26 es Fresha, en paralelo
   "28": [[102, 102]], // Trabaja con nosotros (ADR-079)
+  "29": [[103, 103]], // Fotos protagonistas, acordeones y menú por categoría (ADR-082)
 };
 
 const req = readFileSync("specs/requirements.md", "utf8");

@@ -20,7 +20,9 @@ export default async function BarbersPage() {
   const [{ data }, { data: svc }, { data: rel }, { data: photos }] = await Promise.all([
     supabase
       .from("barbers")
-      .select("id, display_name, phone_e164, commission_pct, is_active, status, user_id, photo_path")
+      .select(
+        "id, display_name, phone_e164, commission_pct, is_active, status, user_id, photo_path, bio",
+      )
       .eq("business_id", session.business.id)
       .order("is_active", { ascending: false })
       .order("sort_order")
