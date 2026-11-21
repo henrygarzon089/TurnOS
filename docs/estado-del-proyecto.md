@@ -868,6 +868,18 @@ Pendientes (H3): `/admin/caja`,
 - PR #207 (2026-11-18, en producción): "Perdió la hora" (como en "Mi fila" y la agenda del
   dueño) y "No recibes citas" en "Mi agenda", a pedido de Henry.
 
+### Hito 27 — Web de Gamma Club (aprobado 2026-11-21, REQ-101, ADR-077, ADR-078, ADR-081)
+
+- La raíz de https://www.gammaclub.co muestra la web de la barbería (héroe, servicios con precio,
+  barberos, horario, fidelidad, menú, ubicación y botones de reservar, tomar turno y WhatsApp);
+  el contenido sale de la base con `get_public_site` (migración 0080, **en producción**).
+- T-300…T-303 (PR #211) y el rediseño T-305 (PR #212, ADR-078) en `main` y desplegados. SEO local
+  (metadata, JSON-LD `BarberShop`, sitemap y robots) y Vercel Web Analytics solo en páginas
+  públicas.
+- T-304 (2026-11-21): Henry aprobó (ADR-081).
+- Pendiente (Henry): activar Web Analytics en Vercel, enviar el sitemap a Search Console y poner
+  gammaclub.co en el perfil de Google y en Instagram.
+
 ### Hito 28 — "Trabaja con nosotros" (aprobado 2026-11-21, REQ-102, ADR-079, ADR-080)
 
 - Página `/trabaja-con-nosotros` (enlazada desde la portada y en el sitemap) con lo del volante:
@@ -943,7 +955,8 @@ Pendientes (H3): `/admin/caja`,
 
 **Pendientes de Henry hoy (2026-11-18):** T-256 (probar el harness), T-069 (Meta), conectar el
 repo en Vercel para el despliegue automático y lo de Supabase del punto 1. Los Hitos 19–21,
-23–25 y 28 están aprobados y en producción; falta publicar el párrafo de postulantes en
+23–25, 27 y 28 están aprobados y en producción; del 27 faltan Web Analytics, Search
+Console y los enlaces de Google e Instagram; falta publicar el párrafo de postulantes en
 "Privacidad" (Hito 28).
 
 ## Cómo seguir (prompt sugerido para Claude Code)
