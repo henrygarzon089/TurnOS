@@ -1,6 +1,6 @@
 -- T-310 · Postulaciones de "Trabaja con nosotros" (REQ-102, ADR-079, design §34.1)
 begin;
-select plan(18);
+select plan(19);
 
 create temp table ctx as
 select z.id as biz,
@@ -42,6 +42,12 @@ select is((select count(*)::int || ' ' || min(full_name) || ' ' || min(status::t
 select is(pg_temp.apply('+573001110001', 'Camilo', '10.0.0.3'), 'updated', 'REQ-102.5 tercer envío del día');
 select is(pg_temp.apply('+573001110001', 'Camilo', '10.0.0.4'), 'rate_limited',
   'REQ-102.5 más de 3 por celular al día se frenan');
+
+-- La limpieza de una ventana de 1 hora no borra el conteo diario del celular
+select setseed(0);
+select count(*) from generate_series(1, 200) g where check_rate_limit('job:ip:otra-' || g, 10, interval '1 hour');
+select is(pg_temp.apply('+573001110001', 'Camilo', '10.0.0.5'), 'rate_limited',
+  'REQ-102.5 el límite diario del celular no se borra con la limpieza por hora');
 
 select auth.test_login((select juan_u from ctx));
 select is((select count(*)::int from job_applications), 0, 'REQ-102.7 el barbero no ve postulaciones');

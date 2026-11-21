@@ -128,3 +128,26 @@ begin
     perform cron.schedule('turnos_purge_job_applications', '30 8 * * *', 'select public.purge_job_applications()');
   end if;
 end $$;
+
+-- REQ-102.5 la limpieza oportunista de check_rate_limit borra con la ventana de quien llama: una
+-- llamada por hora (la IP) borraba el conteo diario del celular y el límite de 3 al día se
+-- reiniciaba. Redefinición de 0038: los conteos diarios `job:phone:` solo los limpia su propia
+-- llamada (ventana de 1 día → borra los de más de 2 días).
+create or replace function check_rate_limit(p_key text, p_limit int, p_window interval default interval '1 hour')
+returns boolean
+language plpgsql security definer set search_path = public as $$
+declare
+  v_window timestamptz := to_timestamp(floor(extract(epoch from now()) / extract(epoch from p_window)) * extract(epoch from p_window));
+  v_count int;
+begin
+  insert into rate_limits (key, window_start, count) values (p_key, v_window, 1)
+  on conflict (key, window_start) do update set count = rate_limits.count + 1
+  returning count into v_count;
+  -- Limpieza oportunista de ventanas viejas
+  delete from rate_limits
+  where window_start < now() - p_window * 2
+    and key not like 'wa-reply:%'
+    and (key not like 'job:phone:%' or p_window >= interval '1 day')
+    and random() < 0.05;
+  return v_count <= p_limit;
+end $$;
