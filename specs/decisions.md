@@ -1493,7 +1493,7 @@
   `set_barber_bio` para el dueño (`security definer`, `is_owner_of`); `get_public_site` suma
   `bio` al equipo y la categoría a los productos a la venta. (2) Acordeón con `<details>` y
   `<summary>` nativos: funciona sin JavaScript y con teclado. (3) El menú se agrupa en el
-  navegador del servidor (`groupProductsByCategory`, lógica pura en `src/lib/domain/site.ts`).
+  servidor (`groupProductsByCategory`, lógica pura en `src/lib/domain/site.ts`).
   (4) El horario de las 10 es dato, no código.
 - Alternativas: (a) acordeón con estado de React: más código y no sirve sin JS. (b) Mostrar los
   servicios del barbero en vez de descripción: Henry escogió la descripción. (c) Separar el menú
