@@ -1423,6 +1423,19 @@
   párrafo del aviso de privacidad para postulantes lo publica Henry en "Privacidad" (texto en la
   guía).
 
+## ADR-081 · Aprobación del Hito 27 (web de Gamma Club en gammaclub.co)
+- Estado: **aceptada** (Henry, 2026-11-21)
+- Contexto: REQ-101 construido (T-300…T-303) y rediseñado (T-305, ADR-078); fusionado en `main`
+  con los PRs #211 y #212 (CI en verde, E2E y Lighthouse incluidos). La migración de solo lectura
+  0080 está en producción y la web se sirve en la raíz de https://www.gammaclub.co, con enlace a
+  "Trabaja con nosotros" desde el Hito 28. `pnpm trace --hito=27` sin huecos. Guía:
+  `docs/guia-prueba-hito-27.md`.
+- Decisión: Henry aprueba el Hito 27 ("apruebo Hito 27", 2026-11-21). T-304 cerrada.
+- Consecuencias: la raíz de gammaclub.co es la puerta de Google e Instagram; el QR del local sigue
+  en `/gamma-club`. Quedan de Henry, fuera del código: activar Web Analytics en Vercel (vigilar el
+  costo, PA-H27-3), enviar `sitemap.xml` a Google Search Console y poner gammaclub.co en el perfil
+  de Google y en Instagram.
+
 ## ADR-078 · Rediseño de la web de Gamma Club
 
 - Estado: **aprobada** por Henry el 2026-11-18 ("Approved, merge it") tras ver la vista previa.

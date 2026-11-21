@@ -3321,11 +3321,15 @@ T-088 y T-089 quedan libres (reservados para el Hito 8 si hace falta partir una 
 - Hecha 2026-11-18. Henry la pidió al ver la web en producción ("esta muy simple"). Las pruebas de
   REQ-101 siguen igual; suma `REQ-101.12` en `site-home.test.tsx`.
 
-### [ ] T-304 · Validación Hito 27
+### [x] T-304 · Validación Hito 27
 - Terminado: `pnpm trace --hito=27` sin huecos; guía `docs/guia-prueba-hito-27.md` con los pasos
   para publicar (fusionar, desplegar, activar Web Analytics en Vercel, enviar el sitemap a Google
   Search Console y actualizar el perfil de Google y el enlace de Instagram); Henry abre
   https://www.gammaclub.co desde el celular, reserva desde la web y aprueba (ADR nuevo).
+- Hecho (2026-11-21): PRs #211 y #212 en `main`, 0080 en producción y desplegado en
+  https://www.gammaclub.co; Henry aprobó (ADR-081). Quedan de su lado, fuera del código: activar
+  Web Analytics en Vercel, enviar el sitemap a Search Console y poner gammaclub.co en el perfil de
+  Google y en Instagram.
 
 
 ## Hito 28 — Trabaja con nosotros (REQ-102, ADR-079)
