@@ -7,6 +7,7 @@ import { parseLoyaltyForm } from "@/lib/domain/loyalty";
 import { isModuleEnabled } from "@/lib/domain/modules";
 import { parseCOP } from "@/lib/domain/money";
 import {
+  BARBER_DESCRIPTION_MAX,
   BUSINESS_DESCRIPTION_MAX,
   SERVICE_DESCRIPTION_MAX,
   normalizeDescription,
@@ -403,6 +404,11 @@ export async function updateBarber(_prev: FormState, formData: FormData): Promis
   if (typeof id !== "string") return { error: "Barbero inválido." };
   const serviceIds = ids(formData, "service_ids");
   if (formData.has("services_shown") && serviceIds.length === 0) return { error: NO_SERVICES };
+  // REQ-103.3: descripción opcional para la web; si el formulario no la trae, no se toca.
+  const bio = formData.has("description")
+    ? normalizeDescription(String(formData.get("description") ?? ""), BARBER_DESCRIPTION_MAX)
+    : null;
+  if (bio && !bio.ok) return { error: bio.error };
   const supabase = await createSupabaseServerClient();
   if (formData.has("services_shown")) {
     const err = await saveBarberServices(supabase, "set_barber_services", {
@@ -417,6 +423,7 @@ export async function updateBarber(_prev: FormState, formData: FormData): Promis
       display_name: parsed.data.display_name,
       phone_e164: phone.e164,
       commission_pct: parsed.data.commission_pct,
+      ...(bio?.ok ? { bio: bio.value } : {}),
     })
     .eq("id", id);
   if (error) return { error: "No se pudo guardar." };

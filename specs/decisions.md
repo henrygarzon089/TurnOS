@@ -1484,7 +1484,8 @@
   aplica antes del deploy, y la portada quedó `force-dynamic` en vez de ISR (T-301).
 
 ## ADR-082 · Hito 29: fotos protagonistas, acordeones y menú por categoría en la web
-- Estado: **propuesta** (2026-11-21)
+- Estado: **aceptada** (Henry, 2026-11-21: "Aprobada, constrúyela", con PA-H29-1 y PA-H29-2 según
+  la propuesta)
 - Contexto: Henry revisó la web (Hito 27) en el celular y pidió que en Servicios y Nuestro equipo
   la foto mande y la descripción se abra con "Ver más", y que el Menú separe lo que se vende por
   categoría. Los barberos no tienen descripción guardada; las categorías ya existen como texto

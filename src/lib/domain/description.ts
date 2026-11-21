@@ -7,6 +7,8 @@ export const SERVICE_DESCRIPTION_MAX = 140;
 export const BUSINESS_DESCRIPTION_MAX = 200;
 /** REQ-098.2 (ADR-072): descripción del producto en el menú, mismo largo que el servicio. */
 export const PRODUCT_DESCRIPTION_MAX = 140;
+/** REQ-103.3 (ADR-082): descripción del barbero en "Nuestro equipo" de la web. */
+export const BARBER_DESCRIPTION_MAX = 200;
 
 export type DescriptionResult = { ok: true; value: string | null } | { ok: false; error: string };
 

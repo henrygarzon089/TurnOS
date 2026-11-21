@@ -3782,7 +3782,9 @@ numerar. Máximo ~15 líneas.
   `is_owner_of(business_id)` (si no, `FORBIDDEN` 42501), guarda `nullif(trim(p_bio), '')`.
   `get_public_site` agrega `'bio', b.bio` en `team` y `'category', p.category` en `products`
   (el dato que ya sale por `getPublicBusiness` se reemplaza por el de `get_public_site` en la web).
-  RLS de `barbers` sin cambios.
+  RLS de `barbers` sin cambios. **Al construir (T-320):** sin `set_barber_bio`; el dueño guarda
+  la descripción con `updateBarber` (la misma actualización del barbero), como la de los
+  servicios; el menú sale en una clave nueva `menu`.
 - **Dominio:** `groupProductsByCategory(products)` → `[{ category: string | null, items }]` en el
   orden del primer producto de cada categoría; `null` (sin categoría) al final como "Otros".
 - **UI:** `SiteHome` — Servicios: tarjeta con foto `aspect-[4/5]` arriba, nombre/precio/duración

@@ -19,7 +19,49 @@ export type SiteLoyalty = {
   rewardAmount: number | null;
 } | null;
 
-export type SiteTeamMember = { id: string; name: string; photoPath: string | null };
+export type SiteTeamMember = {
+  id: string;
+  name: string;
+  photoPath: string | null;
+  /** REQ-103.4: descripción opcional que escribe el dueño. */
+  bio: string | null;
+};
+
+/** REQ-103.5: producto a la venta en el menú de la web, con su categoría de la vitrina. */
+export type SiteMenuItem = {
+  id: string;
+  name: string;
+  price: number;
+  photoPath: string | null;
+  description?: string | null;
+  category?: string | null;
+};
+
+const OTHER_CATEGORY = "Otros";
+
+/**
+ * REQ-103.5: agrupa el menú por categoría, en el orden del primer producto de cada una (el del
+ * dueño); los que no tienen categoría van al final en "Otros".
+ */
+export function groupProductsByCategory<T extends { category?: string | null }>(
+  products: T[],
+): { category: string; items: T[] }[] {
+  const groups = new Map<string, T[]>();
+  const others: T[] = [];
+  for (const p of products) {
+    const c = p.category?.trim();
+    if (!c) {
+      others.push(p);
+      continue;
+    }
+    const list = groups.get(c) ?? [];
+    list.push(p);
+    groups.set(c, list);
+  }
+  const out = [...groups].map(([category, items]) => ({ category, items }));
+  if (others.length > 0) out.push({ category: OTHER_CATEGORY, items: others });
+  return out;
+}
 
 export type SiteCta = { href: string; label: string; primary: boolean };
 

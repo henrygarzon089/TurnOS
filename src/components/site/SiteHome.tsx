@@ -9,6 +9,7 @@ import { formatCOP } from "@/lib/domain/money";
 import { hhmmTo12h } from "@/lib/domain/public-view";
 import {
   barberShopJsonLd,
+  groupProductsByCategory,
   heroCtas,
   loyaltyLine,
   mapsUrl,
@@ -26,6 +27,7 @@ import { StickyCta } from "./StickyCta";
  */
 export function SiteHome({ data }: { data: SiteHomeData }) {
   const { business: b, hours, loyalty, team, products, canBook, reviewUrl } = data;
+  const menuGroups = groupProductsByCategory(products);
   const jobsEnabled = data.jobsEnabled;
   const ctas = heroCtas({ canBook, slug: b.slug });
   const reward = loyaltyLine(loyalty);
@@ -160,42 +162,43 @@ export function SiteHome({ data }: { data: SiteHomeData }) {
         </div>
 
         <Section id="servicios" eyebrow="Servicios" title="Hechos con calma," muted="a tu medida.">
+          {/* REQ-103.1 / REQ-103.2: la foto manda; la descripción se abre con "Ver más" */}
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {b.services.map((s) => (
               <li
                 key={s.id}
-                className="reveal bg-brand text-brand-ink relative flex min-h-72 flex-col justify-end overflow-hidden rounded-[2rem]"
+                data-testid="service-card"
+                className="reveal bg-card border-line flex flex-col overflow-hidden rounded-[2rem] border"
               >
-                {s.photoPath && (
-                  <Image
-                    src={mediaUrl(s.photoPath)}
-                    alt={s.name}
-                    fill
-                    unoptimized
-                    loading="lazy"
-                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover"
-                  />
+                {s.photoPath ? (
+                  <div className="bg-brand relative aspect-[4/5]">
+                    <Image
+                      src={mediaUrl(s.photoPath)}
+                      alt={s.name}
+                      fill
+                      unoptimized
+                      loading="lazy"
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    aria-hidden="true"
+                    className="bg-brand relative flex aspect-[4/5] items-center justify-center overflow-hidden"
+                  >
+                    <GammaMark variant="negativo" size={160} decorative className="opacity-20" />
+                  </div>
                 )}
-                <div
-                  className={`relative flex flex-col gap-1 ${
-                    s.photoPath ? "bg-card text-ink m-3 rounded-3xl p-5" : "p-6"
-                  }`}
-                >
+                <div className="flex flex-col gap-1 p-5">
                   <div className="flex items-baseline justify-between gap-3">
                     <h3 className="text-xl font-bold">{s.name}</h3>
                     <span className="text-lg font-semibold whitespace-nowrap tabular-nums">
                       {formatCOP(s.price)}
                     </span>
                   </div>
-                  <p className={`text-sm ${s.photoPath ? "text-muted" : "text-brand-ink/80"}`}>
-                    {s.durationMin} min
-                  </p>
-                  {s.description && (
-                    <p className={s.photoPath ? "text-muted" : "text-brand-ink/85"}>
-                      {s.description}
-                    </p>
-                  )}
+                  <p className="text-muted text-sm">{s.durationMin} min</p>
+                  {s.description && <MoreText text={s.description} />}
                 </div>
               </li>
             ))}
@@ -249,33 +252,38 @@ export function SiteHome({ data }: { data: SiteHomeData }) {
 
         {team.length > 0 && (
           <Section id="equipo" eyebrow="Nuestro equipo" title="Manos que" muted="saben lo que hacen.">
-            <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {/* REQ-103.4: foto protagonista y descripción en "Ver más" */}
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {team.map((t) => (
                 <li
                   key={t.id}
-                  className="reveal bg-brand relative flex aspect-[3/4] flex-col justify-end overflow-hidden rounded-[2rem]"
+                  data-testid="team-card"
+                  className="reveal bg-card border-line flex flex-col overflow-hidden rounded-[2rem] border"
                 >
-                  {t.photoPath ? (
-                    <Image
-                      src={mediaUrl(t.photoPath)}
-                      alt={`Foto de ${t.name}`}
-                      fill
-                      unoptimized
-                      loading="lazy"
-                      sizes="(min-width: 1024px) 25vw, 50vw"
-                      className="object-cover"
-                    />
-                  ) : (
-                    <span
-                      aria-hidden="true"
-                      className="text-brand-ink absolute inset-0 flex items-center justify-center text-5xl font-bold tracking-[0.1em]"
-                    >
-                      {initials(t.name)}
-                    </span>
-                  )}
-                  <span className="bg-card text-ink relative m-2 truncate rounded-full px-3 py-2 text-center text-sm font-semibold">
-                    {t.name}
-                  </span>
+                  <div className="bg-brand relative aspect-[3/4]">
+                    {t.photoPath ? (
+                      <Image
+                        src={mediaUrl(t.photoPath)}
+                        alt={`Foto de ${t.name}`}
+                        fill
+                        unoptimized
+                        loading="lazy"
+                        sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <span
+                        aria-hidden="true"
+                        className="text-brand-ink absolute inset-0 flex items-center justify-center text-5xl font-bold tracking-[0.1em]"
+                      >
+                        {initials(t.name)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1 p-5">
+                    <h3 className="truncate text-xl font-bold">{t.name}</h3>
+                    {t.bio && <MoreText text={t.bio} />}
+                  </div>
                 </li>
               ))}
             </ul>
@@ -328,41 +336,47 @@ export function SiteHome({ data }: { data: SiteHomeData }) {
             eyebrow="Menú"
             title="Algo rico"
             muted="mientras esperas."
-            intro="Helados y bebidas para la espera. Se pagan en caja."
+            intro="Lo que tenemos a la venta. Se paga en caja."
           >
-            <ul className="-mx-5 flex snap-x gap-4 overflow-x-auto px-5 pb-2 lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0">
-              {products.map((p) => (
-                <li
-                  key={p.id}
-                  className="bg-card border-line flex w-60 shrink-0 snap-start flex-col overflow-hidden rounded-[2rem] border lg:w-auto"
-                >
-                  <div className="bg-brand-soft relative flex aspect-square items-center justify-center">
-                    {p.photoPath ? (
-                      <Image
-                        src={mediaUrl(p.photoPath)}
-                        alt={p.name}
-                        fill
-                        unoptimized
-                        loading="lazy"
-                        sizes="240px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <Icon name="cup" className="text-ink size-12" />
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-1 p-4">
-                    <div className="flex items-baseline justify-between gap-3">
-                      <p className="font-semibold">{p.name}</p>
-                      <span className="font-semibold whitespace-nowrap tabular-nums">
-                        {formatCOP(p.price)}
-                      </span>
-                    </div>
-                    {p.description && <p className="text-muted text-sm">{p.description}</p>}
-                  </div>
-                </li>
-              ))}
-            </ul>
+            {/* REQ-103.5: un bloque por categoría de la vitrina; subtítulo solo si hay más de una */}
+            {menuGroups.map((g) => (
+              <div key={g.category} className="flex flex-col gap-4">
+                {menuGroups.length > 1 && <h3 className="text-2xl font-bold">{g.category}</h3>}
+                <ul className="-mx-5 flex snap-x gap-4 overflow-x-auto px-5 pb-2 lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0">
+                  {g.items.map((p) => (
+                    <li
+                      key={p.id}
+                      className="bg-card border-line flex w-60 shrink-0 snap-start flex-col overflow-hidden rounded-[2rem] border lg:w-auto"
+                    >
+                      <div className="bg-brand-soft relative flex aspect-square items-center justify-center">
+                        {p.photoPath ? (
+                          <Image
+                            src={mediaUrl(p.photoPath)}
+                            alt={p.name}
+                            fill
+                            unoptimized
+                            loading="lazy"
+                            sizes="240px"
+                            className="object-cover"
+                          />
+                        ) : (
+                          <Icon name="cup" className="text-ink size-12" />
+                        )}
+                      </div>
+                      <div className="flex flex-col gap-1 p-4">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <p className="font-semibold">{p.name}</p>
+                          <span className="font-semibold whitespace-nowrap tabular-nums">
+                            {formatCOP(p.price)}
+                          </span>
+                        </div>
+                        {p.description && <p className="text-muted text-sm">{p.description}</p>}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </Section>
         )}
 
@@ -678,4 +692,21 @@ function initials(name: string): string {
 
 function lowerFirst(s: string): string {
   return s.charAt(0).toLocaleLowerCase("es-CO") + s.slice(1);
+}
+
+/**
+ * REQ-103.2 / REQ-103.6: acordeón nativo (`<details>`): abre con el dedo, con teclado y sin
+ * JavaScript, y el lector de pantalla anuncia si está abierto.
+ */
+function MoreText({ text }: { text: string }) {
+  return (
+    <details className="group mt-1">
+      <summary className="text-link flex min-h-12 cursor-pointer list-none items-center gap-2 font-semibold [&::-webkit-details-marker]:hidden">
+        <span className="group-open:hidden">Ver más</span>
+        <span className="hidden group-open:inline">Ver menos</span>
+        <Icon name="next" className="size-5 rotate-90 transition-transform group-open:-rotate-90" />
+      </summary>
+      <p className="text-muted pb-1">{text}</p>
+    </details>
+  );
 }

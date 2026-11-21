@@ -78,8 +78,8 @@ function data(over: Partial<SiteHomeData> = {}): SiteHomeData {
       rewardAmount: null,
     },
     team: [
-      { id: "x1", name: "Pedro", photoPath: "b1/barbers/pedro.webp" },
-      { id: "x2", name: "Stiven Ríos", photoPath: null },
+      { id: "x1", name: "Pedro", photoPath: "b1/barbers/pedro.webp", bio: null },
+      { id: "x2", name: "Stiven Ríos", photoPath: null, bio: null },
     ],
     products: business.products,
     reviewUrl: "https://g.page/r/abc/review",

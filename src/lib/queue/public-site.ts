@@ -3,7 +3,7 @@
  * regla de fidelidad y equipo, por `get_public_site` con service_role (ADR-009). Sin celulares.
  */
 import type { Gateway } from "@/lib/db/gateway";
-import type { SiteHours, SiteLoyalty, SiteTeamMember } from "@/lib/domain/site";
+import type { SiteHours, SiteLoyalty, SiteMenuItem, SiteTeamMember } from "@/lib/domain/site";
 
 export type PublicSite = {
   hours: SiteHours;
@@ -11,6 +11,8 @@ export type PublicSite = {
   team: SiteTeamMember[];
   /** REQ-036: enlace de reseñas en Google, o null. */
   reviewUrl: string | null;
+  /** REQ-103.5: a la venta con categoría; null sin la migración 0082. */
+  menu: SiteMenuItem[] | null;
 };
 
 export async function getPublicSite(gw: Gateway, slug: string): Promise<PublicSite | null> {
@@ -21,6 +23,12 @@ export async function getPublicSite(gw: Gateway, slug: string): Promise<PublicSi
     reviewUrl: raw.reviewUrl ?? null,
     hours: raw.hours ?? [],
     loyalty: raw.loyalty ?? null,
-    team: (raw.team ?? []).map((t) => ({ id: t.id, name: t.name, photoPath: t.photoPath ?? null })),
+    team: (raw.team ?? []).map((t) => ({
+      id: t.id,
+      name: t.name,
+      photoPath: t.photoPath ?? null,
+      bio: t.bio ?? null,
+    })),
+    menu: raw.menu ?? null,
   };
 }

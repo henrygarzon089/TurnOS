@@ -4,6 +4,8 @@ import { useActionState, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { BARBER_COLS } from "@/components/admin/barber-cols";
 import { CheckList } from "@/components/admin/CheckList";
+import { DescriptionField } from "@/components/admin/DescriptionField";
+import { BARBER_DESCRIPTION_MAX } from "@/lib/domain/description";
 import { ErrorText, Field } from "@/components/auth/LoginForm";
 import { BarberPhotos } from "@/components/photos/BarberPhotos";
 import { ImagePicker } from "@/components/media/ImagePicker";
@@ -38,6 +40,8 @@ export type BarberRow = {
   photos: BarberPhoto[];
   /** REQ-085.1: foto de perfil en `media` */
   photo_path: string | null;
+  /** REQ-103.3: descripción para "Nuestro equipo" de la web */
+  bio?: string | null;
 };
 
 export type ServiceOption = { id: string; name: string };
@@ -364,6 +368,12 @@ export function BarberCard({
               className="input"
             />
           </Field>
+          <DescriptionField
+            label="Descripción (opcional)"
+            help="Sale en Nuestro equipo de la web, al tocar Ver más."
+            max={BARBER_DESCRIPTION_MAX}
+            defaultValue={barber.bio ?? null}
+          />
           <CheckList
             legend="Servicios que hace"
             name="service_ids"
